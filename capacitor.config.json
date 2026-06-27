@@ -1,0 +1,19 @@
+{
+  "appId": "com.sinner.tennis",
+  "appName": "Tennis Tracker",
+  "webDir": "dist",
+  "android": {
+    "backgroundColor": "#0d0d1a",
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#0d0d1a",
+      "showSpinner": false,
+      "androidSpinnerStyle": "small"
+    }
+  }
+}
