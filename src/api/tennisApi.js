@@ -1,10 +1,13 @@
 import { mockLiveMatch, mockUpcoming, mockRecentMatches, mockTournaments, mockRankings, mockPlayer, SINNER_ID } from './mockData.js'
 
-const BASE_URL = 'https://v1.tennis.api-sports.io'
+const BASE_URL = 'https://api-tennis.p.rapidapi.com'
 
 async function apiFetch(endpoint, apiKey) {
   const res = await fetch(`${BASE_URL}${endpoint}`, {
-    headers: { 'x-apisports-key': apiKey },
+    headers: {
+      'x-rapidapi-key': apiKey,
+      'x-rapidapi-host': 'api-tennis.p.rapidapi.com',
+    },
   })
   if (!res.ok) throw new Error(`API error ${res.status}`)
   const data = await res.json()

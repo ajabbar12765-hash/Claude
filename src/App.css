@@ -918,5 +918,64 @@ body {
 .about-line { font-size: 0.82rem; color: var(--text-dim); padding: 3px 0; }
 .about-dim { color: var(--text-dimmer); font-size: 0.75rem; }
 
+.steps-toggle {
+  width: 100%;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  -webkit-tap-highlight-color: transparent;
+}
+.steps-card { padding: 14px; }
+.steps-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+.step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.step-num {
+  width: 22px;
+  height: 22px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.step-text { font-size: 0.85rem; color: var(--text-dim); line-height: 1.4; }
+.step-link { color: var(--accent); font-weight: 600; }
+.step-bold { color: var(--text); }
+.step-note {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--text-dimmer);
+}
+.key-preview {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
 /* ── Utilities ── */
 .favorite { color: var(--sinner) !important; }
