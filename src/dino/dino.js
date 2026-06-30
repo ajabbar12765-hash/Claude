@@ -184,6 +184,24 @@ function spawnCloud() {
 // Game state.
 // ---------------------------------------------------------------------------
 const HIGH_SCORE_KEY = 'dinoRunHighScore';
+
+// Safe localStorage access — some iOS Safari modes (private browsing, blocked
+// storage) throw on access, which would otherwise crash the whole script.
+function loadHigh() {
+  try {
+    return Number(localStorage.getItem(HIGH_SCORE_KEY) || 0) || 0;
+  } catch (e) {
+    return 0;
+  }
+}
+function saveHigh(v) {
+  try {
+    localStorage.setItem(HIGH_SCORE_KEY, String(v));
+  } catch (e) {
+    /* ignore — high score just won't persist */
+  }
+}
+
 const state = {
   running: false,
   over: false,
@@ -191,7 +209,7 @@ const state = {
   speed: WORLD.startSpeed,
   distance: 0,
   score: 0,
-  high: Number(localStorage.getItem(HIGH_SCORE_KEY) || 0),
+  high: loadHigh(),
   night: false,
   nightTimer: 0,
   groundOffset: 0,
@@ -224,7 +242,7 @@ function gameOver() {
   state.over = true;
   if (state.score > state.high) {
     state.high = state.score;
-    localStorage.setItem(HIGH_SCORE_KEY, String(state.high));
+    saveHigh(state.high);
   }
   state.flash = 0;
 }
@@ -268,28 +286,39 @@ window.addEventListener('keyup', (e) => {
 });
 
 // Touch (iPad / iPhone / touch laptops).
-// Tap = jump. Swipe down, or press-and-hold the lower portion, = duck.
+// Tap ANYWHERE = jump. Swipe down, or press-and-hold, = duck.
+// (No location-based zones — a tap anywhere on the canvas always jumps.)
 let touchStartY = 0;
 let touchStartX = 0;
 let touchIsDuck = false;
+let holdTimer = null;
 const DUCK_SWIPE_THRESHOLD = 24; // px of downward movement to count as a duck
+const HOLD_DUCK_MS = 220; // press-and-hold this long (without moving) = duck
+
+function clearHold() {
+  if (holdTimer) {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+  }
+}
 
 canvas.addEventListener(
   'touchstart',
   (e) => {
     e.preventDefault();
     const t = e.changedTouches[0];
-    const rect = canvas.getBoundingClientRect();
     touchStartY = t.clientY;
     touchStartX = t.clientX;
     touchIsDuck = false;
+    clearHold();
 
-    // Holding the lower third of the canvas means "duck".
-    const relY = (t.clientY - rect.top) / rect.height;
-    if (state.running && relY > 0.6) {
-      touchIsDuck = true;
-      setDuck(true);
-    }
+    // Press-and-hold (anywhere) ducks — but only once the game is running.
+    holdTimer = setTimeout(() => {
+      if (state.running && !dino.jumping) {
+        touchIsDuck = true;
+        setDuck(true);
+      }
+    }, HOLD_DUCK_MS);
   },
   { passive: false }
 );
@@ -300,7 +329,9 @@ canvas.addEventListener(
     e.preventDefault();
     const t = e.changedTouches[0];
     const dy = t.clientY - touchStartY;
+    // A clear downward swipe ducks.
     if (state.running && dy > DUCK_SWIPE_THRESHOLD && !dino.jumping) {
+      clearHold();
       touchIsDuck = true;
       setDuck(true);
     }
@@ -312,24 +343,19 @@ canvas.addEventListener(
   'touchend',
   (e) => {
     e.preventDefault();
+    clearHold();
     if (touchIsDuck) {
       setDuck(false);
       touchIsDuck = false;
       return;
     }
-    const t = e.changedTouches[0];
-    const dy = t.clientY - touchStartY;
-    const dx = Math.abs(t.clientX - touchStartX);
-    // A short, mostly-stationary touch is a tap → jump.
-    if (dy < DUCK_SWIPE_THRESHOLD || dx > Math.abs(dy)) {
-      pressJump();
-    } else {
-      setDuck(false);
-    }
+    // Anything that wasn't a duck gesture is a tap → jump (or start/restart).
+    pressJump();
   },
   { passive: false }
 );
 canvas.addEventListener('touchcancel', () => {
+  clearHold();
   setDuck(false);
   touchIsDuck = false;
 });
