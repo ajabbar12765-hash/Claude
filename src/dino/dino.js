@@ -285,107 +285,51 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-// Pointer input (covers touch on iPad, plus mouse/pen) — the most reliable
-// input API on iOS Safari. Tap anywhere on the canvas = jump; swipe down or
-// press-and-hold = duck.
-let pStartY = 0;
-let pStartX = 0;
-let pIsDuck = false;
-let pActive = false;
-let holdTimer = null;
-const DUCK_SWIPE_THRESHOLD = 24; // px of downward movement to count as a duck
-const HOLD_DUCK_MS = 220; // press-and-hold this long (without moving) = duck
+// Touch / pointer input.
+//
+// JUMP happens the INSTANT you press down (like Chrome's game, which jumps on
+// key-press, not release) — so a tap can never be misread as a "hold". dino.jump()
+// is idempotent while airborne, so binding several event types is harmless and
+// just maximizes the chance one of them fires inside any given webview.
+//
+// DUCK is handled only by the dedicated DUCK button (and the Down-arrow key),
+// so it can never swallow a jump.
 
-function clearHold() {
-  if (holdTimer) {
-    clearTimeout(holdTimer);
-    holdTimer = null;
-  }
-}
-
-function gestureStart(x, y) {
-  pActive = true;
-  pStartX = x;
-  pStartY = y;
-  pIsDuck = false;
-  clearHold();
-  holdTimer = setTimeout(() => {
-    if (state.running && !dino.jumping) {
-      pIsDuck = true;
-      setDuck(true);
-    }
-  }, HOLD_DUCK_MS);
-}
-
-function gestureMove(x, y) {
-  if (!pActive) return;
-  if (state.running && y - pStartY > DUCK_SWIPE_THRESHOLD && !dino.jumping) {
-    clearHold();
-    pIsDuck = true;
-    setDuck(true);
-  }
-}
-
-function gestureEnd() {
-  if (!pActive) return;
-  pActive = false;
-  clearHold();
-  if (pIsDuck) {
-    setDuck(false);
-    pIsDuck = false;
-    return;
-  }
-  // Anything that wasn't a duck gesture is a tap → jump (or start/restart).
+let lastPressAt = 0;
+function pressDown(e) {
+  if (e && e.cancelable) e.preventDefault();
+  const now = Date.now();
+  if (now - lastPressAt < 60) return; // de-dupe pointer+touch firing for one tap
+  lastPressAt = now;
   pressJump();
 }
 
-function gestureCancel() {
-  pActive = false;
-  clearHold();
-  setDuck(false);
-  pIsDuck = false;
+// Tap anywhere on the canvas = jump (fires on press-down).
+canvas.addEventListener('pointerdown', pressDown, { passive: false });
+canvas.addEventListener('touchstart', pressDown, { passive: false });
+canvas.addEventListener('mousedown', pressDown);
+
+// On-screen buttons — plain HTML controls that reliably receive taps.
+const btnJump = document.getElementById('btn-jump');
+if (btnJump) {
+  btnJump.addEventListener('pointerdown', pressDown, { passive: false });
+  btnJump.addEventListener('touchstart', pressDown, { passive: false });
+  btnJump.addEventListener('mousedown', pressDown);
+  btnJump.addEventListener('click', pressDown); // last-resort fallback
 }
 
-if (window.PointerEvent) {
-  canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); gestureStart(e.clientX, e.clientY); }, { passive: false });
-  canvas.addEventListener('pointermove', (e) => { e.preventDefault(); gestureMove(e.clientX, e.clientY); }, { passive: false });
-  canvas.addEventListener('pointerup', (e) => { e.preventDefault(); gestureEnd(); }, { passive: false });
-  canvas.addEventListener('pointercancel', gestureCancel);
-} else {
-  // Fallback for older browsers without Pointer Events.
-  canvas.addEventListener('touchstart', (e) => { e.preventDefault(); const t = e.changedTouches[0]; gestureStart(t.clientX, t.clientY); }, { passive: false });
-  canvas.addEventListener('touchmove', (e) => { e.preventDefault(); const t = e.changedTouches[0]; gestureMove(t.clientX, t.clientY); }, { passive: false });
-  canvas.addEventListener('touchend', (e) => { e.preventDefault(); gestureEnd(); }, { passive: false });
-  canvas.addEventListener('touchcancel', gestureCancel);
-  canvas.addEventListener('mousedown', (e) => { e.preventDefault(); pressJump(); });
+const btnDuck = document.getElementById('btn-duck');
+if (btnDuck) {
+  const duckOn = (e) => { if (e && e.cancelable) e.preventDefault(); setDuck(true); };
+  const duckOff = (e) => { if (e && e.cancelable) e.preventDefault(); setDuck(false); };
+  btnDuck.addEventListener('pointerdown', duckOn, { passive: false });
+  btnDuck.addEventListener('pointerup', duckOff, { passive: false });
+  btnDuck.addEventListener('pointerleave', duckOff);
+  btnDuck.addEventListener('pointercancel', duckOff);
+  btnDuck.addEventListener('touchstart', duckOn, { passive: false });
+  btnDuck.addEventListener('touchend', duckOff, { passive: false });
+  btnDuck.addEventListener('touchcancel', duckOff);
 }
-
-// On-screen buttons — plain HTML controls that always receive taps, as a
-// guaranteed fallback in case canvas gestures misbehave on a given device.
-function bindButton(el, onDown, onUp) {
-  if (!el) return;
-  const down = (e) => { e.preventDefault(); onDown(); };
-  const up = (e) => { if (e) e.preventDefault(); if (onUp) onUp(); };
-  if (window.PointerEvent) {
-    el.addEventListener('pointerdown', down, { passive: false });
-    el.addEventListener('pointerup', up, { passive: false });
-    el.addEventListener('pointerleave', () => up());
-    el.addEventListener('pointercancel', () => up());
-  } else {
-    el.addEventListener('touchstart', down, { passive: false });
-    el.addEventListener('touchend', up, { passive: false });
-    el.addEventListener('touchcancel', () => up());
-    // Mouse/keyboard-activated click for desktop & accessibility.
-    el.addEventListener('click', (e) => { e.preventDefault(); onDown(); if (onUp) onUp(); });
-  }
-}
-
-bindButton(document.getElementById('btn-jump'), () => pressJump());
-bindButton(
-  document.getElementById('btn-duck'),
-  () => setDuck(true),
-  () => setDuck(false)
-);
 
 // Prevent iOS double-tap-to-zoom on the whole page.
 document.addEventListener('gesturestart', (e) => e.preventDefault());
@@ -626,7 +570,7 @@ function render() {
 
   if (!state.started) {
     drawDino(theme.fg);
-    drawCenter(theme.fg, ['PRESS SPACE / TAP TO START', 'Tap = jump · Swipe down / hold = duck']);
+    drawCenter(theme.fg, ['PRESS SPACE / TAP TO START', 'Tap or JUMP button to jump · DUCK to duck']);
   } else if (state.over) {
     drawCenter(theme.fg, ['G A M E   O V E R', 'Tap or press Space to restart']);
   }
