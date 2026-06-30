@@ -1,0 +1,87 @@
+/* Dino Run — standalone offline-style dinosaur game.
+   Layout is built to feel right on iPad (touch, both orientations) as well as desktop. */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: #f7f7f7;
+  color: #535353;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, "Courier New", monospace;
+  /* Stop iOS rubber-band scrolling / pull-to-refresh while playing */
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  /* Respect the iPad/iPhone safe areas (notch, home indicator) */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+#game-root {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#game-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  padding: 12px;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* The canvas is the entire touch surface; disable browser gestures on it
+     so taps/swipes drive the game instead of scrolling or zooming the page. */
+  touch-action: none;
+  border-radius: 8px;
+}
+
+#hud {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+#hint {
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: #9aa0a6;
+  background: rgba(247, 247, 247, 0.7);
+  padding: 4px 10px;
+  border-radius: 999px;
+  transition: opacity 0.4s ease;
+}
+
+#hint.hidden {
+  opacity: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #202124;
+    color: #cfcfcf;
+  }
+  #hint {
+    color: #80868b;
+    background: rgba(32, 33, 36, 0.7);
+  }
+}
