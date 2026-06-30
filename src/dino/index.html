@@ -18,9 +18,16 @@
   <body>
     <main id="game-root">
       <div id="game-wrap">
-        <canvas id="game"></canvas>
-        <div id="hud">
-          <p id="hint">Tap to jump &middot; swipe down or hold to duck</p>
+        <div id="stage">
+          <canvas id="game"></canvas>
+          <div id="hud">
+            <p id="hint">Tap to jump &middot; swipe down or hold to duck</p>
+          </div>
+        </div>
+        <!-- On-screen controls (shown on touch devices) as a reliable fallback. -->
+        <div id="touch-controls">
+          <button id="btn-duck" type="button" aria-label="Duck">DUCK</button>
+          <button id="btn-jump" type="button" aria-label="Jump">JUMP</button>
         </div>
       </div>
     </main>
