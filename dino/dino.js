@@ -6,9 +6,10 @@
  *  - Plays great on iPad / touch: tap to jump, swipe down or press-and-hold
  *    the lower part of the screen to duck. No scrolling/zooming gets in the way.
  *  - Crisp on retina/Hi-DPI iPad screens and responsive to any width.
+ *
+ * Pure vanilla JS + Canvas — no build step, no dependencies. Open index.html
+ * (or deploy the folder as a static site) and it runs.
  */
-
-import './dino.css';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
