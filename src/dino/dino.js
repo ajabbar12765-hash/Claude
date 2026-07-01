@@ -295,27 +295,34 @@ window.addEventListener('keyup', (e) => {
 // DUCK is handled only by the dedicated DUCK button (and the Down-arrow key),
 // so it can never swallow a jump.
 
+// Diagnostic counters (surfaced by the optional on-screen readout, ?debug=1).
+const counts = { cpd: 0, cts: 0, cmd: 0, bpd: 0, bts: 0, bmd: 0, bcl: 0, jumps: 0 };
+let lastSrc = '—';
+
 let lastPressAt = 0;
-function pressDown(e) {
+function pressDown(e, src) {
   if (e && e.cancelable) e.preventDefault();
+  if (src) lastSrc = src;
   const now = Date.now();
   if (now - lastPressAt < 60) return; // de-dupe pointer+touch firing for one tap
   lastPressAt = now;
+  const couldJump = state.running && !state.over && !dino.jumping;
   pressJump();
+  if (couldJump && dino.jumping) counts.jumps++;
 }
 
 // Tap anywhere on the canvas = jump (fires on press-down).
-canvas.addEventListener('pointerdown', pressDown, { passive: false });
-canvas.addEventListener('touchstart', pressDown, { passive: false });
-canvas.addEventListener('mousedown', pressDown);
+canvas.addEventListener('pointerdown', (e) => { counts.cpd++; pressDown(e, 'canvas·pointer'); }, { passive: false });
+canvas.addEventListener('touchstart', (e) => { counts.cts++; pressDown(e, 'canvas·touch'); }, { passive: false });
+canvas.addEventListener('mousedown', (e) => { counts.cmd++; pressDown(e, 'canvas·mouse'); });
 
 // On-screen buttons — plain HTML controls that reliably receive taps.
 const btnJump = document.getElementById('btn-jump');
 if (btnJump) {
-  btnJump.addEventListener('pointerdown', pressDown, { passive: false });
-  btnJump.addEventListener('touchstart', pressDown, { passive: false });
-  btnJump.addEventListener('mousedown', pressDown);
-  btnJump.addEventListener('click', pressDown); // last-resort fallback
+  btnJump.addEventListener('pointerdown', (e) => { counts.bpd++; pressDown(e, 'JUMP·pointer'); }, { passive: false });
+  btnJump.addEventListener('touchstart', (e) => { counts.bts++; pressDown(e, 'JUMP·touch'); }, { passive: false });
+  btnJump.addEventListener('mousedown', (e) => { counts.bmd++; pressDown(e, 'JUMP·mouse'); });
+  btnJump.addEventListener('click', (e) => { counts.bcl++; pressDown(e, 'JUMP·click'); }); // last-resort fallback
 }
 
 const btnDuck = document.getElementById('btn-duck');
@@ -329,6 +336,29 @@ if (btnDuck) {
   btnDuck.addEventListener('touchstart', duckOn, { passive: false });
   btnDuck.addEventListener('touchend', duckOff, { passive: false });
   btnDuck.addEventListener('touchcancel', duckOff);
+}
+
+// Optional on-screen input readout — add ?debug=1 to the URL to show it.
+// Confirms which build is loaded and whether taps are reaching the page.
+const BUILD = 'debug-2';
+let dbg = null;
+if (/[?&]debug/.test(location.search)) {
+  dbg = document.createElement('pre');
+  dbg.style.cssText =
+    'position:fixed;top:6px;left:6px;z-index:99999;margin:0;padding:6px 9px;' +
+    'font:11px/1.4 ui-monospace,Menlo,monospace;color:#111;' +
+    'background:rgba(255,224,90,.96);border:1px solid #c9a400;border-radius:8px;' +
+    'white-space:pre;pointer-events:none;max-width:92vw;';
+  document.body.appendChild(dbg);
+}
+function updateDbg() {
+  if (!dbg) return;
+  dbg.textContent =
+    'BUILD ' + BUILD + '  PointerEvent:' + !!window.PointerEvent + '\n' +
+    'canvas  pd:' + counts.cpd + ' ts:' + counts.cts + ' md:' + counts.cmd + '\n' +
+    'JUMPbtn pd:' + counts.bpd + ' ts:' + counts.bts + ' cl:' + counts.bcl + '\n' +
+    'jumps:' + counts.jumps + '   last:' + lastSrc + '\n' +
+    'running:' + state.running + ' over:' + state.over + ' air:' + dino.jumping;
 }
 
 // Prevent iOS double-tap-to-zoom on the whole page.
@@ -588,6 +618,7 @@ function loop(now) {
   if (state.over) state.flash += dt;
   update(dt);
   render();
+  updateDbg();
   requestAnimationFrame(loop);
 }
 
