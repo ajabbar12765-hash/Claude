@@ -85,11 +85,14 @@ const dino = {
   get hitWidth() {
     return this.ducking ? this.duckWidth : this.width;
   },
-  get bottom() {
-    return WORLD.groundY;
-  },
   get top() {
-    return this.bottom - this.hitHeight;
+    // Actual top of the hitbox. While standing or jumping this follows the
+    // vertical position (this.y), so a jump genuinely lifts the dino over
+    // obstacles. Ducking keeps it on the ground at the shorter height.
+    return this.ducking ? WORLD.groundY - this.duckHeight : this.y;
+  },
+  get bottom() {
+    return this.top + this.hitHeight;
   },
   jump() {
     if (!this.jumping) {
@@ -340,7 +343,7 @@ if (btnDuck) {
 
 // Optional on-screen input readout — add ?debug=1 to the URL to show it.
 // Confirms which build is loaded and whether taps are reaching the page.
-const BUILD = 'debug-2';
+const BUILD = 'jump-fixed';
 let dbg = null;
 if (/[?&]debug/.test(location.search)) {
   dbg = document.createElement('pre');
@@ -471,7 +474,8 @@ function drawDino(fg) {
     return;
   }
 
-  const y = WORLD.groundY - dino.height;
+  // Follow the dino's actual vertical position so jumps visibly lift it.
+  const y = dino.y;
   // Tail
   px(x, y + 18, 12, 8);
   // Body
