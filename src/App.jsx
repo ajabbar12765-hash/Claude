@@ -331,7 +331,7 @@ function Founder() {
 
 // Web3Forms access key — get a free one at https://web3forms.com (tied to the
 // inbox that should receive submissions). Replace the placeholder below.
-const WEB3FORMS_KEY = 'REPLACE_WITH_YOUR_ACCESS_KEY';
+const WEB3FORMS_KEY = '99ab0e66-badb-4e01-85e7-28f01af72a13';
 
 function Contact() {
   const [ref, visible] = useInView();
