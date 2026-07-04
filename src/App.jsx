@@ -329,12 +329,40 @@ function Founder() {
   );
 }
 
+// Web3Forms access key — get a free one at https://web3forms.com (tied to the
+// inbox that should receive submissions). Replace the placeholder below.
+const WEB3FORMS_KEY = 'REPLACE_WITH_YOUR_ACCESS_KEY';
+
 function Contact() {
   const [ref, visible] = useInView();
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
   const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState('idle'); // idle | sending | error
   const onChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-  const onSubmit = (e) => { e.preventDefault(); setSent(true); };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: 'New enquiry from the Capital Connect website',
+          from_name: 'Capital Connect Website',
+          name: form.name,
+          email: form.email,
+          company: form.company || 'Not provided',
+          message: form.message,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) { setSent(true); setStatus('idle'); }
+      else { setStatus('error'); }
+    } catch {
+      setStatus('error');
+    }
+  };
   return (
     <section id="contact" className="section section-dark contact">
       <div className="container">
@@ -382,7 +410,12 @@ function Contact() {
                 </div>
                 <input name="company" placeholder="Company / Organisation" value={form.company} onChange={onChange} />
                 <textarea name="message" placeholder="How can we help you?" rows={5} value={form.message} onChange={onChange} required />
-                <button type="submit" className="btn-primary">Send Message</button>
+                <button type="submit" className="btn-primary" disabled={status === 'sending'}>
+                  {status === 'sending' ? 'Sending…' : 'Send Message'}
+                </button>
+                {status === 'error' && (
+                  <p className="form-error">Something went wrong. Please try again, or email us directly at info@capconnect.net.</p>
+                )}
               </>
             )}
           </form>
