@@ -709,6 +709,9 @@ a { text-decoration: none; }
 .form-success h3 { color: white; font-size: 1.25rem; margin-bottom: 0.5rem; }
 .form-success p  { color: rgba(255,255,255,0.55); }
 
+.contact-form .btn-primary[disabled] { opacity: 0.6; cursor: not-allowed; }
+.form-error { color: #f87171; font-size: 0.85rem; line-height: 1.6; margin-top: -0.25rem; }
+
 /* ── Footer ───────────────────────────────────────────────────────────────────── */
 .footer {
   background: #060d18;
