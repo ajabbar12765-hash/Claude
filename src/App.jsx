@@ -54,9 +54,8 @@ function Navbar() {
   return (
     <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
       <div className="navbar-inner">
-        <button className="nav-logo" onClick={() => go('hero')}>
-          <span className="logo-cap">capital</span>
-          <span className="logo-con">connect</span>
+        <button className="nav-logo" onClick={() => go('hero')} aria-label="Capital Connect home">
+          <img className="nav-logo-img" src="/logo-white.png" alt="Capital Connect" />
         </button>
         <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="menu">
           <span /><span /><span />
@@ -401,8 +400,7 @@ function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <div className="footer-logo">
-              <span className="logo-cap">capital</span>
-              <span className="logo-con">connect</span>
+              <img className="footer-logo-img" src="/logo-white.png" alt="Capital Connect" />
             </div>
             <p>Financial Advisory &amp; Investment Management</p>
             <p className="footer-sub">info@capconnect.net</p>
