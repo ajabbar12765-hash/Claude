@@ -5,6 +5,8 @@ website you found through an ad (Facebook, Instagram, TikTok, Google ads,
 etc.). Paste the link, and it gives you a color-coded verdict with a
 plain-English explanation of every red flag it found.
 
+**Live site:** https://scam-shield-snowy.vercel.app
+
 ## What it checks
 
 **The link itself (works even offline):**
@@ -40,7 +42,11 @@ Each signal contributes points to a 0–100 risk score:
 
 ## How to run it
 
-You need Python 3.9+.
+The app is deployed on Vercel at https://scam-shield-snowy.vercel.app —
+`pyproject.toml` declares the Flask app (`app:app`) as the Vercel Python
+entrypoint, so redeploying is just pushing this folder to a Vercel project.
+
+To run it locally instead (Python 3.9+):
 
 ```bash
 cd scam-shield
