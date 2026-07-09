@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scam Shield — is this shop safe?</title>
+<style>
+  :root {
+    --bg: #0f1420;
+    --card: #1a2233;
+    --card-2: #202b42;
+    --text: #e8edf7;
+    --muted: #9aa7bf;
+    --accent: #4f8ef7;
+    --danger: #ef5b6b;
+    --warning: #f2a854;
+    --info: #6aa5f8;
+    --good: #4cc38a;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 64px;
+  }
+  .container { width: 100%; max-width: 760px; }
+  header { text-align: center; margin-bottom: 28px; }
+  header .shield { font-size: 44px; }
+  header h1 { font-size: 30px; margin-top: 8px; letter-spacing: 0.5px; }
+  header p { color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+  form {
+    display: flex;
+    gap: 10px;
+    background: var(--card);
+    padding: 12px;
+    border-radius: var(--radius);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  }
+  input[type="text"] {
+    flex: 1;
+    background: var(--card-2);
+    border: 1px solid #2c3a58;
+    color: var(--text);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 16px;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.55; cursor: wait; }
+
+  .status { text-align: center; color: var(--muted); margin: 22px 0; min-height: 22px; }
+  .spinner {
+    display: inline-block; width: 16px; height: 16px; vertical-align: -3px;
+    border: 2px solid var(--muted); border-top-color: transparent;
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #result { display: none; }
+  .verdict {
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 18px;
+    border: 1px solid transparent;
+  }
+  .verdict h2 { font-size: 22px; margin-bottom: 6px; }
+  .verdict .domain { font-size: 13px; opacity: 0.85; margin-bottom: 10px; word-break: break-all; }
+  .verdict p { line-height: 1.55; }
+  .verdict.high-risk  { background: #3a1620; border-color: var(--danger); }
+  .verdict.suspicious { background: #3a2a14; border-color: var(--warning); }
+  .verdict.caution    { background: #2c2a14; border-color: #d9c34a; }
+  .verdict.low-risk   { background: #14301f; border-color: var(--good); }
+
+  .meter { height: 10px; background: #10161f; border-radius: 6px; overflow: hidden; margin: 14px 0 4px; }
+  .meter-fill { height: 100%; width: 0; transition: width 0.6s ease; border-radius: 6px; }
+  .meter-label { font-size: 12px; color: var(--muted); }
+
+  .finding {
+    background: var(--card);
+    border-left: 4px solid var(--muted);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .finding h3 { font-size: 15px; margin-bottom: 4px; }
+  .finding p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+  .finding.danger  { border-left-color: var(--danger); }
+  .finding.danger h3  { color: var(--danger); }
+  .finding.warning { border-left-color: var(--warning); }
+  .finding.warning h3 { color: var(--warning); }
+  .finding.info    { border-left-color: var(--info); }
+  .finding.info h3    { color: var(--info); }
+  .finding.good    { border-left-color: var(--good); }
+  .finding.good h3    { color: var(--good); }
+
+  .tips {
+    margin-top: 34px;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+  }
+  .tips h2 { font-size: 17px; margin-bottom: 12px; }
+  .tips li { color: var(--muted); font-size: 14px; line-height: 1.7; margin-left: 18px; }
+  footer { margin-top: 30px; color: var(--muted); font-size: 12px; text-align: center; line-height: 1.6; }
+  .error { color: var(--danger); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="shield">🛡️</div>
+    <h1>Scam Shield</h1>
+    <p>Saw an ad on Facebook, Instagram or Google and not sure if the shop is real?<br>
+       Paste the link below and get a safety verdict before you order.</p>
+  </header>
+
+  <form id="check-form">
+    <input type="text" id="url-input" placeholder="Paste the shop or ad link here, e.g. https://super-deals.example"
+           autocomplete="off" spellcheck="false">
+    <button type="submit" id="check-btn">Check</button>
+  </form>
+
+  <div class="status" id="status"></div>
+
+  <div id="result">
+    <div class="verdict" id="verdict">
+      <h2 id="verdict-title"></h2>
+      <div class="domain" id="verdict-domain"></div>
+      <p id="verdict-advice"></p>
+      <div class="meter"><div class="meter-fill" id="meter-fill"></div></div>
+      <div class="meter-label">Risk score: <span id="score"></span> / 100</div>
+    </div>
+    <div id="findings"></div>
+  </div>
+
+  <div class="tips">
+    <h2>Quick rules that beat most scams</h2>
+    <ul>
+      <li>If the discount looks impossible (70–90% off brand goods), it is.</li>
+      <li>Never pay by bank transfer, gift card or crypto — you can't get that money back. Use a card or PayPal.</li>
+      <li>Search the shop's name plus the word “scam” before your first order.</li>
+      <li>Countdown timers and “only 2 left!” are pressure tricks — real stores restock.</li>
+      <li>A real shop shows a physical address, a working phone/email and a returns policy.</li>
+    </ul>
+  </div>
+
+  <footer>
+    Scam Shield gives an automated risk estimate based on known scam patterns.<br>
+    A “low risk” result is not a guarantee of safety, and a flagged site is not proof of fraud.
+  </footer>
+</div>
+
+<script>
+const form = document.getElementById('check-form');
+const input = document.getElementById('url-input');
+const btn = document.getElementById('check-btn');
+const statusEl = document.getElementById('status');
+const resultEl = document.getElementById('result');
+
+const VERDICT_COLORS = {
+  'high-risk': '#ef5b6b',
+  'suspicious': '#f2a854',
+  'caution': '#d9c34a',
+  'low-risk': '#4cc38a',
+};
+const SEVERITY_ICONS = { danger: '⛔', warning: '⚠️', info: 'ℹ️', good: '✅' };
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const url = input.value.trim();
+  if (!url) return;
+
+  btn.disabled = true;
+  resultEl.style.display = 'none';
+  statusEl.innerHTML = '<span class="spinner"></span>Checking the link, domain age and page content… this can take a few seconds.';
+
+  try {
+    const resp = await fetch('/api/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      statusEl.innerHTML = '<span class="error">' + escapeHtml(data.error || 'Something went wrong.') + '</span>';
+      return;
+    }
+    render(data);
+    statusEl.textContent = '';
+  } catch (err) {
+    statusEl.innerHTML = '<span class="error">Could not reach the checker. Is the server running?</span>';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function render(data) {
+  const v = document.getElementById('verdict');
+  v.className = 'verdict ' + data.verdict.level;
+  document.getElementById('verdict-title').textContent = data.verdict.title;
+  document.getElementById('verdict-domain').textContent = 'Checked: ' + data.url + '  (domain: ' + data.domain + ')';
+  document.getElementById('verdict-advice').textContent = data.verdict.advice;
+  document.getElementById('score').textContent = data.score;
+
+  const fill = document.getElementById('meter-fill');
+  fill.style.background = VERDICT_COLORS[data.verdict.level];
+  fill.style.width = '0';
+
+  const list = document.getElementById('findings');
+  list.innerHTML = '';
+  if (data.findings.length === 0) {
+    list.innerHTML = '<div class="finding good"><h3>✅ Nothing suspicious detected</h3><p>No known scam patterns were found in this link or page.</p></div>';
+  }
+  for (const f of data.findings) {
+    const div = document.createElement('div');
+    div.className = 'finding ' + f.severity;
+    div.innerHTML = '<h3>' + (SEVERITY_ICONS[f.severity] || '') + ' ' + escapeHtml(f.title) + '</h3>'
+                  + '<p>' + escapeHtml(f.detail) + '</p>';
+    list.appendChild(div);
+  }
+
+  resultEl.style.display = 'block';
+  requestAnimationFrame(() => { fill.style.width = Math.max(data.score, 3) + '%'; });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
+}
+</script>
+</body>
+</html>
