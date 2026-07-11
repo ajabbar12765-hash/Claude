@@ -1,479 +1,362 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import './App.css';
 
-function useInView(threshold = 0.12) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); io.disconnect(); } },
-      { threshold }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [threshold]);
-  return [ref, visible];
-}
+const CONTACT = {
+  phone: '0329-0985503',
+  email: 'freshleaf.essentials@gmail.com',
+};
 
-function Counter({ to, suffix = '', prefix = '', inView }) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (!inView) return;
-    const steps = 100;
-    let s = 0;
-    const t = setInterval(() => {
-      s++;
-      setVal(Math.round((to * s) / steps));
-      if (s >= steps) clearInterval(t);
-    }, 20);
-    return () => clearInterval(t);
-  }, [inView, to]);
-  return <span>{prefix}{val}{suffix}</span>;
-}
-
-const NAV = [
-  ['About', 'about'],
-  ['Services', 'services'],
-  ['Fund Management', 'fund'],
-  ['Climate Core', 'climate'],
-  ['Founder', 'founder'],
-  ['Contact', 'contact'],
+// Product photos: drop your images into /public/products and set the `image`
+// field to the file name, e.g. image: '/products/citrus-room-spray.jpg'
+const PRODUCTS = [
+  {
+    id: 'room-spray',
+    name: 'Signature Room Spray',
+    tagline: 'Pure essential oils for living spaces',
+    price: 'Rs. 1,200',
+    image: null,
+  },
+  {
+    id: 'car-freshener',
+    name: 'Car Freshener Spray',
+    tagline: 'A calm, natural drive every day',
+    price: 'Rs. 950',
+    image: null,
+  },
+  {
+    id: 'workspace-mist',
+    name: 'Workspace Mist',
+    tagline: 'Focus-friendly botanical blends',
+    price: 'Rs. 1,100',
+    image: null,
+  },
 ];
 
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', fn);
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
-  const go = (id) => { setMenuOpen(false); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
+function Leaf() {
   return (
-    <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
-      <div className="navbar-inner">
-        <button className="nav-logo" onClick={() => go('hero')} aria-label="Capital Connect home">
-          <img className="nav-logo-img" src="/logo-white.png" alt="Capital Connect" />
-        </button>
-        <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="menu">
-          <span /><span /><span />
-        </button>
-        <ul className={`nav-links${menuOpen ? ' open' : ''}`}>
-          {NAV.map(([l, id]) => (
-            <li key={id}><button onClick={() => go(id)}>{l}</button></li>
-          ))}
-        </ul>
-      </div>
-    </nav>
+    <svg className="leaf-mark" viewBox="0 0 32 32" aria-hidden="true">
+      <path
+        d="M26 4C14 4 5 12 5 24c0 1.7.3 3.1.7 4C7 21 12 14 21 10c-7 5-11.5 12-13 17.5 1.2.4 2.6.5 4 .5C24 28 28 15 26 4z"
+        fill="currentColor"
+      />
+    </svg>
   );
 }
 
-function Hero() {
-  const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+function ProductImage({ product }) {
+  if (product.image) {
+    return <img className="product-img" src={product.image} alt={product.name} />;
+  }
   return (
-    <section id="hero" className="hero">
-      <div className="hero-bg">
-        <div className="hero-grid" />
-        <div className="hero-glow" />
-        <div className="hero-glow hero-glow-2" />
-      </div>
-      <div className="hero-content">
-        <div className="hero-eyebrow">Financial Advisory &amp; Investment Management</div>
-        <h1 className="hero-title">
-          Connecting Capital<br />
-          <em>With Opportunity</em>
-        </h1>
-        <p className="hero-sub">
-          Capital Connect bridges ambitious businesses and institutions with global capital —
-          pairing cross-border M&amp;A and capital-raising advisory with a licensed fund-management
-          platform pioneering impact and blended-finance investment across Pakistan and Asia.
-        </p>
-        <div className="hero-ctas">
-          <button className="btn-primary" onClick={() => go('services')}>Explore Services</button>
-          <button className="btn-outline" onClick={() => go('contact')}>Get in Touch</button>
-        </div>
-      </div>
-      <div className="hero-scroll">
-        <div className="scroll-line" />
-        <span>Scroll</span>
-      </div>
-    </section>
+    <div className="product-img placeholder" role="img" aria-label={`${product.name} photo coming soon`}>
+      <Leaf />
+      <span>Product photo coming soon</span>
+    </div>
   );
 }
 
-function About() {
-  const [ref, visible] = useInView();
-  return (
-    <section id="about" className="section about">
-      <div className="container">
-        <div className={`about-grid${visible ? ' visible' : ''}`} ref={ref}>
-          <div className="about-left">
-            <div className="section-tag">About Us</div>
-            <h2 className="section-title">Financial Advisory Meets Institutional Fund Management</h2>
-            <p>Founded in 2017, Capital Connect is a boutique investment banking and financial advisory firm with deep roots in Pakistan's capital markets and a strong international network. Today the brand spans two complementary pillars — an advisory practice executing cross-border M&amp;A and capital raising, and a licensed fund-management platform investing in impact and climate-aligned opportunities.</p>
-            <p>We specialize in structuring and executing complex cross-border transactions — advising governments, corporates, and funds across mergers &amp; acquisitions, equity and debt instruments, privatization mandates, and strategic investment planning.</p>
-            <p>Our client-first approach, combined with direct relationships with international DFIs, sovereign wealth funds, and institutional investors, makes Capital Connect the partner of choice for transformative financial mandates.</p>
-            <p>Through Capital Connect Investment Management (Private) Limited — our SECP-regulated non-banking finance company — together with Climate Core GP Limited, a fund-management platform in Abu Dhabi Global Market (ADGM), we designed and will manage Pakistan's pioneer low-carbon blended-finance private equity fund, Climate Core Pakistan (CCP), and are building a platform to launch further impact and blended-finance instruments to mobilize private-sector capital toward developing markets.</p>
-            <div className="about-pills">
-              <span>Bulge Bracket Experience</span>
-              <span>Licensed Fund Manager</span>
-              <span>ESG Certified</span>
-              <span>Cross-Border Specialists</span>
-              <span>Pakistan-Focused</span>
-            </div>
-          </div>
-          <div className="about-right">
-            {[
-              { tag: 'M&A', title: 'Mergers & Acquisitions', desc: 'End-to-end advisory on buy-side and sell-side mandates across minority, majority, and strategic stake transactions.' },
-              { tag: 'PE',  title: 'Private Equity',          desc: 'Full private equity lifecycle management — from fund formation and deal sourcing to execution and exit.' },
-              { tag: 'BF',  title: 'Blended Finance',         desc: 'Mobilising public and private capital through risk-sharing structures to finance climate, infrastructure, and development mandates across developing countries.' },
-            ].map((c, i) => (
-              <div className={`about-card delay-${i}`} key={i}>
-                <div className="about-icon">{c.tag}</div>
-                <h3>{c.title}</h3>
-                <p>{c.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+function OrderForm() {
+  const [payment, setPayment] = useState('cod');
+  const [submitted, setSubmitted] = useState(false);
 
-const SERVICES = [
-  { title: 'Mergers & Acquisitions',  desc: 'Strategic M&A advisory for sell-side, buy-side, and joint venture mandates across energy, financial institutions, consumer, and industrials.' },
-  { title: 'Private Equity Advisory', desc: 'Comprehensive PE lifecycle support: fund structuring, deal origination, valuation, execution, and exit advisory for sponsors and portfolio companies.' },
-  { title: 'Privatization Advisory',  desc: 'Unparalleled experience advising governments on strategic stake sales and investor targeting for state-owned enterprises.' },
-  { title: 'Fund Raising',            desc: 'Direct access to international DFIs, sovereign wealth funds, and institutional investors to support capital raising for funds and sponsors.' },
-  { title: 'Blended Finance',         desc: 'Design equity and debt blended-finance structures that combine technical assistance, guarantees, and concessional and grant capital to de-risk investment and mobilise private-sector capital.' },
-  { title: 'Investment Management',   desc: 'Licensed fund management through Capital Connect Investment Management (Private) Limited (Pakistan) and Climate Core GP Limited (ADGM) — fund formation, structuring, and portfolio management across clean energy, climate, and impact-investing themes, including blended-finance and Shariah-compliant structures.' },
-];
-
-function Services() {
-  const [ref, visible] = useInView();
-  return (
-    <section id="services" className="section section-dark services">
-      <div className="container">
-        <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
-          <div className="section-tag light">Our Services</div>
-          <h2 className="section-title light">Comprehensive Financial Solutions</h2>
-          <p className="section-sub light">From cross-border M&A and capital raising to licensed fund management, we deliver institutional-grade solutions at every stage of the capital lifecycle.</p>
-        </div>
-        <div className={`services-grid${visible ? ' visible' : ''}`}>
-          {SERVICES.map((s, i) => (
-            <div className={`service-card delay-${i}`} key={i}>
-              <div className="service-num">0{i + 1}</div>
-              <h3>{s.title}</h3>
-              <p>{s.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Stats() {
-  const [ref, visible] = useInView(0.3);
-  const items = [
-    { to: 450, prefix: '$', suffix: 'M+', label: 'Clean Energy Pipeline Originated' },
-    { to: 60,  suffix: '+',               label: 'Clean Energy Transactions Supported' },
-    { text: 'Pakistan & UAE',             label: 'Sustainable Finance Platforms Created' },
-  ];
-  return (
-    <section className="stats" ref={ref}>
-      <div className="container">
-        <div className={`stats-grid stats-grid-3${visible ? ' visible' : ''}`}>
-          {items.map((s, i) => (
-            <div className={`stat-item delay-${i}`} key={i}>
-              <div className="stat-num">
-                {s.text ? s.text : <Counter to={s.to} suffix={s.suffix} prefix={s.prefix || ''} inView={visible} />}
-              </div>
-              <div className="stat-label">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const PLATFORM_CARDS = [
-  { title: 'Impact Funds',        desc: 'Pioneer fund manager focused on impact and climate-aligned investment in Pakistan.' },
-  { title: 'Blended Finance',     desc: 'Risk-sharing structures — first-loss guarantees, concessional and junior capital — that de-risk private capital.' },
-  { title: 'Governance & ESG',    desc: 'Institutional governance, SECP-regulated compliance, and a dedicated ESMS / ESG framework.' },
-  { title: 'Shariah Structuring', desc: 'Capability to develop and structure funds in line with Shariah principles.' },
-];
-
-function FundManagement() {
-  const [ref, visible] = useInView();
-  return (
-    <section id="fund" className="section section-light fund">
-      <div className="container">
-        <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
-          <div className="section-tag">Fund Management</div>
-          <h2 className="section-title">A Licensed Platform for Impact &amp; Blended Finance</h2>
-          <p className="section-sub">Capital Connect Investment Management (Private) Limited (CCIM) is building Pakistan's pioneer fund-management platform dedicated to impact and blended-finance investment.</p>
-        </div>
-        <div className={`fund-body${visible ? ' visible' : ''}`}>
-          <div className="fund-intro">
-            <p>CCIM is a non-banking finance company established to become Pakistan's pioneer fund manager focused on impact funds and related initiatives, operating under the Private Fund Regulations, 2015.</p>
-            <p>The platform is designed to launch multiple funds, beginning with anchor fund Climate Core Pakistan and extending to sector-agnostic, industry-specific, and alternative investment funds — including Shariah-compliant structures — each using blended-finance mechanisms to catalyse commercial capital into underserved markets.</p>
-          </div>
-          <div className="fund-callout">
-            <div className="callout-label">International Platform</div>
-            <p><strong>Climate Core GP Limited</strong> is a complementary fund-management platform established in the Abu Dhabi Global Market (ADGM), one of the region's leading international financial centres. Operating within ADGM's English common-law framework and internationally recognised regulatory regime, it extends Capital Connect's reach to global investors, development finance institutions, and sovereign capital — anchoring the group's cross-border structuring and enabling offshore vehicles that channel international capital into impact and blended-finance strategies.</p>
-          </div>
-        </div>
-        <div className={`platform-grid${visible ? ' visible' : ''}`}>
-          {PLATFORM_CARDS.map((c, i) => (
-            <div className={`platform-card delay-${i}`} key={i}>
-              <h3>{c.title}</h3>
-              <p>{c.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const CCP_TERMS = [
-  ['Fund Size', 'US$50 million (~PKR 15 billion); PKR 8.5 billion first close'],
-  ['Structure', 'Closed-ended private equity (impact) fund; Trust structure under Private Fund Regulations, 2015'],
-  ['Fund Manager', 'Capital Connect Investment Management (Private) Limited'],
-  ['First-Loss Guarantee', 'Up to 40%'],
-  ['Fund Term', '10 years (+2 optional)'],
-  ['Deal Size', 'US$2–5 million; 5–10 investments; growth capital'],
-];
-
-const CCP_SECTORS = ['Clean Energy', 'Clean Transport & EV', 'Technology & Energy Efficiency', 'Bio-Energy', 'Affordable Housing', 'Responsible Consumer'];
-
-function ClimateCore() {
-  const [ref, visible] = useInView();
-  return (
-    <section id="climate" className="section section-dark climate">
-      <div className="container">
-        <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
-          <div className="section-tag light">Climate Core Pakistan</div>
-          <h2 className="section-title light">Pakistan's Pioneer De-Risked Low-Carbon Blended Fund</h2>
-          <p className="section-sub light">Climate Core Pakistan (CCP) is CCIM's anchor fund — a PKR 15 billion low-carbon blended private equity fund catalysing a PKR 8.5 billion first close.</p>
-        </div>
-        <div className={`climate-body${visible ? ' visible' : ''}`}>
-          <div className="climate-text">
-            <p>Climate Core Pakistan mobilises private capital into underserved low-carbon markets through a landmark, de-risked financial structure. The fund provides growth and expansion equity to commercially viable clean-energy and climate-aligned businesses — bridging Pakistan's "missing middle" of impact and sustainability funding.</p>
-            <p>CCP is built on the learnings of a US$7 million, four-year USAID-funded technical-assistance programme (PFAN), inheriting an established, investor-ready pipeline of more than US$100 million in commercially viable low-carbon investments — managed by the original architects and originators of that pipeline.</p>
-            <p>A tiered blended structure pairs commercial (senior) capital with concessional (junior) capital, while an up-to-40% first-loss guarantee shields anchor capital from initial downside — enhancing risk-adjusted returns for commercial investors.</p>
-          </div>
-          <div className="climate-terms">
-            <div className="terms-label">Key Terms</div>
-            {CCP_TERMS.map(([k, v]) => (
-              <div className="term-row" key={k}>
-                <span className="term-k">{k}</span>
-                <span className="term-v">{v}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="climate-sectors">
-          <div className="sectors-label">Target Sectors</div>
-          <div className="sectors-tags">
-            {CCP_SECTORS.map(s => <span key={s}>{s}</span>)}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Founder() {
-  const [ref, visible] = useInView();
-  return (
-    <section id="founder" className="section founder">
-      <div className="container">
-        <div className="section-tag">Our Founder</div>
-        <div className={`founder-grid${visible ? ' visible' : ''}`} ref={ref}>
-          <div className="founder-left">
-            <div className="founder-photo"><span>GJ</span></div>
-            <div className="founder-id">
-              <strong>Ghazil Jabbar</strong>
-              <span>Managing Director, Capital Connect</span>
-              <span>Founder &amp; Managing Partner, CCIM &amp; Climate Core GP</span>
-            </div>
-            <div className="founder-edu">
-              <div className="edu-item">
-                <b>MBA</b>
-                <span>Warwick Business School</span>
-                <em>British Chevening Scholar</em>
-              </div>
-              <div className="edu-item">
-                <b>MBA / BBA (Hons)</b>
-                <span>Institute of Business Administration</span>
-              </div>
-            </div>
-          </div>
-          <div className="founder-right">
-            <h2 className="section-title">Ghazil Jabbar</h2>
-            <div className="founder-role">Business Lead with Regional Private Equity &amp; Advisory Experience</div>
-            <p>Ghazil Jabbar is an Investment Banker with 25 years of experience in Investment Banking, Private Equity, and Strategic Planning. He established Capital Connect in 2017 as a specialist M&amp;A advisory firm to deliver institutional-grade financial services to regional and international clients. He leads Capital Connect in establishing the Climate Core Funds — Pakistan's pioneer low-carbon blended-finance investment platform.</p>
-            <p>As a United Nations Industrial Development Organization (UNIDO) consultant, he led, as Deputy Chief of Party, the Pakistan Private Sector Energy (PPSE) project — a USAID-funded initiative — where he originated and developed a US$450 million+ clean-energy project pipeline across Pakistan. He also established the Private Equity and Venture Capital Funds at Faysal Funds, Pakistan's first Shariah-compliant private equity platform.</p>
-            <p>Ghazil served as Pakistan coverage banker for JPMorgan and held senior investment banking roles at Capital Partners Group Pte. (Singapore), NIB Bank (Temasek), and Elixir Securities Pakistan. He has managed cross-border industry teams in M&amp;A, equity and debt capital markets across Pakistan and Asia Pacific — spanning consumer, renewable, oil &amp; gas, power, financial institutions, industrial, and logistics sectors.</p>
-            <p>His privatization transaction experience is unparalleled, having advised several noteworthy privatization mandates in Pakistan. Certified under JPMorgan's specialized Investment Banking Training Programs in the USA and Hong Kong, he also holds certifications in AMT Training and ESG.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Web3Forms access key — get a free one at https://web3forms.com (tied to the
-// inbox that should receive submissions). Replace the placeholder below.
-const WEB3FORMS_KEY = '99ab0e66-badb-4e01-85e7-28f01af72a13';
-
-function Contact() {
-  const [ref, visible] = useInView();
-  const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
-  const [sent, setSent] = useState(false);
-  const [status, setStatus] = useState('idle'); // idle | sending | error
-  const onChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-  const onSubmit = async (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    setStatus('sending');
-    try {
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject: 'New enquiry from the Capital Connect website',
-          from_name: 'Capital Connect Website',
-          name: form.name,
-          email: form.email,
-          company: form.company || 'Not provided',
-          message: form.message,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) { setSent(true); setStatus('idle'); }
-      else { setStatus('error'); }
-    } catch {
-      setStatus('error');
-    }
-  };
-  return (
-    <section id="contact" className="section section-dark contact">
-      <div className="container">
-        <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
-          <div className="section-tag light">Contact Us</div>
-          <h2 className="section-title light">Connect With Us</h2>
-          <p className="section-sub light">Whether you're exploring a transaction, seeking capital, or evaluating a strategic partnership — we want to hear from you.</p>
-        </div>
-        <div className={`contact-grid${visible ? ' visible' : ''}`}>
-          <div className="contact-info">
-            <div className="contact-item">
-              <div className="contact-dot" />
-              <div>
-                <strong>Email</strong>
-                <a href="mailto:info@capconnect.net">info@capconnect.net</a>
-              </div>
-            </div>
-            <div className="contact-item">
-              <div className="contact-dot" />
-              <div>
-                <strong>Advisory &amp; Fund Management</strong>
-                <span>Capital Connect &amp; CCIM (Private) Limited</span>
-              </div>
-            </div>
-            <div className="contact-item">
-              <div className="contact-dot" />
-              <div>
-                <strong>International Platform</strong>
-                <span>Climate Core GP Limited — ADGM, Abu Dhabi</span>
-              </div>
-            </div>
-          </div>
-          <form className="contact-form" onSubmit={onSubmit}>
-            {sent ? (
-              <div className="form-success">
-                <div className="form-check">✓</div>
-                <h3>Message Received</h3>
-                <p>Thank you for reaching out. We'll be in touch shortly.</p>
-              </div>
-            ) : (
-              <>
-                <div className="form-row">
-                  <input name="name" placeholder="Full Name" value={form.name} onChange={onChange} required />
-                  <input name="email" type="email" placeholder="Email Address" value={form.email} onChange={onChange} required />
-                </div>
-                <input name="company" placeholder="Company / Organisation" value={form.company} onChange={onChange} />
-                <textarea name="message" placeholder="How can we help you?" rows={5} value={form.message} onChange={onChange} required />
-                <button type="submit" className="btn-primary" disabled={status === 'sending'}>
-                  {status === 'sending' ? 'Sending…' : 'Send Message'}
-                </button>
-                {status === 'error' && (
-                  <p className="form-error">Something went wrong. Please try again, or email us directly at info@capconnect.net.</p>
-                )}
-              </>
-            )}
-          </form>
-        </div>
-      </div>
-    </section>
-  );
-}
+    const data = new FormData(e.target);
+    const product = PRODUCTS.find((p) => p.id === data.get('product'));
+    const lines = [
+      'New FreshLeaf order',
+      '',
+      `Product: ${product ? product.name : data.get('product')}`,
+      `Quantity: ${data.get('quantity')}`,
+      `Payment method: ${payment === 'cod' ? 'Cash on Delivery' : 'Credit Card'}`,
+      '',
+      `Name: ${data.get('name')}`,
+      `Phone: ${data.get('phone')}`,
+      `Delivery address: ${data.get('address')}`,
+      data.get('notes') ? `Notes: ${data.get('notes')}` : '',
+    ].filter(Boolean);
 
-function Footer() {
-  const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  return (
-    <footer className="footer">
-      <div className="container">
-        <div className="footer-grid">
-          <div className="footer-brand">
-            <div className="footer-logo">
-              <img className="footer-logo-img" src="/logo-white.png" alt="Capital Connect" />
-            </div>
-            <p>Financial Advisory &amp; Investment Management</p>
-            <p className="footer-sub">info@capconnect.net</p>
-          </div>
-          <div>
-            <strong>Navigate</strong>
-            <ul>
-              {NAV.map(([l, id]) => (
-                <li key={id}><button onClick={() => go(id)}>{l}</button></li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <strong>Services</strong>
-            <ul>
-              {['Mergers & Acquisitions','Private Equity','Blended Finance','Investment Management','Privatization Advisory','Fund Raising'].map(s => (
-                <li key={s}>{s}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <div className="footer-bottom">&copy; {new Date().getFullYear()} Capital Connect. All rights reserved.</div>
+    const mailto = `mailto:${CONTACT.email}?subject=${encodeURIComponent(
+      'FreshLeaf Order — ' + data.get('name')
+    )}&body=${encodeURIComponent(lines.join('\n'))}`;
+    window.location.href = mailto;
+    setSubmitted(true);
+  }
+
+  if (submitted) {
+    return (
+      <div className="order-thanks">
+        <Leaf />
+        <h3>Thank you for your order!</h3>
+        <p>
+          Your order details have been prepared in your email app — just press send.
+          We'll confirm your order shortly on the phone number you provided.
+        </p>
+        <button className="btn btn-outline" onClick={() => setSubmitted(false)}>
+          Place another order
+        </button>
       </div>
-    </footer>
+    );
+  }
+
+  return (
+    <form className="order-form" onSubmit={handleSubmit}>
+      <div className="form-row">
+        <label>
+          Product
+          <select name="product" required defaultValue={PRODUCTS[0].id}>
+            {PRODUCTS.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name} — {p.price}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Quantity
+          <input type="number" name="quantity" min="1" max="50" defaultValue="1" required />
+        </label>
+      </div>
+
+      <div className="form-row">
+        <label>
+          Full name
+          <input type="text" name="name" placeholder="Your name" required />
+        </label>
+        <label>
+          Phone number
+          <input type="tel" name="phone" placeholder="03xx-xxxxxxx" required />
+        </label>
+      </div>
+
+      <label>
+        Delivery address
+        <textarea name="address" rows="3" placeholder="House, street, area, city" required />
+      </label>
+
+      <label>
+        Notes (optional)
+        <textarea name="notes" rows="2" placeholder="Preferred scent, delivery instructions…" />
+      </label>
+
+      <fieldset className="payment-choice">
+        <legend>Payment method</legend>
+        <label className={payment === 'cod' ? 'pay-option selected' : 'pay-option'}>
+          <input
+            type="radio"
+            name="payment"
+            value="cod"
+            checked={payment === 'cod'}
+            onChange={() => setPayment('cod')}
+          />
+          <div>
+            <strong>Cash on Delivery</strong>
+            <span>Pay in cash when your order arrives at your door.</span>
+          </div>
+        </label>
+        <label className={payment === 'card' ? 'pay-option selected' : 'pay-option'}>
+          <input
+            type="radio"
+            name="payment"
+            value="card"
+            checked={payment === 'card'}
+            onChange={() => setPayment('card')}
+          />
+          <div>
+            <strong>Credit Card</strong>
+            <span>We'll send you a secure payment link to complete your purchase.</span>
+          </div>
+        </label>
+      </fieldset>
+
+      <button type="submit" className="btn btn-primary">
+        Place Order
+      </button>
+      <p className="form-note">
+        Submitting opens your email app with the order pre-filled — press send and we'll
+        take care of the rest. You can also order directly by calling {CONTACT.phone}.
+      </p>
+    </form>
   );
 }
 
 export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const navLinks = [
+    ['#about', 'About Us'],
+    ['#products', 'Our Sprays'],
+    ['#order', 'Order'],
+    ['#contact', 'Contact'],
+  ];
+
   return (
     <>
-      <Navbar />
-      <Hero />
-      <About />
-      <Services />
-      <Stats />
-      <FundManagement />
-      <ClimateCore />
-      <Founder />
-      <Contact />
-      <Footer />
+      <header className="site-header">
+        <a className="brand" href="#top">
+          <Leaf />
+          <span>FreshLeaf</span>
+        </a>
+        <button
+          className="menu-toggle"
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          ☰
+        </button>
+        <nav className={menuOpen ? 'open' : ''}>
+          {navLinks.map(([href, label]) => (
+            <a key={href} href={href} onClick={() => setMenuOpen(false)}>
+              {label}
+            </a>
+          ))}
+          <a className="btn btn-small" href="#order" onClick={() => setMenuOpen(false)}>
+            Order Now
+          </a>
+        </nav>
+      </header>
+
+      <main id="top">
+        {/* Hero */}
+        <section className="hero">
+          <p className="eyebrow">Premium Home Fragrance</p>
+          <h1>
+            Spaces that feel fresh,
+            <br />
+            <em>naturally.</em>
+          </h1>
+          <p className="hero-sub">
+            Room sprays and car fresheners crafted with pure essential oils — no harsh
+            chemicals, just nature's finest scents.
+          </p>
+          <div className="hero-actions">
+            <a className="btn btn-primary" href="#order">Order Now</a>
+            <a className="btn btn-outline" href="#about">Our Story</a>
+          </div>
+          <p className="hero-tagline">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+        </section>
+
+        {/* About Us */}
+        <section id="about" className="section">
+          <p className="eyebrow">About Us</p>
+          <h2>Introduction</h2>
+          <div className="prose">
+            <p>Imagine walking into a space that instantly feels fresh, peaceful, and inviting.</p>
+            <p>
+              That's the experience FreshLeaf was created to deliver. We craft premium home
+              fragrance products using pure essential oils, blending nature's finest scents
+              into elegant products that elevate your surroundings. Whether it's your home,
+              your car, or your workspace, FreshLeaf transforms ordinary spaces into places
+              you'll love to be.
+            </p>
+            <p className="tagline-line">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+          </div>
+
+          <h2 className="story-heading">Our Story</h2>
+          <div className="prose">
+            <p>Every great journey begins with a simple question.</p>
+            <p>
+              For us, it was: <em>Why should creating a beautifully scented home mean filling
+              it with harsh chemicals?</em>
+            </p>
+            <p>
+              We loved the feeling of walking into a fresh, inviting space, but we couldn't
+              find home fragrance products that combined elegant scents with ingredients we
+              felt good about using every day. Too often, they relied on overpowering
+              synthetic fragrances and alcohol, that didn't reflect the natural, calming
+              atmosphere we wanted to create.
+            </p>
+            <p>That question became the inspiration behind FreshLeaf.</p>
+            <p>
+              FreshLeaf was founded with a simple purpose—to bring nature-inspired fragrances
+              into everyday spaces through thoughtfully handcrafted products. Every room
+              spray, car freshener, and home fragrance is created with care, using carefully
+              selected essential oils and quality ingredients to deliver scents that are
+              refreshing, comforting, and memorable.
+            </p>
+            <p>
+              We believe fragrance is more than just a pleasant aroma. It has the power to
+              brighten your mood, create a sense of calm, welcome guests, and turn ordinary
+              moments into meaningful experiences. Whether you're starting your morning with
+              an uplifting citrus blend, unwinding after a long day, or adding a touch of
+              freshness to your car or workspace, FreshLeaf is designed to become part of
+              those everyday rituals.
+            </p>
+            <p>
+              Our commitment goes beyond creating beautiful fragrances. We are passionate
+              about craftsmanship, quality, and creating products that are as elegant as they
+              are enjoyable to use. Every bottle reflects our dedication to thoughtful
+              design, careful formulation, and attention to detail.
+            </p>
+            <p>
+              As FreshLeaf continues to grow, our mission remains unchanged: to help people
+              create spaces that feel fresh, peaceful, and welcoming—naturally.
+            </p>
+            <p>
+              Thank you for being part of our story. We invite you to discover the fragrances
+              that make every space feel a little more like home.
+            </p>
+          </div>
+        </section>
+
+        {/* Products */}
+        <section id="products" className="section section-alt">
+          <p className="eyebrow">Our Sprays</p>
+          <h2>See the product before you buy</h2>
+          <div className="product-grid">
+            {PRODUCTS.map((p) => (
+              <article key={p.id} className="product-card">
+                <ProductImage product={p} />
+                <h3>{p.name}</h3>
+                <p>{p.tagline}</p>
+                <div className="product-foot">
+                  <span className="price">{p.price}</span>
+                  <a className="btn btn-small" href="#order">Order</a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* Order */}
+        <section id="order" className="section">
+          <p className="eyebrow">Place an Order</p>
+          <h2>Order your sprays</h2>
+          <p className="section-sub">
+            Fill in your details below and choose how you'd like to pay — cash on delivery
+            or credit card.
+          </p>
+          <OrderForm />
+        </section>
+
+        {/* Contact */}
+        <section id="contact" className="section section-alt">
+          <p className="eyebrow">Contact Us</p>
+          <h2>We'd love to hear from you</h2>
+          <div className="contact-cards">
+            <a className="contact-card" href={`tel:+92${CONTACT.phone.replace(/[^0-9]/g, '').replace(/^0/, '')}`}>
+              <span className="contact-icon" aria-hidden="true">📞</span>
+              <strong>Call or WhatsApp</strong>
+              <span>{CONTACT.phone}</span>
+            </a>
+            <a className="contact-card" href={`mailto:${CONTACT.email}`}>
+              <span className="contact-icon" aria-hidden="true">✉️</span>
+              <strong>Email</strong>
+              <span>{CONTACT.email}</span>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <div className="brand">
+          <Leaf />
+          <span>FreshLeaf</span>
+        </div>
+        <p>Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+        <p className="fine">© {new Date().getFullYear()} FreshLeaf. All rights reserved.</p>
+      </footer>
     </>
   );
 }
