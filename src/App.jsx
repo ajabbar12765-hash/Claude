@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import './App.css';
 
+// Contact form submissions are emailed via FormSubmit (free, no backend).
+// The first submission triggers a one-time activation email to this inbox.
+const FORM_ENDPOINT = 'https://formsubmit.co/ajax/freshleaf.essentials@gmail.com';
+
 const CONTACT = {
   phone: '0329-0985503',
   email: 'freshleaf.essentials@gmail.com',
@@ -180,6 +184,125 @@ function OrderForm() {
   );
 }
 
+function ContactSection() {
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState('idle'); // idle | sending | error
+
+  const onChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    setStatus('sending');
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: 'New message from the FreshLeaf website',
+          name: form.name,
+          email: form.email,
+          message: form.message,
+        }),
+      });
+      const data = await res.json();
+      if (data.success === 'true' || data.success === true) {
+        setSent(true);
+        setStatus('idle');
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  return (
+    <section id="contact" className="section-dark contact">
+      <div className="contact-inner">
+        <div className="contact-head">
+          <p className="eyebrow light">Contact Us</p>
+          <h2>We'd love to hear from you</h2>
+          <p className="contact-sub">
+            Questions about our fragrances, your order, or anything else — send us a
+            message and we'll get back to you shortly.
+          </p>
+        </div>
+        <div className="contact-grid">
+          <div className="contact-info">
+            <div className="contact-item">
+              <div className="contact-dot" />
+              <div>
+                <strong>Call or WhatsApp</strong>
+                <a href={`tel:+92${CONTACT.phone.replace(/[^0-9]/g, '').replace(/^0/, '')}`}>
+                  {CONTACT.phone}
+                </a>
+              </div>
+            </div>
+            <div className="contact-item">
+              <div className="contact-dot" />
+              <div>
+                <strong>Email</strong>
+                <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+              </div>
+            </div>
+            <div className="contact-item">
+              <div className="contact-dot" />
+              <div>
+                <strong>Orders</strong>
+                <span>Cash on delivery available across Pakistan</span>
+              </div>
+            </div>
+          </div>
+          <form className="contact-form" onSubmit={onSubmit}>
+            {sent ? (
+              <div className="form-success">
+                <div className="form-check">✓</div>
+                <h3>Message Received</h3>
+                <p>Thank you for reaching out. We'll be in touch shortly.</p>
+              </div>
+            ) : (
+              <>
+                <input
+                  name="name"
+                  placeholder="Full Name"
+                  value={form.name}
+                  onChange={onChange}
+                  required
+                />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email Address"
+                  value={form.email}
+                  onChange={onChange}
+                  required
+                />
+                <textarea
+                  name="message"
+                  placeholder="How can we help you?"
+                  rows={5}
+                  value={form.message}
+                  onChange={onChange}
+                  required
+                />
+                <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
+                  {status === 'sending' ? 'Sending…' : 'Send Message'}
+                </button>
+                {status === 'error' && (
+                  <p className="form-error">
+                    Something went wrong. Please try again, or email us directly at {CONTACT.email}.
+                  </p>
+                )}
+              </>
+            )}
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -331,22 +454,7 @@ export default function App() {
         </section>
 
         {/* Contact */}
-        <section id="contact" className="section section-alt">
-          <p className="eyebrow">Contact Us</p>
-          <h2>We'd love to hear from you</h2>
-          <div className="contact-cards">
-            <a className="contact-card" href={`tel:+92${CONTACT.phone.replace(/[^0-9]/g, '').replace(/^0/, '')}`}>
-              <span className="contact-icon" aria-hidden="true">📞</span>
-              <strong>Call or WhatsApp</strong>
-              <span>{CONTACT.phone}</span>
-            </a>
-            <a className="contact-card" href={`mailto:${CONTACT.email}`}>
-              <span className="contact-icon" aria-hidden="true">✉️</span>
-              <strong>Email</strong>
-              <span>{CONTACT.email}</span>
-            </a>
-          </div>
-        </section>
+        <ContactSection />
       </main>
 
       <footer className="site-footer">
