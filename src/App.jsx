@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import './App.css';
 
-// Contact form submissions are emailed via FormSubmit (free, no backend).
-// The first submission triggers a one-time activation email to this inbox.
-const FORM_ENDPOINT = 'https://formsubmit.co/ajax/freshleaf.essentials@gmail.com';
+// Contact form submissions are emailed via Web3Forms (free, no backend).
+// The access key is tied to the freshleaf.essentials@gmail.com inbox.
+const WEB3FORMS_KEY = '38b54a42-86c4-40f9-b8ee-8b5f61b14862';
 
 const CONTACT = {
   phone: '0329-0985503',
@@ -195,18 +195,20 @@ function ContactSection() {
     e.preventDefault();
     setStatus('sending');
     try {
-      const res = await fetch(FORM_ENDPOINT, {
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          _subject: 'New message from the FreshLeaf website',
+          access_key: WEB3FORMS_KEY,
+          subject: 'New message from the FreshLeaf website',
+          from_name: 'FreshLeaf Website',
           name: form.name,
           email: form.email,
           message: form.message,
         }),
       });
       const data = await res.json();
-      if (data.success === 'true' || data.success === true) {
+      if (data.success) {
         setSent(true);
         setStatus('idle');
       } else {
