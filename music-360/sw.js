@@ -1,6 +1,6 @@
 /* Orbit 360 service worker — cache the app shell so the installed
  * app opens instantly; catalog search and audio always go to network. */
-const CACHE = 'orbit360-v2';
+const CACHE = 'orbit360-v3';
 const SHELL = [
   './',
   'index.html',

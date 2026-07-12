@@ -58,29 +58,33 @@
 
   /* ----- Audius (full songs) ----- */
   const AUDIUS_APP = 'Orbit360';
-  let audiusHostP = null;
-  function audiusHost() {
-    if (!audiusHostP) {
-      audiusHostP = fetch('https://api.audius.co')
-        .then((r) => r.json())
-        .then((j) => {
-          if (!j.data || !j.data.length) throw new Error('no hosts');
-          return j.data[Math.floor(Math.random() * Math.min(3, j.data.length))];
-        })
-        .catch((e) => { audiusHostP = null; throw e; });
+  let audiusHosts = null;   // discovery node list; individual nodes go down,
+  let hostIdx = 0;          // so streams can rotate to the next one on error
+  async function audiusHost(advance) {
+    if (advance) hostIdx++;
+    if (!audiusHosts) {
+      const r = await fetch('https://api.audius.co');
+      const j = await r.json();
+      if (!j.data || !j.data.length) throw new Error('no hosts');
+      audiusHosts = j.data;
+      hostIdx = Math.floor(Math.random() * audiusHosts.length);
     }
-    return audiusHostP;
+    return audiusHosts[hostIdx % audiusHosts.length];
+  }
+  function audiusStreamUrl(audiusId, host) {
+    return host + '/v1/tracks/' + audiusId + '/stream?app_name=' + AUDIUS_APP;
   }
   function mapAudius(t, host) {
     const art = t.artwork || {};
     return {
       id: 'au_' + t.id,
+      audiusId: t.id,
       title: t.title,
       artist: (t.user && t.user.name) || 'Unknown artist',
       album: t.genre || 'Audius',
       art: art['480x480'] || art['150x150'] || 'icons/icon-192.png',
       artSmall: art['150x150'] || art['480x480'] || 'icons/icon-192.png',
-      src: host + '/v1/tracks/' + t.id + '/stream?app_name=' + AUDIUS_APP,
+      src: audiusStreamUrl(t.id, host),
       duration: t.duration || 0,
       full: true,
     };
@@ -133,7 +137,8 @@
     try {
       const full = await audiusSearch(term);
       if (full.length) return full;
-      return await itunesSearch(term);          // nothing on Audius → previews
+      toast('Not on the full-song network — showing previews. Play one and tap “find the full version”.', 4000);
+      return await itunesSearch(term);
     } catch {
       toast('Full-song catalog unreachable — showing chart previews.');
       return itunesSearch(term);
@@ -269,10 +274,14 @@
     try { return new URL(src).host; } catch { return ''; }
   }
 
+  let lastTrackId = null;
+  let audiusRetries = 0;
+
   async function loadCurrent(autoplay) {
     const t = queue[qIndex];
     if (!t) return;
     const myIndex = qIndex;
+    if (t.id !== lastTrackId) { lastTrackId = t.id; audiusRetries = 0; }
 
     let src = t.src;
     if (t.upload && !src) {
@@ -378,6 +387,7 @@
   function updateTrackUI(t) {
     $('np-title').textContent = t.title;
     $('np-artist').textContent = t.artist + (t.album ? ' — ' + t.album : '');
+    $('np-find-full').hidden = t.full !== false;
     $('np-art').src = t.art;
     $('mini-title').textContent = t.title;
     $('mini-artist').textContent = t.artist;
@@ -429,8 +439,20 @@
       if (spatialOn && el === elSpatial) engine.checkSilence();
     });
     el.addEventListener('pause', () => { if (el === activeEl) syncPlayIcons(); });
-    el.addEventListener('error', () => {
+    el.addEventListener('error', async () => {
       if (el !== activeEl || !el.getAttribute('src')) return;
+      // Audius streams: an individual node can be down — rotate to the
+      // next discovery node and retry before giving up on the track.
+      const t = queue[qIndex];
+      if (t && t.audiusId && audiusRetries < 3) {
+        audiusRetries++;
+        try {
+          const h = await audiusHost(true);
+          t.src = audiusStreamUrl(t.audiusId, h);
+          loadCurrent(true);
+          return;
+        } catch { /* discovery down too — fall through */ }
+      }
       toast('Could not load that track — trying the next one.');
       if (queue.length > 1) next();
     });
@@ -450,6 +472,30 @@
   $('btn-next').addEventListener('click', next);
   $('btn-prev').addEventListener('click', prev);
   $('np-like').addEventListener('click', () => { const t = queue[qIndex]; if (t) toggleLike(t); });
+
+  /* Preview tracks: jump to full-length versions/covers on Audius. The
+   * original studio recordings of major-label artists are licensed and
+   * can only be streamed in full inside official apps. */
+  $('np-find-full').addEventListener('click', async () => {
+    const t = queue[qIndex];
+    if (!t) return;
+    toast('Searching the full-song catalog…', 1800);
+    try {
+      let results = await audiusSearch(t.title, 25);
+      if (!results.length) {
+        const bare = t.title.replace(/[([].*?[)\]]/g, '').trim();
+        if (bare && bare !== t.title) results = await audiusSearch(bare, 25);
+      }
+      if (results.length) {
+        playQueue(results, 0);
+        toast('Full-length versions & covers from the Audius network.');
+      } else {
+        toast('No licensed full version exists outside official apps — upload your own file to hear the whole song in 360°.', 4500);
+      }
+    } catch {
+      toast('Full-song catalog unreachable right now.');
+    }
+  });
 
   /* ============================================================
    * 360 controls

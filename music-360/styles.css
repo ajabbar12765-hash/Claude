@@ -139,6 +139,10 @@ img { display: block; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .np-meta { margin: 2px 0 6px; }
+.find-full { margin-top: 8px; font-size: 12.5px; font-weight: 600; color: var(--accent);
+  background: rgba(30,215,96,.1); border: 1px solid rgba(30,215,96,.35); border-radius: 999px;
+  padding: 6px 12px; }
+.find-full:active { background: rgba(30,215,96,.2); }
 .np-titles h2 { font-size: 21px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .np-titles p { color: var(--text-dim); margin: 4px 0 0; font-size: 15px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
