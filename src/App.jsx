@@ -36,8 +36,8 @@ function Counter({ to, suffix = '', prefix = '', inView }) {
 const NAV = [
   ['About', 'about'],
   ['Services', 'services'],
-  ['Fund Management', 'fund'],
-  ['Climate Core', 'climate'],
+  ['Investment Management', 'fund'],
+  ['Climate Core Pakistan', 'climate'],
   ['Founder', 'founder'],
   ['Contact', 'contact'],
 ];
@@ -87,8 +87,8 @@ function Hero() {
         </h1>
         <p className="hero-sub">
           Capital Connect bridges ambitious businesses and institutions with global capital —
-          pairing cross-border M&amp;A and capital-raising advisory with a licensed fund-management
-          platform pioneering impact and blended-finance investment across Pakistan and Asia.
+          pairing cross-border M&amp;A and capital-raising advisory with licensed fund-management
+          platforms pioneering impact and blended-finance investment across Pakistan and Asia.
         </p>
         <div className="hero-ctas">
           <button className="btn-primary" onClick={() => go('services')}>Explore Services</button>
@@ -113,9 +113,9 @@ function About() {
             <div className="section-tag">About Us</div>
             <h2 className="section-title">Financial Advisory Meets Institutional Fund Management</h2>
             <p>Founded in 2017, Capital Connect is a boutique investment banking and financial advisory firm with deep roots in Pakistan's capital markets and a strong international network. Today the brand spans two complementary pillars — an advisory practice executing cross-border M&amp;A and capital raising, and a licensed fund-management platform investing in impact and climate-aligned opportunities.</p>
-            <p>We specialize in structuring and executing complex cross-border transactions — advising governments, corporates, and funds across mergers &amp; acquisitions, equity and debt instruments, privatization mandates, and strategic investment planning.</p>
+            <p>We specialise in structuring and executing complex cross-border transactions — advising governments, corporates, and funds across mergers &amp; acquisitions, equity and debt instruments, privatisation mandates, and strategic investment planning.</p>
             <p>Our client-first approach, combined with direct relationships with international DFIs, sovereign wealth funds, and institutional investors, makes Capital Connect the partner of choice for transformative financial mandates.</p>
-            <p>Through Capital Connect Investment Management (Private) Limited — our SECP-regulated non-banking finance company — together with Climate Core GP Limited, a fund-management platform in Abu Dhabi Global Market (ADGM), we designed and will manage Pakistan's pioneer low-carbon blended-finance private equity fund, Climate Core Pakistan (CCP), and are building a platform to launch further impact and blended-finance instruments to mobilize private-sector capital toward developing markets.</p>
+            <p>Through Capital Connect Investment Management (Private) Limited — our SECP-regulated non-banking finance company — we designed and will manage Pakistan's pioneer low-carbon blended-finance private equity fund, Climate Core Pakistan (CCP). We established Climate Core GP Limited as an independent fund-management platform in the Abu Dhabi Global Market (ADGM), extending Capital Connect's reach to global investors and development finance institutions, and channelling international capital into impact and blended-finance strategies across developing markets.</p>
             <div className="about-pills">
               <span>Bulge Bracket Experience</span>
               <span>Licensed Fund Manager</span>
@@ -143,13 +143,31 @@ function About() {
   );
 }
 
+function ClimateFocus() {
+  const [ref, visible] = useInView(0.25);
+  return (
+    <section className="section climate-focus">
+      <div className="container">
+        <div className={`climate-focus-inner${visible ? ' visible' : ''}`} ref={ref}>
+          <div className="section-tag">Climate Focus</div>
+          <p>
+            Climate and impact anchor Capital Connect's strategy across both pillars — advisory and
+            fund management. From advising on clean-energy and sustainable-infrastructure transactions
+            to managing dedicated low-carbon funds, we mobilise capital toward the businesses driving
+            the transition across Pakistan and the wider region.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const SERVICES = [
   { title: 'Mergers & Acquisitions',  desc: 'Strategic M&A advisory for sell-side, buy-side, and joint venture mandates across energy, financial institutions, consumer, and industrials.' },
   { title: 'Private Equity Advisory', desc: 'Comprehensive PE lifecycle support: fund structuring, deal origination, valuation, execution, and exit advisory for sponsors and portfolio companies.' },
   { title: 'Privatization Advisory',  desc: 'Unparalleled experience advising governments on strategic stake sales and investor targeting for state-owned enterprises.' },
   { title: 'Fund Raising',            desc: 'Direct access to international DFIs, sovereign wealth funds, and institutional investors to support capital raising for funds and sponsors.' },
   { title: 'Blended Finance',         desc: 'Design equity and debt blended-finance structures that combine technical assistance, guarantees, and concessional and grant capital to de-risk investment and mobilise private-sector capital.' },
-  { title: 'Investment Management',   desc: 'Licensed fund management through Capital Connect Investment Management (Private) Limited (Pakistan) and Climate Core GP Limited (ADGM) — fund formation, structuring, and portfolio management across clean energy, climate, and impact-investing themes, including blended-finance and Shariah-compliant structures.' },
 ];
 
 function Services() {
@@ -158,9 +176,9 @@ function Services() {
     <section id="services" className="section section-dark services">
       <div className="container">
         <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
-          <div className="section-tag light">Our Services</div>
-          <h2 className="section-title light">Comprehensive Financial Solutions</h2>
-          <p className="section-sub light">From cross-border M&A and capital raising to licensed fund management, we deliver institutional-grade solutions at every stage of the capital lifecycle.</p>
+          <div className="section-tag light">Advisory Services</div>
+          <h2 className="section-title light">Comprehensive Advisory Solutions</h2>
+          <p className="section-sub light">From cross-border M&A and capital raising to privatisation and blended-finance advisory, we deliver institutional-grade solutions at every stage of the capital lifecycle.</p>
         </div>
         <div className={`services-grid${visible ? ' visible' : ''}`}>
           {SERVICES.map((s, i) => (
@@ -181,7 +199,7 @@ function Stats() {
   const items = [
     { to: 450, prefix: '$', suffix: 'M+', label: 'Clean Energy Pipeline Originated' },
     { to: 60,  suffix: '+',               label: 'Clean Energy Transactions Supported' },
-    { text: 'Pakistan & UAE',             label: 'Sustainable Finance Platforms Created' },
+    { to: 2,   suffix: '',                label: 'Sustainable Finance Platforms Established' },
   ];
   return (
     <section className="stats" ref={ref}>
@@ -214,13 +232,13 @@ function FundManagement() {
     <section id="fund" className="section section-light fund">
       <div className="container">
         <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
-          <div className="section-tag">Fund Management</div>
+          <div className="section-tag">Investment Management</div>
           <h2 className="section-title">A Licensed Platform for Impact &amp; Blended Finance</h2>
           <p className="section-sub">Capital Connect Investment Management (Private) Limited (CCIM) is building Pakistan's pioneer fund-management platform dedicated to impact and blended-finance investment.</p>
         </div>
         <div className={`fund-body${visible ? ' visible' : ''}`}>
           <div className="fund-intro">
-            <p>CCIM is a non-banking finance company established to become Pakistan's pioneer fund manager focused on impact funds and related initiatives, operating under the Private Fund Regulations, 2015.</p>
+            <p>Capital Connect Investment Management (Private) Limited is a non-banking finance company established to become Pakistan's pioneer fund manager focused on impact funds and related initiatives, operating under the Private Fund Regulations, 2015.</p>
             <p>The platform is designed to launch multiple funds, beginning with anchor fund Climate Core Pakistan and extending to sector-agnostic, industry-specific, and alternative investment funds — including Shariah-compliant structures — each using blended-finance mechanisms to catalyse commercial capital into underserved markets.</p>
           </div>
           <div className="fund-callout">
@@ -260,13 +278,13 @@ function ClimateCore() {
         <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
           <div className="section-tag light">Climate Core Pakistan</div>
           <h2 className="section-title light">Pakistan's Pioneer De-Risked Low-Carbon Blended Fund</h2>
-          <p className="section-sub light">Climate Core Pakistan (CCP) is CCIM's anchor fund — a PKR 15 billion low-carbon blended private equity fund catalysing a PKR 8.5 billion first close.</p>
+          <p className="section-sub light">Climate Core Pakistan (CCP) is Capital Connect Investment Management (Private) Limited's anchor fund — a PKR 15 billion low-carbon blended private equity fund catalysing a PKR 8.5 billion first close.</p>
         </div>
         <div className={`climate-body${visible ? ' visible' : ''}`}>
           <div className="climate-text">
             <p>Climate Core Pakistan mobilises private capital into underserved low-carbon markets through a landmark, de-risked financial structure. The fund provides growth and expansion equity to commercially viable clean-energy and climate-aligned businesses — bridging Pakistan's "missing middle" of impact and sustainability funding.</p>
             <p>CCP is built on the learnings of a US$7 million, four-year USAID-funded technical-assistance programme (PFAN), inheriting an established, investor-ready pipeline of more than US$100 million in commercially viable low-carbon investments — managed by the original architects and originators of that pipeline.</p>
-            <p>A tiered blended structure pairs commercial (senior) capital with concessional (junior) capital, while an up-to-40% first-loss guarantee shields anchor capital from initial downside — enhancing risk-adjusted returns for commercial investors.</p>
+            <p>A tiered blended structure pairs commercial (senior) capital with concessional (junior) capital, while an up-to-40% first-loss guarantee shields capital from initial downside — enhancing risk-adjusted returns for commercial investors.</p>
           </div>
           <div className="climate-terms">
             <div className="terms-label">Key Terms</div>
@@ -309,19 +327,15 @@ function Founder() {
                 <span>Warwick Business School</span>
                 <em>British Chevening Scholar</em>
               </div>
-              <div className="edu-item">
-                <b>MBA / BBA (Hons)</b>
-                <span>Institute of Business Administration</span>
-              </div>
             </div>
           </div>
           <div className="founder-right">
             <h2 className="section-title">Ghazil Jabbar</h2>
             <div className="founder-role">Business Lead with Regional Private Equity &amp; Advisory Experience</div>
-            <p>Ghazil Jabbar is an Investment Banker with 25 years of experience in Investment Banking, Private Equity, and Strategic Planning. He established Capital Connect in 2017 as a specialist M&amp;A advisory firm to deliver institutional-grade financial services to regional and international clients. He leads Capital Connect in establishing the Climate Core Funds — Pakistan's pioneer low-carbon blended-finance investment platform.</p>
-            <p>As a United Nations Industrial Development Organization (UNIDO) consultant, he led, as Deputy Chief of Party, the Pakistan Private Sector Energy (PPSE) project — a USAID-funded initiative — where he originated and developed a US$450 million+ clean-energy project pipeline across Pakistan. He also established the Private Equity and Venture Capital Funds at Faysal Funds, Pakistan's first Shariah-compliant private equity platform.</p>
+            <p>Ghazil Jabbar is an Investment Banker with 25 years of experience in Investment Banking, Private Equity, and Strategic Planning. He established Capital Connect in 2017 as a specialist M&amp;A advisory firm to deliver institutional-grade financial services to regional and international clients. He leads Capital Connect in establishing the fund-management platforms in Pakistan and the United Arab Emirates.</p>
+            <p>As a United Nations Industrial Development Organization (UNIDO) consultant, he led, as Deputy Chief of Party, the Pakistan Private Sector Energy (PPSE) project, a USAID-funded initiative, where he originated and developed a US$450 million+ clean-energy project pipeline across Pakistan. He also structured and established the Private Equity and Venture Capital Funds for an asset management company in Pakistan — Pakistan's first Shariah-compliant private equity platform.</p>
             <p>Ghazil served as Pakistan coverage banker for JPMorgan and held senior investment banking roles at Capital Partners Group Pte. (Singapore), NIB Bank (Temasek), and Elixir Securities Pakistan. He has managed cross-border industry teams in M&amp;A, equity and debt capital markets across Pakistan and Asia Pacific — spanning consumer, renewable, oil &amp; gas, power, financial institutions, industrial, and logistics sectors.</p>
-            <p>His privatization transaction experience is unparalleled, having advised several noteworthy privatization mandates in Pakistan. Certified under JPMorgan's specialized Investment Banking Training Programs in the USA and Hong Kong, he also holds certifications in AMT Training and ESG.</p>
+            <p>His privatisation transaction experience is unparalleled, having advised several noteworthy privatisation mandates in Pakistan. Certified under JPMorgan's specialised Investment Banking Training Programs in the USA and Hong Kong, he also holds certifications from AMT Training and the Corporate Finance Institute in ESG.</p>
           </div>
         </div>
       </div>
@@ -369,7 +383,7 @@ function Contact() {
         <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
           <div className="section-tag light">Contact Us</div>
           <h2 className="section-title light">Connect With Us</h2>
-          <p className="section-sub light">Whether you're exploring a transaction, seeking capital, or evaluating a strategic partnership — we want to hear from you.</p>
+          <p className="section-sub light">Whether you're exploring a transaction, seeking capital, structuring a fund, or evaluating a strategic partnership — we want to hear from you.</p>
         </div>
         <div className={`contact-grid${visible ? ' visible' : ''}`}>
           <div className="contact-info">
@@ -449,7 +463,7 @@ function Footer() {
           <div>
             <strong>Services</strong>
             <ul>
-              {['Mergers & Acquisitions','Private Equity','Blended Finance','Investment Management','Privatization Advisory','Fund Raising'].map(s => (
+              {['Mergers & Acquisitions','Private Equity','Blended Finance','Privatization Advisory','Fund Raising'].map(s => (
                 <li key={s}>{s}</li>
               ))}
             </ul>
@@ -467,8 +481,9 @@ export default function App() {
       <Navbar />
       <Hero />
       <About />
-      <Services />
+      <ClimateFocus />
       <Stats />
+      <Services />
       <FundManagement />
       <ClimateCore />
       <Founder />
