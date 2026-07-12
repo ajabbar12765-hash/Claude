@@ -60,43 +60,57 @@ function ProductImage({ product }) {
 }
 
 function OrderForm() {
-  const [payment, setPayment] = useState('cod');
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState('idle'); // idle | sending | error
+  const [placed, setPlaced] = useState(null); // { name, phone } after success
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const data = new FormData(e.target);
+    const formEl = e.target;
+    const data = new FormData(formEl);
     const product = PRODUCTS.find((p) => p.id === data.get('product'));
-    const lines = [
-      'New FreshLeaf order',
-      '',
-      `Product: ${product ? product.name : data.get('product')}`,
-      `Quantity: ${data.get('quantity')}`,
-      `Payment method: ${payment === 'cod' ? 'Cash on Delivery' : 'Credit Card'}`,
-      '',
-      `Name: ${data.get('name')}`,
-      `Phone: ${data.get('phone')}`,
-      `Delivery address: ${data.get('address')}`,
-      data.get('notes') ? `Notes: ${data.get('notes')}` : '',
-    ].filter(Boolean);
-
-    const mailto = `mailto:${CONTACT.email}?subject=${encodeURIComponent(
-      'FreshLeaf Order — ' + data.get('name')
-    )}&body=${encodeURIComponent(lines.join('\n'))}`;
-    window.location.href = mailto;
-    setSubmitted(true);
+    setStatus('sending');
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `New FreshLeaf Order — ${data.get('name')}`,
+          from_name: 'FreshLeaf Website',
+          replyto: data.get('email') || undefined,
+          'Order type': 'Cash on Delivery',
+          Product: product ? `${product.name} (${product.price})` : data.get('product'),
+          Quantity: data.get('quantity'),
+          'Customer name': data.get('name'),
+          Phone: data.get('phone'),
+          Email: data.get('email') || 'Not provided',
+          'Delivery address': data.get('address'),
+          Notes: data.get('notes') || 'None',
+        }),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setPlaced({ name: data.get('name'), phone: data.get('phone') });
+        setStatus('idle');
+        formEl.reset();
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
   }
 
-  if (submitted) {
+  if (placed) {
     return (
       <div className="order-thanks">
         <Leaf />
-        <h3>Thank you for your order!</h3>
+        <h3>Order received — thank you!</h3>
         <p>
-          Your order details have been prepared in your email app — just press send.
-          We'll confirm your order shortly on the phone number you provided.
+          Your order has been sent to us. We'll call you at {placed.phone} to confirm
+          your order and delivery, and you'll pay in cash when it arrives.
         </p>
-        <button className="btn btn-outline" onClick={() => setSubmitted(false)}>
+        <button className="btn btn-outline" onClick={() => setPlaced(null)}>
           Place another order
         </button>
       </div>
@@ -134,6 +148,11 @@ function OrderForm() {
       </div>
 
       <label>
+        Email (optional)
+        <input type="email" name="email" placeholder="you@example.com" />
+      </label>
+
+      <label>
         Delivery address
         <textarea name="address" rows="3" placeholder="House, street, area, city" required />
       </label>
@@ -143,42 +162,28 @@ function OrderForm() {
         <textarea name="notes" rows="2" placeholder="Preferred scent, delivery instructions…" />
       </label>
 
-      <fieldset className="payment-choice">
-        <legend>Payment method</legend>
-        <label className={payment === 'cod' ? 'pay-option selected' : 'pay-option'}>
-          <input
-            type="radio"
-            name="payment"
-            value="cod"
-            checked={payment === 'cod'}
-            onChange={() => setPayment('cod')}
-          />
-          <div>
-            <strong>Cash on Delivery</strong>
-            <span>Pay in cash when your order arrives at your door.</span>
-          </div>
-        </label>
-        <label className={payment === 'card' ? 'pay-option selected' : 'pay-option'}>
-          <input
-            type="radio"
-            name="payment"
-            value="card"
-            checked={payment === 'card'}
-            onChange={() => setPayment('card')}
-          />
-          <div>
-            <strong>Credit Card</strong>
-            <span>We'll send you a secure payment link to complete your purchase.</span>
-          </div>
-        </label>
-      </fieldset>
+      <div className="pay-option selected cod-note">
+        <div>
+          <strong>Payment: Cash on Delivery</strong>
+          <span>
+            Pay in cash when your order arrives at your door. Online card payment is
+            coming soon.
+          </span>
+        </div>
+      </div>
 
-      <button type="submit" className="btn btn-primary">
-        Place Order
+      <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
+        {status === 'sending' ? 'Placing order…' : 'Place Order'}
       </button>
+      {status === 'error' && (
+        <p className="form-error dark-on-light">
+          Something went wrong sending your order. Please try again, or order directly by
+          calling {CONTACT.phone}.
+        </p>
+      )}
       <p className="form-note">
-        Submitting opens your email app with the order pre-filled — press send and we'll
-        take care of the rest. You can also order directly by calling {CONTACT.phone}.
+        Your order is sent to us instantly — we'll call you to confirm. You can also
+        order directly by calling {CONTACT.phone}.
       </p>
     </form>
   );
@@ -449,8 +454,8 @@ export default function App() {
           <p className="eyebrow">Place an Order</p>
           <h2>Order your sprays</h2>
           <p className="section-sub">
-            Fill in your details below and choose how you'd like to pay — cash on delivery
-            or credit card.
+            Fill in your details below and we'll deliver to your door — pay in cash when
+            your order arrives.
           </p>
           <OrderForm />
         </section>

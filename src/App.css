@@ -434,6 +434,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
 .contact-form .btn-primary:disabled { opacity: 0.6; cursor: wait; }
 
 .form-error { font-size: 0.85rem; color: #f0b9a8; text-align: center; }
+.form-error.dark-on-light { color: #a4432c; }
+
+.cod-note { cursor: default; }
 
 .form-success {
   text-align: center;
