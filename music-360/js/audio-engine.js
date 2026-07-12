@@ -1,73 +1,153 @@
 /* ============================================================
- * Orbit 360 — binaural spatial audio engine
+ * Orbit 360 — binaural spatial audio engine, v2
  *
- * Renders ordinary stereo tracks as 3D sound over any stereo
- * headphones using Web Audio HRTF panning, in the spirit of
- * Sony 360 Reality Audio's object-on-a-sphere model:
+ * Architecture modeled on how production spatializers (Apple
+ * Spatialize Stereo, Sony's headphone renderer, Dolby Headphone)
+ * actually work — tuned for clarity, not effect:
  *
- *  - "sphere" mode splits the signal into frequency-band
- *    "objects" (sub / body / voice / air / ambience) that sit at
- *    fixed points on a sphere around the listener and drift
- *    gently, plus a short pre-delayed rear ambience object and a
- *    synthesized room reverb for out-of-head externalization.
- *  - "orbit" mode sends the whole mix on a slow 3D orbit
- *    around the head (classic "8D audio").
+ *  - Virtual-speaker rendering: the stereo mix stays intact; L and
+ *    R feed two HRTF sources placed around the head with ZERO
+ *    distance rolloff, so nothing gets quieter or duller.
+ *  - Bass anchor: everything below ~115 Hz bypasses the panners
+ *    (an LR4-style crossover), because spatialized bass just loses
+ *    punch — every serious renderer keeps low end centered.
+ *  - Timbre correction: HRTF filtering steals presence and air, so
+ *    a presence peak + high shelf after the panners pays it back.
+ *  - Externalization: a short, band-limited room reverb at a low
+ *    mix level pushes the image out of the head without mud.
+ *  - Safety limiter on the master so makeup gain can never clip.
+ *
+ * Modes:
+ *  - studio:  hi-fi virtual speakers at ±~30°, still image.
+ *  - concert: wide stage (±~48°) + elevated, delayed rear ambience
+ *             pair and more room — center-of-the-venue feel.
+ *  - orbit:   the whole (still stereo!) stage revolves around the
+ *             head — the "8D" mode, now without the muffle.
  * ============================================================ */
 
 class SpatialEngine {
   constructor(audioEl) {
     this.el = audioEl;
     this.ctx = null;
-    this.mode = 'off';          // 'off' | 'sphere' | 'orbit'
-    this.speed = 0.35;          // 0..1 motion speed
-    this.depth = 0.65;          // 0..1 spatial depth / radius
-    this._t = 0;                // animation clock (radians-ish)
+    this.mode = 'off';          // 'off' | 'studio' | 'concert' | 'orbit'
+    this.speed = 0.35;          // 0..1 — orbit rate / concert drift
+    this.depth = 0.65;          // 0..1 — stage width, room, ambience
+    this._t = 0;
     this._raf = 0;
     this._lastFrame = 0;
-    this.objects = [];          // active spatial objects for the visualizer
-    this.corsBroken = false;    // true when the source taints the graph
-    this._silenceChecked = false;
-    this.onCorsBroken = null;   // callback(engine)
+    this.objects = [];          // positions for the visualizer
+    this.corsBroken = false;
+    this.onCorsBroken = null;
   }
 
-  /* Lazily build the graph — must be called from a user gesture. */
+  /* Build the graph — call from a user gesture. */
   init() {
     if (this.ctx) return true;
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return false;
-    this.ctx = new AC();
+    const ctx = this.ctx = new AC();
 
-    this.source = this.ctx.createMediaElementSource(this.el);
+    this.source = ctx.createMediaElementSource(this.el);
 
-    this.master = this.ctx.createGain();
-    this.analyser = this.ctx.createAnalyser();
+    // master → analyser → safety limiter → out
+    this.master = ctx.createGain();
+    this.analyser = ctx.createAnalyser();
     this.analyser.fftSize = 256;
+    this.limiter = ctx.createDynamicsCompressor();
+    this.limiter.threshold.value = -1.5;
+    this.limiter.knee.value = 0;
+    this.limiter.ratio.value = 20;
+    this.limiter.attack.value = 0.002;
+    this.limiter.release.value = 0.12;
     this.master.connect(this.analyser);
-    this.analyser.connect(this.ctx.destination);
+    this.analyser.connect(this.limiter);
+    this.limiter.connect(ctx.destination);
 
-    // Direct (non-spatial) path, used when 360 is off.
-    this.directGain = this.ctx.createGain();
+    // Bypass path (360 off) — bit-transparent apart from the limiter.
+    this.directGain = ctx.createGain();
     this.source.connect(this.directGain);
     this.directGain.connect(this.master);
 
-    // Spatial input bus (fed to whichever mode is active).
-    this.spatialIn = this.ctx.createGain();
+    // Spatial input bus.
+    this.spatialIn = ctx.createGain();
     this.spatialIn.gain.value = 0;
     this.source.connect(this.spatialIn);
 
-    // Room reverb for externalization (synthesized IR, low mix).
-    this.reverb = this.ctx.createConvolver();
-    this.reverb.buffer = this._makeImpulse(1.6, 2.8);
-    this.reverbSend = this.ctx.createGain();
-    this.reverbSend.gain.value = 0;
-    this.spatialIn.connect(this.reverbSend);
-    this.reverbSend.connect(this.reverb);
-    this.reverb.connect(this.master);
+    const bq = (type, freq, opts = {}) => {
+      const f = ctx.createBiquadFilter();
+      f.type = type; f.frequency.value = freq;
+      if (opts.q != null) f.Q.value = opts.q;
+      if (opts.gain != null) f.gain.value = opts.gain;
+      return f;
+    };
 
-    this._buildOrbit();
-    this._buildSphere();
+    // ---- bass anchor: LR4-ish lowpass, un-spatialized, keeps punch ----
+    const XOVER = 115;
+    const lp1 = bq('lowpass', XOVER), lp2 = bq('lowpass', XOVER);
+    this.subGain = ctx.createGain();
+    this.subGain.gain.value = 1.05;
+    this.spatialIn.connect(lp1); lp1.connect(lp2); lp2.connect(this.subGain);
+    this.subGain.connect(this.master);
 
-    const L = this.ctx.listener;
+    // ---- main band: everything above the crossover, stereo preserved ----
+    const hp1 = bq('highpass', XOVER), hp2 = bq('highpass', XOVER);
+    this.bandIn = ctx.createGain();
+    this.spatialIn.connect(hp1); hp1.connect(hp2); hp2.connect(this.bandIn);
+
+    const split = ctx.createChannelSplitter(2);
+    this.bandIn.connect(split);
+
+    const mkPanner = () => {
+      const p = ctx.createPanner();
+      p.panningModel = 'HRTF';
+      p.distanceModel = 'inverse';
+      p.refDistance = 1;
+      p.rolloffFactor = 0;      // constant loudness anywhere on the sphere
+      return p;
+    };
+    this.pannerL = mkPanner();
+    this.pannerR = mkPanner();
+    split.connect(this.pannerL, 0);
+    split.connect(this.pannerR, 1);
+
+    this.spatialSum = ctx.createGain();
+    this.pannerL.connect(this.spatialSum);
+    this.pannerR.connect(this.spatialSum);
+
+    // ---- rear ambience pair (concert): delayed, decorrelated, elevated ----
+    this.ambGain = ctx.createGain();
+    this.ambGain.gain.value = 0;
+    this.bandIn.connect(this.ambGain);
+    const dL = ctx.createDelay(0.1); dL.delayTime.value = 0.017;
+    const dR = ctx.createDelay(0.1); dR.delayTime.value = 0.023;
+    this.pannerRearL = mkPanner();
+    this.pannerRearR = mkPanner();
+    this.ambGain.connect(dL); dL.connect(this.pannerRearL);
+    this.ambGain.connect(dR); dR.connect(this.pannerRearR);
+    this.pannerRearL.connect(this.spatialSum);
+    this.pannerRearR.connect(this.spatialSum);
+
+    // ---- timbre correction + makeup: repay what HRTF filtering takes ----
+    const presence = bq('peaking', 2500, { q: 1, gain: 2 });
+    const air = bq('highshelf', 6500, { gain: 3.5 });
+    this.makeup = ctx.createGain();
+    this.makeup.gain.value = 1.25;
+    this.spatialSum.connect(presence); presence.connect(air); air.connect(this.makeup);
+    this.makeup.connect(this.master);
+
+    // ---- externalization reverb: short, band-limited, low mix ----
+    this.revSend = ctx.createGain();
+    this.revSend.gain.value = 0;
+    const revHP = bq('highpass', 240), revLP = bq('lowpass', 6200);
+    const conv = ctx.createConvolver();
+    conv.buffer = this._makeImpulse(1.25, 2.6);
+    const revReturn = ctx.createGain();
+    revReturn.gain.value = 0.8;
+    this.bandIn.connect(this.revSend);
+    this.revSend.connect(revHP); revHP.connect(revLP); revLP.connect(conv);
+    conv.connect(revReturn); revReturn.connect(this.master);
+
+    const L = ctx.listener;
     if (L.forwardX) {
       L.forwardX.value = 0; L.forwardY.value = 0; L.forwardZ.value = -1;
       L.upX.value = 0; L.upY.value = 1; L.upZ.value = 0;
@@ -75,80 +155,6 @@ class SpatialEngine {
       L.setOrientation(0, 0, -1, 0, 1, 0);
     }
     return true;
-  }
-
-  _panner() {
-    const p = this.ctx.createPanner();
-    p.panningModel = 'HRTF';
-    p.distanceModel = 'inverse';
-    p.refDistance = 1;
-    p.rolloffFactor = 0.9;
-    return p;
-  }
-
-  _setPos(p, x, y, z, smooth = 0.05) {
-    const t = this.ctx.currentTime;
-    if (p.positionX) {
-      p.positionX.setTargetAtTime(x, t, smooth);
-      p.positionY.setTargetAtTime(y, t, smooth);
-      p.positionZ.setTargetAtTime(z, t, smooth);
-    } else {
-      p.setPosition(x, y, z);
-    }
-  }
-
-  /* -------- orbit mode: whole mix circles the head -------- */
-  _buildOrbit() {
-    this.orbitGain = this.ctx.createGain();
-    this.orbitGain.gain.value = 0;
-    this.orbitPanner = this._panner();
-    this.spatialIn.connect(this.orbitGain);
-    this.orbitGain.connect(this.orbitPanner);
-    this.orbitPanner.connect(this.master);
-  }
-
-  /* -------- sphere mode: frequency-band objects on a sphere -------- */
-  _buildSphere() {
-    this.sphereGain = this.ctx.createGain();
-    this.sphereGain.gain.value = 0;
-    this.spatialIn.connect(this.sphereGain);
-
-    const mk = (filters, gain, base) => {
-      let node = this.sphereGain;
-      for (const f of filters) { node.connect(f); node = f; }
-      const g = this.ctx.createGain();
-      g.gain.value = gain;
-      const p = this._panner();
-      node.connect(g); g.connect(p); p.connect(this.master);
-      return { panner: p, base, phase: Math.random() * Math.PI * 2 };
-    };
-    const bq = (type, freq, q = 0.8) => {
-      const f = this.ctx.createBiquadFilter();
-      f.type = type; f.frequency.value = freq; f.Q.value = q;
-      return f;
-    };
-
-    // Objects: [filters], gain, base position {az (rad, 0 = front), el (-1..1), r}
-    this.sphereObjects = [
-      // Sub bass — anchored front-center, barely moves (keeps punch).
-      { ...mk([bq('lowpass', 130)], 1.15, { az: 0, el: -0.25, r: 1.1 }), drift: 0.06, label: 'sub' },
-      // Body (drums / bass guitar) — behind the listener.
-      { ...mk([bq('highpass', 130), bq('lowpass', 500)], 1.1, { az: Math.PI, el: -0.1, r: 1.9 }), drift: 0.5, label: 'body' },
-      // Voice (mids) — front, slightly raised.
-      { ...mk([bq('highpass', 500), bq('lowpass', 2800)], 1.05, { az: 0, el: 0.15, r: 1.6 }), drift: 0.35, label: 'voice' },
-      // Air left / right — high frequencies above the shoulders, counter-drifting.
-      { ...mk([bq('highpass', 2800)], 0.85, { az: -Math.PI / 2.4, el: 0.55, r: 1.8 }), drift: 1.0, label: 'airL' },
-      { ...mk([bq('highpass', 2800)], 0.85, { az: Math.PI / 2.4, el: 0.55, r: 1.8 }), drift: -1.0, label: 'airR' },
-    ];
-
-    // Rear ambience: short pre-delay behind the head → envelopment.
-    const delay = this.ctx.createDelay(0.1);
-    delay.delayTime.value = 0.019;
-    const ag = this.ctx.createGain();
-    ag.gain.value = 0.32;
-    const ap = this._panner();
-    this.sphereGain.connect(delay); delay.connect(ag); ag.connect(ap); ap.connect(this.master);
-    this.sphereObjects.push({ panner: ap, base: { az: Math.PI, el: 0.4, r: 2.6 }, phase: 1.3, drift: 0.22, label: 'amb' });
   }
 
   _makeImpulse(seconds, decay) {
@@ -164,21 +170,52 @@ class SpatialEngine {
     return buf;
   }
 
-  /* -------- mode switching (click-free via gain ramps) -------- */
+  _setPos(p, az, el, smooth = 0.05) {
+    // az: radians from straight ahead (+ = right); el: radians up. r = 1.
+    const x = Math.sin(az) * Math.cos(el);
+    const z = -Math.cos(az) * Math.cos(el);
+    const y = Math.sin(el);
+    const t = this.ctx.currentTime;
+    if (p.positionX) {
+      p.positionX.setTargetAtTime(x, t, smooth);
+      p.positionY.setTargetAtTime(y, t, smooth);
+      p.positionZ.setTargetAtTime(z, t, smooth);
+    } else {
+      p.setPosition(x, y, z);
+    }
+    return { x, y, z };
+  }
+
+  /* Per-mode targets. Depth widens the stage and opens the room. */
+  _params() {
+    const d = this.depth;
+    switch (this.mode) {
+      case 'studio':  return { width: (22 + 18 * d) * Math.PI / 180, amb: 0,            rev: 0.06 + 0.06 * d };
+      case 'concert': return { width: (34 + 24 * d) * Math.PI / 180, amb: 0.18 + 0.16 * d, rev: 0.12 + 0.09 * d };
+      case 'orbit':   return { width: 26 * Math.PI / 180,            amb: 0.10 * d,     rev: 0.09 + 0.07 * d };
+      default:        return { width: 0, amb: 0, rev: 0 };
+    }
+  }
+
+  _applyGains() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const ramp = (param, v) => {
+      param.cancelScheduledValues(t);
+      param.setTargetAtTime(v, t, 0.08);
+    };
+    const off = this.mode === 'off';
+    const p = this._params();
+    ramp(this.directGain.gain, off ? 1 : 0);
+    ramp(this.spatialIn.gain, off ? 0 : 1);
+    ramp(this.ambGain.gain, p.amb);
+    ramp(this.revSend.gain, p.rev);
+  }
+
   setMode(mode) {
     if (!this.ctx) return;
     this.mode = mode;
-    const t = this.ctx.currentTime;
-    const ramp = (g, v) => {
-      g.gain.cancelScheduledValues(t);
-      g.gain.setTargetAtTime(v, t, 0.08);
-    };
-    ramp(this.directGain, mode === 'off' ? 1 : 0);
-    ramp(this.spatialIn, mode === 'off' ? 0 : 1);
-    ramp(this.orbitGain, mode === 'orbit' ? 1 : 0);
-    ramp(this.sphereGain, mode === 'sphere' ? 1 : 0);
-    ramp(this.reverbSend, mode === 'off' ? 0 : 0.14 + this.depth * 0.1);
-
+    this._applyGains();
     if (mode === 'off') {
       cancelAnimationFrame(this._raf);
       this._raf = 0;
@@ -190,45 +227,43 @@ class SpatialEngine {
   }
 
   setSpeed(v) { this.speed = v; }
-  setDepth(v) {
-    this.depth = v;
-    if (this.ctx && this.mode !== 'off') {
-      this.reverbSend.gain.setTargetAtTime(0.14 + v * 0.1, this.ctx.currentTime, 0.1);
-    }
-  }
+  setDepth(v) { this.depth = v; this._applyGains(); }
 
   resume() {
     if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
   }
 
-  /* -------- animation: move objects, expose positions for the visualizer -------- */
   _frame(ts) {
     const dt = Math.min((ts - this._lastFrame) / 1000, 0.1);
     this._lastFrame = ts;
-    this._t += dt * (0.15 + this.speed * 1.1);
+    this._t += dt;
 
+    const { width } = this._params();
     const out = [];
+    let azL, azR, el = 0;
+
     if (this.mode === 'orbit') {
-      const r = 1.2 + this.depth * 1.8;
-      const az = this._t;                       // full revolutions around the head
-      const el = Math.sin(this._t * 0.43) * 0.5 * this.depth;
-      const x = Math.sin(az) * r * Math.cos(el);
-      const z = -Math.cos(az) * r * Math.cos(el);
-      const y = Math.sin(el) * r;
-      this._setPos(this.orbitPanner, x, y, z, 0.03);
-      out.push({ x, z, y, main: true });
-    } else if (this.mode === 'sphere') {
-      for (const o of this.sphereObjects) {
-        const wobble = Math.sin(this._t * 0.7 * Math.abs(o.drift) + o.phase) * 0.45 * Math.sign(o.drift || 1);
-        const az = o.base.az + wobble * this.depth;
-        const el = o.base.el + Math.sin(this._t * 0.5 + o.phase) * 0.12 * this.depth;
-        const r = o.base.r * (0.75 + this.depth * 0.5);
-        const x = Math.sin(az) * r * Math.cos(el);
-        const z = -Math.cos(az) * r * Math.cos(el);
-        const y = el * r;
-        this._setPos(o.panner, x, y, z, 0.08);
-        out.push({ x, z, y, main: o.label === 'voice' });
-      }
+      const ang = this._t * (0.25 + this.speed * 1.15);
+      azL = ang - width; azR = ang + width;
+      el = Math.sin(this._t * 0.37) * 0.30 * this.depth;
+    } else {
+      // studio: still; concert: a slow ±3° breathing drift scaled by Motion
+      const drift = this.mode === 'concert'
+        ? Math.sin(this._t * (0.1 + this.speed * 0.5)) * (3 * Math.PI / 180) * this.speed
+        : 0;
+      azL = -width + drift; azR = width + drift;
+      el = this.mode === 'concert' ? 0.06 : 0;
+    }
+
+    const l = this._setPos(this.pannerL, azL, el, 0.04);
+    const r = this._setPos(this.pannerR, azR, el, 0.04);
+    out.push({ ...l, main: true }, { ...r, main: true });
+
+    if (this.ambGain.gain.value > 0.02) {
+      const sway = Math.sin(this._t * 0.22) * 0.10;
+      const rl = this._setPos(this.pannerRearL, Math.PI * 0.75 + sway, 0.45, 0.1);
+      const rr = this._setPos(this.pannerRearR, -Math.PI * 0.75 + sway, 0.45, 0.1);
+      out.push({ ...rl, main: false }, { ...rr, main: false });
     }
     this.objects = out;
 
@@ -237,10 +272,7 @@ class SpatialEngine {
     }
   }
 
-  /* -------- CORS taint detection --------
-   * If a media source doesn't send CORS headers the graph runs but
-   * outputs pure silence. Detect that shortly after playback starts
-   * so the app can fall back to plain playback. */
+  /* CORS taint → the graph outputs pure silence; detect and report. */
   checkSilence() {
     if (!this.ctx || this.corsBroken || this.el.paused) return;
     const data = new Uint8Array(this.analyser.frequencyBinCount);
@@ -248,8 +280,7 @@ class SpatialEngine {
     const probe = () => {
       if (this.el.paused || this.corsBroken) return;
       this.analyser.getByteFrequencyData(data);
-      const alive = data.some((v) => v > 0);
-      if (alive) return;                        // audio flowing — all good
+      if (data.some((v) => v > 0)) return;
       if (++tries < 10) { setTimeout(probe, 250); return; }
       this.corsBroken = true;
       if (this.onCorsBroken) this.onCorsBroken(this);
@@ -257,7 +288,6 @@ class SpatialEngine {
     setTimeout(probe, 600);
   }
 
-  /* Frequency data for the visualizer ring. */
   getLevels(bins = 24) {
     if (!this.ctx) return null;
     const data = new Uint8Array(this.analyser.frequencyBinCount);

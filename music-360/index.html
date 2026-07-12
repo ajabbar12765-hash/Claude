@@ -56,14 +56,30 @@
           <input id="search-input" type="search" inputmode="search" autocomplete="off"
                  placeholder="Songs, artists, albums…" aria-label="Search music" />
         </div>
+        <div class="seg" id="source-seg" role="radiogroup" aria-label="Catalog source">
+          <button data-src="full" class="active" role="radio" aria-checked="true">Full songs</button>
+          <button data-src="previews" role="radio" aria-checked="false">Chart previews</button>
+        </div>
         <div class="track-list" id="search-results">
-          <p class="empty-hint">Search the full catalog — any artist, any song.<br/>High-quality previews play through the 360° engine.</p>
+          <p class="empty-hint"><strong>Full songs</strong> streams complete tracks from the Audius network.<br/><strong>Chart previews</strong> searches every mainstream artist (preview-length).</p>
         </div>
       </section>
 
       <!-- LIBRARY -->
       <section class="view" id="view-library">
         <header class="view-header"><h1 class="page-title">Your Library</h1></header>
+
+        <button class="upload-btn" id="btn-upload">
+          <svg viewBox="0 0 24 24"><path d="M12 16V5m0 0-4 4m4-4 4 4M5 19h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Add your own music (MP3 / FLAC — full quality)
+        </button>
+        <input type="file" id="file-input" accept="audio/*" multiple hidden />
+
+        <h2 class="section-title">Your uploads</h2>
+        <div class="track-list" id="upload-list">
+          <p class="empty-hint">Your own files play at full quality and always support 360°.</p>
+        </div>
+
         <h2 class="section-title">Liked songs</h2>
         <div class="track-list" id="liked-list">
           <p class="empty-hint">Tap the heart on any track to save it here.</p>
@@ -128,11 +144,14 @@
 
         <div class="spatial-body" id="spatial-body">
           <div class="mode-row" role="radiogroup" aria-label="Spatial mode">
-            <button class="mode-btn active" data-mode="sphere" role="radio" aria-checked="true">
-              <strong>Sphere</strong><span>Sony-style object stage</span>
+            <button class="mode-btn active" data-mode="studio" role="radio" aria-checked="true">
+              <strong>Studio</strong><span>Hi-fi virtual speakers</span>
+            </button>
+            <button class="mode-btn" data-mode="concert" role="radio" aria-checked="false">
+              <strong>Concert</strong><span>Wide stage + hall</span>
             </button>
             <button class="mode-btn" data-mode="orbit" role="radio" aria-checked="false">
-              <strong>Orbit</strong><span>Sound circles your head</span>
+              <strong>Orbit</strong><span>Revolving stage</span>
             </button>
           </div>
           <label class="slider-row">
@@ -143,7 +162,7 @@
             <span>Depth</span>
             <input type="range" id="spatial-depth" min="0" max="100" value="65" aria-label="Spatial depth" />
           </label>
-          <p class="spatial-tip">Best with headphones — tuned for stereo Bluetooth sets like the Sony WH-CH520. Keep any phone “spatial audio” OS setting off; this app does the 3D rendering itself.</p>
+          <p class="spatial-tip">Bass stays anchored and loudness stays constant — no muffling. Timbre correction repays what HRTF filtering takes. Tuned for stereo headphones like the Sony WH-CH520; keep any phone “spatial audio” OS setting off.</p>
         </div>
       </div>
     </section>
@@ -183,6 +202,7 @@
   </div>
 
   <audio id="player" crossorigin="anonymous" preload="auto"></audio>
+  <audio id="player-plain" preload="auto"></audio>
   <script src="js/audio-engine.js"></script>
   <script src="js/app.js"></script>
 </body>
