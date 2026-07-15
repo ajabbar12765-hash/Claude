@@ -2,26 +2,72 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-// Draws the bottle's label as a texture so the 3D model carries the brand.
+// Citrus Fresh label: lemon-yellow band with a white panel, matching the
+// real product photography.
 function makeLabelTexture() {
   const c = document.createElement('canvas');
   c.width = 2048;
-  c.height = 512;
+  c.height = 1024;
   const ctx = c.getContext('2d');
-  ctx.fillStyle = '#faf7f0';
+
+  const bg = ctx.createLinearGradient(0, 0, 0, c.height);
+  bg.addColorStop(0, '#f7d95e');
+  bg.addColorStop(0.5, '#fbe98c');
+  bg.addColorStop(1, '#f4cf4e');
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, c.width, c.height);
-  ctx.strokeStyle = 'rgba(46, 92, 64, 0.35)';
-  ctx.lineWidth = 6;
-  ctx.strokeRect(24, 24, c.width - 48, c.height - 48);
-  ctx.fillStyle = '#1f3d2b';
+
+  // abstract lemons + leaves scattered over the band
+  for (let i = 0; i < 42; i++) {
+    const x = (i * 197) % c.width;
+    const y = (i * 271) % c.height;
+    const r = 46 + (i % 4) * 14;
+    ctx.fillStyle = i % 3 === 0 ? '#f3c22e' : '#f9e06a';
+    ctx.beginPath();
+    ctx.ellipse(x, y, r, r * 0.78, (i % 6) * 0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.beginPath();
+    ctx.ellipse(x, y, r * 0.55, r * 0.42, (i % 6) * 0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#7da85c';
+    ctx.beginPath();
+    ctx.ellipse(x + r * 0.8, y - r * 0.6, r * 0.34, r * 0.14, 0.8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // white panel, centred on the face the camera sees
+  const pw = 640;
+  const ph = 780;
+  const px = (c.width - pw) / 2;
+  const py = (c.height - ph) / 2;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.roundRect(px, py, pw, ph, 18);
+  ctx.fill();
+
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = '600 150px Cormorant Garamond, Georgia, serif';
-  ctx.fillText('FreshLeaf', c.width / 2, c.height / 2 - 40);
-  ctx.font = '300 52px Inter, sans-serif';
+  const cx = c.width / 2;
+  ctx.fillStyle = '#1f3d2b';
+  ctx.font = '600 92px Cormorant Garamond, Georgia, serif';
+  ctx.fillText('freshleaf', cx, py + 130);
+  ctx.strokeStyle = 'rgba(31, 61, 43, 0.25)';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(cx - 200, py + 195);
+  ctx.lineTo(cx + 200, py + 195);
+  ctx.stroke();
+  ctx.fillStyle = '#c47c2b';
+  ctx.font = '700 110px Inter, sans-serif';
+  ctx.fillText('CITRUS', cx, py + 330);
+  ctx.fillText('FRESH', cx, py + 450);
   ctx.fillStyle = '#55655c';
-  const sub = 'R O O M   S P R A Y';
-  ctx.fillText(sub, c.width / 2, c.height / 2 + 110);
+  ctx.font = '400 40px Inter, sans-serif';
+  ctx.fillText('R O O M   A N D   L I N E N   S P R A Y', cx, py + 560);
+  ctx.font = '300 38px Inter, sans-serif';
+  ctx.fillText('2 5 0 M L', cx, py + 690);
+
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
@@ -67,19 +113,19 @@ export default function Bottle3D() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
-    camera.position.set(0, 0.55, 8.2);
-    camera.lookAt(0, 0.15, 0);
+    camera.position.set(0, 0.8, 9.4);
+    camera.lookAt(0, 0.55, 0);
 
     const pmrem = new THREE.PMREMGenerator(renderer);
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
-    const key = new THREE.DirectionalLight(0xfff8ec, 1.4);
+    const key = new THREE.DirectionalLight(0xfff8ec, 1.5);
     key.position.set(4, 6, 6);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0xcfe8d6, 1.1);
+    const rim = new THREE.DirectionalLight(0xcfe8d6, 1.2);
     rim.position.set(-5, 3, -4);
     scene.add(rim);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.35));
 
     const group = new THREE.Group();
     scene.add(group);
@@ -87,49 +133,55 @@ export default function Bottle3D() {
     const dispose = [];
     const track = (obj) => { dispose.push(obj); return obj; };
 
-    const glass = track(new THREE.MeshPhysicalMaterial({
-      color: 0x5d8f70,
-      metalness: 0,
-      roughness: 0.22,
-      transmission: 0.35,
-      thickness: 1.6,
+    // glossy black PET bottle + matte black sprayer, like the real product
+    const bottleMat = track(new THREE.MeshPhysicalMaterial({
+      color: 0x111411,
+      metalness: 0.1,
+      roughness: 0.18,
       clearcoat: 1,
-      clearcoatRoughness: 0.12,
+      clearcoatRoughness: 0.08,
     }));
-    const capMat = track(new THREE.MeshStandardMaterial({ color: 0x152b1e, metalness: 0.35, roughness: 0.42 }));
-    const labelMat = track(new THREE.MeshStandardMaterial({ map: track(makeLabelTexture()), roughness: 0.55 }));
+    bottleMat.envMapIntensity = 0.55;
+    const sprayerMat = track(new THREE.MeshStandardMaterial({ color: 0x141414, metalness: 0.15, roughness: 0.45 }));
+    sprayerMat.envMapIntensity = 0.45;
+    const labelMat = track(new THREE.MeshStandardMaterial({ map: track(makeLabelTexture()), roughness: 0.5 }));
 
-    const add = (geo, mat, y = 0, sx = 1, sy = 1, sz = 1) => {
+    const add = (geo, mat, x = 0, y = 0, z = 0) => {
       const m = new THREE.Mesh(track(geo), mat);
-      m.position.y = y;
-      m.scale.set(sx, sy, sz);
+      m.position.set(x, y, z);
       group.add(m);
       return m;
     };
 
-    // bottle body + shoulder + neck
-    add(new THREE.CylinderGeometry(0.74, 0.8, 2.35, 64), glass, -0.05);
-    add(new THREE.SphereGeometry(0.74, 64, 32, 0, Math.PI * 2, 0, Math.PI / 2), glass, 1.12, 1, 0.62, 1);
-    add(new THREE.CylinderGeometry(0.23, 0.23, 0.34, 32), glass, 1.62);
+    // slim tall bottle body
+    add(new THREE.CylinderGeometry(0.55, 0.58, 3.1, 64), bottleMat, 0, -0.3);
+    const shoulder = add(new THREE.SphereGeometry(0.55, 64, 32, 0, Math.PI * 2, 0, Math.PI / 2), bottleMat, 0, 1.25);
+    shoulder.scale.set(1, 0.5, 1);
+    add(new THREE.CylinderGeometry(0.2, 0.24, 0.35, 32), bottleMat, 0, 1.55);
 
-    // cap + nozzle
-    add(new THREE.CylinderGeometry(0.31, 0.33, 0.6, 48), capMat, 2.02);
-    add(new THREE.SphereGeometry(0.31, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), capMat, 2.3, 1, 0.5, 1);
-    const nozzle = new THREE.Mesh(track(new THREE.BoxGeometry(0.16, 0.14, 0.2)), capMat);
-    nozzle.position.set(0, 2.22, 0.26);
-    group.add(nozzle);
+    // trigger sprayer: collar, pump body, head arm, nozzle, trigger blade
+    add(new THREE.CylinderGeometry(0.26, 0.27, 0.32, 32), sprayerMat, 0, 1.83);
+    add(new THREE.BoxGeometry(0.3, 0.55, 0.38), sprayerMat, 0, 2.2);
+    const headArm = add(new THREE.BoxGeometry(0.3, 0.3, 1.15), sprayerMat, 0, 2.55, 0.18);
+    headArm.rotation.x = -0.06;
+    const nozzle = add(new THREE.CylinderGeometry(0.075, 0.09, 0.16, 24), sprayerMat, 0, 2.52, 0.78);
+    nozzle.rotation.x = Math.PI / 2;
+    const tail = add(new THREE.BoxGeometry(0.26, 0.42, 0.3), sprayerMat, 0, 2.4, -0.42);
+    tail.rotation.x = 0.35;
+    const trigger = add(new THREE.BoxGeometry(0.12, 0.75, 0.14), sprayerMat, 0, 2.05, 0.52);
+    trigger.rotation.x = -0.35;
 
-    // label band (rotated so the brand faces the camera)
-    const label = add(new THREE.CylinderGeometry(0.765, 0.795, 1.15, 64, 1, true), labelMat, -0.18);
+    // citrus label band (rotated so the panel faces the camera)
+    const label = add(new THREE.CylinderGeometry(0.565, 0.585, 1.9, 64, 1, true), labelMat, 0, -0.45);
     label.rotation.y = Math.PI;
 
     // soft contact shadow
     const shadow = new THREE.Mesh(
-      track(new THREE.CircleGeometry(1.6, 48)),
+      track(new THREE.CircleGeometry(1.5, 48)),
       track(new THREE.MeshBasicMaterial({ map: track(makeShadowTexture()), transparent: true, depthWrite: false }))
     );
     shadow.rotation.x = -Math.PI / 2;
-    shadow.position.y = -1.42;
+    shadow.position.y = -1.95;
     scene.add(shadow);
 
     // gentle mist particles
@@ -138,7 +190,7 @@ export default function Bottle3D() {
     const speeds = new Float32Array(COUNT);
     for (let i = 0; i < COUNT; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 4.4;
-      positions[i * 3 + 1] = Math.random() * 4 - 1.4;
+      positions[i * 3 + 1] = Math.random() * 4.6 - 1.9;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 2.5;
       speeds[i] = 0.0025 + Math.random() * 0.005;
     }
@@ -201,7 +253,7 @@ export default function Bottle3D() {
       const pos = pGeo.attributes.position;
       for (let i = 0; i < COUNT; i++) {
         let y = pos.getY(i) + speeds[i];
-        if (y > 2.8) y = -1.4;
+        if (y > 2.9) y = -1.9;
         pos.setY(i, y);
         pos.setX(i, pos.getX(i) + Math.sin(t * 0.6 + i) * 0.0006);
       }
@@ -260,5 +312,5 @@ export default function Bottle3D() {
     );
   }
 
-  return <div className="bottle-stage" ref={mountRef} aria-label="3D FreshLeaf room spray bottle — drag to rotate" />;
+  return <div className="bottle-stage" ref={mountRef} aria-label="3D FreshLeaf Citrus Fresh spray bottle — drag to rotate" />;
 }

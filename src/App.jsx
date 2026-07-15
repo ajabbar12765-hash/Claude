@@ -11,29 +11,43 @@ const CONTACT = {
   email: 'freshleaf.essentials@gmail.com',
 };
 
-// Product photos: drop your images into /public/products and set the `image`
-// field to the file name, e.g. image: '/products/citrus-room-spray.jpg'
+// Set `price` (e.g. 'Rs. 1,200') once prices are decided; until then the
+// cards show "price on request" and the order form lists names only.
 const PRODUCTS = [
   {
-    id: 'room-spray',
-    name: 'Signature Room Spray',
-    tagline: 'Pure essential oils for living spaces',
-    price: 'Rs. 1,200',
-    image: null,
+    id: 'citrus-fresh',
+    name: 'Citrus Fresh',
+    tagline: 'Essential oils of orange, lemon, peppermint & bergamot',
+    price: null,
+    image: '/products/citrus-fresh.webp',
   },
   {
-    id: 'car-freshener',
-    name: 'Car Freshener Spray',
-    tagline: 'A calm, natural drive every day',
-    price: 'Rs. 950',
-    image: null,
+    id: 'morning-zest',
+    name: 'Morning Zest',
+    tagline: 'Essential oils of eucalyptus, lemon & peppermint',
+    price: null,
+    image: '/products/morning-zest.webp',
   },
   {
-    id: 'workspace-mist',
-    name: 'Workspace Mist',
-    tagline: 'Focus-friendly botanical blends',
-    price: 'Rs. 1,100',
-    image: null,
+    id: 'spiced-orange',
+    name: 'Spiced Orange',
+    tagline: 'Essential oils of clove, ginger, orange & cinnamon',
+    price: null,
+    image: '/products/spiced-orange.webp',
+  },
+  {
+    id: 'floral-fantasy',
+    name: 'Floral Fantasy',
+    tagline: 'Essential oils of ylang ylang, rose, jasmine & geranium',
+    price: null,
+    image: '/products/floral-fantasy.webp',
+  },
+  {
+    id: 'pure',
+    name: 'Pure',
+    tagline: 'Essential oils of tea tree, eucalyptus, peppermint & lemon',
+    price: null,
+    image: '/products/pure.webp',
   },
 ];
 
@@ -335,16 +349,17 @@ function Products() {
         <Reveal>
           <p className="eyebrow">Our Sprays</p>
           <h2>See the product before you buy</h2>
+          <p className="section-sub">Room &amp; linen sprays, 250&nbsp;ml, made with 100% essential oils.</p>
         </Reveal>
         <div className="product-grid">
           {PRODUCTS.map((p, i) => (
-            <Reveal key={p.id} delay={i * 140}>
+            <Reveal key={p.id} delay={i * 120}>
               <TiltCard className="product-card" pop>
                 <ProductImage product={p} />
                 <h3>{p.name}</h3>
                 <p>{p.tagline}</p>
                 <div className="product-foot">
-                  <span className="price">{p.price}</span>
+                  <span className="price">{p.price ?? '250 ml'}</span>
                   <a className="btn btn-small" href="#order">Order</a>
                 </div>
               </TiltCard>
@@ -376,7 +391,7 @@ function OrderForm() {
           from_name: 'FreshLeaf Website',
           replyto: data.get('email') || undefined,
           'Order type': 'Cash on Delivery',
-          Product: product ? `${product.name} (${product.price})` : data.get('product'),
+          Product: product ? `${product.name}${product.price ? ` (${product.price})` : ''}` : data.get('product'),
           Quantity: data.get('quantity'),
           'Customer name': data.get('name'),
           Phone: data.get('phone'),
@@ -422,7 +437,7 @@ function OrderForm() {
           <select name="product" required defaultValue={PRODUCTS[0].id}>
             {PRODUCTS.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.name} — {p.price}
+                {p.name}{p.price ? ` — ${p.price}` : ''}
               </option>
             ))}
           </select>
