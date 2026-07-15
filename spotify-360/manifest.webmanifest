@@ -1,0 +1,15 @@
+{
+  "name": "Orbit 360 — Spatial Music",
+  "short_name": "Orbit 360",
+  "description": "Spotify-style music player with true 360° spatial audio for any stereo headphones.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0c10",
+  "theme_color": "#0a0c10",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
