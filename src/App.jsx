@@ -214,7 +214,7 @@ const FEATURES = [
   },
   {
     title: 'Cash on Delivery',
-    text: 'Order today, pay at your door across Pakistan',
+    text: 'Order today, pay in cash at your door',
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M2 7h13v10H2zM15 10h4l3 3v4h-7zM6.5 19.5a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6zm11 0a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -576,7 +576,7 @@ function ContactSection() {
                 <div className="contact-dot" />
                 <div>
                   <strong>Orders</strong>
-                  <span>Cash on delivery available across Pakistan</span>
+                  <span>Cash on delivery — pay when your order arrives</span>
                 </div>
               </div>
             </div>
@@ -654,7 +654,7 @@ export default function App() {
       <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
         <a className="brand" href="#top">
           <Leaf />
-          <span>FreshLeaf</span>
+          <span>freshleaf</span>
         </a>
         <button
           className="menu-toggle"
@@ -686,10 +686,7 @@ export default function App() {
       </main>
 
       <footer className="site-footer">
-        <div className="brand">
-          <Leaf />
-          <span>FreshLeaf</span>
-        </div>
+        <img className="footer-logo" src="/logo.jpg" alt="freshleaf" />
         <p>Naturally crafted. Beautifully scented. Thoughtfully made.</p>
         <p className="fine">© {new Date().getFullYear()} FreshLeaf. All rights reserved.</p>
       </footer>

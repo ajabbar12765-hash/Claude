@@ -25,6 +25,7 @@ body {
   line-height: 1.65;
   font-weight: 300;
   overflow-x: hidden;
+  touch-action: pan-x pan-y;
 }
 
 h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dark); }
@@ -758,9 +759,14 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
   gap: 0.5rem;
 }
 
-.site-footer .brand { color: var(--cream); font-size: 1.4rem; }
-.site-footer .leaf-mark { color: var(--green-soft); }
 .site-footer .fine { font-size: 0.8rem; opacity: 0.6; }
+
+/* The logo art sits on its own dark green; lighten-blend melts it into the footer. */
+.footer-logo {
+  width: min(72vw, 280px);
+  mix-blend-mode: lighten;
+  margin-bottom: 0.4rem;
+}
 
 /* ---------- mobile ---------- */
 
