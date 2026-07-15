@@ -19,35 +19,35 @@ const PRODUCTS = [
     name: 'Citrus Fresh',
     tagline: 'Essential oils of orange, lemon, peppermint & bergamot',
     price: null,
-    image: '/products/citrus-fresh.webp',
+    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/citrus-fresh.webp',
   },
   {
     id: 'morning-zest',
     name: 'Morning Zest',
     tagline: 'Essential oils of eucalyptus, lemon & peppermint',
     price: null,
-    image: '/products/morning-zest.webp',
+    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/morning-zest.webp',
   },
   {
     id: 'spiced-orange',
     name: 'Spiced Orange',
     tagline: 'Essential oils of clove, ginger, orange & cinnamon',
     price: null,
-    image: '/products/spiced-orange.webp',
+    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/spiced-orange.webp',
   },
   {
     id: 'floral-fantasy',
     name: 'Floral Fantasy',
     tagline: 'Essential oils of ylang ylang, rose, jasmine & geranium',
     price: null,
-    image: '/products/floral-fantasy.webp',
+    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/floral-fantasy.webp',
   },
   {
     id: 'pure',
     name: 'Pure',
     tagline: 'Essential oils of tea tree, eucalyptus, peppermint & lemon',
     price: null,
-    image: '/products/pure.webp',
+    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/pure.webp',
   },
 ];
 
@@ -701,7 +701,7 @@ export default function App() {
       </main>
 
       <footer className="site-footer">
-        <img className="footer-logo" src="/logo.jpg" alt="freshleaf" />
+        <img className="footer-logo" src="https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/logo.jpg" alt="freshleaf" />
         <p>Naturally crafted. Beautifully scented. Thoughtfully made.</p>
         <p className="fine">© {new Date().getFullYear()} FreshLeaf. All rights reserved.</p>
       </footer>
