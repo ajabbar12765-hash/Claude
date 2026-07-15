@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import Bottle3D from './Bottle3D.jsx';
 import './App.css';
 
 // Contact form submissions are emailed via Web3Forms (free, no backend).
@@ -38,10 +39,16 @@ const PRODUCTS = [
 
 /* ---------- animation helpers ---------- */
 
-function useInView(threshold = 0.15) {
+function useInView(threshold = 0.15, eager = false) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
+    if (eager || !('IntersectionObserver' in window)) {
+      // Above-the-fold content (and old browsers) must never wait on an
+      // observer callback — a busy main thread can starve those.
+      const t = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(t);
+    }
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -55,12 +62,12 @@ function useInView(threshold = 0.15) {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [threshold]);
+  }, [threshold, eager]);
   return [ref, visible];
 }
 
-function Reveal({ children, delay = 0, className = '' }) {
-  const [ref, visible] = useInView();
+function Reveal({ children, delay = 0, className = '', eager = false }) {
+  const [ref, visible] = useInView(0.15, eager);
   return (
     <div
       ref={ref}
@@ -137,35 +144,98 @@ function Hero() {
       <div className="float-leaf fl-3" aria-hidden="true"><Leaf /></div>
       <div className="float-leaf fl-4" aria-hidden="true"><Leaf /></div>
 
-      <div className="hero-content">
-        <Reveal>
-          <p className="eyebrow">Premium Home Fragrance</p>
-        </Reveal>
-        <Reveal delay={120}>
-          <h1>
-            Spaces that feel fresh,
-            <br />
-            <em>naturally.</em>
-          </h1>
-        </Reveal>
-        <Reveal delay={240}>
-          <p className="hero-sub">
-            Room sprays and car fresheners crafted with pure essential oils — no harsh
-            chemicals, just nature's finest scents.
-          </p>
-        </Reveal>
-        <Reveal delay={360}>
-          <div className="hero-actions">
-            <a className="btn btn-primary" href="#order">Order Now</a>
-            <a className="btn btn-outline" href="#about">Our Story</a>
-          </div>
-        </Reveal>
-        <Reveal delay={520}>
-          <p className="hero-tagline">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+      <div className="hero-grid">
+        <div className="hero-content">
+          <Reveal eager>
+            <p className="eyebrow">Premium Home Fragrance</p>
+          </Reveal>
+          <Reveal eager delay={120}>
+            <h1>
+              Spaces that feel fresh,
+              <br />
+              <em>naturally.</em>
+            </h1>
+          </Reveal>
+          <Reveal eager delay={240}>
+            <p className="hero-sub">
+              Room sprays and car fresheners crafted with pure essential oils — no harsh
+              chemicals, just nature's finest scents.
+            </p>
+          </Reveal>
+          <Reveal eager delay={360}>
+            <div className="hero-actions">
+              <a className="btn btn-primary" href="#order">Order Now</a>
+              <a className="btn btn-outline" href="#about">Our Story</a>
+            </div>
+          </Reveal>
+          <Reveal eager delay={520}>
+            <p className="hero-tagline">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+          </Reveal>
+        </div>
+        <Reveal eager delay={300} className="hero-visual">
+          <Bottle3D />
+          <p className="drag-hint">Drag the bottle to spin it</p>
         </Reveal>
       </div>
       <div className="hero-scroll" aria-hidden="true">
         <span />
+      </div>
+    </section>
+  );
+}
+
+const FEATURES = [
+  {
+    title: 'Pure Essential Oils',
+    text: "Nature's finest scents, thoughtfully blended",
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2c4 5 7 8.6 7 12.5A7 7 0 0 1 5 14.5C5 10.6 8 7 12 2z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Handcrafted with Care',
+    text: 'Small batches, careful formulation, elegant design',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21s-7-4.6-9.3-8.7C1 9.1 2.6 5.7 6 5.3c2-.2 3.6.8 4.6 2.3.5.8 1.4.8 1.9 0 1-1.5 2.6-2.5 4.6-2.3 3.4.4 5 3.8 3.3 7C19 16.4 12 21 12 21z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Home · Car · Workspace',
+    text: 'One fresh feeling for every space you love',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 11.5 12 4l9 7.5M5.5 9.8V20h13V9.8" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Cash on Delivery',
+    text: 'Order today, pay at your door across Pakistan',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M2 7h13v10H2zM15 10h4l3 3v4h-7zM6.5 19.5a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6zm11 0a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+];
+
+function Features() {
+  return (
+    <section className="features" aria-label="Why FreshLeaf">
+      <div className="features-inner">
+        {FEATURES.map((f, i) => (
+          <Reveal key={f.title} delay={i * 120}>
+            <div className="feature-card">
+              <div className="feature-icon">{f.icon}</div>
+              <strong>{f.title}</strong>
+              <span>{f.text}</span>
+            </div>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
@@ -608,6 +678,7 @@ export default function App() {
 
       <main id="top">
         <Hero />
+        <Features />
         <About />
         <Products />
         <OrderSection />
