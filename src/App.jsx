@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 // Contact form submissions are emailed via Web3Forms (free, no backend).
@@ -36,6 +36,72 @@ const PRODUCTS = [
   },
 ];
 
+/* ---------- animation helpers ---------- */
+
+function useInView(threshold = 0.15) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          io.disconnect();
+        }
+      },
+      { threshold }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [threshold]);
+  return [ref, visible];
+}
+
+function Reveal({ children, delay = 0, className = '' }) {
+  const [ref, visible] = useInView();
+  return (
+    <div
+      ref={ref}
+      className={`reveal${visible ? ' visible' : ''} ${className}`}
+      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+    >
+      {children}
+    </div>
+  );
+}
+
+// 3D tilt that follows the cursor; resets on leave, inert on touch devices.
+function TiltCard({ children, className = '', pop = false }) {
+  const ref = useRef(null);
+
+  function onMove(e) {
+    const el = ref.current;
+    if (!el || window.matchMedia('(pointer: coarse)').matches) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transform = `perspective(900px) rotateY(${px * 10}deg) rotateX(${py * -10}deg) translateZ(6px)`;
+  }
+
+  function onLeave() {
+    const el = ref.current;
+    if (el) el.style.transform = '';
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={`tilt${pop ? ' tilt-pop' : ''} ${className}`}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+    >
+      {children}
+    </div>
+  );
+}
+
 function Leaf() {
   return (
     <svg className="leaf-mark" viewBox="0 0 32 32" aria-hidden="true">
@@ -44,6 +110,139 @@ function Leaf() {
         fill="currentColor"
       />
     </svg>
+  );
+}
+
+/* ---------- sections ---------- */
+
+function Hero() {
+  const ref = useRef(null);
+
+  // Mouse parallax: layers read --mx/--my and drift at different depths.
+  function onMove(e) {
+    const el = ref.current;
+    if (!el || window.matchMedia('(pointer: coarse)').matches) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', String((e.clientX - r.left) / r.width - 0.5));
+    el.style.setProperty('--my', String((e.clientY - r.top) / r.height - 0.5));
+  }
+
+  return (
+    <section className="hero" ref={ref} onMouseMove={onMove}>
+      <div className="orb orb-a" aria-hidden="true" />
+      <div className="orb orb-b" aria-hidden="true" />
+      <div className="orb orb-c" aria-hidden="true" />
+      <div className="float-leaf fl-1" aria-hidden="true"><Leaf /></div>
+      <div className="float-leaf fl-2" aria-hidden="true"><Leaf /></div>
+      <div className="float-leaf fl-3" aria-hidden="true"><Leaf /></div>
+      <div className="float-leaf fl-4" aria-hidden="true"><Leaf /></div>
+
+      <div className="hero-content">
+        <Reveal>
+          <p className="eyebrow">Premium Home Fragrance</p>
+        </Reveal>
+        <Reveal delay={120}>
+          <h1>
+            Spaces that feel fresh,
+            <br />
+            <em>naturally.</em>
+          </h1>
+        </Reveal>
+        <Reveal delay={240}>
+          <p className="hero-sub">
+            Room sprays and car fresheners crafted with pure essential oils — no harsh
+            chemicals, just nature's finest scents.
+          </p>
+        </Reveal>
+        <Reveal delay={360}>
+          <div className="hero-actions">
+            <a className="btn btn-primary" href="#order">Order Now</a>
+            <a className="btn btn-outline" href="#about">Our Story</a>
+          </div>
+        </Reveal>
+        <Reveal delay={520}>
+          <p className="hero-tagline">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+        </Reveal>
+      </div>
+      <div className="hero-scroll" aria-hidden="true">
+        <span />
+      </div>
+    </section>
+  );
+}
+
+function About() {
+  return (
+    <section id="about" className="section about">
+      <div className="about-glow" aria-hidden="true" />
+      <Reveal>
+        <p className="eyebrow">About Us</p>
+        <h2>Introduction</h2>
+      </Reveal>
+      <Reveal delay={100}>
+        <div className="prose card-glass">
+          <p>Imagine walking into a space that instantly feels fresh, peaceful, and inviting.</p>
+          <p>
+            That's the experience FreshLeaf was created to deliver. We craft premium home
+            fragrance products using pure essential oils, blending nature's finest scents
+            into elegant products that elevate your surroundings. Whether it's your home,
+            your car, or your workspace, FreshLeaf transforms ordinary spaces into places
+            you'll love to be.
+          </p>
+          <p className="tagline-line">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+        </div>
+      </Reveal>
+
+      <Reveal>
+        <h2 className="story-heading">Our Story</h2>
+      </Reveal>
+      <Reveal delay={100}>
+        <div className="prose">
+          <p>Every great journey begins with a simple question.</p>
+          <p>
+            For us, it was: <em>Why should creating a beautifully scented home mean filling
+            it with harsh chemicals?</em>
+          </p>
+          <p>
+            We loved the feeling of walking into a fresh, inviting space, but we couldn't
+            find home fragrance products that combined elegant scents with ingredients we
+            felt good about using every day. Too often, they relied on overpowering
+            synthetic fragrances and alcohol, that didn't reflect the natural, calming
+            atmosphere we wanted to create.
+          </p>
+          <p>That question became the inspiration behind FreshLeaf.</p>
+          <p>
+            FreshLeaf was founded with a simple purpose—to bring nature-inspired fragrances
+            into everyday spaces through thoughtfully handcrafted products. Every room
+            spray, car freshener, and home fragrance is created with care, using carefully
+            selected essential oils and quality ingredients to deliver scents that are
+            refreshing, comforting, and memorable.
+          </p>
+          <p>
+            We believe fragrance is more than just a pleasant aroma. It has the power to
+            brighten your mood, create a sense of calm, welcome guests, and turn ordinary
+            moments into meaningful experiences. Whether you're starting your morning with
+            an uplifting citrus blend, unwinding after a long day, or adding a touch of
+            freshness to your car or workspace, FreshLeaf is designed to become part of
+            those everyday rituals.
+          </p>
+          <p>
+            Our commitment goes beyond creating beautiful fragrances. We are passionate
+            about craftsmanship, quality, and creating products that are as elegant as they
+            are enjoyable to use. Every bottle reflects our dedication to thoughtful
+            design, careful formulation, and attention to detail.
+          </p>
+          <p>
+            As FreshLeaf continues to grow, our mission remains unchanged: to help people
+            create spaces that feel fresh, peaceful, and welcoming—naturally.
+          </p>
+          <p>
+            Thank you for being part of our story. We invite you to discover the fragrances
+            that make every space feel a little more like home.
+          </p>
+        </div>
+      </Reveal>
+    </section>
   );
 }
 
@@ -56,6 +255,34 @@ function ProductImage({ product }) {
       <Leaf />
       <span>Product photo coming soon</span>
     </div>
+  );
+}
+
+function Products() {
+  return (
+    <section id="products" className="section-wide products">
+      <div className="products-inner">
+        <Reveal>
+          <p className="eyebrow">Our Sprays</p>
+          <h2>See the product before you buy</h2>
+        </Reveal>
+        <div className="product-grid">
+          {PRODUCTS.map((p, i) => (
+            <Reveal key={p.id} delay={i * 140}>
+              <TiltCard className="product-card" pop>
+                <ProductImage product={p} />
+                <h3>{p.name}</h3>
+                <p>{p.tagline}</p>
+                <div className="product-foot">
+                  <span className="price">{p.price}</span>
+                  <a className="btn btn-small" href="#order">Order</a>
+                </div>
+              </TiltCard>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -162,7 +389,7 @@ function OrderForm() {
         <textarea name="notes" rows="2" placeholder="Preferred scent, delivery instructions…" />
       </label>
 
-      <div className="pay-option selected cod-note">
+      <div className="cod-note">
         <div>
           <strong>Payment: Cash on Delivery</strong>
           <span>
@@ -186,6 +413,24 @@ function OrderForm() {
         order directly by calling {CONTACT.phone}.
       </p>
     </form>
+  );
+}
+
+function OrderSection() {
+  return (
+    <section id="order" className="section order">
+      <Reveal>
+        <p className="eyebrow">Place an Order</p>
+        <h2>Order your sprays</h2>
+        <p className="section-sub">
+          Fill in your details below and we'll deliver to your door — pay in cash when
+          your order arrives.
+        </p>
+      </Reveal>
+      <Reveal delay={150}>
+        <OrderForm />
+      </Reveal>
+    </section>
   );
 }
 
@@ -226,84 +471,91 @@ function ContactSection() {
 
   return (
     <section id="contact" className="section-dark contact">
+      <div className="contact-orb" aria-hidden="true" />
       <div className="contact-inner">
-        <div className="contact-head">
-          <p className="eyebrow light">Contact Us</p>
-          <h2>We'd love to hear from you</h2>
-          <p className="contact-sub">
-            Questions about our fragrances, your order, or anything else — send us a
-            message and we'll get back to you shortly.
-          </p>
-        </div>
-        <div className="contact-grid">
-          <div className="contact-info">
-            <div className="contact-item">
-              <div className="contact-dot" />
-              <div>
-                <strong>Call or WhatsApp</strong>
-                <a href={`tel:+92${CONTACT.phone.replace(/[^0-9]/g, '').replace(/^0/, '')}`}>
-                  {CONTACT.phone}
-                </a>
-              </div>
-            </div>
-            <div className="contact-item">
-              <div className="contact-dot" />
-              <div>
-                <strong>Email</strong>
-                <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-              </div>
-            </div>
-            <div className="contact-item">
-              <div className="contact-dot" />
-              <div>
-                <strong>Orders</strong>
-                <span>Cash on delivery available across Pakistan</span>
-              </div>
-            </div>
+        <Reveal>
+          <div className="contact-head">
+            <p className="eyebrow light">Contact Us</p>
+            <h2>We'd love to hear from you</h2>
+            <p className="contact-sub">
+              Questions about our fragrances, your order, or anything else — send us a
+              message and we'll get back to you shortly.
+            </p>
           </div>
-          <form className="contact-form" onSubmit={onSubmit}>
-            {sent ? (
-              <div className="form-success">
-                <div className="form-check">✓</div>
-                <h3>Message Received</h3>
-                <p>Thank you for reaching out. We'll be in touch shortly.</p>
+        </Reveal>
+        <div className="contact-grid">
+          <Reveal delay={100}>
+            <div className="contact-info">
+              <div className="contact-item">
+                <div className="contact-dot" />
+                <div>
+                  <strong>Call or WhatsApp</strong>
+                  <a href={`tel:+92${CONTACT.phone.replace(/[^0-9]/g, '').replace(/^0/, '')}`}>
+                    {CONTACT.phone}
+                  </a>
+                </div>
               </div>
-            ) : (
-              <>
-                <input
-                  name="name"
-                  placeholder="Full Name"
-                  value={form.name}
-                  onChange={onChange}
-                  required
-                />
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="Email Address"
-                  value={form.email}
-                  onChange={onChange}
-                  required
-                />
-                <textarea
-                  name="message"
-                  placeholder="How can we help you?"
-                  rows={5}
-                  value={form.message}
-                  onChange={onChange}
-                  required
-                />
-                <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
-                  {status === 'sending' ? 'Sending…' : 'Send Message'}
-                </button>
-                {status === 'error' && (
-                  <p className="form-error">
-                    Something went wrong. Please try again, or email us directly at {CONTACT.email}.
-                  </p>
-                )}
-              </>
-            )}
-          </form>
+              <div className="contact-item">
+                <div className="contact-dot" />
+                <div>
+                  <strong>Email</strong>
+                  <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+                </div>
+              </div>
+              <div className="contact-item">
+                <div className="contact-dot" />
+                <div>
+                  <strong>Orders</strong>
+                  <span>Cash on delivery available across Pakistan</span>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+          <Reveal delay={220}>
+            <form className="contact-form" onSubmit={onSubmit}>
+              {sent ? (
+                <div className="form-success">
+                  <div className="form-check">✓</div>
+                  <h3>Message Received</h3>
+                  <p>Thank you for reaching out. We'll be in touch shortly.</p>
+                </div>
+              ) : (
+                <>
+                  <input
+                    name="name"
+                    placeholder="Full Name"
+                    value={form.name}
+                    onChange={onChange}
+                    required
+                  />
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="Email Address"
+                    value={form.email}
+                    onChange={onChange}
+                    required
+                  />
+                  <textarea
+                    name="message"
+                    placeholder="How can we help you?"
+                    rows={5}
+                    value={form.message}
+                    onChange={onChange}
+                    required
+                  />
+                  <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
+                    {status === 'sending' ? 'Sending…' : 'Send Message'}
+                  </button>
+                  {status === 'error' && (
+                    <p className="form-error">
+                      Something went wrong. Please try again, or email us directly at {CONTACT.email}.
+                    </p>
+                  )}
+                </>
+              )}
+            </form>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -312,6 +564,13 @@ function ContactSection() {
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const navLinks = [
     ['#about', 'About Us'],
@@ -322,7 +581,7 @@ export default function App() {
 
   return (
     <>
-      <header className="site-header">
+      <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
         <a className="brand" href="#top">
           <Leaf />
           <span>FreshLeaf</span>
@@ -348,119 +607,10 @@ export default function App() {
       </header>
 
       <main id="top">
-        {/* Hero */}
-        <section className="hero">
-          <p className="eyebrow">Premium Home Fragrance</p>
-          <h1>
-            Spaces that feel fresh,
-            <br />
-            <em>naturally.</em>
-          </h1>
-          <p className="hero-sub">
-            Room sprays and car fresheners crafted with pure essential oils — no harsh
-            chemicals, just nature's finest scents.
-          </p>
-          <div className="hero-actions">
-            <a className="btn btn-primary" href="#order">Order Now</a>
-            <a className="btn btn-outline" href="#about">Our Story</a>
-          </div>
-          <p className="hero-tagline">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
-        </section>
-
-        {/* About Us */}
-        <section id="about" className="section">
-          <p className="eyebrow">About Us</p>
-          <h2>Introduction</h2>
-          <div className="prose">
-            <p>Imagine walking into a space that instantly feels fresh, peaceful, and inviting.</p>
-            <p>
-              That's the experience FreshLeaf was created to deliver. We craft premium home
-              fragrance products using pure essential oils, blending nature's finest scents
-              into elegant products that elevate your surroundings. Whether it's your home,
-              your car, or your workspace, FreshLeaf transforms ordinary spaces into places
-              you'll love to be.
-            </p>
-            <p className="tagline-line">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
-          </div>
-
-          <h2 className="story-heading">Our Story</h2>
-          <div className="prose">
-            <p>Every great journey begins with a simple question.</p>
-            <p>
-              For us, it was: <em>Why should creating a beautifully scented home mean filling
-              it with harsh chemicals?</em>
-            </p>
-            <p>
-              We loved the feeling of walking into a fresh, inviting space, but we couldn't
-              find home fragrance products that combined elegant scents with ingredients we
-              felt good about using every day. Too often, they relied on overpowering
-              synthetic fragrances and alcohol, that didn't reflect the natural, calming
-              atmosphere we wanted to create.
-            </p>
-            <p>That question became the inspiration behind FreshLeaf.</p>
-            <p>
-              FreshLeaf was founded with a simple purpose—to bring nature-inspired fragrances
-              into everyday spaces through thoughtfully handcrafted products. Every room
-              spray, car freshener, and home fragrance is created with care, using carefully
-              selected essential oils and quality ingredients to deliver scents that are
-              refreshing, comforting, and memorable.
-            </p>
-            <p>
-              We believe fragrance is more than just a pleasant aroma. It has the power to
-              brighten your mood, create a sense of calm, welcome guests, and turn ordinary
-              moments into meaningful experiences. Whether you're starting your morning with
-              an uplifting citrus blend, unwinding after a long day, or adding a touch of
-              freshness to your car or workspace, FreshLeaf is designed to become part of
-              those everyday rituals.
-            </p>
-            <p>
-              Our commitment goes beyond creating beautiful fragrances. We are passionate
-              about craftsmanship, quality, and creating products that are as elegant as they
-              are enjoyable to use. Every bottle reflects our dedication to thoughtful
-              design, careful formulation, and attention to detail.
-            </p>
-            <p>
-              As FreshLeaf continues to grow, our mission remains unchanged: to help people
-              create spaces that feel fresh, peaceful, and welcoming—naturally.
-            </p>
-            <p>
-              Thank you for being part of our story. We invite you to discover the fragrances
-              that make every space feel a little more like home.
-            </p>
-          </div>
-        </section>
-
-        {/* Products */}
-        <section id="products" className="section section-alt">
-          <p className="eyebrow">Our Sprays</p>
-          <h2>See the product before you buy</h2>
-          <div className="product-grid">
-            {PRODUCTS.map((p) => (
-              <article key={p.id} className="product-card">
-                <ProductImage product={p} />
-                <h3>{p.name}</h3>
-                <p>{p.tagline}</p>
-                <div className="product-foot">
-                  <span className="price">{p.price}</span>
-                  <a className="btn btn-small" href="#order">Order</a>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* Order */}
-        <section id="order" className="section">
-          <p className="eyebrow">Place an Order</p>
-          <h2>Order your sprays</h2>
-          <p className="section-sub">
-            Fill in your details below and we'll deliver to your door — pay in cash when
-            your order arrives.
-          </p>
-          <OrderForm />
-        </section>
-
-        {/* Contact */}
+        <Hero />
+        <About />
+        <Products />
+        <OrderSection />
         <ContactSection />
       </main>
 
