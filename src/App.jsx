@@ -165,7 +165,7 @@ function Leaf() {
 
 /* ---------- shared pieces ---------- */
 
-function ProductCard({ p, delay = 0 }) {
+function ProductCard({ p, delay = 0, onOrder }) {
   return (
     <Reveal delay={delay}>
       <TiltCard className="product-card" pop>
@@ -177,7 +177,7 @@ function ProductCard({ p, delay = 0 }) {
           <div><span>100 ml</span><strong>{rs(p.prices['100ml'])}</strong></div>
         </div>
         <div className="product-foot">
-          <Link className="btn btn-small" to={`/order?product=${p.id}`}>Order</Link>
+          <button className="btn btn-small" onClick={() => onOrder(p.id)}>Order</button>
         </div>
       </TiltCard>
     </Reveal>
@@ -378,32 +378,7 @@ function AboutPage() {
   );
 }
 
-function ProductsPage() {
-  return (
-    <section className="section-wide page-top">
-      <div className="products-inner">
-        <Reveal eager>
-          <p className="eyebrow">Our Sprays</p>
-          <h2>See the product before you buy</h2>
-          <p className="section-sub">Room &amp; linen sprays in 250&nbsp;ml and 100&nbsp;ml, made with 100% essential oils and no chemicals.</p>
-        </Reveal>
-        <div className="product-grid">
-          {PRODUCTS.map((p, i) => (
-            <ProductCard key={p.id} p={p} delay={i * 100} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function OrderForm() {
-  const params = new URLSearchParams(window.location.search);
-  const preselect = PRODUCTS.some((p) => p.id === params.get('product'))
-    ? params.get('product')
-    : PRODUCTS[0].id;
-
-  const [productId, setProductId] = useState(preselect);
+function OrderForm({ productId, setProductId }) {
   const [size, setSize] = useState('250ml');
   const [qty, setQty] = useState(1);
   const [status, setStatus] = useState('idle'); // idle | sending | error
@@ -559,21 +534,57 @@ function OrderForm() {
   );
 }
 
-function OrderPage() {
+function SpraysPage() {
+  const [productId, setProductId] = useState(() => {
+    const q = new URLSearchParams(window.location.search).get('product');
+    return PRODUCTS.some((p) => p.id === q) ? q : PRODUCTS[0].id;
+  });
+  const formRef = useRef(null);
+
+  useEffect(() => {
+    const wantsForm = window.location.pathname === '/order'
+      || new URLSearchParams(window.location.search).has('product');
+    if (wantsForm && formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
+
+  function orderProduct(id) {
+    setProductId(id);
+    if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   return (
-    <section className="section page-top">
-      <Reveal eager>
-        <p className="eyebrow">Place an Order</p>
-        <h2>Order your sprays</h2>
-        <p className="section-sub">
-          Choose your spray and size below — we'll deliver to your door and you pay in
-          cash when your order arrives.
-        </p>
-      </Reveal>
-      <Reveal eager delay={150}>
-        <OrderForm />
-      </Reveal>
-    </section>
+    <>
+      <section className="section-wide page-top">
+        <div className="products-inner">
+          <Reveal eager>
+            <p className="eyebrow">Our Sprays</p>
+            <h2>See the product before you buy</h2>
+            <p className="section-sub">Room &amp; linen sprays in 250&nbsp;ml and 100&nbsp;ml, made with 100% essential oils and no chemicals. Pick a spray to order it below.</p>
+          </Reveal>
+          <div className="product-grid">
+            {PRODUCTS.map((p, i) => (
+              <ProductCard key={p.id} p={p} delay={i * 100} onOrder={orderProduct} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section" ref={formRef}>
+        <Reveal eager>
+          <p className="eyebrow">Place an Order</p>
+          <h2>Order your sprays</h2>
+          <p className="section-sub">
+            Choose your spray and size below — we'll deliver to your door and you pay in
+            cash when your order arrives.
+          </p>
+        </Reveal>
+        <Reveal eager delay={150}>
+          <OrderForm productId={productId} setProductId={setProductId} />
+        </Reveal>
+      </section>
+    </>
   );
 }
 
@@ -691,15 +702,14 @@ const NAV = [
   ['/', 'Home'],
   ['/about', 'About Us'],
   ['/products', 'Our Sprays'],
-  ['/order', 'Order'],
   ['/contact', 'Contact'],
 ];
 
 const PAGES = {
   '/': HomePage,
   '/about': AboutPage,
-  '/products': ProductsPage,
-  '/order': OrderPage,
+  '/products': SpraysPage,
+  '/order': SpraysPage,
   '/contact': ContactPage,
 };
 
