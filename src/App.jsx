@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import Bottle3D from './Bottle3D.jsx';
 import './App.css';
 
@@ -11,45 +11,77 @@ const CONTACT = {
   email: 'freshleaf.essentials@gmail.com',
 };
 
-// Set `price` (e.g. 'Rs. 1,200') once prices are decided; until then the
-// cards show "price on request" and the order form lists names only.
+// Product photos and logo are served from the repo (public on GitHub),
+// pinned to the commit that contains them.
+const IMG = 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/3212e66797fca134c05f29ba25a14e29a62fd2b7/public';
+
 const PRODUCTS = [
   {
     id: 'citrus-fresh',
     name: 'Citrus Fresh',
-    tagline: 'Essential oils of orange, lemon, peppermint & bergamot',
-    price: null,
-    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/citrus-fresh.webp',
+    tagline: 'A zesty blend of orange, lemon, bergamot, and peppermint that refreshes your space with a clean, energizing burst.',
+    prices: { '250ml': 2800, '100ml': 1240 },
+    image: `${IMG}/products/citrus-fresh.webp`,
   },
   {
     id: 'morning-zest',
     name: 'Morning Zest',
-    tagline: 'Essential oils of eucalyptus, lemon & peppermint',
-    price: null,
-    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/morning-zest.webp',
+    tagline: 'A crisp, revitalizing mix of peppermint, eucalyptus, and lemon to awaken your senses.',
+    prices: { '250ml': 2700, '100ml': 1200 },
+    image: `${IMG}/products/morning-zest.webp`,
+  },
+  {
+    id: 'fresh-linen',
+    name: 'Fresh Linen',
+    tagline: 'A soft, airy blend of lavender, bergamot, eucalyptus, and a hint of orange—like fresh laundry on a breezy day.',
+    prices: { '250ml': 3300, '100ml': 1440 },
+    image: `${IMG}/products/fresh-linen.webp`,
   },
   {
     id: 'spiced-orange',
     name: 'Spiced Orange',
-    tagline: 'Essential oils of clove, ginger, orange & cinnamon',
-    price: null,
-    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/spiced-orange.webp',
+    tagline: 'A vibrant blend of orange, clove, cinnamon, and ginger—zesty and warm, with a fresh, festive spark.',
+    prices: { '250ml': 3500, '100ml': 1520 },
+    image: `${IMG}/products/spiced-orange.webp`,
   },
   {
     id: 'floral-fantasy',
     name: 'Floral Fantasy',
-    tagline: 'Essential oils of ylang ylang, rose, jasmine & geranium',
-    price: null,
-    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/floral-fantasy.webp',
+    tagline: 'A lush bouquet of ylang ylang, geranium, rose, and jasmine—soft, romantic, and mood-lifting.',
+    prices: { '250ml': 3150, '100ml': 1380 },
+    image: `${IMG}/products/floral-fantasy.webp`,
   },
   {
     id: 'pure',
     name: 'Pure',
-    tagline: 'Essential oils of tea tree, eucalyptus, peppermint & lemon',
-    price: null,
-    image: 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/products/pure.webp',
+    tagline: 'A clean, clarifying blend of tea tree, lemon, peppermint, and eucalyptus for a fresh, purifying feel.',
+    prices: { '250ml': 2650, '100ml': 1180 },
+    image: `${IMG}/products/pure.webp`,
   },
 ];
+
+const rs = (n) => `Rs. ${n.toLocaleString('en-PK')}`;
+
+/* ---------- tiny router ---------- */
+
+const NavContext = createContext(() => {});
+
+function Link({ to, className = '', children, onClick }) {
+  const navigate = useContext(NavContext);
+  return (
+    <a
+      href={to}
+      className={className}
+      onClick={(e) => {
+        e.preventDefault();
+        if (onClick) onClick();
+        navigate(to);
+      }}
+    >
+      {children}
+    </a>
+  );
+}
 
 /* ---------- animation helpers ---------- */
 
@@ -58,8 +90,6 @@ function useInView(threshold = 0.15, eager = false) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (eager || !('IntersectionObserver' in window)) {
-      // Above-the-fold content (and old browsers) must never wait on an
-      // observer callback — a busy main thread can starve those.
       const t = requestAnimationFrame(() => setVisible(true));
       return () => cancelAnimationFrame(t);
     }
@@ -93,7 +123,6 @@ function Reveal({ children, delay = 0, className = '', eager = false }) {
   );
 }
 
-// 3D tilt that follows the cursor; resets on leave, inert on touch devices.
 function TiltCard({ children, className = '', pop = false }) {
   const ref = useRef(null);
 
@@ -134,136 +163,172 @@ function Leaf() {
   );
 }
 
-/* ---------- sections ---------- */
+/* ---------- shared pieces ---------- */
 
-function Hero() {
-  const ref = useRef(null);
+function ProductCard({ p, delay = 0 }) {
+  return (
+    <Reveal delay={delay}>
+      <TiltCard className="product-card" pop>
+        <img className="product-img" src={p.image} alt={p.name} loading="lazy" />
+        <h3>{p.name}</h3>
+        <p>{p.tagline}</p>
+        <div className="price-rows">
+          <div><span>250 ml</span><strong>{rs(p.prices['250ml'])}</strong></div>
+          <div><span>100 ml</span><strong>{rs(p.prices['100ml'])}</strong></div>
+        </div>
+        <div className="product-foot">
+          <Link className="btn btn-small" to={`/order?product=${p.id}`}>Order</Link>
+        </div>
+      </TiltCard>
+    </Reveal>
+  );
+}
 
-  // Mouse parallax: layers read --mx/--my and drift at different depths.
+/* ---------- pages ---------- */
+
+function HomePage() {
+  const heroRef = useRef(null);
+
   function onMove(e) {
-    const el = ref.current;
+    const el = heroRef.current;
     if (!el || window.matchMedia('(pointer: coarse)').matches) return;
     const r = el.getBoundingClientRect();
     el.style.setProperty('--mx', String((e.clientX - r.left) / r.width - 0.5));
     el.style.setProperty('--my', String((e.clientY - r.top) / r.height - 0.5));
   }
 
-  return (
-    <section className="hero" ref={ref} onMouseMove={onMove}>
-      <div className="orb orb-a" aria-hidden="true" />
-      <div className="orb orb-b" aria-hidden="true" />
-      <div className="orb orb-c" aria-hidden="true" />
-      <div className="float-leaf fl-1" aria-hidden="true"><Leaf /></div>
-      <div className="float-leaf fl-2" aria-hidden="true"><Leaf /></div>
-      <div className="float-leaf fl-3" aria-hidden="true"><Leaf /></div>
-      <div className="float-leaf fl-4" aria-hidden="true"><Leaf /></div>
+  const features = [
+    {
+      title: 'Pure Essential Oils',
+      text: '100% essential oils, no chemicals',
+      icon: (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2c4 5 7 8.6 7 12.5A7 7 0 0 1 5 14.5C5 10.6 8 7 12 2z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Handcrafted with Care',
+      text: 'Small batches, careful formulation, elegant design',
+      icon: (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21s-7-4.6-9.3-8.7C1 9.1 2.6 5.7 6 5.3c2-.2 3.6.8 4.6 2.3.5.8 1.4.8 1.9 0 1-1.5 2.6-2.5 4.6-2.3 3.4.4 5 3.8 3.3 7C19 16.4 12 21 12 21z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Home · Car · Workspace',
+      text: 'One fresh feeling for every space you love',
+      icon: (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 11.5 12 4l9 7.5M5.5 9.8V20h13V9.8" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" />
+        </svg>
+      ),
+    },
+    {
+      title: 'Cash on Delivery',
+      text: 'Order today, pay in cash at your door',
+      icon: (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M2 7h13v10H2zM15 10h4l3 3v4h-7zM6.5 19.5a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6zm11 0a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        </svg>
+      ),
+    },
+  ];
 
-      <div className="hero-grid">
-        <div className="hero-content">
-          <Reveal eager>
-            <p className="eyebrow">Premium Home Fragrance</p>
-          </Reveal>
-          <Reveal eager delay={120}>
-            <h1>
-              Spaces that feel fresh,
-              <br />
-              <em>naturally.</em>
-            </h1>
-          </Reveal>
-          <Reveal eager delay={240}>
-            <p className="hero-sub">
-              Room sprays and car fresheners crafted with pure essential oils — no harsh
-              chemicals, just nature's finest scents.
-            </p>
-          </Reveal>
-          <Reveal eager delay={360}>
-            <div className="hero-actions">
-              <a className="btn btn-primary" href="#order">Order Now</a>
-              <a className="btn btn-outline" href="#about">Our Story</a>
-            </div>
-          </Reveal>
-          <Reveal eager delay={520}>
-            <p className="hero-tagline">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+  return (
+    <>
+      <section className="hero" ref={heroRef} onMouseMove={onMove}>
+        <div className="orb orb-a" aria-hidden="true" />
+        <div className="orb orb-b" aria-hidden="true" />
+        <div className="orb orb-c" aria-hidden="true" />
+        <div className="float-leaf fl-1" aria-hidden="true"><Leaf /></div>
+        <div className="float-leaf fl-2" aria-hidden="true"><Leaf /></div>
+        <div className="float-leaf fl-3" aria-hidden="true"><Leaf /></div>
+        <div className="float-leaf fl-4" aria-hidden="true"><Leaf /></div>
+
+        <div className="hero-grid">
+          <div className="hero-content">
+            <Reveal eager>
+              <p className="eyebrow">Premium Home Fragrance</p>
+            </Reveal>
+            <Reveal eager delay={120}>
+              <h1>
+                Spaces that feel fresh,
+                <br />
+                <em>naturally.</em>
+              </h1>
+            </Reveal>
+            <Reveal eager delay={240}>
+              <p className="hero-sub">
+                Room and linen sprays crafted with 100% essential oils — no harsh
+                chemicals, just nature's finest scents.
+              </p>
+            </Reveal>
+            <Reveal eager delay={360}>
+              <div className="hero-actions">
+                <Link className="btn btn-primary" to="/order">Order Now</Link>
+                <Link className="btn btn-outline" to="/about">Our Story</Link>
+              </div>
+            </Reveal>
+            <Reveal eager delay={520}>
+              <p className="hero-tagline">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+            </Reveal>
+          </div>
+          <Reveal eager delay={300} className="hero-visual">
+            <Bottle3D />
+            <p className="drag-hint">Drag the bottle to spin it</p>
           </Reveal>
         </div>
-        <Reveal eager delay={300} className="hero-visual">
-          <Bottle3D />
-          <p className="drag-hint">Drag the bottle to spin it</p>
-        </Reveal>
-      </div>
-      <div className="hero-scroll" aria-hidden="true">
-        <span />
-      </div>
-    </section>
-  );
-}
+        <div className="hero-scroll" aria-hidden="true">
+          <span />
+        </div>
+      </section>
 
-const FEATURES = [
-  {
-    title: 'Pure Essential Oils',
-    text: "Nature's finest scents, thoughtfully blended",
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 2c4 5 7 8.6 7 12.5A7 7 0 0 1 5 14.5C5 10.6 8 7 12 2z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Handcrafted with Care',
-    text: 'Small batches, careful formulation, elegant design',
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 21s-7-4.6-9.3-8.7C1 9.1 2.6 5.7 6 5.3c2-.2 3.6.8 4.6 2.3.5.8 1.4.8 1.9 0 1-1.5 2.6-2.5 4.6-2.3 3.4.4 5 3.8 3.3 7C19 16.4 12 21 12 21z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Home · Car · Workspace',
-    text: 'One fresh feeling for every space you love',
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M3 11.5 12 4l9 7.5M5.5 9.8V20h13V9.8" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Cash on Delivery',
-    text: 'Order today, pay in cash at your door',
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M2 7h13v10H2zM15 10h4l3 3v4h-7zM6.5 19.5a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6zm11 0a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-];
+      <section className="features" aria-label="Why FreshLeaf">
+        <div className="features-inner">
+          {features.map((f, i) => (
+            <Reveal key={f.title} delay={i * 120}>
+              <div className="feature-card">
+                <div className="feature-icon">{f.icon}</div>
+                <strong>{f.title}</strong>
+                <span>{f.text}</span>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
-function Features() {
-  return (
-    <section className="features" aria-label="Why FreshLeaf">
-      <div className="features-inner">
-        {FEATURES.map((f, i) => (
-          <Reveal key={f.title} delay={i * 120}>
-            <div className="feature-card">
-              <div className="feature-icon">{f.icon}</div>
-              <strong>{f.title}</strong>
-              <span>{f.text}</span>
-            </div>
+      <section className="section-wide">
+        <div className="products-inner">
+          <Reveal>
+            <p className="eyebrow">Our Sprays</p>
+            <h2>The collection</h2>
+            <p className="section-sub">Room &amp; linen sprays in 250&nbsp;ml and 100&nbsp;ml, made with 100% essential oils.</p>
           </Reveal>
-        ))}
-      </div>
-    </section>
+          <div className="product-grid">
+            {PRODUCTS.slice(0, 3).map((p, i) => (
+              <ProductCard key={p.id} p={p} delay={i * 120} />
+            ))}
+          </div>
+          <Reveal className="preview-cta">
+            <Link className="btn btn-primary" to="/products">View all six sprays</Link>
+          </Reveal>
+        </div>
+      </section>
+    </>
   );
 }
 
-function About() {
+function AboutPage() {
   return (
-    <section id="about" className="section about">
+    <section className="section about page-top">
       <div className="about-glow" aria-hidden="true" />
-      <Reveal>
+      <Reveal eager>
         <p className="eyebrow">About Us</p>
         <h2>Introduction</h2>
       </Reveal>
-      <Reveal delay={100}>
+      <Reveal eager delay={120}>
         <div className="prose card-glass">
           <p>Imagine walking into a space that instantly feels fresh, peaceful, and inviting.</p>
           <p>
@@ -330,40 +395,18 @@ function About() {
   );
 }
 
-function ProductImage({ product }) {
-  if (product.image) {
-    return <img className="product-img" src={product.image} alt={product.name} />;
-  }
+function ProductsPage() {
   return (
-    <div className="product-img placeholder" role="img" aria-label={`${product.name} photo coming soon`}>
-      <Leaf />
-      <span>Product photo coming soon</span>
-    </div>
-  );
-}
-
-function Products() {
-  return (
-    <section id="products" className="section-wide products">
+    <section className="section-wide page-top">
       <div className="products-inner">
-        <Reveal>
+        <Reveal eager>
           <p className="eyebrow">Our Sprays</p>
           <h2>See the product before you buy</h2>
-          <p className="section-sub">Room &amp; linen sprays, 250&nbsp;ml, made with 100% essential oils.</p>
+          <p className="section-sub">Room &amp; linen sprays in 250&nbsp;ml and 100&nbsp;ml, made with 100% essential oils and no chemicals.</p>
         </Reveal>
         <div className="product-grid">
           {PRODUCTS.map((p, i) => (
-            <Reveal key={p.id} delay={i * 120}>
-              <TiltCard className="product-card" pop>
-                <ProductImage product={p} />
-                <h3>{p.name}</h3>
-                <p>{p.tagline}</p>
-                <div className="product-foot">
-                  <span className="price">{p.price ?? '250 ml'}</span>
-                  <a className="btn btn-small" href="#order">Order</a>
-                </div>
-              </TiltCard>
-            </Reveal>
+            <ProductCard key={p.id} p={p} delay={i * 100} />
           ))}
         </div>
       </div>
@@ -372,14 +415,25 @@ function Products() {
 }
 
 function OrderForm() {
+  const params = new URLSearchParams(window.location.search);
+  const preselect = PRODUCTS.some((p) => p.id === params.get('product'))
+    ? params.get('product')
+    : PRODUCTS[0].id;
+
+  const [productId, setProductId] = useState(preselect);
+  const [size, setSize] = useState('250ml');
+  const [qty, setQty] = useState(1);
   const [status, setStatus] = useState('idle'); // idle | sending | error
-  const [placed, setPlaced] = useState(null); // { name, phone } after success
+  const [placed, setPlaced] = useState(null); // { phone } after success
+
+  const product = PRODUCTS.find((p) => p.id === productId);
+  const unit = product.prices[size];
+  const total = unit * Math.max(1, qty || 1);
 
   async function handleSubmit(e) {
     e.preventDefault();
     const formEl = e.target;
     const data = new FormData(formEl);
-    const product = PRODUCTS.find((p) => p.id === data.get('product'));
     setStatus('sending');
     try {
       const res = await fetch('https://api.web3forms.com/submit', {
@@ -387,12 +441,15 @@ function OrderForm() {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
           access_key: WEB3FORMS_KEY,
-          subject: `New FreshLeaf Order — ${data.get('name')}`,
+          subject: `New FreshLeaf Order — ${data.get('name')} (${rs(total)})`,
           from_name: 'FreshLeaf Website',
           replyto: data.get('email') || undefined,
           'Order type': 'Cash on Delivery',
-          Product: product ? `${product.name}${product.price ? ` (${product.price})` : ''}` : data.get('product'),
-          Quantity: data.get('quantity'),
+          Product: product.name,
+          Size: size,
+          Quantity: String(qty),
+          'Unit price': rs(unit),
+          Total: rs(total),
           'Customer name': data.get('name'),
           Phone: data.get('phone'),
           Email: data.get('email') || 'Not provided',
@@ -402,9 +459,8 @@ function OrderForm() {
       });
       const result = await res.json();
       if (result.success) {
-        setPlaced({ name: data.get('name'), phone: data.get('phone') });
+        setPlaced({ phone: data.get('phone') });
         setStatus('idle');
-        formEl.reset();
       } else {
         setStatus('error');
       }
@@ -434,35 +490,50 @@ function OrderForm() {
       <div className="form-row">
         <label>
           Product
-          <select name="product" required defaultValue={PRODUCTS[0].id}>
+          <select name="product" value={productId} onChange={(e) => setProductId(e.target.value)}>
             {PRODUCTS.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}{p.price ? ` — ${p.price}` : ''}
-              </option>
+              <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
         </label>
         <label>
-          Quantity
-          <input type="number" name="quantity" min="1" max="50" defaultValue="1" required />
+          Size
+          <select name="size" value={size} onChange={(e) => setSize(e.target.value)}>
+            <option value="250ml">250 ml — {rs(product.prices['250ml'])}</option>
+            <option value="100ml">100 ml — {rs(product.prices['100ml'])}</option>
+          </select>
         </label>
       </div>
 
       <div className="form-row">
         <label>
+          Quantity
+          <input
+            type="number"
+            name="quantity"
+            min="1"
+            max="50"
+            value={qty}
+            onChange={(e) => setQty(Number(e.target.value))}
+            required
+          />
+        </label>
+        <label>
           Full name
           <input type="text" name="name" placeholder="Your name" required />
         </label>
+      </div>
+
+      <div className="form-row">
         <label>
           Phone number
           <input type="tel" name="phone" placeholder="03xx-xxxxxxx" required />
         </label>
+        <label>
+          Email (optional)
+          <input type="email" name="email" placeholder="you@example.com" />
+        </label>
       </div>
-
-      <label>
-        Email (optional)
-        <input type="email" name="email" placeholder="you@example.com" />
-      </label>
 
       <label>
         Delivery address
@@ -471,7 +542,7 @@ function OrderForm() {
 
       <label>
         Notes (optional)
-        <textarea name="notes" rows="2" placeholder="Preferred scent, delivery instructions…" />
+        <textarea name="notes" rows="2" placeholder="Delivery instructions…" />
       </label>
 
       <div className="cod-note">
@@ -482,10 +553,14 @@ function OrderForm() {
             coming soon.
           </span>
         </div>
+        <div className="total-box">
+          <span>Total</span>
+          <strong>{rs(total)}</strong>
+        </div>
       </div>
 
       <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
-        {status === 'sending' ? 'Placing order…' : 'Place Order'}
+        {status === 'sending' ? 'Placing order…' : `Place Order — ${rs(total)}`}
       </button>
       {status === 'error' && (
         <p className="form-error dark-on-light">
@@ -501,28 +576,28 @@ function OrderForm() {
   );
 }
 
-function OrderSection() {
+function OrderPage() {
   return (
-    <section id="order" className="section order">
-      <Reveal>
+    <section className="section page-top">
+      <Reveal eager>
         <p className="eyebrow">Place an Order</p>
         <h2>Order your sprays</h2>
         <p className="section-sub">
-          Fill in your details below and we'll deliver to your door — pay in cash when
-          your order arrives.
+          Choose your spray and size below — we'll deliver to your door and you pay in
+          cash when your order arrives.
         </p>
       </Reveal>
-      <Reveal delay={150}>
+      <Reveal eager delay={150}>
         <OrderForm />
       </Reveal>
     </section>
   );
 }
 
-function ContactSection() {
+function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [sent, setSent] = useState(false);
-  const [status, setStatus] = useState('idle'); // idle | sending | error
+  const [status, setStatus] = useState('idle');
 
   const onChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -555,10 +630,10 @@ function ContactSection() {
   }
 
   return (
-    <section id="contact" className="section-dark contact">
+    <section className="section-dark contact page-top page-fill">
       <div className="contact-orb" aria-hidden="true" />
       <div className="contact-inner">
-        <Reveal>
+        <Reveal eager>
           <div className="contact-head">
             <p className="eyebrow light">Contact Us</p>
             <h2>We'd love to hear from you</h2>
@@ -569,7 +644,7 @@ function ContactSection() {
           </div>
         </Reveal>
         <div className="contact-grid">
-          <Reveal delay={100}>
+          <Reveal eager delay={100}>
             <div className="contact-info">
               <div className="contact-item">
                 <div className="contact-dot" />
@@ -596,7 +671,7 @@ function ContactSection() {
               </div>
             </div>
           </Reveal>
-          <Reveal delay={220}>
+          <Reveal eager delay={220}>
             <form className="contact-form" onSubmit={onSubmit}>
               {sent ? (
                 <div className="form-success">
@@ -606,29 +681,9 @@ function ContactSection() {
                 </div>
               ) : (
                 <>
-                  <input
-                    name="name"
-                    placeholder="Full Name"
-                    value={form.name}
-                    onChange={onChange}
-                    required
-                  />
-                  <input
-                    name="email"
-                    type="email"
-                    placeholder="Email Address"
-                    value={form.email}
-                    onChange={onChange}
-                    required
-                  />
-                  <textarea
-                    name="message"
-                    placeholder="How can we help you?"
-                    rows={5}
-                    value={form.message}
-                    onChange={onChange}
-                    required
-                  />
+                  <input name="name" placeholder="Full Name" value={form.name} onChange={onChange} required />
+                  <input name="email" type="email" placeholder="Email Address" value={form.email} onChange={onChange} required />
+                  <textarea name="message" placeholder="How can we help you?" rows={5} value={form.message} onChange={onChange} required />
                   <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
                     {status === 'sending' ? 'Sending…' : 'Send Message'}
                   </button>
@@ -647,9 +702,34 @@ function ContactSection() {
   );
 }
 
+/* ---------- app shell ---------- */
+
+const NAV = [
+  ['/', 'Home'],
+  ['/about', 'About Us'],
+  ['/products', 'Our Sprays'],
+  ['/order', 'Order'],
+  ['/contact', 'Contact'],
+];
+
+const PAGES = {
+  '/': HomePage,
+  '/about': AboutPage,
+  '/products': ProductsPage,
+  '/order': OrderPage,
+  '/contact': ContactPage,
+};
+
 export default function App() {
+  const [path, setPath] = useState(window.location.pathname);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onPop = () => setPath(window.location.pathname);
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -657,20 +737,20 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const navLinks = [
-    ['#about', 'About Us'],
-    ['#products', 'Our Sprays'],
-    ['#order', 'Order'],
-    ['#contact', 'Contact'],
-  ];
+  function navigate(to) {
+    window.history.pushState({}, '', to);
+    setPath(to.split('?')[0]);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  const Page = PAGES[path] || HomePage;
 
   return (
-    <>
+    <NavContext.Provider value={navigate}>
       <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
-        <a className="brand" href="#top">
-          <Leaf />
-          <span>freshleaf</span>
-        </a>
+        <Link to="/" className="brand" onClick={() => setMenuOpen(false)}>
+          <img src={`${IMG}/logo.jpg`} alt="freshleaf" className="brand-logo" />
+        </Link>
         <button
           className="menu-toggle"
           aria-label="Toggle menu"
@@ -680,31 +760,36 @@ export default function App() {
           ☰
         </button>
         <nav className={menuOpen ? 'open' : ''}>
-          {navLinks.map(([href, label]) => (
-            <a key={href} href={href} onClick={() => setMenuOpen(false)}>
+          {NAV.map(([to, label]) => (
+            <Link
+              key={to}
+              to={to}
+              className={path === to ? 'nav-active' : ''}
+              onClick={() => setMenuOpen(false)}
+            >
               {label}
-            </a>
+            </Link>
           ))}
-          <a className="btn btn-small" href="#order" onClick={() => setMenuOpen(false)}>
+          <Link className="btn btn-small" to="/order" onClick={() => setMenuOpen(false)}>
             Order Now
-          </a>
+          </Link>
         </nav>
       </header>
 
-      <main id="top">
-        <Hero />
-        <Features />
-        <About />
-        <Products />
-        <OrderSection />
-        <ContactSection />
+      <main className="page" key={path}>
+        <Page />
       </main>
 
       <footer className="site-footer">
-        <img className="footer-logo" src="https://raw.githubusercontent.com/ajabbar12765-hash/Claude/4eb6bfc95f3400169da858cefa4b4dd97f15fe5b/public/logo.jpg" alt="freshleaf" />
+        <img className="footer-logo" src={`${IMG}/logo.jpg`} alt="freshleaf" />
         <p>Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+        <nav className="footer-nav">
+          {NAV.map(([to, label]) => (
+            <Link key={to} to={to}>{label}</Link>
+          ))}
+        </nav>
         <p className="fine">© {new Date().getFullYear()} FreshLeaf. All rights reserved.</p>
       </footer>
-    </>
+    </NavContext.Provider>
   );
 }
