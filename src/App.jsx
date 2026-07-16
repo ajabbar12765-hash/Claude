@@ -62,6 +62,86 @@ const PRODUCTS = [
 
 const rs = (n) => `Rs. ${n.toLocaleString('en-PK')}`;
 
+const SIZES = ['250ml', '100ml'];
+const sizeLabel = (s) => (s === '250ml' ? '250 ml' : '100 ml');
+
+/* ---------- cart ---------- */
+
+const CartContext = createContext(null);
+const useCart = () => useContext(CartContext);
+
+// A cart line is { id, size, qty }. Lines are keyed by id + size so the same
+// scent in two sizes is two separate lines.
+function isValidLine(l) {
+  return (
+    l &&
+    PRODUCTS.some((p) => p.id === l.id) &&
+    SIZES.includes(l.size) &&
+    Number.isFinite(l.qty) &&
+    l.qty > 0
+  );
+}
+
+function CartProvider({ children }) {
+  const [items, setItems] = useState(() => {
+    try {
+      const raw = localStorage.getItem('freshleaf-cart');
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed.filter(isValidLine) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('freshleaf-cart', JSON.stringify(items));
+    } catch {
+      /* storage unavailable — cart just won't persist */
+    }
+  }, [items]);
+
+  function addItem(id, size, qty = 1) {
+    setItems((cur) => {
+      const i = cur.findIndex((it) => it.id === id && it.size === size);
+      if (i >= 0) {
+        const next = [...cur];
+        next[i] = { ...next[i], qty: Math.min(50, next[i].qty + qty) };
+        return next;
+      }
+      return [...cur, { id, size, qty: Math.min(50, qty) }];
+    });
+  }
+
+  function setQty(id, size, qty) {
+    setItems((cur) =>
+      cur
+        .map((it) => (it.id === id && it.size === size ? { ...it, qty } : it))
+        .filter((it) => it.qty > 0)
+    );
+  }
+
+  function removeItem(id, size) {
+    setItems((cur) => cur.filter((it) => !(it.id === id && it.size === size)));
+  }
+
+  function clear() {
+    setItems([]);
+  }
+
+  const count = items.reduce((n, it) => n + it.qty, 0);
+  const total = items.reduce((sum, it) => {
+    const p = PRODUCTS.find((x) => x.id === it.id);
+    return sum + (p ? p.prices[it.size] * it.qty : 0);
+  }, 0);
+
+  return (
+    <CartContext.Provider value={{ items, addItem, setQty, removeItem, clear, count, total }}>
+      {children}
+    </CartContext.Provider>
+  );
+}
+
 /* ---------- tiny router ---------- */
 
 const NavContext = createContext(() => {});
@@ -165,19 +245,45 @@ function Leaf() {
 
 /* ---------- shared pieces ---------- */
 
-function ProductCard({ p, delay = 0, onOrder }) {
+function ProductCard({ p, delay = 0 }) {
+  const { addItem } = useCart();
+  const [size, setSize] = useState('250ml');
+  const [added, setAdded] = useState(false);
+  const timer = useRef(null);
+
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  function add() {
+    addItem(p.id, size);
+    setAdded(true);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setAdded(false), 1500);
+  }
+
   return (
     <Reveal delay={delay}>
       <TiltCard className="product-card" pop>
         <img className="product-img" src={p.image} alt={p.name} loading="lazy" />
         <h3>{p.name}</h3>
         <p>{p.tagline}</p>
-        <div className="price-rows">
-          <div><span>250 ml</span><strong>{rs(p.prices['250ml'])}</strong></div>
-          <div><span>100 ml</span><strong>{rs(p.prices['100ml'])}</strong></div>
+        <div className="size-toggle" role="group" aria-label={`Choose size for ${p.name}`}>
+          {SIZES.map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={size === s ? 'active' : ''}
+              aria-pressed={size === s}
+              onClick={() => setSize(s)}
+            >
+              <span>{sizeLabel(s)}</span>
+              <strong>{rs(p.prices[s])}</strong>
+            </button>
+          ))}
         </div>
         <div className="product-foot">
-          <button className="btn btn-small" onClick={() => onOrder(p.id)}>Order</button>
+          <button className={`btn btn-small${added ? ' added' : ''}`} onClick={add}>
+            {added ? 'Added ✓' : 'Add to Cart'}
+          </button>
         </div>
       </TiltCard>
     </Reveal>
@@ -378,21 +484,29 @@ function AboutPage() {
   );
 }
 
-function OrderForm({ productId, setProductId }) {
-  const [size, setSize] = useState('250ml');
-  const [qty, setQty] = useState(1);
+function CheckoutForm({ onBrowse }) {
+  const { items, setQty, removeItem, clear, total } = useCart();
   const [status, setStatus] = useState('idle'); // idle | sending | error
   const [placed, setPlaced] = useState(null); // { phone } after success
 
-  const product = PRODUCTS.find((p) => p.id === productId);
-  const unit = product.prices[size];
-  const total = unit * Math.max(1, qty || 1);
+  // Resolve cart lines against the product list (names, prices).
+  const lines = items
+    .map((it) => {
+      const p = PRODUCTS.find((x) => x.id === it.id);
+      if (!p) return null;
+      return { ...it, name: p.name, unit: p.prices[it.size], lineTotal: p.prices[it.size] * it.qty };
+    })
+    .filter(Boolean);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const formEl = e.target;
-    const data = new FormData(formEl);
+    if (lines.length === 0) return;
+    const data = new FormData(e.target);
     setStatus('sending');
+    const summary = lines
+      .map((l) => `${l.qty} × ${l.name} (${sizeLabel(l.size)}) — ${rs(l.lineTotal)}`)
+      .join('\n');
+    const itemCount = lines.reduce((n, l) => n + l.qty, 0);
     try {
       const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
@@ -403,10 +517,8 @@ function OrderForm({ productId, setProductId }) {
           from_name: 'FreshLeaf Website',
           replyto: data.get('email') || undefined,
           'Order type': 'Cash on Delivery',
-          Product: product.name,
-          Size: size,
-          Quantity: String(qty),
-          'Unit price': rs(unit),
+          Order: summary,
+          Items: String(itemCount),
           Total: rs(total),
           'Customer name': data.get('name'),
           Phone: data.get('phone'),
@@ -418,6 +530,7 @@ function OrderForm({ productId, setProductId }) {
       const result = await res.json();
       if (result.success) {
         setPlaced({ phone: data.get('phone') });
+        clear();
         setStatus('idle');
       } else {
         setStatus('error');
@@ -443,55 +556,76 @@ function OrderForm({ productId, setProductId }) {
     );
   }
 
+  if (lines.length === 0) {
+    return (
+      <div className="order-thanks cart-empty">
+        <Leaf />
+        <h3>Your cart is empty</h3>
+        <p>Pick the sprays and sizes you'd like above, then come back here to check out.</p>
+        <button className="btn btn-outline" onClick={onBrowse}>Browse the sprays</button>
+      </div>
+    );
+  }
+
   return (
     <form className="order-form" onSubmit={handleSubmit}>
-      <div className="form-row">
-        <label>
-          Product
-          <select name="product" value={productId} onChange={(e) => setProductId(e.target.value)}>
-            {PRODUCTS.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Size
-          <select name="size" value={size} onChange={(e) => setSize(e.target.value)}>
-            <option value="250ml">250 ml — {rs(product.prices['250ml'])}</option>
-            <option value="100ml">100 ml — {rs(product.prices['100ml'])}</option>
-          </select>
-        </label>
+      <div className="cart-lines">
+        {lines.map((l) => (
+          <div className="cart-line" key={`${l.id}-${l.size}`}>
+            <div className="cart-line-main">
+              <strong>{l.name}</strong>
+              <span>{sizeLabel(l.size)} · {rs(l.unit)} each</span>
+            </div>
+            <div className="qty-stepper" aria-label={`Quantity of ${l.name}`}>
+              <button
+                type="button"
+                onClick={() => setQty(l.id, l.size, Math.max(1, l.qty - 1))}
+                aria-label="Decrease quantity"
+              >
+                −
+              </button>
+              <span>{l.qty}</span>
+              <button
+                type="button"
+                onClick={() => setQty(l.id, l.size, Math.min(50, l.qty + 1))}
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
+            <div className="cart-line-total">{rs(l.lineTotal)}</div>
+            <button
+              type="button"
+              className="cart-remove"
+              onClick={() => removeItem(l.id, l.size)}
+              aria-label={`Remove ${l.name}`}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="cart-subtotal">
+        <span>Subtotal ({lines.reduce((n, l) => n + l.qty, 0)} item{lines.reduce((n, l) => n + l.qty, 0) === 1 ? '' : 's'})</span>
+        <strong>{rs(total)}</strong>
       </div>
 
       <div className="form-row">
-        <label>
-          Quantity
-          <input
-            type="number"
-            name="quantity"
-            min="1"
-            max="50"
-            value={qty}
-            onChange={(e) => setQty(Number(e.target.value))}
-            required
-          />
-        </label>
         <label>
           Full name
           <input type="text" name="name" placeholder="Your name" required />
         </label>
-      </div>
-
-      <div className="form-row">
         <label>
           Phone number
           <input type="tel" name="phone" placeholder="03xx-xxxxxxx" required />
         </label>
-        <label>
-          Email (optional)
-          <input type="email" name="email" placeholder="you@example.com" />
-        </label>
       </div>
+
+      <label>
+        Email (optional)
+        <input type="email" name="email" placeholder="you@example.com" />
+      </label>
 
       <label>
         Delivery address
@@ -535,37 +669,30 @@ function OrderForm({ productId, setProductId }) {
 }
 
 function SpraysPage() {
-  const [productId, setProductId] = useState(() => {
-    const q = new URLSearchParams(window.location.search).get('product');
-    return PRODUCTS.some((p) => p.id === q) ? q : PRODUCTS[0].id;
-  });
+  const topRef = useRef(null);
   const formRef = useRef(null);
 
   useEffect(() => {
-    const wantsForm = window.location.pathname === '/order'
-      || new URLSearchParams(window.location.search).has('product');
-    if (wantsForm && formRef.current) {
+    // Deep links to /order (e.g. the header cart button) jump to checkout.
+    if (window.location.pathname === '/order' && formRef.current) {
       formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, []);
 
-  function orderProduct(id) {
-    setProductId(id);
-    if (formRef.current) formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  const scrollToTop = () => topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
     <>
-      <section className="section-wide page-top">
+      <section className="section-wide page-top" ref={topRef}>
         <div className="products-inner">
           <Reveal eager>
             <p className="eyebrow">Our Sprays</p>
-            <h2>See the product before you buy</h2>
-            <p className="section-sub">Room &amp; linen sprays in 250&nbsp;ml and 100&nbsp;ml, made with 100% essential oils and no chemicals. Pick a spray to order it below.</p>
+            <h2>Add your favourites to the cart</h2>
+            <p className="section-sub">Room &amp; linen sprays in 250&nbsp;ml and 100&nbsp;ml, made with 100% essential oils and no chemicals. Pick a size, add as many scents as you like, then check out below.</p>
           </Reveal>
           <div className="product-grid">
             {PRODUCTS.map((p, i) => (
-              <ProductCard key={p.id} p={p} delay={i * 100} onOrder={orderProduct} />
+              <ProductCard key={p.id} p={p} delay={i * 100} />
             ))}
           </div>
         </div>
@@ -573,15 +700,15 @@ function SpraysPage() {
 
       <section className="section" ref={formRef}>
         <Reveal eager>
-          <p className="eyebrow">Place an Order</p>
-          <h2>Order your sprays</h2>
+          <p className="eyebrow">Your Cart</p>
+          <h2>Review &amp; check out</h2>
           <p className="section-sub">
-            Choose your spray and size below — we'll deliver to your door and you pay in
-            cash when your order arrives.
+            Adjust quantities, then enter your details — we'll deliver to your door and
+            you pay in cash when your order arrives.
           </p>
         </Reveal>
         <Reveal eager delay={150}>
-          <OrderForm productId={productId} setProductId={setProductId} />
+          <CheckoutForm onBrowse={scrollToTop} />
         </Reveal>
       </section>
     </>
@@ -713,7 +840,28 @@ const PAGES = {
   '/contact': ContactPage,
 };
 
-export default function App() {
+function CartButton({ onClick }) {
+  const { count } = useCart();
+  return (
+    <Link to="/order" className="cart-btn" onClick={onClick} aria-label={`Cart, ${count} item${count === 1 ? '' : 's'}`}>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M4 5h2l1.6 10.2a1.5 1.5 0 0 0 1.5 1.3h7.6a1.5 1.5 0 0 0 1.5-1.2L20.5 8H7"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle cx="10" cy="20" r="1.4" fill="currentColor" />
+        <circle cx="17" cy="20" r="1.4" fill="currentColor" />
+      </svg>
+      {count > 0 && <span className="cart-badge">{count}</span>}
+    </Link>
+  );
+}
+
+function App() {
   const [path, setPath] = useState(window.location.pathname);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -744,14 +892,17 @@ export default function App() {
         <Link to="/" className="brand" onClick={() => setMenuOpen(false)}>
           <img src={`${IMG}/logo-transparent.webp`} alt="freshleaf" className="brand-logo" />
         </Link>
-        <button
-          className="menu-toggle"
-          aria-label="Toggle menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((o) => !o)}
-        >
-          ☰
-        </button>
+        <div className="header-tools">
+          <CartButton onClick={() => setMenuOpen(false)} />
+          <button
+            className="menu-toggle"
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            ☰
+          </button>
+        </div>
         <nav className={menuOpen ? 'open' : ''}>
           {NAV.map(([to, label]) => (
             <Link
@@ -784,5 +935,13 @@ export default function App() {
         <p className="fine">© {new Date().getFullYear()} FreshLeaf. All rights reserved.</p>
       </footer>
     </NavContext.Provider>
+  );
+}
+
+export default function Root() {
+  return (
+    <CartProvider>
+      <App />
+    </CartProvider>
   );
 }
