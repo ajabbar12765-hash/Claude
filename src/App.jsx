@@ -13,7 +13,7 @@ const CONTACT = {
 
 // Product photos and logo are served from the repo (public on GitHub),
 // pinned to the commit that contains them.
-const IMG = 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/3212e66797fca134c05f29ba25a14e29a62fd2b7/public';
+const IMG = 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/ad3c4a2f2e296f202b291dd55a756a9b44456691/public';
 
 const PRODUCTS = [
   {
@@ -299,23 +299,6 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="section-wide">
-        <div className="products-inner">
-          <Reveal>
-            <p className="eyebrow">Our Sprays</p>
-            <h2>The collection</h2>
-            <p className="section-sub">Room &amp; linen sprays in 250&nbsp;ml and 100&nbsp;ml, made with 100% essential oils.</p>
-          </Reveal>
-          <div className="product-grid">
-            {PRODUCTS.slice(0, 3).map((p, i) => (
-              <ProductCard key={p.id} p={p} delay={i * 120} />
-            ))}
-          </div>
-          <Reveal className="preview-cta">
-            <Link className="btn btn-primary" to="/products">View all six sprays</Link>
-          </Reveal>
-        </div>
-      </section>
     </>
   );
 }
@@ -749,7 +732,7 @@ export default function App() {
     <NavContext.Provider value={navigate}>
       <header className={`site-header${scrolled ? ' scrolled' : ''}`}>
         <Link to="/" className="brand" onClick={() => setMenuOpen(false)}>
-          <img src={`${IMG}/logo.jpg`} alt="freshleaf" className="brand-logo" />
+          <img src={`${IMG}/logo-transparent.webp`} alt="freshleaf" className="brand-logo" />
         </Link>
         <button
           className="menu-toggle"
@@ -781,7 +764,7 @@ export default function App() {
       </main>
 
       <footer className="site-footer">
-        <img className="footer-logo" src={`${IMG}/logo.jpg`} alt="freshleaf" />
+        <img className="footer-logo" src={`${IMG}/logo-transparent.webp`} alt="freshleaf" />
         <p>Naturally crafted. Beautifully scented. Thoughtfully made.</p>
         <nav className="footer-nav">
           {NAV.map(([to, label]) => (
