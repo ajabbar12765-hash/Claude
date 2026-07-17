@@ -275,7 +275,7 @@ function ClimateCore() {
     <section id="climate" className="section section-dark climate">
       <div className="container">
         <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
-          <img className="ccp-logo" src="/climate-core-logo.svg" alt="Climate Core Pakistan" />
+          <img className="ccp-logo" src="/climate-core-logo-white.svg" alt="Climate Core Pakistan" />
           <h2 className="section-title light">Pakistan's Pioneer De-Risked Low-Carbon Blended Fund</h2>
           <p className="section-sub light">Climate Core Pakistan is Capital Connect Investment Management (Private) Limited's anchor fund — a PKR 15 billion low-carbon blended private equity fund catalysing a PKR 8.5 billion first close.</p>
         </div>
