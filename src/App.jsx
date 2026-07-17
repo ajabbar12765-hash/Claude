@@ -82,8 +82,10 @@ function Hero() {
       <div className="hero-content">
         <div className="hero-eyebrow">Financial Advisory &amp; Investment Management</div>
         <h1 className="hero-title">
-          Connecting Capital<br />
-          <em>With Opportunity</em>
+          <span>Connecting</span>
+          <span>Capital</span>
+          <span className="accent">With</span>
+          <span className="accent">Opportunity</span>
         </h1>
         <p className="hero-sub">
           Capital Connect bridges ambitious businesses and institutions with global capital —
@@ -237,9 +239,9 @@ function FundManagement() {
           <p className="section-sub">Capital Connect operates two licensed fund-management platforms dedicated to impact and blended-finance investment — Capital Connect Investment Management (Private) Limited (CCIM) in Pakistan and Climate Core GP Limited in the Abu Dhabi Global Market (ADGM).</p>
         </div>
         <div className={`fund-body${visible ? ' visible' : ''}`}>
-          <div className="fund-intro">
-            <div className="fund-intro-label">Pakistan Platform</div>
-            <p>Capital Connect Investment Management (Private) Limited is a non-banking finance company established to become Pakistan's pioneer fund manager focused on impact funds and related initiatives, operating under the Private Fund Regulations, 2015.</p>
+          <div className="fund-callout">
+            <div className="callout-label">Pakistan Platform</div>
+            <p><strong>Capital Connect Investment Management (Private) Limited</strong> is a non-banking finance company established to become Pakistan's pioneer fund manager focused on impact funds and related initiatives, operating under the Private Fund Regulations, 2015.</p>
             <p>The platform is designed to launch multiple funds, beginning with anchor fund Climate Core Pakistan and extending to sector-agnostic, industry-specific, and alternative investment funds — including Shariah-compliant structures — each using blended-finance mechanisms to catalyse commercial capital into underserved markets.</p>
           </div>
           <div className="fund-callout">
