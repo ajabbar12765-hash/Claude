@@ -515,6 +515,17 @@ a { text-decoration: none; }
 .platform-card h3 { font-size: 0.98rem; font-weight: 600; color: var(--dark); margin-bottom: 0.55rem; }
 .platform-card p  { font-size: 0.84rem; color: var(--text-muted); line-height: 1.7; }
 
+.ccp-logo {
+  display: block;
+  width: 168px;
+  height: auto;
+  margin: 0 auto 1.75rem;
+  background: #fff;
+  padding: 20px 26px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.28);
+}
+
 /* ── Climate Core Pakistan ────────────────────────────────────────────────────── */
 .climate-body {
   display: grid;
