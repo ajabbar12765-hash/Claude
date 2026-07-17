@@ -140,12 +140,12 @@ a { text-decoration: none; }
   align-items: center;
 }
 .nav-logo-img {
-  height: 34px;
+  height: 50px;
   width: auto;
   display: block;
   transition: height 0.4s var(--ease);
 }
-.navbar.scrolled .nav-logo-img { height: 30px; }
+.navbar.scrolled .nav-logo-img { height: 44px; }
 .logo-cap, .logo-con { color: #5A9AE0; }
 
 .nav-links {
