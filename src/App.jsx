@@ -37,6 +37,7 @@ const PRODUCTS = [
     tagline: 'A soft, airy blend of lavender, bergamot, eucalyptus, and a hint of orange—like fresh laundry on a breezy day.',
     prices: { '250ml': 3300, '100ml': 1440 },
     image: `${IMG}/products/fresh-linen.webp`,
+    bestSeller: true,
   },
   {
     id: 'spiced-orange',
