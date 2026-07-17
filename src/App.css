@@ -294,6 +294,57 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
   color: var(--green-soft);
 }
 
+.bottle-caption {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--green);
+  text-align: center;
+}
+
+/* Best-seller badge (hero bottle + product card) */
+.bestseller-badge,
+.card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.34rem 0.72rem;
+  border-radius: 999px;
+  background: linear-gradient(150deg, #f7d774, #e9a83a);
+  color: #4a3406;
+  box-shadow: 0 8px 18px -8px rgba(233, 168, 58, 0.75);
+  white-space: nowrap;
+}
+
+.bottle-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.bottle-wrap .bestseller-badge {
+  position: absolute;
+  top: 4%;
+  right: 6%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.card-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  font-size: 0.64rem;
+  padding: 0.28rem 0.6rem;
+}
+
 /* ---------- feature strip ---------- */
 
 .features {
@@ -525,6 +576,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
 }
 
 .product-card {
+  position: relative;
   background: rgba(250, 247, 240, 0.9);
   border: 1px solid rgba(221, 214, 198, 0.9);
   border-radius: 22px;

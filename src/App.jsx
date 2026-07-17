@@ -22,6 +22,7 @@ const PRODUCTS = [
     tagline: 'A zesty blend of orange, lemon, bergamot, and peppermint that refreshes your space with a clean, energizing burst.',
     prices: { '250ml': 2800, '100ml': 1240 },
     image: `${IMG}/products/citrus-fresh.webp`,
+    bestSeller: true,
   },
   {
     id: 'morning-zest',
@@ -263,6 +264,7 @@ function ProductCard({ p, delay = 0 }) {
   return (
     <Reveal delay={delay}>
       <TiltCard className="product-card" pop>
+        {p.bestSeller && <span className="card-badge">★ Best Seller</span>}
         <img className="product-img" src={p.image} alt={p.name} loading="lazy" />
         <h3>{p.name}</h3>
         <p>{p.tagline}</p>
@@ -382,7 +384,11 @@ function HomePage() {
             </Reveal>
           </div>
           <Reveal eager delay={300} className="hero-visual">
-            <Bottle3D />
+            <div className="bottle-wrap">
+              <span className="bestseller-badge">★ Best Seller</span>
+              <Bottle3D />
+            </div>
+            <p className="bottle-caption">Citrus&nbsp;Fresh — our best-selling spray</p>
             <p className="drag-hint">Drag the bottle to spin it</p>
           </Reveal>
         </div>
