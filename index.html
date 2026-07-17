@@ -665,8 +665,9 @@ footer a{color:var(--gold-2)}
   // reveal on scroll
   var io=new IntersectionObserver(function(es){
     es.forEach(function(en){ if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);} });
-  },{threshold:.12});
+  },{threshold:0.01,rootMargin:'0px 0px -30px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+  window.addEventListener('load',function(){setTimeout(function(){document.querySelectorAll('.reveal:not(.in)').forEach(function(el){el.classList.add('in');});},1500);});
 })();
 </script>
 </body></html>
