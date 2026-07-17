@@ -35,7 +35,7 @@ function Counter({ to, suffix = '', prefix = '', inView }) {
 
 const NAV = [
   ['About Us', 'about'],
-  ['Advisory', 'services'],
+  ['Financial Advisory', 'services'],
   ['Investment Management', 'fund'],
   ['Climate Core Pakistan', 'climate'],
   ['Founder', 'founder'],
@@ -176,7 +176,7 @@ function Services() {
     <section id="services" className="section section-dark services">
       <div className="container">
         <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
-          <div className="section-tag light">Advisory Services</div>
+          <div className="section-tag light">Financial Advisory</div>
           <h2 className="section-title light">Comprehensive Advisory Solutions</h2>
           <p className="section-sub light">From cross-border M&A and capital raising to privatisation and blended-finance advisory, we deliver institutional-grade solutions at every stage of the capital lifecycle.</p>
         </div>
@@ -233,11 +233,12 @@ function FundManagement() {
       <div className="container">
         <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
           <div className="section-tag">Investment Management</div>
-          <h2 className="section-title">A Licensed Platform for Impact &amp; Blended Finance</h2>
-          <p className="section-sub">Capital Connect Investment Management (Private) Limited (CCIM) is building Pakistan's pioneer fund-management platform dedicated to impact and blended-finance investment.</p>
+          <h2 className="section-title">Licensed Platforms for Impact &amp; Blended Finance</h2>
+          <p className="section-sub">Capital Connect operates two licensed fund-management platforms dedicated to impact and blended-finance investment — Capital Connect Investment Management (Private) Limited (CCIM) in Pakistan and Climate Core GP Limited in the Abu Dhabi Global Market (ADGM).</p>
         </div>
         <div className={`fund-body${visible ? ' visible' : ''}`}>
           <div className="fund-intro">
+            <div className="fund-intro-label">Pakistan Platform</div>
             <p>Capital Connect Investment Management (Private) Limited is a non-banking finance company established to become Pakistan's pioneer fund manager focused on impact funds and related initiatives, operating under the Private Fund Regulations, 2015.</p>
             <p>The platform is designed to launch multiple funds, beginning with anchor fund Climate Core Pakistan and extending to sector-agnostic, industry-specific, and alternative investment funds — including Shariah-compliant structures — each using blended-finance mechanisms to catalyse commercial capital into underserved markets.</p>
           </div>
@@ -265,7 +266,7 @@ const CCP_TERMS = [
   ['Fund Manager', 'Capital Connect Investment Management (Private) Limited'],
   ['First-Loss Guarantee', 'Up to 40%'],
   ['Fund Term', '10 years (+2 optional)'],
-  ['Deal Size', 'US$2–5 million; 5–10 investments; growth capital'],
+  ['Deal Size', 'PKR 500–1,500 million; 5–10 investments; growth capital'],
 ];
 
 const CCP_SECTORS = ['Clean Energy', 'Clean Transport & EV', 'Technology & Energy Efficiency', 'Bio-Energy', 'Affordable Housing', 'Responsible Consumer'];
@@ -283,7 +284,7 @@ function ClimateCore() {
         <div className={`climate-body${visible ? ' visible' : ''}`}>
           <div className="climate-text">
             <p>Climate Core Pakistan mobilises private capital into underserved low-carbon markets through a landmark, de-risked financial structure. The fund provides growth and expansion equity to commercially viable clean-energy and climate-aligned businesses — bridging Pakistan's "missing middle" of impact and sustainability funding.</p>
-            <p>CCP is built on the learnings of a US$7 million, four-year USAID-funded technical-assistance programme (PFAN), inheriting an established, investor-ready pipeline of more than US$100 million in commercially viable low-carbon investments — managed by the original architects and originators of that pipeline.</p>
+            <p>Climate Core Pakistan is built on the learnings of a US$7 million, four-year USAID-funded technical-assistance programme (PFAN), inheriting an established, investor-ready pipeline of more than US$100 million in commercially viable low-carbon investments — managed by the original architects and originators of that pipeline.</p>
             <p>A tiered blended structure pairs commercial (senior) capital with concessional (junior) capital, while an up-to-40% first-loss guarantee shields capital from initial downside — enhancing risk-adjusted returns for commercial investors.</p>
           </div>
           <div className="climate-terms">

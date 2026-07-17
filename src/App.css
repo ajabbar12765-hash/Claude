@@ -466,6 +466,14 @@ a { text-decoration: none; }
 }
 .fund-body.visible { opacity: 1; transform: none; }
 
+.fund-intro-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 0.75rem;
+}
 .fund-intro p { color: var(--text-muted); margin-bottom: 1.1rem; line-height: 1.8; }
 
 .fund-callout {
