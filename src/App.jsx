@@ -97,10 +97,6 @@ function Hero() {
           <button className="btn-outline" onClick={() => go('contact')}>Get in Touch</button>
         </div>
       </div>
-      <div className="hero-scroll">
-        <div className="scroll-line" />
-        <span>Scroll</span>
-      </div>
     </section>
   );
 }
