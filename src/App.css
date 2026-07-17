@@ -265,6 +265,7 @@ a { text-decoration: none; }
 }
 .hero-title span { display: block; }
 .hero-title .accent { color: #5A9AE0; }
+.hero-title .tight-top { margin-top: -0.18em; }
 
 .hero-sub {
   font-size: 1.1rem;

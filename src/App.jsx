@@ -85,7 +85,7 @@ function Hero() {
           <span>Connecting</span>
           <span>Capital</span>
           <span className="accent">With</span>
-          <span className="accent">Opportunity</span>
+          <span className="accent tight-top">Opportunity</span>
         </h1>
         <p className="hero-sub">
           Capital Connect bridges ambitious businesses and institutions with global capital —
