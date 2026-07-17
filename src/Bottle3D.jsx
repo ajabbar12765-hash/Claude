@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
 
 // Citrus Fresh label: lemon-yellow band with a white panel, matching the
 // real product photography.
@@ -86,6 +88,34 @@ function makeShadowTexture() {
   return new THREE.CanvasTexture(c);
 }
 
+// Subtle micro-imperfections (smudges, fingerprints, dust) so the gloss
+// isn't a perfect mirror — this is what sells "real plastic" vs "CGI".
+function makeSmudgeTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#d2d2d2';
+  ctx.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 1600; i++) {
+    const x = Math.random() * 512;
+    const y = Math.random() * 512;
+    const r = Math.random() * 46 + 5;
+    const a = Math.random() * 0.13;
+    const light = Math.random() > 0.5;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, light ? `rgba(255,255,255,${a})` : `rgba(40,40,40,${a})`);
+    g.addColorStop(1, 'rgba(128,128,128,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 3);
+  return tex;
+}
+
 export default function Bottle3D() {
   const mountRef = useRef(null);
   const [failed, setFailed] = useState(false);
@@ -108,7 +138,7 @@ export default function Bottle3D() {
     const smallScreen = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, smallScreen ? 1.5 : 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.12;
     mount.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -117,15 +147,27 @@ export default function Bottle3D() {
     camera.lookAt(0, 0.55, 0);
 
     const pmrem = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.02).texture;
 
-    const key = new THREE.DirectionalLight(0xfff8ec, 1.5);
+    const key = new THREE.DirectionalLight(0xfff8ec, 1.35);
     key.position.set(4, 6, 6);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0xcfe8d6, 1.2);
+    const rim = new THREE.DirectionalLight(0xcfe8d6, 1.1);
     rim.position.set(-5, 3, -4);
     scene.add(rim);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.28));
+
+    // Soft rectangular studio light — casts the long, gentle vertical
+    // highlight you see on real glossy product bottles.
+    RectAreaLightUniformsLib.init();
+    const softbox = new THREE.RectAreaLight(0xffffff, 2.6, 3.2, 6.5);
+    softbox.position.set(-2.6, 2.4, 4.2);
+    softbox.lookAt(0, 0.4, 0);
+    scene.add(softbox);
+    const softbox2 = new THREE.RectAreaLight(0xdff0e4, 1.4, 2.4, 5);
+    softbox2.position.set(3.4, 1.6, 2.2);
+    softbox2.lookAt(0, 0.5, 0);
+    scene.add(softbox2);
 
     const group = new THREE.Group();
     scene.add(group);
@@ -134,17 +176,35 @@ export default function Bottle3D() {
     const track = (obj) => { dispose.push(obj); return obj; };
 
     // glossy black PET bottle + matte black sprayer, like the real product
+    const smudge = track(makeSmudgeTexture());
     const bottleMat = track(new THREE.MeshPhysicalMaterial({
-      color: 0x111411,
-      metalness: 0.1,
-      roughness: 0.18,
+      color: 0x0a0c0a,
+      metalness: 0.0,
+      roughness: 0.3,
+      roughnessMap: smudge,
       clearcoat: 1,
-      clearcoatRoughness: 0.08,
+      clearcoatRoughness: 0.14,
+      clearcoatRoughnessMap: smudge,
+      ior: 1.5,
+      reflectivity: 0.55,
     }));
-    bottleMat.envMapIntensity = 0.55;
-    const sprayerMat = track(new THREE.MeshStandardMaterial({ color: 0x141414, metalness: 0.15, roughness: 0.45 }));
-    sprayerMat.envMapIntensity = 0.45;
-    const labelMat = track(new THREE.MeshStandardMaterial({ map: track(makeLabelTexture()), roughness: 0.5 }));
+    bottleMat.envMapIntensity = 1.1;
+    const sprayerMat = track(new THREE.MeshPhysicalMaterial({
+      color: 0x0d0d0d,
+      metalness: 0.0,
+      roughness: 0.6,
+      roughnessMap: smudge,
+      clearcoat: 0.45,
+      clearcoatRoughness: 0.35,
+    }));
+    sprayerMat.envMapIntensity = 0.85;
+    const labelMat = track(new THREE.MeshPhysicalMaterial({
+      map: track(makeLabelTexture()),
+      roughness: 0.42,
+      clearcoat: 0.4,
+      clearcoatRoughness: 0.28,
+    }));
+    labelMat.envMapIntensity = 0.9;
 
     const add = (geo, mat, x = 0, y = 0, z = 0) => {
       const m = new THREE.Mesh(track(geo), mat);
@@ -160,15 +220,16 @@ export default function Bottle3D() {
     add(new THREE.CylinderGeometry(0.2, 0.24, 0.35, 32), bottleMat, 0, 1.55);
 
     // trigger sprayer: collar, pump body, head arm, nozzle, trigger blade
-    add(new THREE.CylinderGeometry(0.26, 0.27, 0.32, 32), sprayerMat, 0, 1.83);
-    add(new THREE.BoxGeometry(0.3, 0.55, 0.38), sprayerMat, 0, 2.2);
-    const headArm = add(new THREE.BoxGeometry(0.3, 0.3, 1.15), sprayerMat, 0, 2.55, 0.18);
+    // (rounded boxes so the moulded plastic parts don't look like hard cubes)
+    add(new THREE.CylinderGeometry(0.26, 0.27, 0.32, 48), sprayerMat, 0, 1.83);
+    add(new RoundedBoxGeometry(0.3, 0.55, 0.38, 5, 0.07), sprayerMat, 0, 2.2);
+    const headArm = add(new RoundedBoxGeometry(0.3, 0.3, 1.15, 5, 0.08), sprayerMat, 0, 2.55, 0.18);
     headArm.rotation.x = -0.06;
-    const nozzle = add(new THREE.CylinderGeometry(0.075, 0.09, 0.16, 24), sprayerMat, 0, 2.52, 0.78);
+    const nozzle = add(new THREE.CylinderGeometry(0.075, 0.09, 0.16, 32), sprayerMat, 0, 2.52, 0.78);
     nozzle.rotation.x = Math.PI / 2;
-    const tail = add(new THREE.BoxGeometry(0.26, 0.42, 0.3), sprayerMat, 0, 2.4, -0.42);
+    const tail = add(new RoundedBoxGeometry(0.26, 0.42, 0.3, 5, 0.07), sprayerMat, 0, 2.4, -0.42);
     tail.rotation.x = 0.35;
-    const trigger = add(new THREE.BoxGeometry(0.12, 0.75, 0.14), sprayerMat, 0, 2.05, 0.52);
+    const trigger = add(new RoundedBoxGeometry(0.12, 0.75, 0.14, 4, 0.045), sprayerMat, 0, 2.05, 0.52);
     trigger.rotation.x = -0.35;
 
     // citrus label band (rotated so the panel faces the camera)
