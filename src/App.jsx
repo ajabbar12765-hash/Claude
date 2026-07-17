@@ -318,7 +318,7 @@ function Founder() {
             <div className="founder-id">
               <strong>Ghazil Jabbar</strong>
               <span>Managing Director, Capital Connect</span>
-              <span>Founder &amp; Managing Partner, Capital Connect Investment Management &amp; Climate Core GP</span>
+              <span>Founder &amp; Managing Partner, Capital Connect Investment Management (Private) Limited &amp; Climate Core GP Limited</span>
             </div>
             <div className="founder-edu">
               <div className="edu-item">
