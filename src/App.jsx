@@ -113,7 +113,7 @@ function About() {
             <p>Founded in 2017, Capital Connect is a boutique investment banking and financial advisory firm with deep roots in Pakistan's capital markets and a strong international network. Today the brand spans two complementary pillars — an advisory practice executing cross-border M&amp;A and capital raising, and a licensed fund-management platform investing in impact and climate-aligned opportunities.</p>
             <p>We specialise in structuring and executing complex cross-border transactions — advising governments, corporates, and funds across mergers &amp; acquisitions, equity and debt instruments, privatisation mandates, and strategic investment planning.</p>
             <p>Our client-first approach, combined with direct relationships with international DFIs, sovereign wealth funds, and institutional investors, makes Capital Connect the partner of choice for transformative financial mandates.</p>
-            <p>Through Capital Connect Investment Management (Private) Limited — our SECP-regulated non-banking finance company — we designed and will manage Pakistan's pioneer low-carbon blended-finance private equity fund, Climate Core Pakistan (CCP). We established Climate Core GP Limited as an independent fund-management platform in the Abu Dhabi Global Market (ADGM), extending Capital Connect's reach to global investors and development finance institutions, and channelling international capital into impact and blended-finance strategies across developing markets.</p>
+            <p>Through Capital Connect Investment Management (Private) Limited — our SECP-regulated non-banking finance company — we designed and will manage Pakistan's pioneer low-carbon blended-finance private equity fund, Climate Core Pakistan. We established Climate Core GP Limited as an independent fund-management platform in the Abu Dhabi Global Markets (ADGM), extending Capital Connect's reach to global investors and development finance institutions, and channelling international capital into impact and blended-finance strategies across developing markets.</p>
             <div className="about-pills">
               <span>Bulge Bracket Experience</span>
               <span>Licensed Fund Manager</span>
@@ -232,7 +232,7 @@ function FundManagement() {
         <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
           <div className="section-tag">Investment Management</div>
           <h2 className="section-title">Licensed Platforms for Impact &amp; Blended Finance</h2>
-          <p className="section-sub">Capital Connect operates two licensed fund-management platforms dedicated to impact and blended-finance investment — Capital Connect Investment Management (Private) Limited (CCIM) in Pakistan and Climate Core GP Limited in the Abu Dhabi Global Market (ADGM).</p>
+          <p className="section-sub">Capital Connect operates two licensed fund-management platforms dedicated to impact and blended-finance investment — Capital Connect Investment Management (Private) Limited in Pakistan and Climate Core GP Limited in the Abu Dhabi Global Markets (ADGM).</p>
         </div>
         <div className={`fund-body${visible ? ' visible' : ''}`}>
           <div className="fund-callout">
@@ -242,7 +242,7 @@ function FundManagement() {
           </div>
           <div className="fund-callout">
             <div className="callout-label">International Platform</div>
-            <p><strong>Climate Core GP Limited</strong> is a complementary fund-management platform established in the Abu Dhabi Global Market (ADGM), one of the region's leading international financial centres. Operating within ADGM's English common-law framework and internationally recognised regulatory regime, it extends Capital Connect's reach to global investors, development finance institutions, and sovereign capital — anchoring the group's cross-border structuring and enabling offshore vehicles that channel international capital into impact and blended-finance strategies.</p>
+            <p><strong>Climate Core GP Limited</strong> is a complementary fund-management platform established in the Abu Dhabi Global Markets (ADGM), one of the region's leading international financial centres. Operating within ADGM's English common-law framework and internationally recognised regulatory regime, it extends Capital Connect's reach to global investors, development finance institutions, and sovereign capital — anchoring the group's cross-border structuring and enabling offshore vehicles that channel international capital into impact and blended-finance strategies.</p>
           </div>
         </div>
         <div className={`platform-grid${visible ? ' visible' : ''}`}>
@@ -277,7 +277,7 @@ function ClimateCore() {
         <div className={`section-header${visible ? ' visible' : ''}`} ref={ref}>
           <div className="section-tag light">Climate Core Pakistan</div>
           <h2 className="section-title light">Pakistan's Pioneer De-Risked Low-Carbon Blended Fund</h2>
-          <p className="section-sub light">Climate Core Pakistan (CCP) is Capital Connect Investment Management (Private) Limited's anchor fund — a PKR 15 billion low-carbon blended private equity fund catalysing a PKR 8.5 billion first close.</p>
+          <p className="section-sub light">Climate Core Pakistan is Capital Connect Investment Management (Private) Limited's anchor fund — a PKR 15 billion low-carbon blended private equity fund catalysing a PKR 8.5 billion first close.</p>
         </div>
         <div className={`climate-body${visible ? ' visible' : ''}`}>
           <div className="climate-text">
@@ -318,7 +318,7 @@ function Founder() {
             <div className="founder-id">
               <strong>Ghazil Jabbar</strong>
               <span>Managing Director, Capital Connect</span>
-              <span>Founder &amp; Managing Partner, CCIM &amp; Climate Core GP</span>
+              <span>Founder &amp; Managing Partner, Capital Connect Investment Management &amp; Climate Core GP</span>
             </div>
             <div className="founder-edu">
               <div className="edu-item">
