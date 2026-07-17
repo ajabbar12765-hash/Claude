@@ -153,6 +153,14 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
   cursor: pointer;
 }
 
+/* On desktop, push the cart to the far right corner, after the nav. */
+@media (min-width: 721px) {
+  .site-header { justify-content: flex-start; }
+  .brand { margin-right: auto; }
+  .site-header nav { order: 2; }
+  .header-tools { order: 3; }
+}
+
 /* page transitions */
 .page { animation: pagein 0.5s var(--ease-out); }
 
