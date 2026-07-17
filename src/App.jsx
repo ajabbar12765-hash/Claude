@@ -34,8 +34,8 @@ function Counter({ to, suffix = '', prefix = '', inView }) {
 }
 
 const NAV = [
-  ['About', 'about'],
-  ['Services', 'services'],
+  ['About Us', 'about'],
+  ['Advisory', 'services'],
   ['Investment Management', 'fund'],
   ['Climate Core Pakistan', 'climate'],
   ['Founder', 'founder'],
@@ -397,15 +397,17 @@ function Contact() {
             <div className="contact-item">
               <div className="contact-dot" />
               <div>
-                <strong>Advisory &amp; Fund Management</strong>
-                <span>Capital Connect &amp; CCIM (Private) Limited</span>
+                <strong>Advisory Services</strong>
+                <span>Capital Connect (Pakistan)</span>
+                <span>Capital Connect LLC-FZ (U.A.E.)</span>
               </div>
             </div>
             <div className="contact-item">
               <div className="contact-dot" />
               <div>
-                <strong>International Platform</strong>
-                <span>Climate Core GP Limited — ADGM, Abu Dhabi</span>
+                <strong>Investment Management</strong>
+                <span>Capital Connect Investment Management (Private) Limited (Pakistan)</span>
+                <span>Climate Core GP Limited (ADGM, U.A.E.)</span>
               </div>
             </div>
           </div>
