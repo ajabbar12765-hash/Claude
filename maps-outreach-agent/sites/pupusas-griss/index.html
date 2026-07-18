@@ -74,6 +74,21 @@
   .dish p{color:#6d5f47;font-size:.95rem}
   .menu-note{text-align:center;margin-top:28px;font-size:1.05rem;color:var(--blue-deep);font-weight:700}
   .menu-note a{color:var(--red)}
+  .special{display:flex;flex-wrap:wrap;align-items:center;gap:16px;max-width:720px;margin:0 auto 26px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow);color:var(--charcoal)}
+  .special-tag{font-weight:800;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;background:rgba(0,0,0,.14);padding:6px 12px;border-radius:999px;white-space:nowrap}
+  .special-body{flex:1;min-width:180px}
+  .special-body h3{font-size:1.35rem;margin-bottom:2px;color:var(--charcoal)}
+  .special-body p{font-size:.95rem;color:#5b4a24}
+  .special-price{font-family:"Trebuchet MS",sans-serif;font-weight:800;font-size:2rem;color:var(--charcoal)}
+  .menu-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:18px}
+  .menu-card{background:#fff;border-radius:var(--radius);padding:26px 24px;box-shadow:var(--shadow);border:2px solid #f6dfa6}
+  .menu-card h3{color:var(--blue);font-size:1.3rem;margin-bottom:4px}
+  .menu-card-sub{color:#8a7c5f;font-size:.85rem;margin-bottom:14px}
+  .mlist{list-style:none}
+  .mlist li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #ecd9a6}
+  .mlist li:last-child{border-bottom:none}
+  .mlist .price{color:var(--red);font-weight:800;white-space:nowrap}
+  .price-note{text-align:center;color:#9a8a68;font-size:.85rem;font-style:italic;margin-top:18px}
 
   .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
   .card{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);border:2px solid #f6dfa6}
@@ -146,17 +161,51 @@
       <div class="section-head">
         <span class="kicker">Buen Provecho</span>
         <h2>Our Menu</h2>
-        <p>Authentic Salvadoran &amp; Mexican favorites, made fresh daily. See full prices and order online.</p>
+        <p>Handmade Salvadoran pupusas &amp; authentic Mexican favorites — every pupusa served with curtido &amp; salsa verde.</p>
       </div>
-      <div class="dishes">
-        <div class="dish"><span class="emoji">🫓</span><h3>Pupusa Revuelta</h3><p>The classic — chicharrón, cheese &amp; beans, handmade and griddled.</p></div>
-        <div class="dish"><span class="emoji">🧀</span><h3>Pupusa de Frijol y Queso</h3><p>Beans &amp; melty cheese in a warm, fresh masa pupusa.</p></div>
-        <div class="dish"><span class="emoji">🍗</span><h3>Pupusa de Pollo con Queso</h3><p>Seasoned chicken and cheese — a house favorite.</p></div>
-        <div class="dish"><span class="emoji">🌮</span><h3>Tacos</h3><p>Authentic street tacos with your choice of meat.</p></div>
-        <div class="dish"><span class="emoji">🥪</span><h3>Tortas &amp; Gorditas</h3><p>Hearty Mexican classics, made to order.</p></div>
-        <div class="dish"><span class="emoji">🧀</span><h3>Quesadillas</h3><p>Big, melty, and golden off the grill.</p></div>
+
+      <div class="special">
+        <span class="special-tag">⭐ House Special</span>
+        <div class="special-body">
+          <h3>The Griss Special</h3>
+          <p>20 Pupusas Revueltas — perfect for the family or a party.</p>
+        </div>
+        <span class="special-price">$45</span>
       </div>
-      <p class="menu-note">See full menu &amp; prices on <a href="https://www.ubereats.com/store/taqueria-y-pupusas-griss-9811-spring-cypress-road/d3YMVMsdQHiHh6c5dLa2FA" target="_blank" rel="noopener">Uber Eats</a> — or <a href="tel:+18327446141">call (832) 744-6141</a>.</p>
+
+      <div class="menu-cols">
+        <div class="menu-card">
+          <h3>🫓 Pupusas</h3>
+          <p class="menu-card-sub">Handmade &amp; griddled, served with curtido &amp; salsa verde.</p>
+          <ul class="mlist">
+            <li><span>Revuelta — chicharrón, queso &amp; frijol · 4 pc</span><span class="price">$11.50</span></li>
+            <li><span>Fajita · 4 pc</span><span class="price">$11.50</span></li>
+            <li><span>Frijol y Queso</span></li>
+            <li><span>Pollo con Queso</span></li>
+          </ul>
+        </div>
+        <div class="menu-card">
+          <h3>🌮 Tacos &amp; Mains</h3>
+          <p class="menu-card-sub">Salvadoran &amp; Mexican classics, made to order.</p>
+          <ul class="mlist">
+            <li><span>Steak Mini Tacos · 5 pc</span><span class="price">$12.99</span></li>
+            <li><span>Steak Torta</span><span class="price">$9.99</span></li>
+            <li><span>Gorditas</span></li>
+            <li><span>Large Quesadillas</span></li>
+            <li><span>Tamales — Mexican &amp; Salvadoran</span></li>
+          </ul>
+        </div>
+        <div class="menu-card">
+          <h3>🥤 Drinks</h3>
+          <p class="menu-card-sub">Fresh, house-made aguas.</p>
+          <ul class="mlist">
+            <li><span>Horchata</span></li>
+            <li><span>Agua de Melón</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="price-note">Prices may vary in-store — call to confirm today's menu.</p>
+      <p class="menu-note">See the full menu &amp; order on <a href="https://www.ubereats.com/store/taqueria-y-pupusas-griss-9811-spring-cypress-road/d3YMVMsdQHiHh6c5dLa2FA" target="_blank" rel="noopener">Uber Eats</a> — or <a href="tel:+18327446141">call (832) 744-6141</a>.</p>
     </div>
   </section>
 
