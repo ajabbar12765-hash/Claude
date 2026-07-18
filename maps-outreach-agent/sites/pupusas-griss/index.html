@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Taqueria y Pupusas Griss — Salvadoran &amp; Mexican Food in Houston, TX</title>
+<meta name="description" content="Taqueria y Pupusas Griss serves authentic Salvadoran and Mexican food in Houston, TX — pupusas, tacos, tortas and gorditas. Call (832) 744-6141 or order online." />
+<style>
+  :root{
+    --blue:#0f4fb0;
+    --blue-deep:#0a3a86;
+    --gold:#f4b52a;
+    --gold-deep:#d99a00;
+    --red:#c1272d;
+    --green:#2f8f57;
+    --cream:#fff8ec;
+    --cream-2:#fdeecb;
+    --ink:#2b2418;
+    --charcoal:#1f2233;
+    --shadow:0 14px 36px rgba(15,40,90,.16);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+  h1,h2,h3,.display{font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;letter-spacing:-.4px}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  a{color:inherit}
+
+  .callbar{position:sticky;top:0;z-index:50;background:var(--blue-deep);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;box-shadow:0 4px 16px rgba(0,0,0,.22)}
+  .callbar .name{font-weight:800;font-size:1.02rem}
+  .callbar .name span{color:var(--gold)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:800;text-decoration:none;border:none;cursor:pointer;padding:13px 22px;border-radius:999px;font-size:1rem;white-space:nowrap;transition:transform .12s ease,box-shadow .12s ease}
+  .btn:active{transform:translateY(1px)}
+  .btn-call{background:var(--gold);color:var(--charcoal);box-shadow:0 6px 16px rgba(244,181,42,.45)}
+  .btn-call:hover{box-shadow:0 9px 24px rgba(244,181,42,.6)}
+  .btn-green{background:var(--green);color:#fff;box-shadow:0 6px 16px rgba(47,143,87,.35)}
+  .btn-red{background:var(--red);color:#fff}
+  .btn-dark{background:#000;color:#fff}
+  .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.55)}
+  .callbar .btn{padding:9px 16px;font-size:.95rem}
+
+  .hero{position:relative;text-align:center;color:#fff;padding:60px 20px 70px;overflow:hidden;
+    background:linear-gradient(160deg,#0f4fb0 0%,#0a3a86 55%,#08306e 100%)}
+  .hero:before{content:"";position:absolute;inset:0;opacity:.14;pointer-events:none;
+    background-image:radial-gradient(circle at 18% 25%,#fff 1.2px,transparent 1.6px),radial-gradient(circle at 72% 62%,#fff 1.2px,transparent 1.6px);background-size:46px 46px}
+  .hero > *{position:relative;z-index:1}
+  .hero .eyebrow{display:inline-block;letter-spacing:2.5px;text-transform:uppercase;font-size:.72rem;font-weight:800;color:var(--gold);border:1px solid rgba(244,181,42,.6);padding:6px 14px;border-radius:999px;margin-bottom:20px;background:rgba(0,0,0,.22)}
+  .hero h1{font-size:clamp(2.4rem,7.8vw,4.4rem);line-height:1.02;text-shadow:0 4px 22px rgba(0,0,0,.4)}
+  .hero h1 .g{color:var(--gold)}
+  .hero .tag{font-size:clamp(1.05rem,3.6vw,1.4rem);margin-top:16px;color:#eaf1ff;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+  .hero .loc{margin-top:6px;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;color:#cfe0ff}
+  .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+  .status{display:inline-flex;align-items:center;gap:9px;margin-top:26px;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.2);padding:9px 18px;border-radius:999px;font-size:.95rem;font-weight:700}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot.open{background:#54d17a;box-shadow:0 0 0 4px rgba(84,209,122,.3)}
+  .dot.closed{background:#ff7a6b;box-shadow:0 0 0 4px rgba(255,122,107,.25)}
+
+  .order{background:var(--charcoal);color:#fff;text-align:center;padding:26px 20px}
+  .order p{font-weight:700;letter-spacing:.5px;margin-bottom:14px;font-size:1.05rem}
+  .order .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  section{padding:56px 0}
+  .section-head{text-align:center;margin-bottom:34px}
+  .section-head .kicker{color:var(--blue);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:.75rem;display:block;margin-bottom:8px}
+  .section-head h2{font-size:clamp(1.8rem,5.2vw,2.6rem);color:var(--charcoal)}
+  .section-head p{max-width:600px;margin:12px auto 0;color:#6d5f47}
+
+  .menu{background:var(--cream-2)}
+  .dishes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+  .dish{background:#fff;border-radius:var(--radius);padding:24px 22px;box-shadow:var(--shadow);border:2px solid #f6dfa6;display:flex;flex-direction:column;gap:8px}
+  .dish .emoji{font-size:2.1rem}
+  .dish h3{font-size:1.2rem;color:var(--charcoal)}
+  .dish p{color:#6d5f47;font-size:.95rem}
+  .menu-note{text-align:center;margin-top:28px;font-size:1.05rem;color:var(--blue-deep);font-weight:700}
+  .menu-note a{color:var(--red)}
+
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .card{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);border:2px solid #f6dfa6}
+  .card h3{color:var(--blue);font-size:1.4rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .hours-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #ecd9a6}
+  .hours-row:last-child{border-bottom:none}
+  .hours-row.today{background:var(--cream-2);margin:0 -12px;padding:9px 12px;border-radius:10px;font-weight:800;border-bottom:none}
+  .hours-row .time{color:#6d5f47}
+  .addr{font-size:1.1rem;line-height:1.7;margin-bottom:16px}
+  .addr .pin{color:var(--blue);font-weight:700}
+  .map-embed{border-radius:14px;overflow:hidden;border:1px solid #f6dfa6;aspect-ratio:16/9;background:repeating-linear-gradient(45deg,#eef2fa,#eef2fa 12px,#e2e9f6 12px,#e2e9f6 24px);display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;text-align:center;color:#7a86a0;font-weight:700;text-decoration:none}
+  .map-embed .big{font-size:1.8rem}
+
+  .about{background:linear-gradient(135deg,var(--blue),var(--blue-deep));color:#fff;text-align:center}
+  .about .wrap{max-width:720px}
+  .about h2{color:var(--gold);font-size:clamp(1.8rem,5vw,2.5rem);margin-bottom:16px}
+  .about p{font-size:1.14rem;color:#eaf1ff;margin-bottom:12px}
+
+  .final{text-align:center;background:var(--cream-2)}
+  .final h2{color:var(--charcoal);font-size:clamp(1.9rem,5.5vw,2.7rem);margin-bottom:10px}
+  .final p{color:#6d5f47;margin-bottom:24px;font-size:1.1rem}
+  .final .btn-call{font-size:1.15rem;padding:16px 30px}
+  .phone-big{display:block;margin-top:18px;font-family:"Trebuchet MS",sans-serif;font-size:1.7rem;color:var(--charcoal);font-weight:800}
+  .socials{margin-top:22px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .socials a{background:#fff;border:2px solid #f6dfa6;padding:11px 18px;border-radius:999px;font-weight:700;text-decoration:none;color:var(--charcoal)}
+
+  footer{background:var(--charcoal);color:#cfd3e0;text-align:center;padding:30px 20px;font-size:.9rem}
+  footer .fname{color:var(--gold);font-size:1.2rem;display:block;margin-bottom:6px}
+  footer a{color:var(--gold)}
+
+  @media(max-width:640px){.info-grid{grid-template-columns:1fr}.callbar .name{font-size:.9rem}section{padding:44px 0}}
+</style>
+</head>
+<body>
+
+  <div class="callbar">
+    <div class="name">Taqueria y Pupusas <span>Griss</span></div>
+    <a class="btn btn-call" href="tel:+18327446141">📞 Call</a>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="eyebrow">🫓 Salvadoran &amp; Mexican Food</span>
+    <h1>Taqueria y Pupusas <span class="g">Griss</span></h1>
+    <p class="tag">Handmade pupusas &amp; authentic tacos — fresh off the comal, every day.</p>
+    <p class="loc">9811 Spring Cypress Rd · Houston, Texas</p>
+    <div class="hero-cta">
+      <a class="btn btn-call" href="tel:+18327446141">📞 (832) 744-6141</a>
+      <a class="btn btn-ghost" href="https://www.google.com/maps/dir/?api=1&destination=Taqueria+y+Pupusas+Griss+9811+Spring+Cypress+Rd+Houston+TX+77070" target="_blank" rel="noopener">📍 Get Directions</a>
+    </div>
+    <div class="status" id="status">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Checking hours…</span>
+    </div>
+  </header>
+
+  <!-- ORDER ONLINE -->
+  <div class="order">
+    <p>🚗 Hungry now? Order online for pickup or delivery</p>
+    <div class="btns">
+      <a class="btn btn-dark" href="https://www.ubereats.com/store/taqueria-y-pupusas-griss-9811-spring-cypress-road/d3YMVMsdQHiHh6c5dLa2FA" target="_blank" rel="noopener">Order on Uber Eats</a>
+      <a class="btn btn-red" href="https://www.doordash.com/store/pupusas-taqueria-houston-2471611/" target="_blank" rel="noopener">Order on DoorDash</a>
+      <a class="btn btn-green" href="https://www.grubhub.com/restaurant/pupusas-griss-9811-spring-cypress-rd-houston/2835869" target="_blank" rel="noopener">Order on Grubhub</a>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <section class="menu">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Buen Provecho</span>
+        <h2>Our Menu</h2>
+        <p>Authentic Salvadoran &amp; Mexican favorites, made fresh daily. See full prices and order online.</p>
+      </div>
+      <div class="dishes">
+        <div class="dish"><span class="emoji">🫓</span><h3>Pupusa Revuelta</h3><p>The classic — chicharrón, cheese &amp; beans, handmade and griddled.</p></div>
+        <div class="dish"><span class="emoji">🧀</span><h3>Pupusa de Frijol y Queso</h3><p>Beans &amp; melty cheese in a warm, fresh masa pupusa.</p></div>
+        <div class="dish"><span class="emoji">🍗</span><h3>Pupusa de Pollo con Queso</h3><p>Seasoned chicken and cheese — a house favorite.</p></div>
+        <div class="dish"><span class="emoji">🌮</span><h3>Tacos</h3><p>Authentic street tacos with your choice of meat.</p></div>
+        <div class="dish"><span class="emoji">🥪</span><h3>Tortas &amp; Gorditas</h3><p>Hearty Mexican classics, made to order.</p></div>
+        <div class="dish"><span class="emoji">🧀</span><h3>Quesadillas</h3><p>Big, melty, and golden off the grill.</p></div>
+      </div>
+      <p class="menu-note">See full menu &amp; prices on <a href="https://www.ubereats.com/store/taqueria-y-pupusas-griss-9811-spring-cypress-road/d3YMVMsdQHiHh6c5dLa2FA" target="_blank" rel="noopener">Uber Eats</a> — or <a href="tel:+18327446141">call (832) 744-6141</a>.</p>
+    </div>
+  </section>
+
+  <!-- HOURS + LOCATION -->
+  <section>
+    <div class="wrap">
+      <div class="info-grid">
+        <div class="card">
+          <h3>🕑 Hours</h3>
+          <div id="hours"></div>
+        </div>
+        <div class="card">
+          <h3>📍 Find Us</h3>
+          <p class="addr"><span class="pin">Taqueria y Pupusas Griss</span><br>9811 Spring Cypress Rd<br>Houston, TX 77070</p>
+          <a class="map-embed" href="https://www.google.com/maps/dir/?api=1&destination=Taqueria+y+Pupusas+Griss+9811+Spring+Cypress+Rd+Houston+TX+77070" target="_blank" rel="noopener">
+            <span class="big">🗺️</span><span>Tap for directions</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about">
+    <div class="wrap">
+      <h2>Real Salvadoran &amp; Mexican Cooking</h2>
+      <p>At Taqueria y Pupusas Griss, every pupusa is patted by hand and cooked fresh on the comal, and every taco is made the authentic way. Real ingredients, real flavor, served with heart.</p>
+      <p>Come hungry — leave happy.</p>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final">
+    <div class="wrap">
+      <h2>¡Vengan a Comer!</h2>
+      <p>Dine in, call ahead, or order online — we'll have it ready for you.</p>
+      <a class="btn btn-call" href="tel:+18327446141">📞 Call to Order</a>
+      <span class="phone-big">(832) 744-6141</span>
+      <div class="socials">
+        <a href="https://www.facebook.com/spring.houston.texas.texas.texas/" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://www.ubereats.com/store/taqueria-y-pupusas-griss-9811-spring-cypress-road/d3YMVMsdQHiHh6c5dLa2FA" target="_blank" rel="noopener">Uber Eats</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="fname">Taqueria y Pupusas Griss</span>
+    9811 Spring Cypress Rd, Houston, TX 77070 · (832) 744-6141<br>
+    Authentic Salvadoran &amp; Mexican Food · <a href="tel:+18327446141">Call us today</a>
+  </footer>
+
+<script>
+  // Central time (Houston). 0=Sun..6=Sat. [open,close] minutes, or null.
+  var HOURS={
+    0:[720,1230],  // Sun 12:00-20:30
+    1:[480,1140],  // Mon 8:00-19:00
+    2:[480,1140],  // Tue
+    3:[480,1140],  // Wed
+    4:[480,1140],  // Thu
+    5:[480,1260],  // Fri 8:00-21:00
+    6:[510,1260]   // Sat 8:30-21:00
+  };
+  var DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  function fmt(m){var h=Math.floor(m/60),mm=m%60,ap=h>=12?"pm":"am",hh=h%12;if(hh===0)hh=12;return hh+(mm?":"+(mm<10?"0":"")+mm:"")+ap;}
+  function nowCT(){var p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Chicago",weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());var m={};p.forEach(function(x){m[x.type]=x.value;});return{day:{Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[m.weekday],min:(parseInt(m.hour,10)%24)*60+parseInt(m.minute,10)};}
+  (function(){
+    var n=nowCT(),t=HOURS[n.day],open=t&&n.min>=t[0]&&n.min<t[1];
+    var dot=document.getElementById("statusDot"),txt=document.getElementById("statusText");
+    if(open){dot.className="dot open";txt.textContent="Open now · until "+fmt(t[1]);}
+    else{dot.className="dot closed";var msg="Closed";if(t&&n.min<t[0])msg="Closed · opens today "+fmt(t[0]);else{for(var i=1;i<=7;i++){var d=(n.day+i)%7;if(HOURS[d]){msg="Closed · opens "+DAYS[d]+" "+fmt(HOURS[d][0]);break;}}}txt.textContent=msg;}
+    var html="";for(var d=1;d<=7;d++){var idx=d%7,h=HOURS[idx],today=idx===n.day;html+='<div class="hours-row'+(today?' today':'')+'"><span class="day">'+DAYS[idx]+'</span><span class="time">'+(h?fmt(h[0])+' – '+fmt(h[1]):'Closed')+'</span></div>';}
+    document.getElementById("hours").innerHTML=html;
+  })();
+</script>
+</body>
+</html>
