@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Taqueria La Cabana — Authentic Mexican Food in Tulsa, OK</title>
+<meta name="description" content="Taqueria La Cabana serves fresh, authentic Mexican food in Tulsa, OK. Street tacos, burritos, tortas and Mexican breakfast. Family-owned. Call (918) 610-8244 or order online." />
+<style>
+  :root{
+    --red:#c1272d;
+    --red-deep:#9c1d22;
+    --green:#1f7a4d;
+    --green-deep:#155a38;
+    --gold:#f4b400;
+    --gold-deep:#d99a00;
+    --terra:#d9622b;
+    --cream:#fff8ec;
+    --cream-2:#ffefcf;
+    --ink:#3a2418;
+    --charcoal:#2a1a12;
+    --shadow:0 14px 36px rgba(90,30,15,.16);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+  h1,h2,h3,.display{font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;letter-spacing:-.4px}
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+  a{color:inherit}
+
+  .callbar{position:sticky;top:0;z-index:50;background:var(--red-deep);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;box-shadow:0 4px 16px rgba(0,0,0,.22)}
+  .callbar .name{font-weight:800;font-size:1.05rem}
+  .callbar .name span{color:var(--gold)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:800;text-decoration:none;border:none;cursor:pointer;padding:13px 22px;border-radius:999px;font-size:1rem;white-space:nowrap;transition:transform .12s ease,box-shadow .12s ease}
+  .btn:active{transform:translateY(1px)}
+  .btn-call{background:var(--gold);color:var(--charcoal);box-shadow:0 6px 16px rgba(244,180,0,.45)}
+  .btn-call:hover{box-shadow:0 9px 24px rgba(244,180,0,.6)}
+  .btn-green{background:var(--green);color:#fff;box-shadow:0 6px 16px rgba(31,122,77,.35)}
+  .btn-red{background:var(--red);color:#fff}
+  .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.55)}
+  .callbar .btn{padding:9px 16px;font-size:.95rem}
+
+  /* hero */
+  .hero{position:relative;text-align:center;color:#fff;padding:60px 20px 70px;overflow:hidden;
+    background:linear-gradient(160deg,#c1272d 0%,#a51f24 45%,#1f7a4d 100%)}
+  .hero:before{content:"";position:absolute;inset:0;opacity:.12;pointer-events:none;
+    background-image:repeating-linear-gradient(90deg,#fff 0 2px,transparent 2px 40px)}
+  .hero:after{content:"";position:absolute;inset:0;background:rgba(20,10,6,.28)}
+  .hero > *{position:relative;z-index:1}
+  .hero .eyebrow{display:inline-block;letter-spacing:2.5px;text-transform:uppercase;font-size:.72rem;font-weight:800;color:var(--gold);border:1px solid rgba(244,180,0,.6);padding:6px 14px;border-radius:999px;margin-bottom:20px;background:rgba(0,0,0,.22)}
+  .hero h1{font-size:clamp(2.6rem,8.5vw,4.8rem);line-height:1;text-shadow:0 4px 22px rgba(0,0,0,.4)}
+  .hero h1 .taq{display:block;font-size:.34em;letter-spacing:5px;color:var(--gold);font-weight:700;margin-bottom:2px}
+  .hero .tag{font-size:clamp(1.05rem,3.6vw,1.45rem);margin-top:16px;color:#fff3df;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+  .hero .loc{margin-top:6px;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;color:#ffe4b0}
+  .hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+  .status{display:inline-flex;align-items:center;gap:9px;margin-top:26px;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.2);padding:9px 18px;border-radius:999px;font-size:.95rem;font-weight:700}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot.open{background:#54d17a;box-shadow:0 0 0 4px rgba(84,209,122,.3)}
+  .dot.closed{background:#ff7a6b;box-shadow:0 0 0 4px rgba(255,122,107,.25)}
+
+  /* order band */
+  .order{background:var(--charcoal);color:#fff;text-align:center;padding:26px 20px}
+  .order p{font-weight:700;letter-spacing:.5px;margin-bottom:14px;font-size:1.05rem}
+  .order .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  section{padding:56px 0}
+  .section-head{text-align:center;margin-bottom:34px}
+  .section-head .kicker{color:var(--red);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:.75rem;display:block;margin-bottom:8px}
+  .section-head h2{font-size:clamp(1.8rem,5.2vw,2.6rem);color:var(--charcoal)}
+  .section-head p{max-width:600px;margin:12px auto 0;color:#6d5647}
+
+  .menu{background:var(--cream-2)}
+  .dishes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+  .dish{background:#fff;border-radius:var(--radius);padding:24px 22px;box-shadow:var(--shadow);border:2px solid #ffe1a8;display:flex;flex-direction:column;gap:8px}
+  .dish .emoji{font-size:2.1rem}
+  .dish h3{font-size:1.25rem;color:var(--charcoal)}
+  .dish p{color:#6d5647;font-size:.95rem}
+  .menu-note{text-align:center;margin-top:28px;font-size:1.05rem;color:var(--green-deep);font-weight:700}
+  .menu-note a{color:var(--red)}
+
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .card{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);border:2px solid #ffe1a8}
+  .card h3{color:var(--red);font-size:1.4rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .hours-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #f0d9a8}
+  .hours-row:last-child{border-bottom:none}
+  .hours-row.today{background:var(--cream-2);margin:0 -12px;padding:9px 12px;border-radius:10px;font-weight:800;border-bottom:none}
+  .hours-row .time{color:#6d5647}
+  .addr{font-size:1.1rem;line-height:1.7;margin-bottom:16px}
+  .addr .pin{color:var(--red);font-weight:700}
+  .map-embed{border-radius:14px;overflow:hidden;border:1px solid #ffe1a8;aspect-ratio:16/9;background:repeating-linear-gradient(45deg,#f6e6c3,#f6e6c3 12px,#efdcb2 12px,#efdcb2 24px);display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;text-align:center;color:#997a4f;font-weight:700;text-decoration:none}
+  .map-embed .big{font-size:1.8rem}
+
+  .about{background:linear-gradient(135deg,var(--green),var(--green-deep));color:#fff;text-align:center}
+  .about .wrap{max-width:720px}
+  .about h2{color:var(--gold);font-size:clamp(1.8rem,5vw,2.5rem);margin-bottom:16px}
+  .about p{font-size:1.14rem;color:#eafff2;margin-bottom:12px}
+  .stars{color:var(--gold);font-size:1.5rem;letter-spacing:3px;margin-top:22px}
+  .about .rec{margin-top:6px;color:#d7f2e2;font-weight:600}
+
+  .final{text-align:center;background:var(--cream-2)}
+  .final h2{color:var(--charcoal);font-size:clamp(1.9rem,5.5vw,2.7rem);margin-bottom:10px}
+  .final p{color:#6d5647;margin-bottom:24px;font-size:1.1rem}
+  .final .btn-call{font-size:1.15rem;padding:16px 30px}
+  .phone-big{display:block;margin-top:18px;font-family:"Trebuchet MS",sans-serif;font-size:1.7rem;color:var(--charcoal);font-weight:800}
+  .socials{margin-top:22px;display:flex;gap:14px;justify-content:center}
+  .socials a{background:#fff;border:2px solid #ffe1a8;padding:11px 18px;border-radius:999px;font-weight:700;text-decoration:none;color:var(--charcoal)}
+
+  footer{background:var(--charcoal);color:#e0cbb4;text-align:center;padding:30px 20px;font-size:.9rem}
+  footer .fname{color:var(--gold);font-size:1.2rem;display:block;margin-bottom:6px}
+  footer a{color:var(--gold)}
+
+  @media(max-width:640px){.info-grid{grid-template-columns:1fr}.callbar .name{font-size:.92rem}section{padding:44px 0}}
+</style>
+</head>
+<body>
+
+  <div class="callbar">
+    <div class="name">Taqueria La <span>Cabaña</span></div>
+    <a class="btn btn-call" href="tel:+19186108244">📞 Call</a>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="eyebrow">🌮 Family-Owned &amp; Woman-Run</span>
+    <h1><span class="taq">TAQUERIA</span>La Cabaña</h1>
+    <p class="tag">Fresh, authentic Mexican food — made from scratch, the way abuela taught.</p>
+    <p class="loc">10301 E 51st St · Tulsa, Oklahoma</p>
+    <div class="hero-cta">
+      <a class="btn btn-call" href="tel:+19186108244">📞 (918) 610-8244</a>
+      <a class="btn btn-ghost" href="https://www.google.com/maps/dir/?api=1&destination=Taqueria+La+Cabana+10301+E+51st+St+Tulsa+OK+74146" target="_blank" rel="noopener">📍 Get Directions</a>
+    </div>
+    <div class="status" id="status">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Checking hours…</span>
+    </div>
+  </header>
+
+  <!-- ORDER ONLINE -->
+  <div class="order">
+    <p>🚗 Hungry now? Order online for pickup or delivery</p>
+    <div class="btns">
+      <a class="btn btn-red" href="https://www.doordash.com/en/store/taqueria-la-cabana-tulsa-27642016/" target="_blank" rel="noopener">Order on DoorDash</a>
+      <a class="btn btn-green" href="https://www.grubhub.com/restaurant/taqueria-la-cabana-10301-e-51st-st-tulsa/5234896" target="_blank" rel="noopener">Order on Grubhub</a>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <section class="menu">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker">Buen Provecho</span>
+        <h2>Authentic Favorites</h2>
+        <p>Real Mexican cooking, made fresh daily. Open early for breakfast, too.</p>
+      </div>
+      <div class="dishes">
+        <div class="dish"><span class="emoji">🌮</span><h3>Street Tacos</h3><p>Your choice of meat on warm corn tortillas with onion &amp; cilantro.</p></div>
+        <div class="dish"><span class="emoji">🌯</span><h3>Burritos</h3><p>Stuffed big and rolled fresh — a full meal in every bite.</p></div>
+        <div class="dish"><span class="emoji">🥪</span><h3>Tortas</h3><p>Classic Mexican sandwiches piled high on toasted bread.</p></div>
+        <div class="dish"><span class="emoji">🍳</span><h3>Mexican Breakfast</h3><p>Open at 8am — start your day with authentic desayuno.</p></div>
+        <div class="dish"><span class="emoji">🧀</span><h3>Quesadillas</h3><p>Melty, golden, and made to order the traditional way.</p></div>
+        <div class="dish"><span class="emoji">🥤</span><h3>Aguas Frescas</h3><p>Refreshing house-made drinks to cool things down.</p></div>
+      </div>
+      <p class="menu-note">See the full menu &amp; order on <a href="https://www.doordash.com/en/store/taqueria-la-cabana-tulsa-27642016/" target="_blank" rel="noopener">DoorDash</a> — or <a href="tel:+19186108244">call (918) 610-8244</a>.</p>
+    </div>
+  </section>
+
+  <!-- HOURS + LOCATION -->
+  <section>
+    <div class="wrap">
+      <div class="info-grid">
+        <div class="card">
+          <h3>🕑 Hours</h3>
+          <div id="hours"></div>
+        </div>
+        <div class="card">
+          <h3>📍 Find Us</h3>
+          <p class="addr"><span class="pin">Taqueria La Cabaña</span><br>10301 E 51st St<br>Tulsa, OK 74146</p>
+          <a class="map-embed" href="https://www.google.com/maps/dir/?api=1&destination=Taqueria+La+Cabana+10301+E+51st+St+Tulsa+OK+74146" target="_blank" rel="noopener">
+            <span class="big">🗺️</span><span>Tap for directions</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about">
+    <div class="wrap">
+      <h2>Family-Owned, Made With Corazón</h2>
+      <p>Taqueria La Cabaña is a family-owned, woman-run kitchen serving Tulsa authentic Mexican food made fresh every day. From our tacos to our breakfast, everything is prepared with real ingredients and real heart.</p>
+      <p>Come in as a customer, leave as familia.</p>
+      <div class="stars">★★★★★</div>
+      <p class="rec">96% of guests recommend us · 180+ reviews</p>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final">
+    <div class="wrap">
+      <h2>¡Vámonos a Comer!</h2>
+      <p>Dine in, call ahead, or order online — we'll have it ready.</p>
+      <a class="btn btn-call" href="tel:+19186108244">📞 Call to Order</a>
+      <span class="phone-big">(918) 610-8244</span>
+      <div class="socials">
+        <a href="https://www.facebook.com/taquerialacabanatulsa/" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://www.instagram.com/taqueria_la_cabana_/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="fname">Taqueria La Cabaña</span>
+    10301 E 51st St, Tulsa, OK 74146 · (918) 610-8244<br>
+    Family-owned &amp; woman-run · Authentic Mexican Food · <a href="tel:+19186108244">Call us today</a>
+  </footer>
+
+<script>
+  // Central time (Tulsa). 0=Sun..6=Sat. [open,close] minutes, or null.
+  var HOURS={
+    0:[600,900],   // Sun 10:00-15:00
+    1:[480,1080],  // Mon 8:00-18:00
+    2:[480,1080],  // Tue 8:00-18:00
+    3:[480,960],   // Wed 8:00-16:00
+    4:[480,1260],  // Thu 8:00-21:00
+    5:[480,1260],  // Fri 8:00-21:00
+    6:[510,1260]   // Sat 8:30-21:00
+  };
+  var DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  function fmt(m){var h=Math.floor(m/60),mm=m%60,ap=h>=12?"pm":"am",hh=h%12;if(hh===0)hh=12;return hh+(mm?":"+(mm<10?"0":"")+mm:"")+ap;}
+  function nowCT(){var p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Chicago",weekday:"short",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());var m={};p.forEach(function(x){m[x.type]=x.value;});return{day:{Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[m.weekday],min:(parseInt(m.hour,10)%24)*60+parseInt(m.minute,10)};}
+  (function(){
+    var n=nowCT(),t=HOURS[n.day],open=t&&n.min>=t[0]&&n.min<t[1];
+    var dot=document.getElementById("statusDot"),txt=document.getElementById("statusText");
+    if(open){dot.className="dot open";txt.textContent="Open now · until "+fmt(t[1]);}
+    else{dot.className="dot closed";var msg="Closed";if(t&&n.min<t[0])msg="Closed · opens today "+fmt(t[0]);else{for(var i=1;i<=7;i++){var d=(n.day+i)%7;if(HOURS[d]){msg="Closed · opens "+DAYS[d]+" "+fmt(HOURS[d][0]);break;}}}txt.textContent=msg;}
+    var html="";for(var d=1;d<=7;d++){var idx=d%7,h=HOURS[idx],today=idx===n.day;html+='<div class="hours-row'+(today?' today':'')+'"><span class="day">'+DAYS[idx]+'</span><span class="time">'+(h?fmt(h[0])+' – '+fmt(h[1]):'Closed')+'</span></div>';}
+    document.getElementById("hours").innerHTML=html;
+  })();
+</script>
+</body>
+</html>
