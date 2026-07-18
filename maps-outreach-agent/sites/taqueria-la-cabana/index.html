@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Taqueria La Cabana — Authentic Mexican Food in Tulsa, OK</title>
-<meta name="description" content="Taqueria La Cabana serves fresh, authentic Mexican food in Tulsa, OK. Street tacos, burritos, tortas and Mexican breakfast. Family-owned. Call (918) 610-8244 or order online." />
+<meta name="description" content="Taqueria La Cabana serves fresh, authentic Mexican food in Tulsa, OK. Family-owned and woman-run. Call (918) 610-8244 or order online via DoorDash or Grubhub." />
 <style>
   :root{
     --red:#c1272d;
@@ -77,6 +77,12 @@
   .dish p{color:#6d5647;font-size:.95rem}
   .menu-note{text-align:center;margin-top:28px;font-size:1.05rem;color:var(--green-deep);font-weight:700}
   .menu-note a{color:var(--red)}
+  .menu-panel{max-width:560px;margin:0 auto;background:#fff;border-radius:var(--radius);padding:34px 28px;box-shadow:var(--shadow);border:2px solid #ffe1a8;text-align:center}
+  .menu-panel-lead{font-size:1.15rem;font-weight:800;color:var(--charcoal);margin-bottom:18px}
+  .menu-panel-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+  .menu-panel-note{color:#6d5647;font-weight:600}
+  .menu-panel-note a{color:var(--red);font-weight:800}
+  .menu-placeholder{margin-top:20px;font-size:.9rem;color:#a98c6a;font-style:italic}
 
   .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
   .card{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);border:2px solid #ffe1a8}
@@ -123,7 +129,7 @@
   <header class="hero">
     <span class="eyebrow">🌮 Family-Owned &amp; Woman-Run</span>
     <h1><span class="taq">TAQUERIA</span>La Cabaña</h1>
-    <p class="tag">Fresh, authentic Mexican food — made from scratch, the way abuela taught.</p>
+    <p class="tag">Authentic Mexican food — family-owned &amp; woman-run in Tulsa.</p>
     <p class="loc">10301 E 51st St · Tulsa, Oklahoma</p>
     <div class="hero-cta">
       <a class="btn btn-call" href="tel:+19186108244">📞 (918) 610-8244</a>
@@ -149,18 +155,18 @@
     <div class="wrap">
       <div class="section-head">
         <span class="kicker">Buen Provecho</span>
-        <h2>Authentic Favorites</h2>
-        <p>Real Mexican cooking, made fresh daily. Open early for breakfast, too.</p>
+        <h2>Our Menu</h2>
+        <p>Authentic Mexican food, made fresh. See the full menu and order online, or call to order ahead.</p>
       </div>
-      <div class="dishes">
-        <div class="dish"><span class="emoji">🌮</span><h3>Street Tacos</h3><p>Your choice of meat on warm corn tortillas with onion &amp; cilantro.</p></div>
-        <div class="dish"><span class="emoji">🌯</span><h3>Burritos</h3><p>Stuffed big and rolled fresh — a full meal in every bite.</p></div>
-        <div class="dish"><span class="emoji">🥪</span><h3>Tortas</h3><p>Classic Mexican sandwiches piled high on toasted bread.</p></div>
-        <div class="dish"><span class="emoji">🍳</span><h3>Mexican Breakfast</h3><p>Open at 8am — start your day with authentic desayuno.</p></div>
-        <div class="dish"><span class="emoji">🧀</span><h3>Quesadillas</h3><p>Melty, golden, and made to order the traditional way.</p></div>
-        <div class="dish"><span class="emoji">🥤</span><h3>Aguas Frescas</h3><p>Refreshing house-made drinks to cool things down.</p></div>
+      <div class="menu-panel">
+        <p class="menu-panel-lead">📋 View the full menu &amp; prices:</p>
+        <div class="menu-panel-btns">
+          <a class="btn btn-red" href="https://www.doordash.com/en/store/taqueria-la-cabana-tulsa-27642016/" target="_blank" rel="noopener">Menu on DoorDash</a>
+          <a class="btn btn-green" href="https://www.grubhub.com/restaurant/taqueria-la-cabana-10301-e-51st-st-tulsa/5234896" target="_blank" rel="noopener">Menu on Grubhub</a>
+        </div>
+        <p class="menu-panel-note">Prefer to call? <a href="tel:+19186108244">(918) 610-8244</a></p>
+        <p class="menu-placeholder">Your full menu can be added right here.</p>
       </div>
-      <p class="menu-note">See the full menu &amp; order on <a href="https://www.doordash.com/en/store/taqueria-la-cabana-tulsa-27642016/" target="_blank" rel="noopener">DoorDash</a> — or <a href="tel:+19186108244">call (918) 610-8244</a>.</p>
     </div>
   </section>
 
@@ -187,10 +193,8 @@
   <section class="about">
     <div class="wrap">
       <h2>Family-Owned, Made With Corazón</h2>
-      <p>Taqueria La Cabaña is a family-owned, woman-run kitchen serving Tulsa authentic Mexican food made fresh every day. From our tacos to our breakfast, everything is prepared with real ingredients and real heart.</p>
+      <p>Taqueria La Cabaña is a family-owned, woman-run kitchen serving Tulsa authentic Mexican food. Everything is prepared fresh, with real ingredients and real heart.</p>
       <p>Come in as a customer, leave as familia.</p>
-      <div class="stars">★★★★★</div>
-      <p class="rec">96% of guests recommend us · 180+ reviews</p>
     </div>
   </section>
 
