@@ -156,5 +156,76 @@ class PageContentTests(unittest.TestCase):
                             for f in findings))
 
 
+class WebReputationTests(unittest.TestCase):
+    def _titles(self, findings):
+        return [f["title"] for f in findings]
+
+    def test_search_unavailable(self):
+        from websearch import analyze_search_results
+        findings, sources = analyze_search_results("example.com", None)
+        self.assertIn("Web reputation check unavailable", self._titles(findings))
+        self.assertEqual(sources, [])
+        self.assertEqual(findings[0]["points"], 0)
+
+    def test_no_web_presence(self):
+        from websearch import analyze_search_results
+        findings, sources = analyze_search_results("obscure-shop.top", [])
+        self.assertTrue(any("web presence" in t.lower()
+                            for t in self._titles(findings)))
+
+    def test_scam_reports_on_platform_flagged(self):
+        from websearch import analyze_search_results
+        results = [
+            {"title": "Is bestdeals-shop.top a scam? - ScamAdviser",
+             "snippet": "Users report this fake store never delivers orders.",
+             "url": "https://www.scamadviser.com/check-website/bestdeals-shop.top"},
+            {"title": "bestdeals-shop.top reviews",
+             "snippet": "Total scam, they took my money and no refund.",
+             "url": "https://www.trustpilot.com/review/bestdeals-shop.top"},
+        ]
+        findings, sources = analyze_search_results("bestdeals-shop.top", results)
+        self.assertIn("Scam reports found online", self._titles(findings))
+        self.assertTrue(findings[0]["points"] > 0)
+        self.assertTrue(len(sources) >= 1)
+        self.assertTrue(any("scamadviser" in s["url"] for s in sources))
+
+    def test_clean_reviews_positive(self):
+        from websearch import analyze_search_results
+        results = [
+            {"title": "MyShop reviews", "snippet": "Great service, fast "
+             "delivery, highly recommend.",
+             "url": "https://www.trustpilot.com/review/myshop.com"},
+        ]
+        findings, sources = analyze_search_results("myshop.com", results)
+        self.assertIn("Reviewed online with no scam reports",
+                      self._titles(findings))
+        self.assertTrue(findings[0]["points"] < 0)
+
+    def test_wikipedia_established(self):
+        from websearch import analyze_search_results
+        results = [
+            {"title": "Amazon - Wikipedia", "snippet": "Amazon.com is an "
+             "American multinational technology company.",
+             "url": "https://en.wikipedia.org/wiki/Amazon_(company)"},
+        ]
+        findings, sources = analyze_search_results("amazon.com", results)
+        self.assertIn("Recognized, established website",
+                      self._titles(findings))
+
+    def test_ddg_href_decoding(self):
+        from websearch import _decode_ddg_href
+        href = "//duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.trustpilot.com%2Freview%2Fx.com&rut=abc"
+        self.assertEqual(_decode_ddg_href(href),
+                         "https://www.trustpilot.com/review/x.com")
+
+
+class AnalyzeContractTests(unittest.TestCase):
+    def test_offline_analyze_includes_sources_key(self):
+        # web_search is skipped when live=False; sources stays a list.
+        result = analyze("https://example.com", live=False)
+        self.assertIn("sources", result)
+        self.assertEqual(result["sources"], [])
+
+
 if __name__ == "__main__":
     unittest.main()

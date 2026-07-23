@@ -111,6 +111,22 @@
   .finding.good    { border-left-color: var(--good); }
   .finding.good h3    { color: var(--good); }
 
+  #sources { margin-top: 4px; }
+  #sources h2 { font-size: 15px; margin: 6px 0 10px; color: var(--text); }
+  .source {
+    display: block;
+    background: var(--card);
+    border: 1px solid #2c3a58;
+    border-radius: 10px;
+    padding: 11px 14px;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .source:hover { border-color: var(--accent); }
+  .source .s-title { font-size: 14px; line-height: 1.35; }
+  .source .s-site { font-size: 12px; color: var(--accent); margin-top: 3px; word-break: break-all; }
+
   .tips {
     margin-top: 34px;
     background: var(--card);
@@ -149,6 +165,7 @@
       <div class="meter-label">Risk score: <span id="score"></span> / 100</div>
     </div>
     <div id="findings"></div>
+    <div id="sources"></div>
   </div>
 
   <div class="tips">
@@ -190,7 +207,7 @@ form.addEventListener('submit', async (e) => {
 
   btn.disabled = true;
   resultEl.style.display = 'none';
-  statusEl.innerHTML = '<span class="spinner"></span>Checking the link, domain age and page content… this can take a few seconds.';
+  statusEl.innerHTML = '<span class="spinner"></span>Checking the link, domain age, page content and searching the web for reviews… this can take a few seconds.';
 
   try {
     const resp = await fetch('/api/check', {
@@ -235,6 +252,24 @@ function render(data) {
     div.innerHTML = '<h3>' + (SEVERITY_ICONS[f.severity] || '') + ' ' + escapeHtml(f.title) + '</h3>'
                   + '<p>' + escapeHtml(f.detail) + '</p>';
     list.appendChild(div);
+  }
+
+  const src = document.getElementById('sources');
+  src.innerHTML = '';
+  if (data.sources && data.sources.length) {
+    const h = document.createElement('h2');
+    h.textContent = '🔎 What the web says (tap to read)';
+    src.appendChild(h);
+    for (const s of data.sources) {
+      const a = document.createElement('a');
+      a.className = 'source';
+      a.href = s.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer nofollow';
+      a.innerHTML = '<div class="s-title">' + escapeHtml(s.title || s.site) + '</div>'
+                  + '<div class="s-site">' + escapeHtml(s.site || '') + '</div>';
+      src.appendChild(a);
+    }
   }
 
   resultEl.style.display = 'block';

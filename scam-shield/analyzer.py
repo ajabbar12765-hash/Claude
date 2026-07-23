@@ -21,6 +21,8 @@ from urllib.parse import urlparse, parse_qs, unquote
 
 import requests
 
+from websearch import web_reputation
+
 FETCH_TIMEOUT = 12
 RDAP_TIMEOUT = 10
 USER_AGENT = (
@@ -556,9 +558,10 @@ def verdict_for(score, findings):
             "with a protected method (card or PayPal).")
 
 
-def analyze(raw_url, live=True):
+def analyze(raw_url, live=True, web_search=True):
     url, parsed = normalize_url(raw_url)
     findings = []
+    sources = []
 
     url, parsed, unwrapped = unwrap_redirect(url, parsed)
     if unwrapped:
@@ -580,6 +583,9 @@ def analyze(raw_url, live=True):
             html, final_url = fetch_page(url, findings)
             if html:
                 check_page_content(html, findings)
+        if web_search and not is_ip_address(host):
+            rep_findings, sources = web_reputation(reg_dom)
+            findings.extend(rep_findings)
 
     score = max(0, min(100, sum(f["points"] for f in findings)))
     level, title, advice = verdict_for(score, findings)
@@ -593,4 +599,5 @@ def analyze(raw_url, live=True):
         "score": score,
         "verdict": {"level": level, "title": title, "advice": advice},
         "findings": findings,
+        "sources": sources,
     }
