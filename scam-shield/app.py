@@ -7,6 +7,7 @@ Then open: http://localhost:5000
 from flask import Flask, jsonify, request, send_from_directory
 
 from analyzer import analyze
+from qa import answer_question
 
 app = Flask(__name__, static_folder="static", static_url_path="")
 
@@ -24,6 +25,21 @@ def api_check():
         result = analyze(raw_url)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@app.post("/api/ask")
+def api_ask():
+    payload = request.get_json(silent=True) or {}
+    question = payload.get("question", "")
+    analysis = payload.get("analysis") or {}
+    try:
+        result = answer_question(question, analysis)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except Exception:
+        return jsonify({"error": "Couldn't answer right now. "
+                                 "Please try again."}), 500
     return jsonify(result)
 
 

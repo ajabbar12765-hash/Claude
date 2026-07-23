@@ -41,6 +41,15 @@ plain-English explanation of every red flag it found.
 - Shows the sources it found as clickable links ("What the web says") so
   you can read them yourself
 
+**Ask a question (optional AI):**
+- After a check, a box lets you type any question about that site — "Is
+  it safe to order?", "Why is it risky?", "Do they take PayPal?", "Is
+  this the real Nike?"
+- Answered by Claude, grounded in that site's analysis, so it only
+  reasons about the site you checked. Requires an `ANTHROPIC_API_KEY`
+  (see below). Without a key it falls back to answering from the
+  automated check and tells you how to enable full AI answers.
+
 Each signal contributes points to a 0–100 risk score:
 
 | Verdict | Meaning |
@@ -82,6 +91,16 @@ search API by setting **one** of these environment variables:
 On Vercel: **Project → Settings → Environment Variables**, add the key,
 then redeploy. If neither key is set, the app falls back to DuckDuckGo,
 and if a search can't be completed it simply says so rather than guessing.
+
+## AI answers (optional API key)
+
+The "Ask a question" box uses Claude. Set an **`ANTHROPIC_API_KEY`** env
+var (Vercel → Project → Settings → Environment Variables) to turn it on;
+answers then run on your Anthropic account and use your credits. The
+model defaults to `claude-opus-4-8` and can be overridden with the
+`SCAM_SHIELD_MODEL` env var (e.g. `claude-haiku-4-5` for lower cost).
+Without a key, the box still works — it answers from the automated check
+and notes that full AI answers need a key.
 
 ## Running the tests
 

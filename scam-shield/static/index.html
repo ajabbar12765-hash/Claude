@@ -127,6 +127,46 @@
   .source .s-title { font-size: 14px; line-height: 1.35; }
   .source .s-site { font-size: 12px; color: var(--accent); margin-top: 3px; word-break: break-all; }
 
+  #ask-box {
+    margin-top: 22px;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  #ask-box h2 { font-size: 16px; margin-bottom: 4px; }
+  .ask-hint { font-size: 12.5px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+  #ask-form { display: flex; gap: 8px; }
+  #ask-input {
+    flex: 1;
+    background: var(--card-2);
+    border: 1px solid #2c3a58;
+    color: var(--text);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 15px;
+    outline: none;
+  }
+  #ask-input:focus { border-color: var(--accent); }
+  #ask-btn {
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    padding: 0 20px; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  #ask-btn:disabled { opacity: 0.55; cursor: wait; }
+  .ask-status { font-size: 13px; color: var(--muted); margin-top: 10px; min-height: 0; }
+  #answer {
+    margin-top: 12px;
+    line-height: 1.6;
+    font-size: 15px;
+    white-space: pre-wrap;
+  }
+  #answer.show {
+    background: var(--card-2);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  #answer .ai-note { display: block; margin-top: 10px; font-size: 12px; color: var(--muted); }
+
   .tips {
     margin-top: 34px;
     background: var(--card);
@@ -166,6 +206,17 @@
     </div>
     <div id="findings"></div>
     <div id="sources"></div>
+
+    <div id="ask-box">
+      <h2>💬 Ask a question about this website</h2>
+      <p class="ask-hint">e.g. “Is it safe to order?”, “Why is it risky?”, “Do they take PayPal?”, “Is this the real Nike?”</p>
+      <form id="ask-form">
+        <input type="text" id="ask-input" placeholder="Type your question…" autocomplete="off">
+        <button type="submit" id="ask-btn">Ask</button>
+      </form>
+      <div class="ask-status" id="ask-status"></div>
+      <div id="answer"></div>
+    </div>
   </div>
 
   <div class="tips">
@@ -200,6 +251,8 @@ const VERDICT_COLORS = {
 };
 const SEVERITY_ICONS = { danger: '⛔', warning: '⚠️', info: 'ℹ️', good: '✅' };
 
+let lastAnalysis = null;
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const url = input.value.trim();
@@ -230,6 +283,13 @@ form.addEventListener('submit', async (e) => {
 });
 
 function render(data) {
+  lastAnalysis = data;
+  const ans = document.getElementById('answer');
+  ans.textContent = '';
+  ans.className = '';
+  document.getElementById('ask-status').textContent = '';
+  document.getElementById('ask-input').value = '';
+
   const v = document.getElementById('verdict');
   v.className = 'verdict ' + data.verdict.level;
   document.getElementById('verdict-title').textContent = data.verdict.title;
@@ -275,6 +335,56 @@ function render(data) {
   resultEl.style.display = 'block';
   requestAnimationFrame(() => { fill.style.width = Math.max(data.score, 3) + '%'; });
 }
+
+const askForm = document.getElementById('ask-form');
+const askInput = document.getElementById('ask-input');
+const askBtn = document.getElementById('ask-btn');
+const askStatus = document.getElementById('ask-status');
+const answerEl = document.getElementById('answer');
+
+askForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const question = askInput.value.trim();
+  if (!question) return;
+  if (!lastAnalysis) {
+    askStatus.textContent = 'Check a link first, then ask about it.';
+    return;
+  }
+
+  askBtn.disabled = true;
+  answerEl.textContent = '';
+  answerEl.className = '';
+  askStatus.innerHTML = '<span class="spinner"></span>Thinking about this website…';
+
+  try {
+    const resp = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, analysis: lastAnalysis }),
+    });
+    const data = await resp.json();
+    askStatus.textContent = '';
+    if (!resp.ok) {
+      answerEl.className = 'show';
+      answerEl.textContent = data.error || 'Something went wrong.';
+      return;
+    }
+    answerEl.className = 'show';
+    answerEl.textContent = data.answer || '';
+    if (data.ai === false) {
+      const note = document.createElement('span');
+      note.className = 'ai-note';
+      note.textContent = 'Answered from the automated check. Full AI answers turn on once an ANTHROPIC_API_KEY is set in Vercel.';
+      answerEl.appendChild(note);
+    }
+  } catch (err) {
+    askStatus.textContent = '';
+    answerEl.className = 'show';
+    answerEl.textContent = 'Could not reach the assistant. Please try again in a moment.';
+  } finally {
+    askBtn.disabled = false;
+  }
+});
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({

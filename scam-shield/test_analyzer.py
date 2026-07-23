@@ -3,6 +3,7 @@
 Run with:  python3 -m unittest test_analyzer -v
 """
 
+import os
 import unittest
 
 from analyzer import (
@@ -225,6 +226,45 @@ class AnalyzeContractTests(unittest.TestCase):
         result = analyze("https://example.com", live=False)
         self.assertIn("sources", result)
         self.assertEqual(result["sources"], [])
+
+
+class QaTests(unittest.TestCase):
+    """qa.answer_question with no API key uses the rule-based fallback."""
+
+    def setUp(self):
+        self._saved = os.environ.pop("ANTHROPIC_API_KEY", None)
+
+    def tearDown(self):
+        if self._saved is not None:
+            os.environ["ANTHROPIC_API_KEY"] = self._saved
+
+    def test_empty_question_rejected(self):
+        import qa
+        with self.assertRaises(ValueError):
+            qa.answer_question("   ", {})
+
+    def test_fallback_without_key(self):
+        import qa
+        analysis = analyze("https://amazom.top/deal", live=False)
+        out = qa.answer_question("Is this safe to order from?", analysis)
+        self.assertFalse(out["ai"])
+        self.assertIn("ANTHROPIC_API_KEY", out["answer"])
+        # The verdict title should be reflected in the fallback answer.
+        self.assertIn(analysis["verdict"]["title"].split(" —")[0],
+                      out["answer"])
+
+    def test_context_builder_is_compact_text(self):
+        import qa
+        analysis = analyze("https://amazom.top/deal", live=False)
+        ctx = qa._context_from_analysis(analysis)
+        self.assertIn("Domain:", ctx)
+        self.assertIn("Verdict:", ctx)
+        self.assertIsInstance(ctx, str)
+
+    def test_context_builder_handles_junk(self):
+        import qa
+        self.assertIsInstance(qa._context_from_analysis(None), str)
+        self.assertIsInstance(qa._context_from_analysis({}), str)
 
 
 if __name__ == "__main__":
