@@ -17,7 +17,17 @@ import os
 import requests
 
 # Gemini: free tier via https://aistudio.google.com/apikey
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+# Google retires model names over time and blocks retired ones for new keys
+# (e.g. "gemini-2.5-flash is no longer available to new users"). So we try a
+# list of current models in order and use the first that responds. Setting
+# GEMINI_MODEL pins a specific one and skips the fallback list.
+_GEMINI_MODEL_ENV = os.environ.get("GEMINI_MODEL")
+GEMINI_MODELS = ([_GEMINI_MODEL_ENV] if _GEMINI_MODEL_ENV else [
+    "gemini-flash-latest",
+    "gemini-2.0-flash",
+    "gemini-2.5-flash",
+    "gemini-pro-latest",
+])
 # Anthropic (paid): default model
 CLAUDE_MODEL = os.environ.get("SCAM_SHIELD_MODEL", "claude-opus-4-8")
 
@@ -125,10 +135,14 @@ def _fallback_answer(question, analysis, reason=None):
     return " ".join(bits)
 
 
-def _ask_gemini(api_key, user_text):
-    """Call the Google Gemini REST API. Returns text or None on failure."""
+def _gemini_call_one(model, api_key, user_text):
+    """Call one Gemini model. Returns (text_or_None, error_or_None).
+
+    error is a (status_code, message) tuple when the request was rejected,
+    so the caller can decide whether to try the next model (404 = model gone)
+    or give up (401/403 = bad key)."""
     url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
-           f"{GEMINI_MODEL}:generateContent")
+           f"{model}:generateContent")
     body = {
         "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
         "contents": [{"role": "user", "parts": [{"text": user_text}]}],
@@ -139,22 +153,36 @@ def _ask_gemini(api_key, user_text):
         headers={"Content-Type": "application/json"},
         json=body, timeout=AI_TIMEOUT)
     if resp.status_code != 200:
-        # Surface Google's own error message (e.g. "API key not valid",
-        # "model not found") so the fallback can explain what went wrong.
         detail = ""
         try:
             detail = (resp.json().get("error") or {}).get("message", "")
         except Exception:
             detail = (resp.text or "")[:160]
-        raise RuntimeError(
-            f"HTTP {resp.status_code}: {detail or 'request rejected'}")
+        return None, (resp.status_code, detail or "request rejected")
     data = resp.json()
     candidates = data.get("candidates") or []
     if not candidates:
-        return None
+        return None, None
     parts = (candidates[0].get("content") or {}).get("parts") or []
     text = "".join(p.get("text", "") for p in parts).strip()
-    return text or None
+    return (text or None), None
+
+
+def _ask_gemini(api_key, user_text):
+    """Try each candidate Gemini model until one answers. Raises RuntimeError
+    with Google's own message if every model was rejected."""
+    last_err = None
+    for model in GEMINI_MODELS:
+        text, err = _gemini_call_one(model, api_key, user_text)
+        if err is None:
+            return text
+        status, detail = err
+        last_err = f"HTTP {status}: {detail}"
+        # 404 = this model name is unavailable for the key; try the next one.
+        # Anything else (bad key, quota, blocked) will recur, so stop early.
+        if status != 404:
+            break
+    raise RuntimeError(last_err or "Gemini request failed")
 
 
 def _ask_claude(api_key, user_text):
