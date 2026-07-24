@@ -239,8 +239,9 @@ def analyze_search_results(reg_dom, results):
             "shops.", 8)], [])
 
     sld = reg_dom.split(".")[0]
-    complaint_sources = []   # results with genuine complaint language
+    complaint_sources = []   # non-checker results with genuine complaints
     review_clean = []        # real review sites, no complaints found
+    checker_pages = []       # auto-checker aggregator pages (display only)
     wiki = False
     seen = set()
     sources = []
@@ -255,31 +256,43 @@ def analyze_search_results(reg_dom, results):
                         "site": host})
 
     for r in results[:12]:
-        host = (urlparse(r.get("url", "")).hostname or "").lower()
+        url_l = (r.get("url", "") or "").lower()
+        host = (urlparse(url_l).hostname or "")
         text = (r.get("title", "") + " " + r.get("snippet", "")).lower()
         is_review = any(p in host for p in REVIEW_PLATFORMS)
         is_checker = any(p in host for p in CHECKER_AGGREGATORS)
-        is_platform = is_review or is_checker
         complaints = _complaint_phrases(text)
-        mentions_site = sld in text or reg_dom in text
+        # Only count a result if it is actually ABOUT this domain: the domain
+        # must appear in the result URL or in the title/snippet text. A generic
+        # Trustpilot/BBB/ScamDoc homepage that doesn't name the site is noise.
+        mentions_site = (reg_dom in url_l or reg_dom in text
+                         or (len(sld) >= 5 and sld in text))
         if "wikipedia.org" in host:
             wiki = True
-        if complaints and (is_platform or mentions_site):
-            complaint_sources.append((r, is_platform))
-        elif is_review:
+        if is_checker:
+            # Auto-checkers publish a page for every domain; never a complaint
+            # signal on their own. Keep as a display-only source if on-topic.
+            if mentions_site:
+                checker_pages.append(r)
+            continue
+        if complaints and mentions_site:
+            complaint_sources.append((r, is_review))
+        elif is_review and mentions_site:
             review_clean.append(r)
 
     for r, _ in complaint_sources:
         add_source(r)
     for r in review_clean:
         add_source(r)
+    for r in checker_pages:
+        add_source(r)
     sources = sources[:5]
 
-    strong_on_platform = any(is_p for _, is_p in complaint_sources)
+    strong_on_review = any(is_rev for _, is_rev in complaint_sources)
     n = len(complaint_sources)
 
     findings = []
-    if n >= 2 or strong_on_platform:
+    if n >= 2 or strong_on_review:
         findings.append(_finding(
             "danger", "Scam complaints found online",
             "A web search surfaced pages with real complaints about this "

@@ -208,6 +208,43 @@ class WebReputationTests(unittest.TestCase):
                       self._titles(findings))
         self.assertEqual(findings[0]["points"], 0)
 
+    def test_obscure_site_generic_homepages_not_flagged(self):
+        # An unpopular site: the search only returns GENERIC homepages of
+        # review/checker platforms that don't actually name the domain, plus
+        # a checker page. None of this is a complaint about the site, so it
+        # must NOT be flagged as unsafe. (Regression: freshleafpk.com.)
+        from websearch import analyze_search_results
+        results = [
+            {"title": "Trustpilot Reviews: Experience the power of customer "
+             "reviews", "snippet": "Read reviews. Write reviews. Find "
+             "companies. | Trustpilot",
+             "url": "https://www.trustpilot.com/"},
+            {"title": "Better Business Bureau | BBB Start with Trust",
+             "snippet": "BBB helps consumers find businesses they can trust.",
+             "url": "https://www.bbb.org/"},
+            {"title": "freshleafpk.com Review - ScamDoc",
+             "snippet": "Is freshleafpk.com safe? Trust score and website "
+             "review for freshleafpk.com.",
+             "url": "https://www.scamdoc.com/view/freshleafpk.com"},
+        ]
+        findings, sources = analyze_search_results("freshleafpk.com", results)
+        titles = self._titles(findings)
+        self.assertNotIn("Scam complaints found online", titles)
+        self.assertNotIn("A possible complaint online", titles)
+        self.assertEqual(findings[0]["points"], 0)
+
+    def test_complaint_only_counts_when_it_names_the_site(self):
+        # A genuine complaint phrase on a generic homepage that does NOT name
+        # the domain must not be attributed to this site.
+        from websearch import analyze_search_results
+        results = [
+            {"title": "Trustpilot", "snippet": "People say they never "
+             "received their order and got no refund from various shops.",
+             "url": "https://www.trustpilot.com/"},
+        ]
+        findings, sources = analyze_search_results("freshleafpk.com", results)
+        self.assertNotIn("Scam complaints found online", self._titles(findings))
+
     def test_clean_reviews_positive(self):
         from websearch import analyze_search_results
         results = [
