@@ -70,8 +70,68 @@
     mask-image: radial-gradient(80% 60% at 50% 20%, #000 40%, transparent 100%);
     -webkit-mask-image: radial-gradient(80% 60% at 50% 20%, #000 40%, transparent 100%);
   }
+  /* ---- Floating 3D objects in the open spaces ---- */
+  .scene {
+    position: fixed; inset: 0; z-index: -1; overflow: hidden;
+    perspective: 1000px; pointer-events: none;
+    will-change: transform;
+  }
+  .shape { position: absolute; transform-style: preserve-3d; opacity: .55; will-change: transform; }
+  .shape.s-sm { width: 46px; height: 46px; }
+  .shape.s-md { width: 74px; height: 74px; }
+  .shape.s-lg { width: 104px; height: 104px; }
+
+  /* glassy 3D cube */
+  .cube { transform-style: preserve-3d; width: 100%; height: 100%; position: relative;
+    animation: spin3d 20s linear infinite; }
+  .cube i {
+    position: absolute; inset: 0; display: block;
+    background: linear-gradient(135deg, rgba(120,150,255,0.16), rgba(55,207,209,0.10));
+    border: 1px solid rgba(160,190,255,0.35);
+    box-shadow: inset 0 0 18px rgba(120,160,255,0.25);
+    -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  }
+  .cube .f1 { transform: translateZ(calc(var(--h)/2)); }
+  .cube .f2 { transform: rotateY(180deg) translateZ(calc(var(--h)/2)); }
+  .cube .f3 { transform: rotateY(90deg)  translateZ(calc(var(--h)/2)); }
+  .cube .f4 { transform: rotateY(-90deg) translateZ(calc(var(--h)/2)); }
+  .cube .f5 { transform: rotateX(90deg)  translateZ(calc(var(--h)/2)); }
+  .cube .f6 { transform: rotateX(-90deg) translateZ(calc(var(--h)/2)); }
+  .s-sm .cube { --h: 46px; } .s-md .cube { --h: 74px; } .s-lg .cube { --h: 104px; }
+  @keyframes spin3d {
+    0%   { transform: rotateX(0deg) rotateY(0deg); }
+    100% { transform: rotateX(360deg) rotateY(360deg); }
+  }
+
+  /* glossy 3D sphere */
+  .orb { width: 100%; height: 100%; border-radius: 50%;
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(150,180,255,0.5) 22%, rgba(70,110,240,0.35) 55%, rgba(30,40,90,0.25) 100%);
+    box-shadow: inset -6px -8px 20px rgba(0,0,0,0.45), 0 10px 30px rgba(60,100,240,0.35);
+    border: 1px solid rgba(255,255,255,0.18); }
+  .orb.teal { background:
+      radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(120,235,235,0.5) 22%, rgba(40,180,185,0.35) 55%, rgba(20,60,70,0.25) 100%); }
+  .orb.violet { background:
+      radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(190,160,255,0.5) 22%, rgba(130,95,240,0.35) 55%, rgba(40,30,80,0.25) 100%); }
+
+  /* rotating 3D ring */
+  .ring { width: 100%; height: 100%; border-radius: 50%;
+    border: 7px solid rgba(160,190,255,0.35);
+    border-top-color: rgba(55,207,209,0.6);
+    box-shadow: 0 0 18px rgba(90,140,255,0.3), inset 0 0 12px rgba(90,140,255,0.2);
+    animation: ringspin 14s linear infinite; }
+  @keyframes ringspin {
+    0%   { transform: rotateX(65deg) rotateZ(0deg); }
+    100% { transform: rotateX(65deg) rotateZ(360deg); }
+  }
+
+  .float-a { animation: floatY 9s ease-in-out infinite; }
+  .float-b { animation: floatY 12s ease-in-out infinite reverse; }
+  .float-c { animation: floatY 15s ease-in-out infinite; }
+  @keyframes floatY { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-26px); } }
+
   @media (prefers-reduced-motion: reduce) {
-    .aurora span, .logo { animation: none !important; }
+    .aurora span, .logo, .cube, .ring, .float-a, .float-b, .float-c { animation: none !important; }
     html { scroll-behavior: auto; }
   }
 
@@ -279,6 +339,29 @@
 </head>
 <body>
 <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<div class="scene" id="scene" aria-hidden="true">
+  <div class="shape s-md float-a" data-depth="26" style="top:9%; left:4%;">
+    <div class="cube"><i class="f1"></i><i class="f2"></i><i class="f3"></i><i class="f4"></i><i class="f5"></i><i class="f6"></i></div>
+  </div>
+  <div class="shape s-md float-b" data-depth="40" style="top:12%; right:5%;">
+    <div class="orb teal"></div>
+  </div>
+  <div class="shape s-lg float-c" data-depth="18" style="top:40%; right:-3%;">
+    <div class="ring"></div>
+  </div>
+  <div class="shape s-sm float-a" data-depth="52" style="top:52%; left:3%;">
+    <div class="orb violet"></div>
+  </div>
+  <div class="shape s-lg float-b" data-depth="22" style="top:72%; left:-4%;">
+    <div class="cube"><i class="f1"></i><i class="f2"></i><i class="f3"></i><i class="f4"></i><i class="f5"></i><i class="f6"></i></div>
+  </div>
+  <div class="shape s-md float-c" data-depth="46" style="top:84%; right:6%;">
+    <div class="orb"></div>
+  </div>
+  <div class="shape s-sm float-b" data-depth="60" style="top:30%; left:8%;">
+    <div class="ring"></div>
+  </div>
+</div>
 <div class="container">
   <header>
     <div class="logo-wrap">
@@ -551,6 +634,42 @@ function escapeHtml(s) {
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[c]);
 }
+
+// ---- Parallax for the floating 3D objects (pointer + scroll) ----
+(function () {
+  const reduce = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+  const scene = document.getElementById('scene');
+  const aurora = document.querySelector('.aurora');
+  if (!scene) return;
+  let mx = 0, my = 0, ticking = false;
+  function frame() {
+    ticking = false;
+    const sc = -window.scrollY * 0.05;
+    scene.style.transform =
+      'translate3d(' + (mx * 22).toFixed(1) + 'px,' +
+      (my * 22 + sc).toFixed(1) + 'px,0)';
+    if (aurora) aurora.style.transform =
+      'translate3d(' + (mx * 9).toFixed(1) + 'px,' +
+      (my * 9 + sc * 0.5).toFixed(1) + 'px,0)';
+  }
+  function request() { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }
+  window.addEventListener('pointermove', (e) => {
+    mx = (e.clientX / window.innerWidth) - 0.5;
+    my = (e.clientY / window.innerHeight) - 0.5;
+    request();
+  }, { passive: true });
+  window.addEventListener('scroll', request, { passive: true });
+  // Gentle device-tilt parallax on phones/tablets (no permission prompt;
+  // simply stays idle if the browser withholds orientation events).
+  window.addEventListener('deviceorientation', (e) => {
+    if (e.gamma == null) return;
+    mx = Math.max(-0.5, Math.min(0.5, e.gamma / 45));
+    my = Math.max(-0.5, Math.min(0.5, (e.beta - 45) / 45));
+    request();
+  }, { passive: true });
+})();
 </script>
 </body>
 </html>
