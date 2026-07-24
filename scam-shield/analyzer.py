@@ -17,6 +17,7 @@ import ipaddress
 import re
 import socket
 from datetime import datetime, timezone
+from html import unescape as html_unescape
 from urllib.parse import urlparse, parse_qs, unquote
 
 import requests
@@ -448,6 +449,32 @@ def fetch_page(url, findings):
     return resp.text, resp.url
 
 
+# Cap on how much of the page's visible text we keep to feed the AI Q&A.
+PAGE_EXCERPT_CHARS = 6000
+
+
+def extract_page_text(html):
+    """Return (title, cleaned_visible_text) from raw HTML.
+
+    Strips scripts/styles/tags and collapses whitespace so the AI Q&A can
+    read what the site actually says (products, contact info, policies,
+    payment methods) rather than only the summarized findings."""
+    if not html:
+        return "", ""
+    title = ""
+    m = re.search(r"<title[^>]*>(.*?)</title>", html,
+                  flags=re.DOTALL | re.IGNORECASE)
+    if m:
+        title = html_unescape(
+            re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", m.group(1)))).strip()
+    body = re.sub(r"<script.*?</script>|<style.*?</style>|<!--.*?-->", " ",
+                  html, flags=re.DOTALL | re.IGNORECASE)
+    body = re.sub(r"<[^>]+>", " ", body)
+    body = html_unescape(body)
+    body = re.sub(r"\s+", " ", body).strip()
+    return title[:300], body[:PAGE_EXCERPT_CHARS]
+
+
 def check_page_content(html, findings):
     text = re.sub(r"<script.*?</script>|<style.*?</style>", " ", html,
                   flags=re.DOTALL | re.IGNORECASE)
@@ -575,6 +602,8 @@ def analyze(raw_url, live=True, web_search=True):
     reg_dom = check_url_structure(parsed, findings)
 
     resolvable = True
+    page_title = ""
+    page_text = ""
     if live:
         resolvable = check_dns(host, findings)
         if resolvable and not is_ip_address(host):
@@ -583,6 +612,7 @@ def analyze(raw_url, live=True, web_search=True):
             html, final_url = fetch_page(url, findings)
             if html:
                 check_page_content(html, findings)
+                page_title, page_text = extract_page_text(html)
         if web_search and not is_ip_address(host):
             rep_findings, sources = web_reputation(reg_dom)
             findings.extend(rep_findings)
@@ -600,4 +630,6 @@ def analyze(raw_url, live=True, web_search=True):
         "verdict": {"level": level, "title": title, "advice": advice},
         "findings": findings,
         "sources": sources,
+        "page_title": page_title,
+        "page_text": page_text,
     }

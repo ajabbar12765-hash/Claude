@@ -157,6 +157,48 @@ class PageContentTests(unittest.TestCase):
                             for f in findings))
 
 
+class PageTextExtractionTests(unittest.TestCase):
+    def test_extracts_title_and_visible_text(self):
+        from analyzer import extract_page_text
+        html = ("<html><head><title>Fresh Leaf &amp; Co</title>"
+                "<style>.a{color:red}</style></head><body>"
+                "<script>var x=1;</script><h1>Organic tea</h1>"
+                "<p>We accept PayPal. Email help@shop.com</p></body></html>")
+        title, text = extract_page_text(html)
+        self.assertEqual(title, "Fresh Leaf & Co")
+        self.assertIn("Organic tea", text)
+        self.assertIn("PayPal", text)
+        self.assertNotIn("var x", text)   # scripts stripped
+        self.assertNotIn("color:red", text)   # styles stripped
+
+    def test_empty_html_safe(self):
+        from analyzer import extract_page_text
+        self.assertEqual(extract_page_text(""), ("", ""))
+        self.assertEqual(extract_page_text(None), ("", ""))
+
+    def test_excerpt_is_capped(self):
+        from analyzer import extract_page_text, PAGE_EXCERPT_CHARS
+        html = "<body>" + ("word " * 5000) + "</body>"
+        _, text = extract_page_text(html)
+        self.assertLessEqual(len(text), PAGE_EXCERPT_CHARS)
+
+    def test_analyze_offline_has_page_keys(self):
+        result = analyze("https://example.com", live=False)
+        self.assertIn("page_title", result)
+        self.assertIn("page_text", result)
+
+
+class QaPageTextTests(unittest.TestCase):
+    def test_page_text_included_in_context(self):
+        import qa
+        ctx = qa._context_from_analysis({
+            "url": "https://shop.com", "domain": "shop.com", "score": 20,
+            "verdict": {"title": "Mixed", "advice": "a"}, "findings": [],
+            "page_title": "My Shop", "page_text": "We accept PayPal and Visa."})
+        self.assertIn("My Shop", ctx)
+        self.assertIn("We accept PayPal", ctx)
+
+
 class WebReputationTests(unittest.TestCase):
     def _titles(self, findings):
         return [f["title"] for f in findings]
