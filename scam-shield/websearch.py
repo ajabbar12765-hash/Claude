@@ -11,6 +11,13 @@ Providers, in order of preference (first one configured wins):
 
 Everything here is wrapped so that a failed/blocked search degrades to an
 informational "couldn't check" finding rather than breaking the report.
+
+IMPORTANT: sites like ScamAdviser / ScamDoc / Scam-Detector auto-generate
+a page titled "Is <domain> a scam?" for EVERY domain that exists. The mere
+word "scam" on such a page is not a complaint. So we only treat genuine
+complaint language (never received, took my money, do not buy, ...) as a
+scam signal, and we ignore the neutral "is it a scam / scam or legit"
+checker phrasing.
 """
 
 import html as html_lib
@@ -26,23 +33,48 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"
 )
 
-# Sites whose whole reason to exist is reviews / scam reports / complaints.
-# A hit here is far more meaningful than a scam word in a random blog.
-REPUTATION_PLATFORMS = (
-    "scamadviser", "scamdoc", "trustpilot", "sitejabber", "reddit",
-    "bbb.org", "scamwatch", "ripoffreport", "mywot", "urlvoid",
-    "scam-detector", "malwaretips", "complaintsboard", "quora",
-    "trustedreviews", "scamminder", "gridinsoft", "web.paranoid",
+# Real user-review / complaint sites: a complaint here is meaningful, and a
+# clean listing here is mildly reassuring.
+REVIEW_PLATFORMS = (
+    "trustpilot", "sitejabber", "reddit", "bbb.org", "quora",
+    "trustedreviews", "complaintsboard", "ripoffreport",
 )
 
-# Phrases that, when they appear next to the shop's name, signal trouble.
-SCAM_KEYWORDS = (
-    "scam", "scammer", "fraud", "fraudulent", "fake", "counterfeit",
-    "ripoff", "rip-off", "rip off", "phishing", "do not buy", "don't buy",
-    "avoid this", "never received", "did not arrive", "didn't arrive",
-    "stole my", "chargeback", "fake store", "scam site", "scam website",
-    "not legit", "is it a scam", "scam alert", "fake website",
-    "money back", "no refund", "won't refund", "took my money",
+# Automated "scam checker" aggregators. They publish a page for every domain
+# on earth, so a *clean* result here means little; only a genuine complaint
+# phrase on one of these counts.
+CHECKER_AGGREGATORS = (
+    "scamadviser", "scamdoc", "scam-detector", "scamminder", "gridinsoft",
+    "urlvoid", "mywot", "web.paranoid", "malwaretips", "scamwatch",
+)
+
+# Actual complaint / fraud language. Deliberately does NOT include the bare
+# words "scam", "fake" or "legit", which appear on every auto-checker page.
+STRONG_SCAM_PHRASES = (
+    "do not buy", "don't buy", "do not order", "don't order",
+    "never received", "did not receive", "didn't receive", "never got my",
+    "did not arrive", "didn't arrive", "never arrived", "never delivered",
+    "never shipped", "order never", "took my money", "stole my", "money stolen",
+    "chargeback", "charged me", "won't refund", "wouldn't refund", "no refund",
+    "never refund", "refused to refund", "ripoff", "rip-off", "rip off",
+    "scammed", "i was scammed", "got scammed", "is a scam", "it's a scam",
+    "its a scam", "total scam", "complete scam", "obvious scam",
+    "confirmed scam", "known scam", "reported scam", "definitely a scam",
+    "this is a scam", "avoid this", "avoid at all", "stay away", "steer clear",
+    "counterfeit", "fake products", "fake goods", "fake store", "fake site",
+    "fake website", "fraudulent", "phishing", "waste of money", "lost my money",
+    "they stole", "beware", "do not trust", "don't trust", "not trustworthy",
+)
+
+# Neutral phrasing found on auto-generated checker/review pages. Stripped out
+# before we look for complaint phrases, so "is it a scam" never counts.
+NEUTRAL_CHECKER_PHRASES = (
+    "is it a scam", "is it legit", "is it safe", "is it real",
+    "scam or legit", "scam or not", "legit or scam", "scam or trustworthy",
+    "scam check", "scam detector", "scam checker", "check website",
+    "website review", "reviews & ratings", "reviews and ratings",
+    "trust score", "trustscore", "safety score", "how to recognize",
+    "is this website", "is this site", "should i buy from",
 )
 
 
@@ -178,6 +210,16 @@ def _finding(severity, title, detail, points):
             "points": points}
 
 
+def _complaint_phrases(text_lower):
+    """Return the genuine complaint phrases in the text, after removing the
+    neutral 'is it a scam / scam checker' phrasing that appears on every
+    auto-generated checker page."""
+    cleaned = text_lower
+    for phrase in NEUTRAL_CHECKER_PHRASES:
+        cleaned = cleaned.replace(phrase, " ")
+    return [p for p in STRONG_SCAM_PHRASES if p in cleaned]
+
+
 def analyze_search_results(reg_dom, results):
     """Turn raw search results into (findings, sources)."""
     if results is None:
@@ -185,7 +227,7 @@ def analyze_search_results(reg_dom, results):
             "info", "Web reputation check unavailable",
             "An automated web search for this shop couldn't be completed "
             "right now, so its online reputation wasn't factored into the "
-            "score. Try searching the shop's name plus 'scam' yourself.",
+            "score. Try searching the shop's name plus 'reviews' yourself.",
             0)], [])
 
     if not results:
@@ -197,8 +239,8 @@ def analyze_search_results(reg_dom, results):
             "shops.", 8)], [])
 
     sld = reg_dom.split(".")[0]
-    scam_sources = []
-    platform_clean = []
+    complaint_sources = []   # results with genuine complaint language
+    review_clean = []        # real review sites, no complaints found
     wiki = False
     seen = set()
     sources = []
@@ -215,47 +257,46 @@ def analyze_search_results(reg_dom, results):
     for r in results[:12]:
         host = (urlparse(r.get("url", "")).hostname or "").lower()
         text = (r.get("title", "") + " " + r.get("snippet", "")).lower()
-        neg = [k for k in SCAM_KEYWORDS if k in text]
-        platform = next((p for p in REPUTATION_PLATFORMS if p in host), None)
+        is_review = any(p in host for p in REVIEW_PLATFORMS)
+        is_checker = any(p in host for p in CHECKER_AGGREGATORS)
+        is_platform = is_review or is_checker
+        complaints = _complaint_phrases(text)
+        mentions_site = sld in text or reg_dom in text
         if "wikipedia.org" in host:
             wiki = True
-        if platform:
-            if neg:
-                scam_sources.append(r)
-            else:
-                platform_clean.append(r)
-        elif neg and (sld in text or reg_dom in text):
-            scam_sources.append(r)
+        if complaints and (is_platform or mentions_site):
+            complaint_sources.append((r, is_platform))
+        elif is_review:
+            review_clean.append(r)
 
-    for r in scam_sources:
+    for r, _ in complaint_sources:
         add_source(r)
-    for r in platform_clean:
+    for r in review_clean:
         add_source(r)
     sources = sources[:5]
 
+    strong_on_platform = any(is_p for _, is_p in complaint_sources)
+    n = len(complaint_sources)
+
     findings = []
-    if len(scam_sources) >= 2 or any(
-            next((p for p in REPUTATION_PLATFORMS
-                  if p in (urlparse(r.get("url", "")).hostname or "").lower()),
-                 None)
-            for r in scam_sources):
+    if n >= 2 or strong_on_platform:
         findings.append(_finding(
-            "danger", "Scam reports found online",
-            "A web search surfaced pages describing this site as a scam or "
-            "reporting problems (fake goods, orders never arriving, no "
-            "refunds). See the sources below and read them before ordering.",
-            25))
-    elif scam_sources:
+            "danger", "Scam complaints found online",
+            "A web search surfaced pages with real complaints about this "
+            "site (orders never arriving, no refunds, fake goods, or people "
+            "saying they were scammed). Read the sources below before "
+            "ordering.", 22))
+    elif n == 1:
         findings.append(_finding(
-            "warning", "Possible scam mentions online",
-            "A web search found at least one page linking this site to scam "
-            "or complaint language. It's not conclusive, so read the source "
-            "and look for more reviews before paying.", 12))
-    elif platform_clean:
+            "warning", "A possible complaint online",
+            "A web search found one page with complaint-style wording about "
+            "this site. It's not conclusive on its own — read it and look "
+            "for more reviews before paying.", 10))
+    elif review_clean:
         findings.append(_finding(
-            "good", "Reviewed online with no scam reports",
-            "This site shows up on independent review platforms and the "
-            "search found no scam or fraud reports. Reassuring, though you "
+            "good", "Reviewed online, no complaints found",
+            "This site appears on genuine review platforms and the search "
+            "found no complaint or scam reports. Reassuring, though you "
             "should still skim the reviews yourself.", -8))
     elif wiki:
         findings.append(_finding(
@@ -264,10 +305,11 @@ def analyze_search_results(reg_dom, results):
             "throwaway scam shops never do.", -10))
     else:
         findings.append(_finding(
-            "info", "No scam reports found online",
-            "A web search found some mentions of this site but no scam or "
-            "fraud reports. Absence of complaints isn't proof it's safe, "
-            "but it's a mildly good sign.", 0))
+            "info", "No scam complaints found online",
+            "A web search found mentions of this site (including automatic "
+            "'is it a scam?' checker pages, which exist for every website) "
+            "but no genuine complaints. Absence of complaints isn't proof "
+            "it's safe, but nothing bad turned up.", 0))
 
     return findings, sources
 
@@ -276,7 +318,10 @@ def web_reputation(reg_dom):
     """Public entry point: search the web about reg_dom and return
     (findings, sources). Never raises."""
     try:
-        query = f"{reg_dom} reviews scam legit safe"
+        # Neutral query: "reviews complaints" surfaces both real reviews and
+        # genuine complaint threads, without the word "scam" biasing results
+        # toward auto-generated scam-checker template pages.
+        query = f"{reg_dom} reviews complaints"
         results = run_search(query)
         return analyze_search_results(reg_dom, results)
     except Exception:

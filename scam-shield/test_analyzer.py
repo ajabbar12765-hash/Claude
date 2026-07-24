@@ -174,7 +174,7 @@ class WebReputationTests(unittest.TestCase):
         self.assertTrue(any("web presence" in t.lower()
                             for t in self._titles(findings)))
 
-    def test_scam_reports_on_platform_flagged(self):
+    def test_scam_complaints_on_platform_flagged(self):
         from websearch import analyze_search_results
         results = [
             {"title": "Is bestdeals-shop.top a scam? - ScamAdviser",
@@ -185,10 +185,28 @@ class WebReputationTests(unittest.TestCase):
              "url": "https://www.trustpilot.com/review/bestdeals-shop.top"},
         ]
         findings, sources = analyze_search_results("bestdeals-shop.top", results)
-        self.assertIn("Scam reports found online", self._titles(findings))
+        self.assertIn("Scam complaints found online", self._titles(findings))
         self.assertTrue(findings[0]["points"] > 0)
         self.assertTrue(len(sources) >= 1)
-        self.assertTrue(any("scamadviser" in s["url"] for s in sources))
+
+    def test_auto_checker_page_not_flagged(self):
+        # ScamAdviser/ScamDoc publish an "is it a scam?" page for EVERY
+        # domain. With no genuine complaint language it must NOT be flagged.
+        from websearch import analyze_search_results
+        results = [
+            {"title": "Is Capconnect.net legit or a scam? - ScamAdviser",
+             "snippet": "Is capconnect.net a scam or legit? Check the trust "
+             "score and read reviews to find out if this website is safe.",
+             "url": "https://www.scamadviser.com/check-website/capconnect.net"},
+            {"title": "capconnect.net Review - ScamDoc",
+             "snippet": "Is capconnect.net safe? Website review and trust "
+             "score for capconnect.net.",
+             "url": "https://www.scamdoc.com/view/capconnect.net"},
+        ]
+        findings, sources = analyze_search_results("capconnect.net", results)
+        self.assertIn("No scam complaints found online",
+                      self._titles(findings))
+        self.assertEqual(findings[0]["points"], 0)
 
     def test_clean_reviews_positive(self):
         from websearch import analyze_search_results
@@ -198,7 +216,7 @@ class WebReputationTests(unittest.TestCase):
              "url": "https://www.trustpilot.com/review/myshop.com"},
         ]
         findings, sources = analyze_search_results("myshop.com", results)
-        self.assertIn("Reviewed online with no scam reports",
+        self.assertIn("Reviewed online, no complaints found",
                       self._titles(findings))
         self.assertTrue(findings[0]["points"] < 0)
 
