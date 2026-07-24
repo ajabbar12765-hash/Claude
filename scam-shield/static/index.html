@@ -414,7 +414,7 @@ askForm.addEventListener('submit', async (e) => {
     if (data.ai === false) {
       const note = document.createElement('span');
       note.className = 'ai-note';
-      note.textContent = 'Answered from the automated check. Full AI answers turn on once an ANTHROPIC_API_KEY is set in Vercel.';
+      note.textContent = 'Answered from the automated check. Full AI answers turn on once a free GEMINI_API_KEY (or an ANTHROPIC_API_KEY) is set in Vercel.';
       answerEl.appendChild(note);
     }
   } catch (err) {

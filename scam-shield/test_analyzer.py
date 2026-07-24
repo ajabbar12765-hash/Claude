@@ -250,11 +250,13 @@ class QaTests(unittest.TestCase):
     """qa.answer_question with no API key uses the rule-based fallback."""
 
     def setUp(self):
-        self._saved = os.environ.pop("ANTHROPIC_API_KEY", None)
+        self._saved = {k: os.environ.pop(k, None)
+                       for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY")}
 
     def tearDown(self):
-        if self._saved is not None:
-            os.environ["ANTHROPIC_API_KEY"] = self._saved
+        for k, v in self._saved.items():
+            if v is not None:
+                os.environ[k] = v
 
     def test_empty_question_rejected(self):
         import qa
@@ -266,7 +268,7 @@ class QaTests(unittest.TestCase):
         analysis = analyze("https://amazom.top/deal", live=False)
         out = qa.answer_question("Is this safe to order from?", analysis)
         self.assertFalse(out["ai"])
-        self.assertIn("ANTHROPIC_API_KEY", out["answer"])
+        self.assertIn("GEMINI_API_KEY", out["answer"])
         # The verdict title should be reflected in the fallback answer.
         self.assertIn(analysis["verdict"]["title"].split(" —")[0],
                       out["answer"])
