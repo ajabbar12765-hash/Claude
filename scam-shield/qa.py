@@ -89,8 +89,13 @@ def _context_from_analysis(analysis):
     return "\n".join(lines)
 
 
-def _fallback_answer(question, analysis):
-    """Answer from the analysis alone when no AI key is configured."""
+def _fallback_answer(question, analysis, reason=None):
+    """Answer from the analysis alone when the AI answer isn't available.
+
+    reason=None      -> no AI key is configured (tell them how to add one).
+    reason=<string>  -> a key IS set but the AI call failed; surface a short,
+                        non-sensitive hint so the problem can be diagnosed.
+    """
     verdict = (analysis or {}).get("verdict") or {}
     title = verdict.get("title", "No verdict available")
     advice = verdict.get("advice", "")
@@ -103,12 +108,20 @@ def _fallback_answer(question, analysis):
     if top:
         bits.append("Main flags: "
                     + "; ".join(str(f.get("title", "")) for f in top) + ".")
+    if reason:
+        bits.append(
+            f"(The AI assistant is configured but couldn't answer just now: "
+            f"{reason}. This usually means the API key is invalid/rejected, "
+            f"or the request was blocked. Double-check the GEMINI_API_KEY "
+            f"value in Vercel.)")
+    else:
+        bits.append(
+            "For a direct answer to your specific question, add a free "
+            "GEMINI_API_KEY (from aistudio.google.com/apikey) in the Vercel "
+            "project settings to turn on AI answers.")
     bits.append(
-        "For a direct answer to your specific question, add a free "
-        "GEMINI_API_KEY (from aistudio.google.com/apikey) in the Vercel "
-        "project settings to turn on AI answers. Either way: pay with a "
-        "card or PayPal so you can dispute the charge if the goods never "
-        "arrive.")
+        "Either way: pay with a card or PayPal so you can dispute the charge "
+        "if the goods never arrive.")
     return " ".join(bits)
 
 
@@ -125,7 +138,16 @@ def _ask_gemini(api_key, user_text):
         url, params={"key": api_key},
         headers={"Content-Type": "application/json"},
         json=body, timeout=AI_TIMEOUT)
-    resp.raise_for_status()
+    if resp.status_code != 200:
+        # Surface Google's own error message (e.g. "API key not valid",
+        # "model not found") so the fallback can explain what went wrong.
+        detail = ""
+        try:
+            detail = (resp.json().get("error") or {}).get("message", "")
+        except Exception:
+            detail = (resp.text or "")[:160]
+        raise RuntimeError(
+            f"HTTP {resp.status_code}: {detail or 'request rejected'}")
     data = resp.json()
     candidates = data.get("candidates") or []
     if not candidates:
@@ -176,6 +198,9 @@ def answer_question(question, analysis):
                     "or search the shop's name plus 'reviews' to see what "
                     "others report.")
         return {"answer": text, "ai": True}
-    except Exception:
-        # Any API/config error: fall back rather than break the page.
-        return {"answer": _fallback_answer(q, analysis), "ai": False}
+    except Exception as exc:
+        # A key IS configured but the call failed: fall back, but surface a
+        # short reason so the problem is diagnosable instead of silent.
+        reason = str(exc)[:180] or exc.__class__.__name__
+        return {"answer": _fallback_answer(q, analysis, reason=reason),
+                "ai": False}

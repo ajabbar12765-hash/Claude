@@ -310,6 +310,14 @@ class QaTests(unittest.TestCase):
         self.assertIn(analysis["verdict"]["title"].split(" —")[0],
                       out["answer"])
 
+    def test_fallback_with_reason_surfaces_error(self):
+        import qa
+        analysis = analyze("https://amazom.top/deal", live=False)
+        out = qa._fallback_answer("Is this safe?", analysis,
+                                  reason="HTTP 400: API key not valid")
+        self.assertIn("API key not valid", out)
+        self.assertIn("couldn't answer", out)
+
     def test_context_builder_is_compact_text(self):
         import qa
         analysis = analyze("https://amazom.top/deal", live=False)
