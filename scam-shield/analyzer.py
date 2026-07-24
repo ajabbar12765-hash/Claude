@@ -450,7 +450,7 @@ def fetch_page(url, findings):
 
 
 # Cap on how much of the page's visible text we keep to feed the AI Q&A.
-PAGE_EXCERPT_CHARS = 6000
+PAGE_EXCERPT_CHARS = 12000
 
 
 def extract_page_text(html):

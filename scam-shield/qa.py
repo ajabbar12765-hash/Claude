@@ -34,7 +34,7 @@ CLAUDE_MODEL = os.environ.get("SCAM_SHIELD_MODEL", "claude-opus-4-8")
 MAX_QUESTION_CHARS = 500
 AI_TIMEOUT = 20
 # How much of the site's page text to pass to the model as grounding.
-PAGE_TEXT_CHARS = 6000
+PAGE_TEXT_CHARS = 12000
 
 SYSTEM_PROMPT = (
     "You are Scam Shield's assistant. You help everyday, non-technical "
