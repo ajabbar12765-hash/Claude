@@ -84,52 +84,10 @@
     );
   }
 
-  // Flashcard: front = the word, back = the meaning.
-  function flipCardHTML(w) {
-    return (
-      '<div class="flip-face front">' +
-        '<span class="flash-label">Word</span>' +
-        '<span class="word">' + esc(w.word) + '</span>' +
-        '<div class="ipa">' + esc(w.ipa) + '</div>' +
-        '<span class="pos-badge">' + esc(w.pos) + '</span>' +
-        '<span class="flip-cue">Tap to reveal the meaning ✦</span>' +
-      '</div>' +
-      '<div class="flip-face back">' +
-        '<span class="flash-label">Meaning</span>' +
-        '<p class="definition">' + esc(w.definition) + '</p>' +
-        explainHTML(w) +
-        '<p class="example">"' + esc(w.example) + '"</p>' +
-        synHTML(w) +
-        '<div class="tip"><span class="tip-ico">💡</span><span>' + esc(w.tip) + '</span></div>' +
-        '<span class="flip-cue">Tap to flip back ↺</span>' +
-      '</div>'
-    );
-  }
-
-  var cardFlipped = false;
-  function sizeFlipCard() {
-    var card = document.getElementById("wordCard");
-    if (!card) return;
-    var f = card.querySelector(".front"), b = card.querySelector(".back");
-    if (!f || !b) return;
-    card.style.height = Math.max(f.offsetHeight, b.offsetHeight) + "px";
-  }
-  function toggleFlip() {
-    cardFlipped = !cardFlipped;
-    document.getElementById("wordCard").classList.toggle("flipped", cardFlipped);
-    var hint = document.getElementById("flipHint");
-    if (hint) hint.textContent = cardFlipped ? "Tap the card to flip back ↺" : "Tap the card to flip it ✦";
-  }
-
   function renderToday() {
     var w = wordOfDay();
     document.getElementById("dateLine").textContent = "Word of the day · " + prettyDate(todayKey());
-    var card = document.getElementById("wordCard");
-    card.innerHTML = flipCardHTML(w);
-    cardFlipped = false;
-    card.classList.remove("flipped");
-    // size after layout settles
-    setTimeout(sizeFlipCard, 0);
+    document.getElementById("wordCard").innerHTML = cardHTML(w);
 
     renderStreak();
 
@@ -499,15 +457,7 @@
     renderAll();
     updateNotifyBtn();
     primeVoices();
-    var wc = document.getElementById("wordCard");
     moveTabGlow("today");
-
-    // tap the flashcard to flip (ignore taps on buttons / links / the simple box)
-    wc.addEventListener("click", function (e) {
-      if (e.target.closest("button, a, .simple-box")) return;
-      toggleFlip();
-    });
-    window.addEventListener("resize", sizeFlipCard);
 
     document.querySelectorAll(".tab").forEach(function (t) {
       t.addEventListener("click", function () { switchView(t.dataset.view); });
@@ -552,7 +502,6 @@
           box.hidden = !show;
           ex.classList.toggle("is-open", show);
           ex.textContent = show ? "🧩 Hide simple version" : "🧩 Explain simply";
-          setTimeout(sizeFlipCard, 0);
         }
         return;
       }
