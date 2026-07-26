@@ -164,6 +164,23 @@ body {
 }
 .tip .tip-ico { font-size: 17px; }
 
+/* ---------- explain-simply toggle ---------- */
+.explain-btn {
+  display: inline-flex; align-items: center; gap: 6px; margin: 0 0 14px;
+  border: 1px solid rgba(167,139,250,.5); background: rgba(167,139,250,.12); color: #d9ccff;
+  border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background .2s, border-color .2s, transform .1s;
+}
+.explain-btn:hover { background: rgba(167,139,250,.2); }
+.explain-btn:active { transform: scale(.96); }
+.explain-btn.is-open { background: linear-gradient(135deg, var(--accent-2), var(--primary-2)); color: #fff; border-color: transparent; }
+.simple-box {
+  margin: -4px 0 16px; padding: 14px 15px; font-size: 15px; line-height: 1.55; color: #f0ecff;
+  background: rgba(167,139,250,.12); border: 1px solid rgba(167,139,250,.38);
+  border-radius: 14px; animation: fade .22s ease;
+}
+.sb-label { display: block; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 5px; }
+
 .today-actions { display: flex; gap: 10px; margin: 18px 0; flex-wrap: wrap; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;

@@ -65,6 +65,10 @@
       '</div>' +
       '<div class="ipa">' + esc(w.ipa) + '</div>' +
       '<p class="definition">' + esc(w.definition) + '</p>' +
+      (w.simple ?
+        '<button class="explain-btn" data-explain type="button">🧩 Explain simply</button>' +
+        '<div class="simple-box" hidden><span class="sb-label">In plain words</span>' + esc(w.simple) + '</div>'
+      : "") +
       '<p class="example">"' + esc(w.example) + '"</p>' +
       '<div class="meta-row">' +
         w.synonyms.map(function (s) { return '<span class="syn">' + esc(s) + '</span>'; }).join("") +
@@ -459,8 +463,19 @@
       if (e.target.id === "detailModal") closeDetail();
     });
 
-    // event delegation for goal check-ins / deletes (works in Today + Goals views)
+    // event delegation for goal check-ins / deletes / explain (works everywhere)
     document.body.addEventListener("click", function (e) {
+      var ex = e.target.closest("[data-explain]");
+      if (ex) {
+        var box = ex.nextElementSibling;
+        if (box && box.classList.contains("simple-box")) {
+          var show = box.hidden;
+          box.hidden = !show;
+          ex.classList.toggle("is-open", show);
+          ex.textContent = show ? "🧩 Hide simple version" : "🧩 Explain simply";
+        }
+        return;
+      }
       var ci = e.target.closest("[data-checkin]");
       if (ci) { checkInToday(ci.getAttribute("data-checkin")); return; }
       var del = e.target.closest("[data-del]");
