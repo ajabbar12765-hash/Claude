@@ -368,9 +368,10 @@
     state.notify.enabled = true; save();
     await tryRegisterPeriodicSync();
     // fire one now so the user sees it works
-    showLocalNotification("🔔 Daily Vocab is on!", "You'll get a new word each day. Today's word: " + wordOfDay().word);
+    var w = wordOfDay();
+    showLocalNotification("📖 You're in! Here's today's word", "“" + w.word + "” — " + (w.simple || w.definition) + " Tap to learn it ✨");
     updateNotifyBtn();
-    toast("Daily reminders on. Add to your home screen for the best experience.");
+    toast("Daily reminders on ✨ A new word will find you each day.");
   }
 
   async function tryRegisterPeriodicSync() {

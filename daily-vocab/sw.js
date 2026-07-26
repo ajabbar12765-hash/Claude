@@ -1,5 +1,5 @@
 /* Daily Vocab service worker: offline cache + daily reminder notifications. */
-var CACHE = "daily-vocab-v1";
+var CACHE = "daily-vocab-v2";
 var ASSETS = [
   "./",
   "index.html",
@@ -46,11 +46,22 @@ function showDailyWord() {
     if (!words.length) return;
     var dayNum = Math.floor(Date.now() / 86400000);
     var w = words[dayNum % words.length];
-    return self.registration.showNotification("📚 Word of the day: " + w.word, {
-      body: w.definition,
+    var hooks = [
+      "✨ Today's word to master",
+      "📖 A fresh word for you",
+      "🧠 Level up your vocabulary",
+      "🎯 Your word of the day",
+      "💬 Sound smarter today",
+      "🔥 Keep your streak going"
+    ];
+    var title = hooks[dayNum % hooks.length] + ": " + w.word;
+    var body = (w.simple || w.definition) + "  ·  Tap to see examples & set a goal.";
+    return self.registration.showNotification(title, {
+      body: body,
       icon: "icons/icon-192.png",
       badge: "icons/icon-192.png",
-      tag: "daily-vocab"
+      tag: "daily-vocab",
+      vibrate: [80, 40, 80]
     });
   }).catch(function () {});
 }
