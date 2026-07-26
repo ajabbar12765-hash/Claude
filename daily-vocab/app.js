@@ -218,9 +218,35 @@
   function renderAll() { renderToday(); renderGoals(); renderHistory(); }
 
   /* ---------- views / tabs ---------- */
+  var TAB_ORDER = ["today", "goals", "history"];
   function switchView(name) {
     document.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("is-active", t.dataset.view === name); });
     document.querySelectorAll(".view").forEach(function (v) { v.classList.toggle("is-active", v.id === "view-" + name); });
+    moveTabGlow(name);
+  }
+  function moveTabGlow(name) {
+    var glow = document.getElementById("tabGlow");
+    if (!glow) return;
+    var i = TAB_ORDER.indexOf(name);
+    if (i < 0) i = 0;
+    glow.style.transform = "translateX(" + (i * 100) + "%)";
+  }
+
+  /* ---------- 3D tilt on the word card ---------- */
+  function setupTilt(el) {
+    if (!el) return;
+    function onMove(e) {
+      var p = (e.touches && e.touches[0]) || e;
+      var r = el.getBoundingClientRect();
+      var px = (p.clientX - r.left) / r.width - 0.5;
+      var py = (p.clientY - r.top) / r.height - 0.5;
+      el.style.transform = "rotateY(" + (px * 9) + "deg) rotateX(" + (-py * 9) + "deg)";
+    }
+    function reset() { el.style.transform = ""; }
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerleave", reset);
+    el.addEventListener("pointercancel", reset);
+    el.addEventListener("touchend", reset);
   }
 
   /* ---------- modals ---------- */
@@ -241,20 +267,87 @@
   function closeDetail() { document.getElementById("detailModal").hidden = true; }
 
   /* ---------- pronunciation ---------- */
+  var voicesReady = false;
+  function primeVoices() {
+    if (!("speechSynthesis" in window)) return;
+    try {
+      speechSynthesis.getVoices();
+      speechSynthesis.onvoiceschanged = function () { voicesReady = true; };
+    } catch (e) {}
+  }
+  function pickEnglishVoice() {
+    try {
+      var vs = speechSynthesis.getVoices() || [];
+      return vs.filter(function (v) { return /^en(\b|[-_])/i.test(v.lang); })[0] ||
+             vs.filter(function (v) { return /en/i.test(v.lang); })[0] || null;
+    } catch (e) { return null; }
+  }
   function speak(text) {
-    if (!("speechSynthesis" in window)) { toast("Speech isn't supported on this device."); return; }
-    var u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.9; u.lang = "en-US";
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
+    if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+      toast("Your browser can't read words aloud. Try Chrome or Safari.");
+      return;
+    }
+    try {
+      // iOS/Safari sometimes gets stuck paused — nudge it awake.
+      if (speechSynthesis.paused) speechSynthesis.resume();
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US"; u.rate = 0.92; u.pitch = 1;
+      var v = pickEnglishVoice();
+      if (v) u.voice = v;
+      u.onerror = function () { toast("Couldn't play audio on this device."); };
+      // If voices aren't loaded yet, wait once for them then speak.
+      if (!v && !voicesReady) {
+        speechSynthesis.onvoiceschanged = function () {
+          voicesReady = true;
+          var vv = pickEnglishVoice(); if (vv) u.voice = vv;
+          speechSynthesis.speak(u);
+        };
+        // Fallback: speak anyway shortly, in case the event never fires.
+        setTimeout(function () { if (speechSynthesis.speaking === false) speechSynthesis.speak(u); }, 250);
+      } else {
+        speechSynthesis.speak(u);
+      }
+      toast("🔊 " + text);
+    } catch (e) {
+      toast("Couldn't play audio on this device.");
+    }
   }
 
   /* ---------- notifications ---------- */
+  function isStandalone() {
+    return window.matchMedia && window.matchMedia("(display-mode: standalone)").matches ||
+           window.navigator.standalone === true;
+  }
+  function isIOS() { return /iP(hone|ad|od)/.test(navigator.userAgent); }
+
   function updateNotifyBtn() {
     var btn = document.getElementById("notifyBtn");
     var on = state.notify.enabled && ("Notification" in window) && Notification.permission === "granted";
     btn.classList.toggle("is-on", on);
     btn.textContent = on ? "🔔" : "🔕";
+    renderNotifyHint();
+  }
+
+  function renderNotifyHint() {
+    var box = document.getElementById("notifyHint");
+    if (!box) return;
+    if (state.notifyHintClosed) { box.hidden = true; return; }
+    var on = state.notify.enabled && ("Notification" in window) && Notification.permission === "granted";
+    if (on) { box.hidden = true; return; }
+
+    var msg;
+    if (!("Notification" in window)) {
+      msg = "<b>Tip:</b> This browser can't send reminders. On iPhone, add this app to your Home Screen first, then open it from there.";
+    } else if (isIOS() && !isStandalone()) {
+      msg = "<b>Turn on daily reminders:</b> tap the <b>Share</b> button → <b>Add to Home Screen</b>, open the app from that icon, then tap the 🔔 bell up top.";
+    } else {
+      msg = "<b>Want a daily nudge?</b> Tap the 🔔 bell in the top-right and choose <b>Allow</b> to get a new word every day.";
+    }
+    box.innerHTML = '<span>💡</span><span>' + msg + '</span><button class="nh-close" id="nhClose" aria-label="Dismiss">×</button>';
+    box.hidden = false;
+    var c = document.getElementById("nhClose");
+    if (c) c.addEventListener("click", function () { state.notifyHintClosed = true; save(); box.hidden = true; });
   }
 
   async function toggleNotify() {
@@ -329,6 +422,9 @@
     recordSeen();
     renderAll();
     updateNotifyBtn();
+    primeVoices();
+    setupTilt(document.getElementById("wordCard"));
+    moveTabGlow("today");
 
     document.querySelectorAll(".tab").forEach(function (t) {
       t.addEventListener("click", function () { switchView(t.dataset.view); });
