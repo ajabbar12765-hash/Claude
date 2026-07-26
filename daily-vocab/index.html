@@ -3,113 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b1020" />
+  <meta name="theme-color" content="#ffffff" />
   <meta name="description" content="Learn one advanced English word every day and build practice goals." />
   <title>Daily Vocab</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Daily Vocab" />
   <link rel="stylesheet" href="app.css" />
 </head>
 <body>
-  <div class="bg-aurora" aria-hidden="true">
-    <span class="blob b1"></span>
-    <span class="blob b2"></span>
-    <span class="blob b3"></span>
-  </div>
-  <div class="word-bg" id="wordBg" aria-hidden="true"></div>
-
-  <div class="app">
-    <header class="topbar">
+  <div class="wrap">
+    <header class="masthead">
       <div class="brand">
-        <img class="brand-mark" src="icons/icon-192.png" alt="" width="38" height="38" />
-        <span class="brand-name">Daily&nbsp;Vocab</span>
+        <img src="icons/icon-192.png" alt="" width="40" height="40" />
+        <div><div class="name">Daily Vocab</div><div class="sub">The daily word encyclopedia</div></div>
       </div>
-      <button id="notifyBtn" class="icon-btn" title="Daily reminders" aria-label="Daily reminders">🔔</button>
+      <button id="notifyBtn" class="bell" title="Daily reminders" aria-label="Daily reminders">🔔</button>
     </header>
 
     <nav class="tabs" role="tablist">
-      <span class="tab-glow" id="tabGlow"></span>
-      <button class="tab is-active" data-view="today" role="tab">Today</button>
+      <button class="tab on" data-view="today" role="tab">Today</button>
       <button class="tab" data-view="goals" role="tab">Goals</button>
       <button class="tab" data-view="history" role="tab">History</button>
     </nav>
 
-    <main class="content">
-      <!-- TODAY -->
-      <section id="view-today" class="view is-active">
-        <div class="hero-3d" aria-hidden="true">
-          <div class="letter3d" id="letter3d"></div>
-          <div class="cube-shadow"></div>
+    <main>
+      <section id="view-today" class="view on">
+        <p class="eyebrow" id="dateLine"></p>
+        <h1 class="headword" id="headword"></h1>
+        <p class="meta" id="meta"></p>
+        <div id="cardBody"></div>
+        <div class="actions">
+          <button class="btn btn-p" id="setGoalBtn">Set a practice goal</button>
+          <button class="btn btn-g" id="speakBtn">🔊 Pronounce</button>
         </div>
-
-        <p class="date-line" id="dateLine"></p>
-        <div class="streak" id="streak" hidden></div>
-
-        <article class="card word-card" id="wordCard"></article>
-
-        <div class="today-actions">
-          <button class="btn btn-primary" id="setGoalBtn"><span>🎯</span> Set a practice goal</button>
-          <button class="btn btn-ghost" id="speakBtn" title="Hear the word">🔊 Pronounce</button>
-        </div>
-
-        <div id="notifyHint" class="notify-hint" hidden></div>
+        <div id="streakWrap"></div>
+        <div id="notifyHint" class="nhint" hidden></div>
         <div id="todayGoalBox"></div>
       </section>
 
-      <!-- GOALS -->
       <section id="view-goals" class="view">
-        <div class="section-head">
-          <h2>Practice goals</h2>
-          <span class="muted" id="goalCount"></span>
-        </div>
-        <p class="hint">Set a goal to use a word every day for a few days. Check in each day you use it — build the streak until the word is yours.</p>
+        <h2 class="sec">Practice goals</h2>
+        <p class="hint">Set a goal to use a word every day for a few days. Check in each day you use it to build your streak.</p>
         <div id="goalsList"></div>
       </section>
 
-      <!-- HISTORY -->
       <section id="view-history" class="view">
-        <div class="section-head">
-          <h2>Word history</h2>
-          <span class="muted" id="historyCount"></span>
-        </div>
-        <p class="hint">Every word you've been shown, newest first. Tap one to review it.</p>
+        <h2 class="sec">Word history</h2>
+        <p class="hint">Every word you have seen, newest first. Select one to review it.</p>
         <div id="historyList"></div>
       </section>
     </main>
 
-    <footer class="foot">Made for daily learning · one word at a time</footer>
+    <footer class="foot">Daily Vocab · one word at a time · your progress is saved on this device</footer>
   </div>
 
-  <!-- Goal modal -->
-  <div class="modal-backdrop" id="goalModal" hidden>
+  <div class="modal-bg" id="goalModal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
       <h3 id="goalModalTitle">Practice this word</h3>
-      <p class="modal-word" id="goalModalWord"></p>
-      <label class="field-label">Use it every day for…</label>
-      <div class="day-choices" id="dayChoices">
+      <p class="mw" id="goalModalWord"></p>
+      <label class="flab">Use it every day for…</label>
+      <div class="chips" id="dayChoices">
         <button class="chip" data-days="3">3 days</button>
-        <button class="chip is-active" data-days="5">5 days</button>
+        <button class="chip on" data-days="5">5 days</button>
         <button class="chip" data-days="7">7 days</button>
         <button class="chip" data-days="14">14 days</button>
       </div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" id="goalCancel">Cancel</button>
-        <button class="btn btn-primary" id="goalConfirm">Start goal</button>
+      <div class="mact">
+        <button class="btn btn-g" id="goalCancel">Cancel</button>
+        <button class="btn btn-p" id="goalConfirm">Start goal</button>
       </div>
     </div>
   </div>
 
-  <!-- Word detail modal -->
-  <div class="modal-backdrop" id="detailModal" hidden>
+  <div class="modal-bg" id="detailModal" hidden>
     <div class="modal" role="dialog" aria-modal="true">
       <div id="detailBody"></div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" id="detailClose">Close</button>
-        <button class="btn btn-primary" id="detailGoal">Set a goal</button>
+      <div class="mact">
+        <button class="btn btn-g" id="detailClose">Close</button>
+        <button class="btn btn-p" id="detailGoal">Set a goal</button>
       </div>
     </div>
   </div>
