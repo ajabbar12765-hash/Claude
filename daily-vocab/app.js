@@ -88,6 +88,7 @@
     var w = wordOfDay();
     document.getElementById("dateLine").textContent = "Word of the day · " + prettyDate(todayKey());
     document.getElementById("wordCard").innerHTML = cardHTML(w);
+    buildLetter3D((w.word[0] || "A").toUpperCase());
 
     renderStreak();
 
@@ -96,6 +97,50 @@
     var goal = state.goals.filter(function (g) { return g.word === w.word && !isComplete(g); })[0];
     box.innerHTML = "";
     if (goal) box.appendChild(goalNode(goal, true));
+  }
+
+  /* ---------- 3D extruded letter hero ---------- */
+  function buildLetter3D(ch) {
+    var host = document.getElementById("letter3d");
+    if (!host) return;
+    host.innerHTML = "";
+    var depth = 14;
+    for (var i = depth; i >= 0; i--) {
+      var s = document.createElement("span");
+      s.className = "l3d-layer" + (i === 0 ? " l3d-front" : "");
+      s.textContent = ch;
+      s.style.transform = "translateZ(" + (-i * 2) + "px)";
+      if (i > 0) {
+        var t = i / depth; // 0 = near front, 1 = deepest
+        var c = mixRGB([217, 164, 65], [72, 52, 16], t);
+        s.style.color = "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")";
+      }
+      host.appendChild(s);
+    }
+  }
+  function mixRGB(a, b, t) {
+    return [0, 1, 2].map(function (i) { return Math.round(a[i] + (b[i] - a[i]) * t); });
+  }
+
+  /* ---------- scattered words wallpaper ---------- */
+  function buildWordBg() {
+    var host = document.getElementById("wordBg");
+    if (!host || !WORDS.length) return;
+    var pos = [[6,8],[70,6],[40,15],[86,20],[15,26],[55,32],[81,42],[7,46],[34,54],[64,60],
+               [90,66],[19,72],[47,78],[75,84],[4,88],[60,90],[29,95],[88,93],[43,40],[12,62]];
+    host.innerHTML = "";
+    pos.forEach(function (p, i) {
+      var w = WORDS[(i * 7) % WORDS.length].word;
+      var s = document.createElement("span");
+      s.textContent = w;
+      if (i % 3 === 0) s.className = "gold";
+      s.style.left = p[0] + "vw";
+      s.style.top = p[1] + "vh";
+      s.style.fontSize = (14 + (i % 5) * 4) + "px";
+      s.style.transform = "rotate(" + (((i * 37) % 40) - 20) + "deg)";
+      s.style.animationDelay = (i % 6) + "s";
+      host.appendChild(s);
+    });
   }
 
   /* ---------- streak ---------- */
@@ -457,6 +502,7 @@
     renderAll();
     updateNotifyBtn();
     primeVoices();
+    buildWordBg();
     moveTabGlow("today");
 
     document.querySelectorAll(".tab").forEach(function (t) {
