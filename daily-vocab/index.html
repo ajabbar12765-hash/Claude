@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="description" content="Learn one advanced English word every day and build practice goals." />
+  <title>Daily Vocab</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Daily Vocab" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">V</span>
+        <span class="brand-name">Daily Vocab</span>
+      </div>
+      <button id="notifyBtn" class="icon-btn" title="Daily reminders" aria-label="Daily reminders">🔔</button>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-view="today" role="tab">Today</button>
+      <button class="tab" data-view="goals" role="tab">Goals</button>
+      <button class="tab" data-view="history" role="tab">History</button>
+    </nav>
+
+    <main class="content">
+      <!-- TODAY -->
+      <section id="view-today" class="view is-active">
+        <p class="date-line" id="dateLine"></p>
+        <article class="card word-card" id="wordCard"></article>
+        <div class="today-actions">
+          <button class="btn btn-primary" id="setGoalBtn">Set a practice goal</button>
+          <button class="btn btn-ghost" id="speakBtn" title="Hear the word">🔊 Pronounce</button>
+        </div>
+        <div id="todayGoalBox"></div>
+      </section>
+
+      <!-- GOALS -->
+      <section id="view-goals" class="view">
+        <div class="section-head">
+          <h2>Practice goals</h2>
+          <span class="muted" id="goalCount"></span>
+        </div>
+        <p class="hint">Set a goal to use a word every day for a few days. Check in each day you use it — build the streak until the word is yours.</p>
+        <div id="goalsList"></div>
+      </section>
+
+      <!-- HISTORY -->
+      <section id="view-history" class="view">
+        <div class="section-head">
+          <h2>Word history</h2>
+          <span class="muted" id="historyCount"></span>
+        </div>
+        <p class="hint">Every word you've been shown, newest first. Tap one to review it.</p>
+        <div id="historyList"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Goal modal -->
+  <div class="modal-backdrop" id="goalModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+      <h3 id="goalModalTitle">Practice this word</h3>
+      <p class="modal-word" id="goalModalWord"></p>
+      <label class="field-label" for="goalDays">Use it every day for…</label>
+      <div class="day-choices" id="dayChoices">
+        <button class="chip" data-days="3">3 days</button>
+        <button class="chip is-active" data-days="5">5 days</button>
+        <button class="chip" data-days="7">7 days</button>
+        <button class="chip" data-days="14">14 days</button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="goalCancel">Cancel</button>
+        <button class="btn btn-primary" id="goalConfirm">Start goal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Word detail modal -->
+  <div class="modal-backdrop" id="detailModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div id="detailBody"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="detailClose">Close</button>
+        <button class="btn btn-primary" id="detailGoal">Set a goal</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
