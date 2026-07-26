@@ -1,5 +1,5 @@
 /* Daily Vocab service worker: offline cache + daily reminder notifications. */
-var CACHE = "daily-vocab-v5";
+var CACHE = "daily-vocab-v6";
 var ASSETS = [
   "./",
   "index.html",
@@ -23,13 +23,21 @@ self.addEventListener("activate", function (e) {
   );
 });
 
+/* Network-first for same-origin GETs so new deploys show up immediately;
+   fall back to cache only when offline. */
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
+  var url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) return;
   e.respondWith(
-    caches.match(e.request).then(function (cached) {
-      return cached || fetch(e.request).then(function (res) {
-        return res;
-      }).catch(function () { return cached; });
+    fetch(e.request).then(function (res) {
+      var copy = res.clone();
+      caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+      return res;
+    }).catch(function () {
+      return caches.match(e.request).then(function (cached) {
+        return cached || caches.match("index.html");
+      });
     })
   );
 });
