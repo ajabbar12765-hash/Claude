@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, viewport-fit=cover'>
+<meta name='theme-color' content='#070b16'>
+<title>Daily Vocab</title>
+<link rel='manifest' href='manifest.webmanifest'>
+<link rel='icon' type='image/png' sizes='192x192' href='icon-192.png'>
+<link rel='apple-touch-icon' href='icon-192.png'>
+<meta name='apple-mobile-web-app-capable' content='yes'>
+<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent'>
+<meta name='apple-mobile-web-app-title' content='Daily Vocab'>
+<style>
+:root{
+--bg:#070b16;--glass:rgba(22,30,58,.55);--glass2:rgba(30,42,79,.55);
+--line:rgba(129,140,248,.22);--linesoft:rgba(255,255,255,.08);--text:#eef2ff;--muted:#9aa6c8;
+--primary:#6366f1;--primary2:#818cf8;--accent:#22d3ee;--accent2:#a78bfa;--good:#34d399;--warn:#fbbf24;
+--gold:#f4c869;--goldd:#d9a441;--serif:Georgia,'Times New Roman',serif;--radius:20px;
+--shadow:0 18px 50px rgba(0,0,0,.5);--glow:0 10px 40px rgba(99,102,241,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+.bg-aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;
+background:radial-gradient(1200px 700px at 75% -15%,rgba(99,102,241,.18),transparent 60%),radial-gradient(1000px 600px at -10% 110%,rgba(34,211,238,.12),transparent 55%),var(--bg)}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55}
+.b1{width:340px;height:340px;background:#4f46e5;top:-80px;right:-60px;animation:f1 18s ease-in-out infinite}
+.b2{width:300px;height:300px;background:#22d3ee;bottom:-100px;left:-80px;animation:f2 22s ease-in-out infinite}
+.b3{width:260px;height:260px;background:#a78bfa;top:40%;left:55%;animation:f3 26s ease-in-out infinite}
+@keyframes f1{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,50px)}}
+@keyframes f2{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-40px)}}
+@keyframes f3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-30px,-30px) scale(1.15)}}
+.word-bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.word-bg span{position:absolute;white-space:nowrap;font-family:var(--serif);font-style:italic;font-weight:600;color:rgba(198,190,255,.06);animation:drift 26s ease-in-out infinite}
+.word-bg span.gold{color:rgba(244,200,105,.06)}
+@keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.app{max-width:640px;margin:0 auto;padding:0 16px calc(30px + env(safe-area-inset-bottom));min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top)) 2px 12px}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-mark{width:38px;height:38px;border-radius:11px;display:block;box-shadow:0 6px 18px rgba(99,102,241,.45)}
+.brand-name{font-weight:800;font-size:19px;background:linear-gradient(90deg,#fff,var(--primary2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.icon-btn{border:1px solid var(--line);background:var(--glass);color:var(--text);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);width:46px;height:46px;border-radius:14px;font-size:20px;cursor:pointer;transition:transform .12s,border-color .2s}
+.icon-btn:active{transform:scale(.92)}
+.icon-btn.on{background:linear-gradient(135deg,var(--primary),var(--primary2));border-color:transparent;box-shadow:var(--glow)}
+.tabs{position:relative;display:flex;gap:4px;padding:5px;background:var(--glass);border:1px solid var(--linesoft);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;margin:6px 0 18px}
+.tab-glow{position:absolute;top:5px;left:5px;height:calc(100% - 10px);width:calc((100% - 10px)/3);border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:var(--glow);transition:transform .28s cubic-bezier(.4,1.2,.4,1);z-index:0}
+.tab{position:relative;z-index:1;flex:1;border:0;background:transparent;color:var(--muted);padding:11px 8px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:color .2s}
+.tab.on{color:#fff}
+.view{display:none;animation:fade .3s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.hero-3d{display:flex;flex-direction:column;align-items:center;justify-content:center;perspective:700px;height:180px;margin:2px 0 10px}
+.letter3d{position:relative;width:120px;height:120px;transform-style:preserve-3d;animation:yaw 7s ease-in-out infinite;filter:drop-shadow(0 6px 20px rgba(244,200,105,.35))}
+.l3d{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:700;font-size:116px;line-height:1}
+.l3d.front{background:linear-gradient(135deg,#fff6df,#f4c869 55%,#d9a441);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes yaw{0%,100%{transform:rotateX(10deg) rotateY(-26deg)}50%{transform:rotateX(6deg) rotateY(26deg)}}
+.shadow{width:96px;height:18px;margin-top:12px;border-radius:50%;background:radial-gradient(closest-side,rgba(244,200,105,.4),transparent);filter:blur(5px)}
+.date{color:var(--gold);font-size:12px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.18em;text-align:center;font-weight:700}
+.streak{text-align:center;margin:0 auto 14px;width:fit-content;background:rgba(244,200,105,.14);border:1px solid rgba(244,200,105,.45);color:var(--gold);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:800}
+.card{position:relative;overflow:hidden;background:linear-gradient(160deg,var(--glass),var(--glass2));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+.wc-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.word{font-family:var(--serif);font-size:clamp(34px,9.5vw,50px);font-weight:700;letter-spacing:-.5px;background:linear-gradient(135deg,#fff,#e8ddff 55%,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05}
+.pos{font-family:var(--serif);font-style:italic;font-size:13px;font-weight:600;color:var(--gold);border:1px solid rgba(244,200,105,.5);border-radius:999px;padding:4px 12px;background:rgba(244,200,105,.1);white-space:nowrap}
+.ipa{color:var(--muted);font-size:15px;margin:6px 0 16px;font-family:var(--serif);font-style:italic}
+.def{font-size:17px;line-height:1.55;margin:0 0 16px}
+.def::first-letter{color:var(--gold);font-weight:600}
+.exp-btn{display:inline-flex;align-items:center;gap:6px;margin:0 0 14px;border:1px solid rgba(167,139,250,.5);background:rgba(167,139,250,.12);color:#d9ccff;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.exp-btn.on{background:linear-gradient(135deg,var(--accent2),var(--primary2));color:#fff;border-color:transparent}
+.simple{margin:-4px 0 16px;padding:14px 15px;font-size:15px;line-height:1.55;color:#f0ecff;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.38);border-radius:14px}
+.simple .lab{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin-bottom:5px}
+.ex{border-left:3px solid var(--primary);padding:4px 0 4px 14px;color:#dfe5ff;font-style:italic;margin:0 0 18px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.syn{font-size:13px;color:#cdd6f4;border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:rgba(255,255,255,.03)}
+.tip{display:flex;gap:10px;align-items:flex-start;background:rgba(99,102,241,.14);border:1px solid rgba(99,102,241,.4);border-radius:14px;padding:13px 15px;font-size:14px;line-height:1.5}
+.actions{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:14px;padding:14px 18px;font-size:15px;font-weight:800;cursor:pointer;transition:transform .1s,filter .2s;flex:1;min-width:150px}
+.btn:active{transform:scale(.97)}
+.btn-p{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:var(--glow)}
+.btn-g{background:var(--glass);color:var(--text);border:1px solid var(--line);flex:0 1 auto}
+.btn-good{background:linear-gradient(135deg,#059669,var(--good));color:#052e22}
+.hint{color:var(--muted);font-size:14px;line-height:1.55;margin:4px 0 18px}
+.shead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.shead h2{font-size:22px;margin:0;font-family:var(--serif);font-weight:700}
+.muted{color:var(--muted);font-size:13px}
+.goal{background:linear-gradient(160deg,var(--glass),var(--glass2));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:14px}
+.goal.done{border-color:rgba(52,211,153,.5)}
+.goal-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.gw{font-size:21px;font-weight:800}
+.gs{font-size:13px;font-weight:800;color:var(--warn)}
+.gs.done{color:var(--good)}
+.gd{color:var(--muted);font-size:14px;margin:6px 0 12px;line-height:1.5}
+.prog{height:11px;background:rgba(0,0,0,.25);border-radius:999px;overflow:hidden;border:1px solid var(--linesoft)}
+.prog>span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .5s}
+.dots{display:flex;gap:6px;margin:13px 0;flex-wrap:wrap}
+.dot{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:12px;font-weight:800;background:rgba(255,255,255,.04);border:1px solid var(--linesoft);color:var(--muted)}
+.dot.f{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border-color:transparent}
+.gact{display:flex;gap:8px;margin-top:4px;align-items:center}
+.gact .btn{padding:11px 15px;font-size:14px}
+.link{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;text-decoration:underline;padding:8px}
+.cd{color:var(--good);font-weight:800;font-size:14px;padding:11px 0}
+.hist{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--linesoft);border-radius:14px;padding:13px 15px;margin-bottom:8px;cursor:pointer}
+.hist .hw{font-weight:800;font-size:16px}
+.hist .hd{color:var(--muted);font-size:13px;margin-top:2px}
+.hist .hdt{color:var(--muted);font-size:12px;white-space:nowrap}
+.empty{color:var(--muted);text-align:center;padding:40px 12px;font-size:15px;line-height:1.6}
+.empty .big{font-size:38px;display:block;margin-bottom:10px}
+.nhint{display:flex;gap:10px;align-items:flex-start;margin:4px 0 8px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.35);border-radius:14px;padding:13px 15px;font-size:13.5px;line-height:1.5;color:#d6f6ff}
+.nhint b{color:#fff}
+.nhint .x{margin-left:auto;background:none;border:0;color:var(--muted);cursor:pointer;font-size:18px}
+.foot{text-align:center;color:rgba(154,166,200,.5);font-size:12px;margin-top:26px}
+.modal-bg{position:fixed;inset:0;background:rgba(4,7,18,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px;z-index:50}
+[hidden]{display:none!important}
+.modal{width:100%;max-width:430px;background:linear-gradient(160deg,var(--glass),var(--glass2));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+.modal h3{margin:0 0 4px;font-size:21px;font-family:var(--serif)}
+.mw{font-family:var(--serif);font-size:28px;font-weight:700;margin:0 0 18px;color:var(--primary2)}
+.flab{display:block;font-size:14px;color:var(--muted);margin-bottom:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.chip{border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);border-radius:11px;padding:10px 15px;font-weight:700;cursor:pointer}
+.chip.on{background:linear-gradient(135deg,var(--primary),var(--primary2));border-color:transparent}
+.mact{display:flex;gap:10px;justify-content:flex-end}
+.mact .btn{flex:0 1 auto;min-width:115px}
+.toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(15,23,48,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--primary);color:var(--text);padding:13px 20px;border-radius:14px;font-size:14px;font-weight:700;box-shadow:var(--shadow);z-index:60;max-width:90%}
+@media (prefers-reduced-motion:reduce){.letter3d,.blob,.word-bg span{animation:none!important}}
+</style>
+</head>
+<body>
+<div class='bg-aurora' aria-hidden='true'><span class='blob b1'></span><span class='blob b2'></span><span class='blob b3'></span></div>
+<div class='word-bg' id='wordBg' aria-hidden='true'></div>
+<div class='app'>
+<header class='topbar'>
+<div class='brand'><img class='brand-mark' src='icon-192.png' alt=''><span class='brand-name'>Daily&nbsp;Vocab</span></div>
+<button id='notifyBtn' class='icon-btn' aria-label='Daily reminders'>&#128276;</button>
+</header>
+<nav class='tabs'><span class='tab-glow' id='tabGlow'></span>
+<button class='tab on' data-v='today'>Today</button>
+<button class='tab' data-v='goals'>Goals</button>
+<button class='tab' data-v='history'>History</button>
+</nav>
+<main>
+<section id='v-today' class='view on'>
+<div class='hero-3d' aria-hidden='true'><div class='letter3d' id='letter3d'></div><div class='shadow'></div></div>
+<p class='date' id='date'></p>
+<div class='streak' id='streak' hidden></div>
+<article class='card' id='card'></article>
+<div class='actions'>
+<button class='btn btn-p' id='goalBtn'>&#127919; Set a practice goal</button>
+<button class='btn btn-g' id='speakBtn'>&#128266; Pronounce</button>
+</div>
+<div id='nhint' class='nhint' hidden></div>
+<div id='todayGoal'></div>
+</section>
+<section id='v-goals' class='view'>
+<div class='shead'><h2>Practice goals</h2><span class='muted' id='gcount'></span></div>
+<p class='hint'>Set a goal to use a word every day for a few days. Check in each day you use it to build the streak.</p>
+<div id='goalList'></div>
+</section>
+<section id='v-history' class='view'>
+<div class='shead'><h2>Word history</h2><span class='muted' id='hcount'></span></div>
+<p class='hint'>Every word you have seen, newest first. Tap one to review it.</p>
+<div id='histList'></div>
+</section>
+</main>
+<footer class='foot'>Made for daily learning &middot; one word at a time</footer>
+</div>
+<div class='modal-bg' id='goalModal' hidden><div class='modal'>
+<h3>Practice this word</h3><p class='mw' id='gmWord'></p>
+<label class='flab'>Use it every day for&hellip;</label>
+<div class='chips' id='chips'>
+<button class='chip' data-d='3'>3 days</button>
+<button class='chip on' data-d='5'>5 days</button>
+<button class='chip' data-d='7'>7 days</button>
+<button class='chip' data-d='14'>14 days</button>
+</div>
+<div class='mact'><button class='btn btn-g' id='gmCancel'>Cancel</button><button class='btn btn-p' id='gmOk'>Start goal</button></div>
+</div></div>
+<div class='modal-bg' id='detailModal' hidden><div class='modal'>
+<div id='detailBody'></div>
+<div class='mact'><button class='btn btn-g' id='dmClose'>Close</button><button class='btn btn-p' id='dmGoal'>Set a goal</button></div>
+</div></div>
+<div class='toast' id='toast' hidden></div>
+<script>
+var WORDS=[
+{word:`ubiquitous`,ipa:`/yoo-BIK-wih-tus/`,pos:`adjective`,def:`Present, appearing, or found everywhere.`,simple:`It is everywhere — you see it no matter where you look.`,ex:`Smartphones have become ubiquitous in modern life.`,syn:[`omnipresent`,`pervasive`,`universal`],tip:`Think you-be-quick — it is already everywhere you look.`},
+{word:`pragmatic`,ipa:`/prag-MAT-ik/`,pos:`adjective`,def:`Dealing with things sensibly and realistically.`,simple:`Practical — you focus on what actually works.`,ex:`She took a pragmatic approach and fixed what could be fixed.`,syn:[`practical`,`realistic`,`sensible`],tip:`A pragmatist cares about what works, not what sounds nice.`},
+{word:`candid`,ipa:`/KAN-did/`,pos:`adjective`,def:`Truthful and straightforward; frank.`,simple:`Honest and open — you say what you really think.`,ex:`I appreciate your candid feedback on the draft.`,syn:[`frank`,`honest`,`forthright`],tip:`A candid camera catches you unfiltered.`},
+{word:`meticulous`,ipa:`/muh-TIK-yuh-lus/`,pos:`adjective`,def:`Showing great attention to detail; very careful.`,simple:`Super careful — you check every little detail.`,ex:`He kept meticulous records of every transaction.`,syn:[`thorough`,`scrupulous`,`painstaking`],tip:`Meticulous people tick every box.`},
+{word:`resilient`,ipa:`/rih-ZIL-yunt/`,pos:`adjective`,def:`Able to recover quickly from difficulties; tough.`,simple:`You bounce back fast after something bad happens.`,ex:`The economy proved surprisingly resilient after the shock.`,syn:[`tough`,`hardy`,`buoyant`],tip:`A resilient band snaps back to shape.`},
+{word:`nuance`,ipa:`/NOO-ahns/`,pos:`noun`,def:`A subtle difference in meaning, expression, or tone.`,simple:`A small, subtle detail that changes the meaning slightly.`,ex:`The translation missed the nuance of the original joke.`,syn:[`subtlety`,`shade`,`gradation`],tip:`Nuance is the small new detail others miss.`},
+{word:`advocate`,ipa:`/AD-vuh-kayt/`,pos:`verb`,def:`To publicly recommend or support a cause.`,simple:`To speak up in support of something you believe in.`,ex:`She advocates for cleaner public transport.`,syn:[`champion`,`endorse`,`promote`],tip:`An advocate adds their voice.`},
+{word:`ambivalent`,ipa:`/am-BIV-uh-lunt/`,pos:`adjective`,def:`Having mixed or contradictory feelings.`,simple:`You feel two ways about it at once — part yes, part no.`,ex:`He felt ambivalent about the promotion.`,syn:[`conflicted`,`torn`,`undecided`],tip:`Ambi means both — you feel both ways at once.`},
+{word:`concise`,ipa:`/kun-SYSE/`,pos:`adjective`,def:`Giving a lot of information clearly in few words.`,simple:`Short and to the point, with no wasted words.`,ex:`Keep the summary concise — one paragraph at most.`,syn:[`succinct`,`terse`,`pithy`],tip:`Concise cuts the excess.`},
+{word:`diligent`,ipa:`/DIL-ih-junt/`,pos:`adjective`,def:`Showing careful and persistent effort in work.`,simple:`Hard-working and steady — you keep at it carefully.`,ex:`Her diligent research paid off in the final report.`,syn:[`hardworking`,`assiduous`,`conscientious`],tip:`Diligent people dig in until it is done.`},
+{word:`eloquent`,ipa:`/EL-uh-kwunt/`,pos:`adjective`,def:`Fluent and persuasive in speaking or writing.`,simple:`You speak or write so well that people are moved.`,ex:`The senator gave an eloquent defense of the bill.`,syn:[`articulate`,`expressive`,`fluent`],tip:`Eloquent speech flows like a smooth current.`},
+{word:`tenacious`,ipa:`/tuh-NAY-shus/`,pos:`adjective`,def:`Holding firmly to a goal or opinion; persistent.`,simple:`You do not give up — you hold on and keep going.`,ex:`Her tenacious pursuit of the truth impressed everyone.`,syn:[`persistent`,`dogged`,`determined`],tip:`Tenacious grips like ten hands that will not let go.`},
+{word:`prudent`,ipa:`/PROO-dunt/`,pos:`adjective`,def:`Acting with care and thought for the future; wise.`,simple:`Careful and sensible — you think ahead before acting.`,ex:`It is prudent to keep three months of savings.`,syn:[`cautious`,`judicious`,`sensible`],tip:`A prudent person prunes risk before it grows.`},
+{word:`articulate`,ipa:`/ar-TIK-yuh-lut/`,pos:`adjective`,def:`Able to express thoughts clearly and effectively.`,simple:`Good at putting your thoughts into clear words.`,ex:`She is remarkably articulate for someone so nervous.`,syn:[`fluent`,`coherent`,`well-spoken`],tip:`Each idea joined clearly, like joints.`},
+{word:`innate`,ipa:`/ih-NAYT/`,pos:`adjective`,def:`Existing from birth; inborn and natural.`,simple:`Something you are born with, not something you learned.`,ex:`He has an innate talent for languages.`,syn:[`inborn`,`inherent`,`natural`],tip:`Innate is what you are born with.`},
+{word:`scrutinize`,ipa:`/SKROO-tuh-nyze/`,pos:`verb`,def:`To examine or inspect closely and thoroughly.`,simple:`To look at something very closely and carefully.`,ex:`Auditors scrutinized every line of the budget.`,syn:[`examine`,`inspect`,`study`],tip:`To scrutinize is to screw in your gaze.`},
+{word:`profound`,ipa:`/pruh-FOWND/`,pos:`adjective`,def:`Very great or intense; showing deep insight.`,simple:`Very deep and powerful — it goes beyond the surface.`,ex:`Her mentor had a profound effect on her career.`,syn:[`deep`,`intense`,`far-reaching`],tip:`Profound goes as deep as a found well.`},
+{word:`versatile`,ipa:`/VUR-suh-tul/`,pos:`adjective`,def:`Able to adapt to many different functions.`,simple:`Good at lots of different things; can handle many roles.`,ex:`A versatile employee who can handle sales and support.`,syn:[`adaptable`,`flexible`,`all-round`],tip:`Versatile can switch into many roles.`},
+{word:`coherent`,ipa:`/koh-HEER-unt/`,pos:`adjective`,def:`Logical and consistent; clearly connected.`,simple:`It makes sense and the parts fit together clearly.`,ex:`Try to give a coherent argument, not scattered points.`,syn:[`logical`,`consistent`,`orderly`],tip:`Coherent parts cohere.`},
+{word:`gregarious`,ipa:`/gruh-GAIR-ee-us/`,pos:`adjective`,def:`Fond of company; sociable.`,simple:`You love being around people and enjoy company.`,ex:`His gregarious nature made him the heart of every gathering.`,syn:[`sociable`,`outgoing`,`convivial`],tip:`A gregarious person loves the crowd.`},
+{word:`astute`,ipa:`/uh-STOOT/`,pos:`adjective`,def:`Having sharp judgment; shrewd and perceptive.`,simple:`Sharp and clever — you quickly notice what is going on.`,ex:`An astute investor who spotted the trend early.`,syn:[`shrewd`,`perceptive`,`canny`],tip:`Astute minds are attuned to what others miss.`},
+{word:`empathy`,ipa:`/EM-puh-thee/`,pos:`noun`,def:`The ability to understand and share another feeling.`,simple:`Being able to feel and understand what someone else feels.`,ex:`Good managers lead with empathy, not just authority.`,syn:[`compassion`,`understanding`,`sensitivity`],tip:`Empathy puts you in another path.`},
+{word:`impeccable`,ipa:`/im-PEK-uh-bul/`,pos:`adjective`,def:`In accordance with the highest standards; flawless.`,simple:`Perfect — without a single fault or mistake.`,ex:`Her timing was impeccable.`,syn:[`flawless`,`faultless`,`immaculate`],tip:`Impeccable has no peck of a flaw.`},
+{word:`salient`,ipa:`/SAY-lee-unt/`,pos:`adjective`,def:`Most noticeable or important; standing out.`,simple:`The most important part — the bit that stands out.`,ex:`Let us focus on the salient points and skip the details.`,syn:[`prominent`,`key`,`notable`],tip:`A salient fact sails out to grab attention.`},
+{word:`lucid`,ipa:`/LOO-sid/`,pos:`adjective`,def:`Clear and easy to understand; thinking clearly.`,simple:`Clear and easy to follow.`,ex:`She gave a lucid explanation of a complex topic.`,syn:[`clear`,`coherent`,`intelligible`],tip:`Lucid is lit up, easy to see.`},
+{word:`candor`,ipa:`/KAN-dur/`,pos:`noun`,def:`The quality of being open and honest.`,simple:`Plain, honest speech with nothing hidden.`,ex:`I value the candor of a friend who tells me the truth.`,syn:[`frankness`,`honesty`,`openness`],tip:`Candor is candid-ness.`},
+{word:`compelling`,ipa:`/kum-PEL-ing/`,pos:`adjective`,def:`Powerfully convincing or captivating.`,simple:`So convincing or interesting that you cannot ignore it.`,ex:`The lawyer made a compelling case to the jury.`,syn:[`convincing`,`persuasive`,`gripping`],tip:`Compelling arguments push you to agree.`},
+{word:`diplomatic`,ipa:`/dip-luh-MAT-ik/`,pos:`adjective`,def:`Skilled at handling situations tactfully.`,simple:`Good at saying things carefully so nobody gets upset.`,ex:`He gave a diplomatic answer that offended no one.`,syn:[`tactful`,`sensitive`,`politic`],tip:`A diplomat smooths things over.`},
+{word:`feasible`,ipa:`/FEE-zuh-bul/`,pos:`adjective`,def:`Possible to do easily or conveniently.`,simple:`Doable — it can actually be done.`,ex:`Is it feasible to finish this by Friday?`,syn:[`viable`,`workable`,`practicable`],tip:`If it is feasible, you can actually do it.`},
+{word:`genuine`,ipa:`/JEN-yoo-in/`,pos:`adjective`,def:`Truly what it is said to be; sincere and authentic.`,simple:`Real and honest — not fake.`,ex:`Her concern felt completely genuine.`,syn:[`authentic`,`real`,`sincere`],tip:`Genuine is the real, original thing.`},
+{word:`mitigate`,ipa:`/MIT-ih-gayt/`,pos:`verb`,def:`To make less severe, serious, or painful.`,simple:`To make a bad thing less bad.`,ex:`Insurance helps mitigate financial risk.`,syn:[`alleviate`,`reduce`,`lessen`],tip:`Mitigate makes trouble mild.`},
+{word:`novel`,ipa:`/NOV-ul/`,pos:`adjective`,def:`New, original, or unusual in an interesting way.`,simple:`New and fresh — something not done before.`,ex:`They proposed a novel solution nobody had tried.`,syn:[`new`,`original`,`innovative`],tip:`A novel idea is brand new.`},
+{word:`objective`,ipa:`/ub-JEK-tiv/`,pos:`adjective`,def:`Not influenced by personal feelings; fact-based.`,simple:`Fair and fact-based — not swayed by your feelings.`,ex:`Try to stay objective when reviewing your own work.`,syn:[`impartial`,`unbiased`,`detached`],tip:`Objective looks at the object, not your feelings.`},
+{word:`plausible`,ipa:`/PLAW-zuh-bul/`,pos:`adjective`,def:`Seeming reasonable or probable.`,simple:`Believable — it sounds like it could be true.`,ex:`That is a plausible explanation, but let us verify it.`,syn:[`credible`,`believable`,`reasonable`],tip:`A plausible story earns applause.`},
+{word:`rapport`,ipa:`/ra-POR/`,pos:`noun`,def:`A close and harmonious relationship.`,simple:`A good, easy connection between people who get each other.`,ex:`She quickly built a rapport with new clients.`,syn:[`connection`,`bond`,`understanding`],tip:`Rapport is when you report well to each other.`},
+{word:`sincere`,ipa:`/sin-SEER/`,pos:`adjective`,def:`Free from pretense; genuine and honest.`,simple:`You really mean what you say — no pretending.`,ex:`Please accept my sincere apologies.`,syn:[`genuine`,`heartfelt`,`earnest`],tip:`Sincere means without wax.`},
+{word:`transparent`,ipa:`/trans-PAIR-unt/`,pos:`adjective`,def:`Open and honest; easy to perceive.`,simple:`Open and honest — nothing is hidden.`,ex:`We aim to be transparent about our pricing.`,syn:[`open`,`candid`,`clear`],tip:`Transparent lets you see right through.`},
+{word:`viable`,ipa:`/VY-uh-bul/`,pos:`adjective`,def:`Capable of working successfully; feasible.`,simple:`It can actually work.`,ex:`It is the only viable option we have left.`,syn:[`workable`,`feasible`,`practical`],tip:`A viable plan has life in it.`},
+{word:`wary`,ipa:`/WAIR-ee/`,pos:`adjective`,def:`Cautious about possible dangers or problems.`,simple:`Careful and a little suspicious of possible trouble.`,ex:`Be wary of deals that seem too good to be true.`,syn:[`cautious`,`careful`,`guarded`],tip:`Stay wary and you will be aware of the trap.`},
+{word:`zealous`,ipa:`/ZEL-us/`,pos:`adjective`,def:`Filled with eager, passionate commitment.`,simple:`Really eager and passionate about something.`,ex:`A zealous volunteer who never misses an event.`,syn:[`passionate`,`fervent`,`ardent`],tip:`Zealous is full of zeal.`},
+{word:`kindle`,ipa:`/KIN-dul/`,pos:`verb`,def:`To arouse or inspire; to light a fire.`,simple:`To spark or start something — a fire or a feeling.`,ex:`The trip kindled her love of travel.`,syn:[`ignite`,`spark`,`arouse`],tip:`To kindle is to light a small flame of interest.`},
+{word:`resourceful`,ipa:`/rih-SORS-ful/`,pos:`adjective`,def:`Able to find clever ways to overcome difficulties.`,simple:`Clever at solving problems with what you have.`,ex:`A resourceful traveler always finds a way.`,syn:[`inventive`,`ingenious`,`capable`],tip:`Full of resources — ideas on tap.`},
+{word:`steadfast`,ipa:`/STED-fast/`,pos:`adjective`,def:`Firm and unwavering in purpose or loyalty.`,simple:`Loyal and steady — you do not waver or quit.`,ex:`A steadfast friend through every hardship.`,syn:[`loyal`,`unwavering`,`constant`],tip:`Steadfast stands steady and holds fast.`},
+{word:`tactful`,ipa:`/TAKT-ful/`,pos:`adjective`,def:`Showing sensitivity in dealing with others.`,simple:`Careful with your words so you do not hurt feelings.`,ex:`A tactful reminder, not a public scolding.`,syn:[`diplomatic`,`considerate`,`discreet`],tip:`Tactful people have a light touch.`},
+{word:`vivid`,ipa:`/VIV-id/`,pos:`adjective`,def:`Producing strong, clear images; intensely bright.`,simple:`So clear and bright it feels real in your mind.`,ex:`She has vivid memories of that summer.`,syn:[`vibrant`,`graphic`,`striking`],tip:`Vivid images feel alive.`},
+{word:`astound`,ipa:`/uh-STOWND/`,pos:`verb`,def:`To shock or greatly surprise someone.`,simple:`To amaze someone so much they can hardly believe it.`,ex:`The results astounded even the experts.`,syn:[`amaze`,`astonish`,`stun`],tip:`Astound leaves you stunned.`},
+{word:`cogent`,ipa:`/KOH-junt/`,pos:`adjective`,def:`Clear, logical, and convincing.`,simple:`A clear argument that is hard to disagree with.`,ex:`She made a cogent argument for the change.`,syn:[`convincing`,`compelling`,`persuasive`],tip:`A cogent case compels agreement.`},
+{word:`endorse`,ipa:`/en-DORS/`,pos:`verb`,def:`To publicly declare approval or support.`,simple:`To openly say you approve of or back something.`,ex:`Several experts endorsed the method.`,syn:[`support`,`back`,`approve`],tip:`You endorse a check by signing the back.`}
+];
+var KEY='dailyVocab.std1';
+function pad(n){return n<10?'0'+n:''+n}
+function tk(d){d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function dayNum(d){d=d||new Date();var l=new Date(d.getFullYear(),d.getMonth(),d.getDate());return Math.floor(l.getTime()/86400000)}
+function pretty(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}
+function shortD(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString(undefined,{month:'short',day:'numeric'})}
+var state=load();
+function load(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==='object'){s.history=s.history||[];s.goals=s.goals||[];s.notify=s.notify||{enabled:false};return s}}catch(e){}return{history:[],goals:[],notify:{enabled:false}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function wIdx(d){return WORDS.length?dayNum(d)%WORDS.length:0}
+function wod(){return WORDS[wIdx()]}
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function seen(){var i=wIdx(),k=tk();if(!state.history.some(function(h){return h.date===k})){state.history.push({date:k,index:i,word:WORDS[i].word});save()}}
+function id(x){return document.getElementById(x)}
+function toast(m){var t=id('toast');t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(function(){t.hidden=true},2600)}
+
+function explainHTML(w){return w.simple?'<button class="exp-btn" data-explain type="button">&#129513; Explain simply</button><div class="simple" hidden><span class="lab">In plain words</span>'+esc(w.simple)+'</div>':''}
+function synHTML(w){return '<div class="meta">'+w.syn.map(function(s){return '<span class="syn">'+esc(s)+'</span>'}).join('')+'</div>'}
+function cardHTML(w){return '<div class="wc-top"><span class="word">'+esc(w.word)+'</span><span class="pos">'+esc(w.pos)+'</span></div><div class="ipa">'+esc(w.ipa)+'</div><p class="def">'+esc(w.def)+'</p>'+explainHTML(w)+'<p class="ex">'+esc(w.ex)+'</p>'+synHTML(w)+'<div class="tip"><span>&#128161;</span><span>'+esc(w.tip)+'</span></div>'}
+
+function mix(a,b,t){return [0,1,2].map(function(i){return Math.round(a[i]+(b[i]-a[i])*t)})}
+function letter3d(ch){var h=id('letter3d');if(!h)return;h.innerHTML='';var depth=14;for(var i=depth;i>=0;i--){var s=document.createElement('span');s.className='l3d'+(i===0?' front':'');s.textContent=ch;s.style.transform='translateZ('+(-i*2)+'px)';if(i>0){var c=mix([217,164,65],[72,52,16],i/depth);s.style.color='rgb('+c[0]+','+c[1]+','+c[2]+')'}h.appendChild(s)}}
+function wordBg(){var h=id('wordBg');if(!h)return;var pos=[[6,8],[70,6],[40,15],[86,20],[15,26],[55,32],[81,42],[7,46],[34,54],[64,60],[90,66],[19,72],[47,78],[75,84],[4,88],[60,90],[29,95],[88,93],[43,40],[12,62]];h.innerHTML='';pos.forEach(function(p,i){var s=document.createElement('span');s.textContent=WORDS[(i*7)%WORDS.length].word;if(i%3===0)s.className='gold';s.style.left=p[0]+'vw';s.style.top=p[1]+'vh';s.style.fontSize=(14+(i%5)*4)+'px';s.style.transform='rotate('+(((i*37)%40)-20)+'deg)';s.style.animationDelay=(i%6)+'s';h.appendChild(s)})}
+
+function streak(){if(!state.history.length)return 0;var days={};state.history.forEach(function(h){days[h.date]=true});var n=0,d=new Date();if(!days[tk(d)])d.setDate(d.getDate()-1);while(days[tk(d)]){n++;d.setDate(d.getDate()-1)}return n}
+function renderStreak(){var el=id('streak'),s=streak();if(s>=2){el.innerHTML='&#128293; '+s+'-day streak';el.hidden=false}else el.hidden=true}
+
+function renderToday(){var w=wod();id('date').textContent='Word of the day · '+pretty(tk());id('card').innerHTML=cardHTML(w);letter3d((w.word[0]||'A').toUpperCase());renderStreak();var box=id('todayGoal');box.innerHTML='';var g=state.goals.filter(function(x){return x.word===w.word&&!done(x)})[0];if(g)box.appendChild(goalNode(g,true))}
+
+function done(g){return g.checkins.length>=g.target}
+function createGoal(word,days){var w=WORDS.filter(function(x){return x.word===word})[0];if(!w)return;if(state.goals.filter(function(g){return g.word===word&&!done(g)})[0]){toast('You already have an active goal for '+word);sv('goals');return}state.goals.unshift({id:'g'+Date.now(),word:word,def:w.def,target:days,checkins:[]});save();toast('Goal set — use '+word+' every day for '+days+' days!');renderAll();sv('goals')}
+function checkin(gid){var g=state.goals.filter(function(x){return x.id===gid})[0];if(!g)return;var k=tk();if(g.checkins.indexOf(k)!==-1){toast('Already checked in today');return}g.checkins.push(k);save();toast(done(g)?'Goal complete! You practiced '+g.word+' for '+g.target+' days.':'Nice — '+g.checkins.length+' / '+g.target+' days done.');renderAll()}
+function delGoal(gid){state.goals=state.goals.filter(function(x){return x.id!==gid});save();renderAll()}
+function goalNode(g,compact){var d=done(g),ct=g.checkins.indexOf(tk())!==-1,pct=Math.min(100,Math.round(g.checkins.length/g.target*100));var el=document.createElement('div');el.className='goal'+(d?' done':'');var dots='';for(var i=0;i<g.target;i++){dots+='<div class="dot'+(i<g.checkins.length?' f':'')+'">'+(i<g.checkins.length?'✓':(i+1))+'</div>'}var act;if(d)act='<span class="cd">&#127942; Mastered</span><button class="link" data-del="'+g.id+'">Remove</button>';else if(ct)act='<span class="cd">&#10003; Checked in today</span><button class="link" data-del="'+g.id+'">Give up</button>';else act='<button class="btn btn-good" data-checkin="'+g.id+'">I used it today</button><button class="link" data-del="'+g.id+'">Give up</button>';el.innerHTML='<div class="goal-top"><div class="gw">'+esc(g.word)+'</div><div class="gs '+(d?'done':'')+'">'+(d?'Complete':g.checkins.length+'/'+g.target+' days')+'</div></div>'+(compact?'':'<div class="gd">'+esc(g.def)+'</div>')+'<div class="prog"><span style="width:'+pct+'%"></span></div><div class="dots">'+dots+'</div><div class="gact">'+act+'</div>';return el}
+function renderGoals(){var l=id('goalList'),a=state.goals.filter(function(g){return !done(g)}),dn=state.goals.filter(done);id('gcount').textContent=state.goals.length?a.length+' active · '+dn.length+' done':'';l.innerHTML='';if(!state.goals.length){l.innerHTML='<div class="empty"><span class="big">&#127919;</span>No goals yet.<br>Open Today and tap Set a practice goal.</div>';return}state.goals.forEach(function(g){l.appendChild(goalNode(g,false))})}
+function renderHist(){var l=id('histList');id('hcount').textContent=state.history.length?state.history.length+' words':'';var items=state.history.slice().sort(function(a,b){return a.date<b.date?1:-1});l.innerHTML='';if(!items.length){l.innerHTML='<div class="empty"><span class="big">&#128214;</span>No words yet — check back tomorrow!</div>';return}items.forEach(function(h){var w=WORDS[h.index];if(!w)return;var n=document.createElement('div');n.className='hist';n.innerHTML='<div><div class="hw">'+esc(w.word)+'</div><div class="hd">'+esc(w.def)+'</div></div><div class="hdt">'+(h.date===tk()?'Today':shortD(h.date))+'</div>';n.addEventListener('click',function(){openDetail(w)});l.appendChild(n)})}
+function renderAll(){renderToday();renderGoals();renderHist()}
+
+var TABS=['today','goals','history'];
+function sv(name){document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.v===name)});document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('on',v.id==='v-'+name)});var g=id('tabGlow'),i=TABS.indexOf(name);g.style.transform='translateX('+((i<0?0:i)*100)+'%)'}
+
+var pending=null,days=5;
+function openGoal(word){pending=word;id('gmWord').textContent=word;id('goalModal').hidden=false}
+function closeGoal(){id('goalModal').hidden=true}
+var detailW=null;
+function openDetail(w){detailW=w;id('detailBody').innerHTML=cardHTML(w);id('detailModal').hidden=false}
+function closeDetail(){id('detailModal').hidden=true}
+
+function speak(t){if(!('speechSynthesis' in window)){toast('Speech is not supported here.');return}try{if(speechSynthesis.paused)speechSynthesis.resume();speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=0.92;var vs=speechSynthesis.getVoices()||[],v=vs.filter(function(x){return /^en/i.test(x.lang)})[0];if(v)u.voice=v;speechSynthesis.speak(u);toast('🔊 '+t)}catch(e){toast('Could not play audio.')}}
+
+function isIOS(){return /iP(hone|ad|od)/.test(navigator.userAgent)}
+function standalone(){return (window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true}
+function notifyBtn(){var b=id('notifyBtn'),on=state.notify.enabled&&('Notification' in window)&&Notification.permission==='granted';b.classList.toggle('on',on);b.innerHTML=on?'&#128276;':'&#128277;';nhint()}
+function nhint(){var box=id('nhint');if(state.nhintClosed){box.hidden=true;return}var on=state.notify.enabled&&('Notification' in window)&&Notification.permission==='granted';if(on){box.hidden=true;return}var m;if(!('Notification' in window))m='<b>Tip:</b> On iPhone, add this to your Home Screen first, then open it from there to enable reminders.';else if(isIOS()&&!standalone())m='<b>Turn on daily reminders:</b> tap Share &rarr; Add to Home Screen, open the app from that icon, then tap the &#128276; bell.';else m='<b>Want a daily nudge?</b> Tap the &#128276; bell and choose Allow to get a new word every day.';box.innerHTML='<span>&#128161;</span><span>'+m+'</span><button class="x" id="nx">&times;</button>';box.hidden=false;id('nx').addEventListener('click',function(){state.nhintClosed=true;save();box.hidden=true})}
+function showNotif(t,b){try{navigator.serviceWorker.ready.then(function(r){r.showNotification(t,{body:b,icon:'icon-192.png',badge:'icon-192.png',tag:'daily-vocab'})})}catch(e){if('Notification' in window&&Notification.permission==='granted')new Notification(t,{body:b})}}
+async function toggleNotify(){if(!('Notification' in window)){toast('Notifications are not supported here.');return}if(state.notify.enabled&&Notification.permission==='granted'){state.notify.enabled=false;save();notifyBtn();toast('Daily reminders off.');return}var p=Notification.permission;if(p!=='granted')p=await Notification.requestPermission();if(p!=='granted'){toast('Reminders need notification permission.');notifyBtn();return}state.notify.enabled=true;save();try{var r=await navigator.serviceWorker.ready;if('periodicSync' in r){var st=await navigator.permissions.query({name:'periodic-background-sync'});if(st.state==='granted')await r.periodicSync.register('daily-word',{minInterval:20*60*60*1000})}}catch(e){}var w=wod();showNotif('📖 You are in! Today: '+w.word,'Challenge: slip '+w.word+' into a real sentence today 🔥');notifyBtn();toast('Daily reminders on ✨')}
+
+function init(){if(!WORDS.length){id('card').innerHTML='<p class="empty">Word list failed to load.</p>';return}
+seen();renderAll();notifyBtn();wordBg();sv('today');
+document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){sv(t.dataset.v)})});
+id('goalBtn').addEventListener('click',function(){openGoal(wod().word)});
+id('speakBtn').addEventListener('click',function(){speak(wod().word)});
+id('notifyBtn').addEventListener('click',toggleNotify);
+id('chips').addEventListener('click',function(e){var c=e.target.closest('.chip');if(!c)return;document.querySelectorAll('#chips .chip').forEach(function(x){x.classList.remove('on')});c.classList.add('on');days=+c.dataset.d});
+id('gmCancel').addEventListener('click',closeGoal);
+id('gmOk').addEventListener('click',function(){if(pending)createGoal(pending,days);closeGoal()});
+id('goalModal').addEventListener('click',function(e){if(e.target.id==='goalModal')closeGoal()});
+id('dmClose').addEventListener('click',closeDetail);
+id('dmGoal').addEventListener('click',function(){if(detailW){closeDetail();openGoal(detailW.word)}});
+id('detailModal').addEventListener('click',function(e){if(e.target.id==='detailModal')closeDetail()});
+document.body.addEventListener('click',function(e){var ex=e.target.closest('[data-explain]');if(ex){var b=ex.nextElementSibling;if(b&&b.classList.contains('simple')){var sh=b.hidden;b.hidden=!sh;ex.classList.toggle('on',sh);ex.innerHTML=sh?'&#129513; Hide simple version':'&#129513; Explain simply'}return}var ci=e.target.closest('[data-checkin]');if(ci){checkin(ci.getAttribute('data-checkin'));return}var dl=e.target.closest('[data-del]');if(dl){if(confirm('Remove this goal?'))delGoal(dl.getAttribute('data-del'));return}});
+document.addEventListener('visibilitychange',function(){if(!document.hidden){seen();renderAll()}});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+</script>
+</body>
+</html>
