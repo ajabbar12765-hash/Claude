@@ -57,6 +57,18 @@
   }
 
   /* ---------- rendering: TODAY ---------- */
+  function explainHTML(w) {
+    if (!w.simple) return "";
+    return '<button class="explain-btn" data-explain type="button">🧩 Explain simply</button>' +
+           '<div class="simple-box" hidden><span class="sb-label">In plain words</span>' + esc(w.simple) + '</div>';
+  }
+  function synHTML(w) {
+    return '<div class="meta-row">' +
+      w.synonyms.map(function (s) { return '<span class="syn">' + esc(s) + '</span>'; }).join("") +
+      '</div>';
+  }
+
+  // Static stacked layout — used in the history detail modal.
   function cardHTML(w) {
     return (
       '<div class="wc-top">' +
@@ -65,31 +77,90 @@
       '</div>' +
       '<div class="ipa">' + esc(w.ipa) + '</div>' +
       '<p class="definition">' + esc(w.definition) + '</p>' +
-      (w.simple ?
-        '<button class="explain-btn" data-explain type="button">🧩 Explain simply</button>' +
-        '<div class="simple-box" hidden><span class="sb-label">In plain words</span>' + esc(w.simple) + '</div>'
-      : "") +
+      explainHTML(w) +
       '<p class="example">"' + esc(w.example) + '"</p>' +
-      '<div class="meta-row">' +
-        w.synonyms.map(function (s) { return '<span class="syn">' + esc(s) + '</span>'; }).join("") +
-      '</div>' +
+      synHTML(w) +
       '<div class="tip"><span class="tip-ico">💡</span><span>' + esc(w.tip) + '</span></div>'
     );
+  }
+
+  // Flashcard: front = the word, back = the meaning.
+  function flipCardHTML(w) {
+    return (
+      '<div class="flip-face front">' +
+        '<span class="flash-label">Word</span>' +
+        '<span class="word">' + esc(w.word) + '</span>' +
+        '<div class="ipa">' + esc(w.ipa) + '</div>' +
+        '<span class="pos-badge">' + esc(w.pos) + '</span>' +
+        '<span class="flip-cue">Tap to reveal the meaning ✦</span>' +
+      '</div>' +
+      '<div class="flip-face back">' +
+        '<span class="flash-label">Meaning</span>' +
+        '<p class="definition">' + esc(w.definition) + '</p>' +
+        explainHTML(w) +
+        '<p class="example">"' + esc(w.example) + '"</p>' +
+        synHTML(w) +
+        '<div class="tip"><span class="tip-ico">💡</span><span>' + esc(w.tip) + '</span></div>' +
+        '<span class="flip-cue">Tap to flip back ↺</span>' +
+      '</div>'
+    );
+  }
+
+  var cardFlipped = false;
+  function sizeFlipCard() {
+    var card = document.getElementById("wordCard");
+    if (!card) return;
+    var f = card.querySelector(".front"), b = card.querySelector(".back");
+    if (!f || !b) return;
+    card.style.height = Math.max(f.offsetHeight, b.offsetHeight) + "px";
+  }
+  function toggleFlip() {
+    cardFlipped = !cardFlipped;
+    document.getElementById("wordCard").classList.toggle("flipped", cardFlipped);
+    var hint = document.getElementById("flipHint");
+    if (hint) hint.textContent = cardFlipped ? "Tap the card to flip back ↺" : "Tap the card to flip it ✦";
   }
 
   function renderToday() {
     var w = wordOfDay();
     document.getElementById("dateLine").textContent = "Word of the day · " + prettyDate(todayKey());
-    document.getElementById("wordCard").innerHTML = cardHTML(w);
+    var card = document.getElementById("wordCard");
+    card.innerHTML = flipCardHTML(w);
+    cardFlipped = false;
+    card.classList.remove("flipped");
+    // size after layout settles
+    setTimeout(sizeFlipCard, 0);
+
+    renderStreak();
 
     // if there's an active goal for today's word, show a check-in box under it
     var box = document.getElementById("todayGoalBox");
     var goal = state.goals.filter(function (g) { return g.word === w.word && !isComplete(g); })[0];
-    if (goal) {
-      box.innerHTML = "";
-      box.appendChild(goalNode(goal, true));
+    box.innerHTML = "";
+    if (goal) box.appendChild(goalNode(goal, true));
+  }
+
+  /* ---------- streak ---------- */
+  function computeStreak() {
+    if (!state.history.length) return 0;
+    var days = {};
+    state.history.forEach(function (h) { days[h.date] = true; });
+    var streak = 0;
+    var d = new Date();
+    // allow the streak to count from today or yesterday (so it doesn't break before you open it)
+    if (!days[todayKey(d)]) d.setDate(d.getDate() - 1);
+    while (days[todayKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
+    return streak;
+  }
+  function renderStreak() {
+    var el = document.getElementById("streak");
+    if (!el) return;
+    var s = computeStreak();
+    if (s >= 2) {
+      el.innerHTML = '<span class="flame">🔥</span> ' + s + '-day streak';
+      el.hidden = false;
     } else {
-      box.innerHTML = "";
+      el.hidden = true;
     }
   }
 
@@ -236,21 +307,20 @@
     glow.style.transform = "translateX(" + (i * 100) + "%)";
   }
 
-  /* ---------- 3D tilt on the word card ---------- */
+  /* ---------- 3D tilt on the word card (combines with flip) ---------- */
   function setupTilt(el) {
     if (!el) return;
     function onMove(e) {
-      var p = (e.touches && e.touches[0]) || e;
+      if (e.pointerType === "touch") return; // don't fight taps on touch
       var r = el.getBoundingClientRect();
-      var px = (p.clientX - r.left) / r.width - 0.5;
-      var py = (p.clientY - r.top) / r.height - 0.5;
-      el.style.transform = "rotateY(" + (px * 9) + "deg) rotateX(" + (-py * 9) + "deg)";
+      var px = (e.clientX - r.left) / r.width - 0.5;
+      var py = (e.clientY - r.top) / r.height - 0.5;
+      applyCardTransform(-py * 6, px * 6);
     }
-    function reset() { el.style.transform = ""; }
+    function reset() { applyCardTransform(0, 0); }
     el.addEventListener("pointermove", onMove);
     el.addEventListener("pointerleave", reset);
     el.addEventListener("pointercancel", reset);
-    el.addEventListener("touchend", reset);
   }
 
   /* ---------- modals ---------- */
@@ -369,7 +439,8 @@
     await tryRegisterPeriodicSync();
     // fire one now so the user sees it works
     var w = wordOfDay();
-    showLocalNotification("📖 You're in! Here's today's word", "“" + w.word + "” — " + (w.simple || w.definition) + " Tap to learn it ✨");
+    showLocalNotification("📖 You're in! Today's word: " + w.word,
+      "Challenge: slip “" + w.word + "” into a real sentence today 🔥  Tap to see what it means.");
     updateNotifyBtn();
     toast("Daily reminders on ✨ A new word will find you each day.");
   }
@@ -428,8 +499,15 @@
     renderAll();
     updateNotifyBtn();
     primeVoices();
-    setupTilt(document.getElementById("wordCard"));
+    var wc = document.getElementById("wordCard");
     moveTabGlow("today");
+
+    // tap the flashcard to flip (ignore taps on buttons / links / the simple box)
+    wc.addEventListener("click", function (e) {
+      if (e.target.closest("button, a, .simple-box")) return;
+      toggleFlip();
+    });
+    window.addEventListener("resize", sizeFlipCard);
 
     document.querySelectorAll(".tab").forEach(function (t) {
       t.addEventListener("click", function () { switchView(t.dataset.view); });
@@ -474,6 +552,7 @@
           box.hidden = !show;
           ex.classList.toggle("is-open", show);
           ex.textContent = show ? "🧩 Hide simple version" : "🧩 Explain simply";
+          setTimeout(sizeFlipCard, 0);
         }
         return;
       }

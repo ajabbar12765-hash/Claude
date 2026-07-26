@@ -60,11 +60,8 @@ body {
 }
 .brand { display: flex; align-items: center; gap: 11px; }
 .brand-mark {
-  width: 38px; height: 38px; border-radius: 12px;
-  display: grid; place-items: center;
-  font-weight: 900; font-size: 20px; color: #0b1020;
-  background: linear-gradient(135deg, var(--primary-2), var(--accent));
-  box-shadow: 0 8px 24px rgba(99,102,241,.5); position: relative;
+  width: 38px; height: 38px; border-radius: 11px; display: block;
+  box-shadow: 0 6px 18px rgba(99,102,241,.45);
 }
 .brand-name { font-weight: 800; letter-spacing: .2px; font-size: 19px;
   background: linear-gradient(90deg, #fff, var(--primary-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -143,7 +140,13 @@ body {
   filter: blur(5px); animation: shadowpulse 22s ease-in-out infinite; }
 @keyframes shadowpulse { 0%,100%{transform:scaleX(1);opacity:.55} 50%{transform:scaleX(.72);opacity:.32} }
 
-.date-line { color: var(--gold); font-size: 12px; margin: 0 0 12px 2px; text-transform: uppercase; letter-spacing: .18em; text-align: center; font-weight: 700; }
+.date-line { color: var(--gold); font-size: 12px; margin: 0 0 10px 2px; text-transform: uppercase; letter-spacing: .18em; text-align: center; font-weight: 700; }
+
+/* ---------- streak chip ---------- */
+.streak { text-align: center; margin: 0 auto 14px; width: fit-content;
+  background: rgba(244,200,105,.14); border: 1px solid rgba(244,200,105,.45); color: var(--gold);
+  border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 800; letter-spacing: .02em; }
+.streak .flame { filter: drop-shadow(0 0 6px rgba(244,120,40,.7)); }
 
 /* ---------- word card (glass + 3D tilt) ---------- */
 .tilt-scene { perspective: 1200px; }
@@ -156,11 +159,33 @@ body {
   padding: 24px;
   box-shadow: var(--shadow);
 }
-.word-card { transition: transform .12s ease; transform-style: preserve-3d; will-change: transform; }
-.word-card::before { content: ""; position: absolute; inset: 0; border-radius: var(--radius);
-  background: linear-gradient(140deg, rgba(255,255,255,.14), transparent 40%); pointer-events: none; }
-.word-card .wc-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-.word-card .word {
+/* ---------- flashcard flip ---------- */
+/* container is a bare 3D stage — no backdrop-filter here (it would flatten 3D) */
+.flip-card { position: relative; cursor: pointer; transform-style: preserve-3d; will-change: transform;
+  transition: transform .6s cubic-bezier(.4,.85,.3,1); min-height: 300px; }
+.flip-card.flipped { transform: rotateY(180deg); }
+.flip-face { position: absolute; top: 0; left: 0; width: 100%; min-height: 100%; padding: 24px;
+  border-radius: var(--radius); overflow: hidden;
+  background: linear-gradient(160deg, var(--glass), var(--glass-2));
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  border: 1px solid var(--line); box-shadow: var(--shadow);
+  -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.flip-face.front { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; }
+.flip-face.front::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(140deg, rgba(255,255,255,.14), transparent 42%); }
+.flip-face.back { transform: rotateY(180deg);
+  background:
+    repeating-linear-gradient(180deg, transparent 0 30px, rgba(244,200,105,.07) 30px 31px),
+    linear-gradient(160deg, var(--glass), var(--glass-2)); }
+.flash-label { font-size: 11px; font-weight: 800; letter-spacing: .26em; text-transform: uppercase; color: var(--gold-deep); }
+.flip-face.front .flash-label { margin-bottom: 2px; }
+.flip-face.front .word { font-size: clamp(40px, 13vw, 62px); }
+.flip-face.front .ipa { margin: 2px 0 4px; }
+.flip-cue { display: block; margin-top: 14px; font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+.flip-face.back .flash-label { display: block; margin-bottom: 10px; }
+.flip-face.back .definition { margin-top: 0; }
+.wc-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.word {
   font-family: var(--serif);
   font-size: clamp(34px, 9.5vw, 50px); font-weight: 700; letter-spacing: -.5px;
   background: linear-gradient(135deg, #ffffff, #e8ddff 55%, var(--gold));
