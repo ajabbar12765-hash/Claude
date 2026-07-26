@@ -24,7 +24,7 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <span class="brand-mark">V</span>
+        <img class="brand-mark" src="icons/icon-192.png" alt="" width="38" height="38" />
         <span class="brand-name">Daily&nbsp;Vocab</span>
       </div>
       <button id="notifyBtn" class="icon-btn" title="Daily reminders" aria-label="Daily reminders">🔔</button>
@@ -57,10 +57,12 @@
         </div>
 
         <p class="date-line" id="dateLine"></p>
+        <div class="streak" id="streak" hidden></div>
 
         <div class="tilt-scene">
-          <article class="card word-card" id="wordCard"></article>
+          <article class="flip-card" id="wordCard"></article>
         </div>
+        <p class="flip-hint" id="flipHint">Tap the card to flip it ✦</p>
 
         <div class="today-actions">
           <button class="btn btn-primary" id="setGoalBtn"><span>🎯</span> Set a practice goal</button>

@@ -1,5 +1,5 @@
 /* Daily Vocab service worker: offline cache + daily reminder notifications. */
-var CACHE = "daily-vocab-v2";
+var CACHE = "daily-vocab-v3";
 var ASSETS = [
   "./",
   "index.html",
@@ -54,8 +54,15 @@ function showDailyWord() {
       "💬 Sound smarter today",
       "🔥 Keep your streak going"
     ];
+    var challenges = [
+      "Challenge: use “" + w.word + "” in a sentence today 🔥",
+      "Can you slip “" + w.word + "” into a chat today? 💬",
+      "Your mission: say “" + w.word + "” out loud once ✨",
+      "Try texting someone the word “" + w.word + "” 📲",
+      "Learn it now, use it before bed 🌙"
+    ];
     var title = hooks[dayNum % hooks.length] + ": " + w.word;
-    var body = (w.simple || w.definition) + "  ·  Tap to see examples & set a goal.";
+    var body = (w.simple || w.definition) + "  ·  " + challenges[dayNum % challenges.length];
     return self.registration.showNotification(title, {
       body: body,
       icon: "icons/icon-192.png",
