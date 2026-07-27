@@ -136,7 +136,23 @@
   }
   function renderGoals(){var l=id("goalsList");l.innerHTML="";if(!state.goals.length){l.innerHTML='<div class="empty"><span class="big">&#9873;</span>No goals yet. On Today, select Set a practice goal to lock a word until you master it.</div>';return;}state.goals.forEach(function(g){l.appendChild(goalNode(g,false));});}
   function renderHist(){var l=id("historyList");var items=state.history.slice().sort(function(a,b){return a.date<b.date?1:-1;});l.innerHTML="";if(!items.length){l.innerHTML='<div class="empty"><span class="big">&#128214;</span>No words yet — check back tomorrow.</div>';return;}items.forEach(function(h){var w=WORDS[h.index];if(!w)return;var n=document.createElement("div");n.className="hist";n.innerHTML='<div><div class="hw">'+esc(w.word)+'</div><div class="hd">'+esc(w.definition)+'</div></div><div class="hdt">'+(h.date===tk()?"Today":shortD(h.date))+'</div>';n.addEventListener("click",function(){openDetail(w);});l.appendChild(n);});}
-  function renderAll(){renderToday();renderGoals();renderHist();}
+  function activeDaySet(){var s={};state.history.forEach(function(h){s[h.date]=1;});state.goals.forEach(function(g){g.checkins.forEach(function(d){s[d]=1;});});return s;}
+  function renderCalendar(){
+    var wrap=id("calWrap");if(!wrap)return;
+    var active=activeDaySet();
+    var now=new Date(),y=now.getFullYear(),m=now.getMonth();
+    var first=new Date(y,m,1),startDow=first.getDay(),dim=new Date(y,m+1,0).getDate();
+    var title=first.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+    var s=streak(),todayK=tk(),count=0;
+    for(var d=1;d<=dim;d++){if(active[y+"-"+pad(m+1)+"-"+pad(d)])count++;}
+    var html='<div class="cal"><div class="cal-head"><span class="cal-title">'+title+'</span>'+(s>=2?'<span class="streak">🔥 '+s+'-day streak</span>':"")+'</div><div class="cal-grid">';
+    ["S","M","T","W","T","F","S"].forEach(function(x){html+='<div class="cal-dow">'+x+'</div>';});
+    for(var i=0;i<startDow;i++)html+='<div class="cal-cell empty"></div>';
+    for(var day=1;day<=dim;day++){var k=y+"-"+pad(m+1)+"-"+pad(day);var cls="cal-cell";if(active[k])cls+=" on";if(k===todayK)cls+=" today";html+='<div class="'+cls+'">'+day+'</div>';}
+    html+='</div><div class="cal-foot">'+count+' active day'+(count===1?"":"s")+' this month</div></div>';
+    wrap.innerHTML=html;
+  }
+  function renderAll(){renderToday();renderGoals();renderHist();renderCalendar();}
 
   /* ---------- tabs / modals ---------- */
   function sv(name){document.querySelectorAll(".tab").forEach(function(t){t.classList.toggle("on",t.dataset.view===name);});document.querySelectorAll(".view").forEach(function(v){v.classList.toggle("on",v.id==="view-"+name);});}
@@ -193,6 +209,28 @@
       out.issues.push("\u201c"+w.word+"\u201d is a verb, so it usually shouldn\u2019t come right after \u201ca/an/the\u201d.");
     return out;
   }
+  function correctSentence(raw){
+    var s=(raw||"").replace(/\r/g,"").trim();
+    if(!s)return s;
+    s=s.replace(/\b(\w+)((?:\s+\1\b)+)/gi,"$1");
+    s=s.replace(/\b(could|should|would) of\b/gi,function(_,m){return m+" have";});
+    s=s.replace(/\b(he|she|it) don'?t\b/gi,function(_,su){return su+" doesn\u2019t";});
+    s=s.replace(/\b(they|we|you) is\b/gi,function(_,su){return su+" are";});
+    s=s.replace(/\bi (is|are)\b/gi,"I am").replace(/\bi were\b/gi,"I was");
+    s=s.replace(/\b(has|have) went\b/gi,"$1 gone");
+    s=s.replace(/\bmore better\b/gi,"better");
+    s=s.replace(/\byour welcome\b/gi,"you\u2019re welcome");
+    s=s.replace(/\buse (\w+) good\b/gi,"use $1 well");
+    var sp={alot:"a lot",definately:"definitely",recieve:"receive",teh:"the",untill:"until",seperate:"separate",occured:"occurred"};
+    s=s.replace(/\b(alot|definately|recieve|teh|untill|seperate|occured)\b/gi,function(w){return sp[w.toLowerCase()];});
+    s=s.replace(/\ba ([aeiou]\w*)/gi,function(m,w){return /^(u|one|uni|use|user|euro|ubi)/i.test(w)?m:"an "+w;});
+    s=s.replace(/\ban ([b-df-hj-np-tv-z]\w*)/gi,function(m,w){return /^(hour|honest|honou?r|heir)/i.test(w)?m:"a "+w;});
+    s=s.replace(/\s+([.,!?;:])/g,"$1").replace(/\s{2,}/g," ").trim();
+    s=s.replace(/\bi\b/g,"I");
+    s=s.replace(/^([a-z])/,function(c){return c.toUpperCase();});
+    if(!/[.!?]["'\u2019\u201d)\]]?$/.test(s))s=s+".";
+    return s;
+  }
   function runCheck(){
     var raw=id("sentence").value;
     var out=id("checkResults");
@@ -201,12 +239,17 @@
     var w=wod();
     var u=usageCheck(raw,w);
     var all=r.issues.concat(u.used?u.issues:[]);
+    var corrected=correctSentence(raw);
+    var changed=corrected && corrected!==raw.trim();
     var html="";
-    if(!all.length){
-      html+='<div class="note ok"><span class="lab">Looks good</span>No grammar or spelling issues spotted in your '+r.words+'-word sentence.</div>';
-    }else{
+    if(all.length){
       html+='<p class="result-head">Found '+all.length+' thing'+(all.length>1?"s":"")+' to review:</p>';
       all.forEach(function(t){html+='<div class="note warn">'+esc(t)+'</div>';});
+    }
+    if(changed){
+      html+='<div class="note note-fix"><span class="lab">Suggested correction</span>\u201c'+esc(corrected)+'\u201d</div>';
+    }else if(!all.length){
+      html+='<div class="note ok"><span class="lab">Looks good</span>No grammar or spelling issues spotted in your '+r.words+'-word sentence.</div>';
     }
     if(u.used){
       html+='<div class="note ok">\u2713 You used today\u2019s word, \u201c'+esc(w.word)+'\u201d'+(u.issues.length?" \u2014 but check the note above about how it\u2019s placed.":" as "+(/^[aeiou]/i.test(w.pos)?"an ":"a ")+esc(w.pos)+".")+'</div>';

@@ -66,6 +66,19 @@ border-radius:var(--radius);padding:13px 15px;margin:0 0 16px;font-size:14.5px;l
 .note-teal{border-left-color:var(--teal)} .note-teal .lab{color:var(--teal)}
 .note-amber{border-left-color:var(--amber)} .note-amber .lab{color:var(--amber)}
 .note-rose{border-left-color:var(--rose)} .note-rose .lab{color:var(--rose)}
+.note-fix{border-left-color:var(--brand);background:rgba(79,70,229,.06);font-size:16px}
+.calwrap{margin:6px 0 4px}
+.cal{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);padding:14px;box-shadow:var(--shadow)}
+.cal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.cal-title{font-family:var(--serif);font-size:18px;font-weight:600}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-dow{text-align:center;font-size:11px;color:var(--faint);font-weight:700;padding-bottom:2px}
+.cal-cell{height:38px;min-width:0;display:grid;place-items:center;font-size:13px;color:var(--muted);border-radius:8px;background:var(--panel);border:1px solid transparent}
+.cal-cell.empty{background:transparent}
+.cal-cell.on{background:linear-gradient(135deg,var(--brand),var(--teal));color:#fff;font-weight:700;border-color:transparent}
+.cal-cell.today{border-color:var(--amber)}
+.cal-cell.on.today{box-shadow:0 0 0 2px var(--amber)}
+.cal-foot{margin-top:10px;font-size:12.5px;color:var(--faint);text-align:center}
 .remember{margin:4px 0 0;padding-left:18px}
 .remember li{margin:0 0 6px;line-height:1.5}
 .remember li:last-child{margin-bottom:0}
