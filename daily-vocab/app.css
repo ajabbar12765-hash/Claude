@@ -47,6 +47,11 @@ cursor:pointer;padding:0;margin:0 0 14px;font-family:var(--sans)}
 .note{background:var(--note);border:1px solid var(--line2);border-left:4px solid var(--link);
 border-radius:2px;padding:12px 14px;margin:0 0 16px;font-size:14.5px;line-height:1.55}
 .note .lab{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+.note.warn{border-left-color:var(--warn)}
+.note.ok{border-left-color:var(--good)}
+.sentence{width:100%;font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:2px;padding:12px 14px;resize:vertical;margin:0 0 14px}
+.sentence:focus{outline:2px solid var(--progressive);outline-offset:-1px;border-color:var(--progressive)}
+.result-head{font-weight:600;margin:0 0 10px}
 .example{margin:0 0 16px;padding:2px 0 2px 14px;border-left:3px solid var(--line2);font-style:italic;color:var(--muted)}
 .syn-line{font-size:15px;margin:0 0 18px}
 .syn-line .lbl{color:var(--muted)}
