@@ -164,18 +164,31 @@ def _fallback_answer(question, analysis, reason=None):
     return " ".join(bits)
 
 
+# We deliberately feed the model text scraped from a possibly-fraudulent
+# site. Gemini's default filters can block its OWN reply just because that
+# text mentions scams/fraud, returning nothing. Relax to only-high so the
+# assistant can still discuss the risk. (These categories are the ones the
+# public API accepts without special allow-listing.)
+GEMINI_SAFETY = [
+    {"category": c, "threshold": "BLOCK_ONLY_HIGH"} for c in (
+        "HARM_CATEGORY_HARASSMENT", "HARM_CATEGORY_HATE_SPEECH",
+        "HARM_CATEGORY_SEXUALLY_EXPLICIT", "HARM_CATEGORY_DANGEROUS_CONTENT")
+]
+
+
 def _gemini_call_one(model, api_key, user_text):
     """Call one Gemini model. Returns (text_or_None, error_or_None).
 
-    error is a (status_code, message) tuple when the request was rejected,
-    so the caller can decide whether to try the next model (404 = model gone)
-    or give up (401/403 = bad key)."""
+    error is a (status_code, message) tuple. status<0 marks a soft failure
+    (blocked / empty reply) that is worth retrying on another model; a real
+    HTTP status is used for transport errors."""
     url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
            f"{model}:generateContent")
     body = {
         "system_instruction": {"parts": [{"text": SYSTEM_PROMPT}]},
         "contents": [{"role": "user", "parts": [{"text": user_text}]}],
-        "generationConfig": {"maxOutputTokens": 600, "temperature": 0.4},
+        "generationConfig": {"maxOutputTokens": 700, "temperature": 0.4},
+        "safetySettings": GEMINI_SAFETY,
     }
     resp = requests.post(
         url, params={"key": api_key},
@@ -189,27 +202,43 @@ def _gemini_call_one(model, api_key, user_text):
             detail = (resp.text or "")[:160]
         return None, (resp.status_code, detail or "request rejected")
     data = resp.json()
+    feedback = data.get("promptFeedback") or {}
+    if feedback.get("blockReason"):
+        return None, (-1, "response blocked (" + str(feedback["blockReason"]) + ")")
     candidates = data.get("candidates") or []
     if not candidates:
-        return None, None
+        return None, (-1, "no answer returned")
     parts = (candidates[0].get("content") or {}).get("parts") or []
     text = "".join(p.get("text", "") for p in parts).strip()
-    return (text or None), None
+    if not text:
+        return None, (-1, "empty (" + str(candidates[0].get("finishReason", "")) + ")")
+    return text, None
+
+
+# HTTP statuses worth retrying on the next model (transient / capacity /
+# per-model quota). Auth/validation errors (400/401/403) will recur on every
+# model, so we stop and surface them.
+_RETRY_STATUSES = {404, 408, 409, 429, 500, 502, 503, 504}
 
 
 def _ask_gemini(api_key, user_text):
     """Try each candidate Gemini model until one answers. Raises RuntimeError
-    with Google's own message if every model was rejected."""
+    with the last error if every model failed."""
     last_err = None
     for model in GEMINI_MODELS:
-        text, err = _gemini_call_one(model, api_key, user_text)
+        try:
+            text, err = _gemini_call_one(model, api_key, user_text)
+        except requests.RequestException as exc:
+            last_err = f"network error: {exc.__class__.__name__}"
+            continue
         if err is None:
             return text
         status, detail = err
-        last_err = f"HTTP {status}: {detail}"
-        # 404 = this model name is unavailable for the key; try the next one.
-        # Anything else (bad key, quota, blocked) will recur, so stop early.
-        if status != 404:
+        last_err = (f"HTTP {status}: {detail}" if status > 0
+                    else f"{detail}")
+        # Retry the next model on soft failures (status<0) and transient/quota
+        # statuses; stop early on auth/validation errors that would recur.
+        if status > 0 and status not in _RETRY_STATUSES:
             break
     raise RuntimeError(last_err or "Gemini request failed")
 
@@ -245,19 +274,29 @@ def answer_question(question, analysis):
     context = _context_from_analysis(analysis)
     user_text = f"Website analysis:\n{context}\n\nMy question: {q}"
 
-    try:
-        if gemini_key:
+    reason = None
+    text = None
+    if gemini_key:
+        try:
             text = _ask_gemini(gemini_key, user_text)
-        else:
+        except Exception as exc:
+            reason = str(exc)[:180] or exc.__class__.__name__
+    if not text and claude_key:
+        # Gemini unavailable (or unset) but a Claude key exists: try it too.
+        try:
             text = _ask_claude(claude_key, user_text)
-        if not text:
-            text = ("I couldn't produce an answer for that. Try rephrasing, "
-                    "or search the shop's name plus 'reviews' to see what "
-                    "others report.")
+            reason = None
+        except Exception as exc:
+            reason = reason or (str(exc)[:180] or exc.__class__.__name__)
+
+    if text:
         return {"answer": text, "ai": True}
-    except Exception as exc:
-        # A key IS configured but the call failed: fall back, but surface a
-        # short reason so the problem is diagnosable instead of silent.
-        reason = str(exc)[:180] or exc.__class__.__name__
+    if reason:
+        # A key IS configured but every provider failed: fall back, and
+        # surface a short reason so the problem is diagnosable, not silent.
         return {"answer": _fallback_answer(q, analysis, reason=reason),
                 "ai": False}
+    # Providers reachable but produced nothing usable.
+    return {"answer": ("I couldn't produce an answer for that. Try "
+                       "rephrasing, or search the shop's name plus 'reviews' "
+                       "to see what others report."), "ai": True}
