@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, viewport-fit=cover'>
+<meta name='theme-color' content='#1d4ed8'>
+<title>Is This Real?</title>
+<link rel='manifest' href='manifest.webmanifest'>
+<link rel='icon' type='image/png' sizes='192x192' href='icon-192.png'>
+<link rel='apple-touch-icon' href='icon-192.png'>
+<meta name='apple-mobile-web-app-capable' content='yes'>
+<meta name='apple-mobile-web-app-status-bar-style' content='default'>
+<meta name='apple-mobile-web-app-title' content='Is This Real?'>
+<style>
+:root{
+--paper:#f6f7fb;--card:#ffffff;--panel:#eef1f8;
+--ink:#141821;--muted:#4a5162;--faint:#6b7383;
+--line:#d9dee9;
+--brand:#1d4ed8;--brand-ink:#ffffff;
+--good:#0f7a4f;--good-bg:#e6f6ee;--good-line:#9bd9bd;
+--warn:#8a5200;--warn-bg:#fdf1dd;--warn-line:#e8c68a;
+--bad:#a4232b;--bad-bg:#fdeced;--bad-line:#eda9ae;
+--sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Roboto,Arial,sans-serif;
+--radius:16px;
+--shadow:0 1px 2px rgba(20,24,33,.06),0 8px 24px rgba(20,24,33,.07);
+--base:20px;
+}
+@media (prefers-color-scheme:dark){:root{
+--paper:#0f1218;--card:#181d26;--panel:#1f2530;
+--ink:#f0f2f7;--muted:#b3bac8;--faint:#8d95a5;
+--line:#2c3340;
+--brand:#6f95ff;--brand-ink:#0b0f16;
+--good:#5fd6a4;--good-bg:#10281f;--good-line:#2c5f47;
+--warn:#f5bd6a;--warn-bg:#2a2113;--warn-line:#6b5228;
+--bad:#ff8b93;--bad-bg:#2b1518;--bad-line:#6a2f36;
+--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+}}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+font-family:var(--sans);color:var(--ink);background:var(--paper);
+font-size:var(--base);line-height:1.55;-webkit-font-smoothing:antialiased;
+min-height:100vh;-webkit-text-size-adjust:100%;
+}
+body.xl{--base:24px}
+.wrap{max-width:620px;margin:0 auto;padding:0 18px calc(48px + env(safe-area-inset-bottom))}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;
+padding:calc(16px + env(safe-area-inset-top)) 0 14px}
+.logo{display:flex;align-items:center;gap:12px;min-width:0}
+.logo img{width:44px;height:44px;border-radius:12px;flex:none}
+.logo .t{font-size:1.15em;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.icon-btn{border:2px solid var(--line);background:var(--card);color:var(--muted);
+width:52px;height:52px;border-radius:14px;font-size:24px;cursor:pointer;flex:none;line-height:1}
+.icon-btn:active{transform:scale(.96)}
+
+/* screens */
+.screen{display:none}
+.screen.on{display:block}
+
+h1{font-size:1.5em;line-height:1.25;margin:6px 0 6px;letter-spacing:-.02em}
+p.lede{color:var(--muted);margin:0 0 26px;font-size:1.02em}
+
+/* big buttons */
+.big{
+display:flex;align-items:center;gap:18px;width:100%;text-align:left;
+background:var(--card);border:2px solid var(--line);border-radius:var(--radius);
+padding:22px 20px;margin-bottom:16px;cursor:pointer;color:inherit;
+font-family:inherit;font-size:1.05em;box-shadow:var(--shadow);
+}
+.big:active{transform:scale(.985)}
+.big .em{font-size:2.1em;line-height:1;flex:none}
+.big .txt{flex:1;min-width:0}
+.big .lbl{display:block;font-weight:750;line-height:1.25}
+.big .sub{display:block;color:var(--muted);font-size:.82em;font-weight:400;margin-top:5px;line-height:1.35}
+
+.btn{
+display:block;width:100%;border:0;border-radius:14px;cursor:pointer;
+font-family:inherit;font-size:1.02em;font-weight:700;padding:18px 20px;
+background:var(--brand);color:var(--brand-ink);margin-bottom:14px;
+}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.btn.quiet{background:transparent;color:var(--muted);font-weight:600;border:0;padding:14px}
+.btn:active{transform:scale(.985)}
+.btn[disabled]{opacity:.5}
+
+/* preview */
+.preview{width:100%;border-radius:var(--radius);border:2px solid var(--line);
+display:block;margin-bottom:20px;background:var(--panel);max-height:44vh;object-fit:contain}
+
+/* thinking */
+.thinking{text-align:center;padding:40px 0}
+.spinner{width:64px;height:64px;border-radius:50%;margin:0 auto 24px;
+border:7px solid var(--line);border-top-color:var(--brand);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.thinking .t{font-size:1.2em;font-weight:700}
+.thinking .s{color:var(--muted);margin-top:8px}
+
+/* verdict */
+.verdict{border-radius:var(--radius);border:3px solid;padding:24px 22px;margin-bottom:22px}
+.verdict .badge{font-size:2.6em;line-height:1;margin-bottom:12px}
+.verdict .vt{font-size:1.45em;font-weight:800;line-height:1.2;letter-spacing:-.02em}
+.verdict .vs{margin-top:10px;font-size:1.02em;line-height:1.5}
+.v-good{background:var(--good-bg);border-color:var(--good-line);color:var(--good)}
+.v-warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+.v-bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.verdict .vs,.verdict .vt{color:var(--ink)}
+
+.card{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);
+padding:20px;margin-bottom:18px;box-shadow:var(--shadow)}
+.card h2{font-size:1.05em;margin:0 0 14px;letter-spacing:.01em}
+.card ul{margin:0;padding-left:24px}
+.card li{margin-bottom:12px}
+.card li:last-child{margin-bottom:0}
+.card p{margin:0}
+
+.alert{background:var(--bad-bg);border:3px solid var(--bad-line);border-radius:var(--radius);
+padding:20px;margin-bottom:18px}
+.alert h2{color:var(--bad);margin:0 0 10px;font-size:1.05em}
+.alert p{margin:0;color:var(--ink)}
+
+.note{color:var(--faint);font-size:.82em;line-height:1.5;margin:22px 0 8px;text-align:center}
+
+/* settings */
+label{display:block;font-weight:700;margin:22px 0 8px;font-size:.95em}
+label .hint{display:block;font-weight:400;color:var(--muted);font-size:.85em;margin-top:4px;line-height:1.45}
+input[type=text],input[type=password],input[type=tel]{
+width:100%;font-family:inherit;font-size:1em;padding:16px;border-radius:12px;
+border:2px solid var(--line);background:var(--card);color:var(--ink)}
+input:focus{outline:3px solid var(--brand);outline-offset:1px}
+.toggle{display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);
+border-radius:12px;padding:16px;margin-top:22px;cursor:pointer}
+.toggle input{width:26px;height:26px;flex:none}
+.saved{background:var(--good-bg);border:2px solid var(--good-line);color:var(--good);
+border-radius:12px;padding:14px;font-weight:700;text-align:center;margin-bottom:16px}
+
+.err{background:var(--bad-bg);border:2px solid var(--bad-line);border-radius:12px;
+padding:18px;margin-bottom:18px;color:var(--ink)}
+.err b{color:var(--bad);display:block;margin-bottom:6px}
+
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+<div class='wrap'>
+
+<header>
+  <div class='logo'>
+    <img src='icon-192.png' alt=''>
+    <div class='t'>Is This Real?</div>
+  </div>
+  <button class='icon-btn' id='gear' aria-label='Settings'>&#9881;</button>
+</header>
+
+<!-- ===== HOME ===== -->
+<section class='screen on' id='s-home'>
+  <h1>What would you like to check?</h1>
+  <p class='lede'>Send me a picture or a video and I'll take a careful look at it with you.</p>
+
+  <button class='big' id='b-photo'>
+    <span class='em'>&#128247;</span>
+    <span class='txt'>
+      <span class='lbl'>Check a picture</span>
+      <span class='sub'>Take a photo, or pick one you were sent</span>
+    </span>
+  </button>
+
+  <button class='big' id='b-video'>
+    <span class='em'>&#127909;</span>
+    <span class='txt'>
+      <span class='lbl'>Check a video</span>
+      <span class='sub'>Pick a video you were sent</span>
+    </span>
+  </button>
+
+  <button class='big' id='b-family'>
+    <span class='em'>&#128222;</span>
+    <span class='txt'>
+      <span class='lbl'>Ask my family</span>
+      <span class='sub' id='family-sub'>Call or text someone you trust</span>
+    </span>
+  </button>
+
+  <p class='note'>Nobody can tell for certain whether something was made by a computer.
+  I'll tell you what I see and how sure I am &mdash; and I'll say so plainly when I'm not sure.</p>
+</section>
+
+<!-- ===== CONFIRM ===== -->
+<section class='screen' id='s-confirm'>
+  <h1 id='confirm-title'>Is this the right one?</h1>
+  <img class='preview' id='preview-img' alt='The picture you chose'>
+  <video class='preview hidden' id='preview-vid' controls playsinline></video>
+  <button class='btn' id='b-go'>Yes &mdash; check it for me</button>
+  <button class='btn ghost' id='b-back1'>No, pick a different one</button>
+</section>
+
+<!-- ===== WORKING ===== -->
+<section class='screen' id='s-working'>
+  <div class='thinking'>
+    <div class='spinner'></div>
+    <div class='t' id='work-title'>Taking a careful look&hellip;</div>
+    <div class='s' id='work-sub'>This usually takes about half a minute.</div>
+  </div>
+</section>
+
+<!-- ===== RESULT ===== -->
+<section class='screen' id='s-result'>
+  <div class='verdict' id='verdict'>
+    <div class='badge' id='v-badge'></div>
+    <div class='vt' id='v-title'></div>
+    <div class='vs' id='v-sub'></div>
+  </div>
+
+  <div class='alert hidden' id='scam'>
+    <h2>&#9888;&#65039; Be careful</h2>
+    <p id='scam-text'></p>
+  </div>
+
+  <div class='card' id='reasons-card'>
+    <h2>Why I think that</h2>
+    <ul id='reasons'></ul>
+  </div>
+
+  <div class='card'>
+    <h2>What I'd do next</h2>
+    <p id='advice'></p>
+  </div>
+
+  <button class='btn ghost' id='b-speak'>&#128264;&nbsp; Read this to me</button>
+  <button class='btn ghost' id='b-family2'>&#128222;&nbsp; Ask my family about this</button>
+  <button class='btn' id='b-again'>Check something else</button>
+
+  <p class='note'>This is a helpful second opinion, not a certainty.
+  When money, passwords, or personal details are involved, always check with someone you trust.</p>
+</section>
+
+<!-- ===== ERROR ===== -->
+<section class='screen' id='s-error'>
+  <h1>Something went wrong</h1>
+  <div class='err' id='err-box'></div>
+  <button class='btn' id='b-retry'>Try again</button>
+  <button class='btn ghost' id='b-home-err'>Back to the start</button>
+</section>
+
+<!-- ===== SETTINGS ===== -->
+<section class='screen' id='s-settings'>
+  <h1>Settings</h1>
+  <p class='lede'>Set this up once. Your grandma never needs to open this screen.</p>
+
+  <div class='saved hidden' id='saved'>Saved</div>
+
+  <label for='f-name'>Family member's name
+    <span class='hint'>Shown on the "Ask my family" button.</span></label>
+  <input type='text' id='f-name' placeholder='e.g. Sarah' autocomplete='off'>
+
+  <label for='f-phone'>Their phone number
+    <span class='hint'>Tapping the button will call or text this number.</span></label>
+  <input type='tel' id='f-phone' placeholder='e.g. +1 555 123 4567' autocomplete='off'>
+
+  <label for='f-proxy'>Server address (recommended)
+    <span class='hint'>If you deployed the included server function, paste its address here
+    &mdash; e.g. https://your-app.vercel.app/api/analyze. Then the key stays on the server
+    and never touches the phone. Leave blank to use a key on this device instead.</span></label>
+  <input type='text' id='f-proxy' placeholder='https://your-app.vercel.app/api/analyze' autocomplete='off' spellcheck='false'>
+
+  <label for='f-key'>Anthropic API key
+    <span class='hint'>Only needed if you left the server address blank. It is stored on this
+    phone only and is sent straight to Anthropic. Anyone who can unlock this phone can read it,
+    so use a key with a spending limit.</span></label>
+  <input type='password' id='f-key' placeholder='sk-ant-...' autocomplete='off' spellcheck='false'>
+
+  <div class='toggle' id='t-xl'>
+    <input type='checkbox' id='f-xl'>
+    <span>Extra large text</span>
+  </div>
+
+  <div style='height:24px'></div>
+  <button class='btn' id='b-save'>Save</button>
+  <button class='btn ghost' id='b-home-set'>Done</button>
+</section>
+
+</div>
+
+<canvas id='cv' style='display:none'></canvas>
+<input type='file' id='pick-photo' accept='image/*' style='display:none'>
+<input type='file' id='pick-video' accept='video/*' style='display:none'>
+
+<script>
+(function(){
+'use strict';
+
+var MODEL = 'claude-opus-5';
+var API = 'https://api.anthropic.com/v1/messages';
+var LS = 'isthisreal.';
+
+/* ---------- tiny helpers ---------- */
+function $(id){ return document.getElementById(id); }
+function get(k,d){ var v = localStorage.getItem(LS+k); return v===null ? d : v; }
+function set(k,v){ localStorage.setItem(LS+k, v); }
+function show(id){
+  var all = document.querySelectorAll('.screen');
+  for (var i=0;i<all.length;i++) all[i].classList.remove('on');
+  $(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+function esc(s){ return String(s==null?'':s).replace(/[<>&]/g, function(c){
+  return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]; }); }
+
+/* ---------- state ---------- */
+var current = null;   // { kind:'photo'|'video', images:[{media_type,data}], objectUrl }
+var lastResult = null;
+
+/* ---------- settings ---------- */
+function applyPrefs(){
+  document.body.classList.toggle('xl', get('xl','0') === '1');
+  var name = get('name','');
+  $('family-sub').textContent = name
+    ? 'Call or text ' + name
+    : 'Call or text someone you trust';
+}
+
+function loadSettings(){
+  $('f-name').value  = get('name','');
+  $('f-phone').value = get('phone','');
+  $('f-proxy').value = get('proxy','');
+  $('f-key').value   = get('key','');
+  $('f-xl').checked  = get('xl','0') === '1';
+}
+
+$('b-save').addEventListener('click', function(){
+  set('name',  $('f-name').value.trim());
+  set('phone', $('f-phone').value.trim());
+  set('proxy', $('f-proxy').value.trim());
+  set('key',   $('f-key').value.trim());
+  set('xl',    $('f-xl').checked ? '1' : '0');
+  applyPrefs();
+  var s = $('saved');
+  s.classList.remove('hidden');
+  setTimeout(function(){ s.classList.add('hidden'); }, 2200);
+  window.scrollTo(0,0);
+});
+
+$('gear').addEventListener('click', function(){ loadSettings(); show('s-settings'); });
+$('b-home-set').addEventListener('click', function(){ show('s-home'); });
+$('t-xl').addEventListener('click', function(e){
+  if (e.target.tagName !== 'INPUT') $('f-xl').checked = !$('f-xl').checked;
+});
+
+/* ---------- family contact ---------- */
+function contactFamily(withContext){
+  var phone = get('phone','');
+  if (!phone){
+    loadSettings();
+    show('s-settings');
+    setTimeout(function(){ $('f-phone').focus(); }, 250);
+    return;
+  }
+  if (withContext && lastResult){
+    var msg = 'Hi! I used my "Is This Real?" app on something I was sent. It said: '
+      + lastResult.headline + ' — can you take a look with me?';
+    window.location.href = 'sms:' + phone + '?&body=' + encodeURIComponent(msg);
+  } else {
+    window.location.href = 'tel:' + phone;
+  }
+}
+$('b-family').addEventListener('click', function(){ contactFamily(false); });
+$('b-family2').addEventListener('click', function(){ contactFamily(true); });
+
+/* ---------- picking files ---------- */
+$('b-photo').addEventListener('click', function(){ $('pick-photo').click(); });
+$('b-video').addEventListener('click', function(){ $('pick-video').click(); });
+
+$('pick-photo').addEventListener('change', function(e){
+  var f = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  loadingScreen('Getting the picture ready…', 'Just a moment.');
+  shrinkImage(f, 1568).then(function(img){
+    current = { kind:'photo', images:[img], objectUrl:null };
+    $('confirm-title').textContent = 'Is this the picture?';
+    $('preview-img').src = 'data:' + img.media_type + ';base64,' + img.data;
+    $('preview-img').classList.remove('hidden');
+    $('preview-vid').classList.add('hidden');
+    show('s-confirm');
+  }).catch(function(err){ fail("I couldn't open that picture.", err); });
+});
+
+$('pick-video').addEventListener('change', function(e){
+  var f = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  loadingScreen('Getting the video ready…', 'Pulling out a few still pictures to look at.');
+  var url = URL.createObjectURL(f);
+  extractFrames(url, 4, 1024).then(function(frames){
+    current = { kind:'video', images:frames, objectUrl:url };
+    $('confirm-title').textContent = 'Is this the video?';
+    $('preview-vid').src = url;
+    $('preview-vid').classList.remove('hidden');
+    $('preview-img').classList.add('hidden');
+    show('s-confirm');
+  }).catch(function(err){
+    URL.revokeObjectURL(url);
+    fail("I couldn't open that video. Some video types don't work on phones — " +
+         "try taking a screenshot of it and checking that picture instead.", err);
+  });
+});
+
+$('b-back1').addEventListener('click', function(){ cleanup(); show('s-home'); });
+$('b-home-err').addEventListener('click', function(){ cleanup(); show('s-home'); });
+$('b-again').addEventListener('click', function(){ cleanup(); show('s-home'); });
+$('b-retry').addEventListener('click', function(){
+  if (current) analyze(); else show('s-home');
+});
+
+function cleanup(){
+  if (current && current.objectUrl){ URL.revokeObjectURL(current.objectUrl); }
+  $('preview-vid').removeAttribute('src');
+  $('preview-img').removeAttribute('src');
+  current = null;
+}
+
+/* ---------- image processing ---------- */
+function shrinkImage(file, maxEdge){
+  return new Promise(function(resolve, reject){
+    var url = URL.createObjectURL(file);
+    var im = new Image();
+    im.onload = function(){
+      try {
+        var cv = $('cv'), ctx = cv.getContext('2d');
+        var scale = Math.min(1, maxEdge / Math.max(im.naturalWidth, im.naturalHeight));
+        cv.width  = Math.max(1, Math.round(im.naturalWidth  * scale));
+        cv.height = Math.max(1, Math.round(im.naturalHeight * scale));
+        ctx.drawImage(im, 0, 0, cv.width, cv.height);
+        var dataUrl = cv.toDataURL('image/jpeg', 0.88);
+        URL.revokeObjectURL(url);
+        resolve({ media_type:'image/jpeg', data: dataUrl.split(',')[1] });
+      } catch(err){ URL.revokeObjectURL(url); reject(err); }
+    };
+    im.onerror = function(){ URL.revokeObjectURL(url); reject(new Error('image decode failed')); };
+    im.src = url;
+  });
+}
+
+function extractFrames(url, count, maxEdge){
+  return new Promise(function(resolve, reject){
+    var v = document.createElement('video');
+    v.preload = 'auto';
+    v.muted = true;
+    v.playsInline = true;
+    v.crossOrigin = 'anonymous';
+
+    var frames = [], times = [], idx = 0, done = false;
+    var timer = setTimeout(function(){
+      if (!done){ done = true; reject(new Error('video timed out')); }
+    }, 45000);
+
+    function finish(ok, err){
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      if (ok) resolve(frames); else reject(err || new Error('video failed'));
+    }
+
+    v.onerror = function(){ finish(false, new Error('video decode failed')); };
+
+    v.onloadeddata = function(){
+      var dur = isFinite(v.duration) && v.duration > 0 ? v.duration : 0;
+      if (dur > 0){
+        for (var i = 0; i < count; i++){
+          times.push(Math.min(dur - 0.05, dur * ((i + 0.5) / count)));
+        }
+      } else {
+        times = [0];
+      }
+      seekNext();
+    };
+
+    function grab(){
+      var cv = $('cv'), ctx = cv.getContext('2d');
+      var w = v.videoWidth, h = v.videoHeight;
+      if (!w || !h) return;
+      var scale = Math.min(1, maxEdge / Math.max(w, h));
+      cv.width  = Math.max(1, Math.round(w * scale));
+      cv.height = Math.max(1, Math.round(h * scale));
+      ctx.drawImage(v, 0, 0, cv.width, cv.height);
+      frames.push({ media_type:'image/jpeg', data: cv.toDataURL('image/jpeg', 0.85).split(',')[1] });
+    }
+
+    v.onseeked = function(){
+      try { grab(); } catch(err){ return finish(false, err); }
+      idx++;
+      seekNext();
+    };
+
+    function seekNext(){
+      if (idx >= times.length){
+        return frames.length ? finish(true) : finish(false, new Error('no frames'));
+      }
+      try { v.currentTime = times[idx]; }
+      catch(err){ finish(false, err); }
+    }
+
+    v.src = url;
+    v.load();
+  });
+}
+
+/* ---------- the prompt ---------- */
+var SYSTEM = [
+  "You help an older adult decide whether a picture or video they were sent is genuine, or was",
+  "created or altered by a computer, and whether it looks like part of a scam.",
+  "",
+  "How to judge:",
+  "- Look at what is actually in front of you: hands and fingers, teeth, ears, jewellery, eyeglasses,",
+  "  text and signage, logos, reflections, shadows and light direction, background objects that bend,",
+  "  merge or repeat, skin and hair that look unnaturally smooth or plasticky, and edges that smear.",
+  "- For video frames, also consider whether the same person looks consistent from frame to frame,",
+  "  and whether the mouth, teeth and jawline look natural.",
+  "- Weigh what the image is being used FOR. A celebrity endorsing an investment, a 'family member'",
+  "  in trouble, a giveaway, a miracle cure, a delivery problem, or anything urging urgency,",
+  "  secrecy, gift cards, crypto, or a payment is a scam pattern regardless of how the image was made.",
+  "",
+  "Honesty rules, these matter more than anything else:",
+  "- You genuinely cannot be certain whether something was made by AI. Modern generators leave no",
+  "  reliable tell. Say 'not_sure' whenever the evidence is thin. Being unsure is a good answer.",
+  "- Never invent a percentage, score, or confidence number.",
+  "- Only cite details you can actually see in the image. Never invent a detail to justify a verdict.",
+  "- If the picture is blurry, small, a screenshot, or an ordinary everyday photo with nothing",
+  "  notable about it, say 'not_sure' rather than guessing.",
+  "- A real photo can still be used in a scam, and an AI picture can be completely harmless.",
+  "  Judge those two things separately.",
+  "",
+  "How to write:",
+  "- Write to a warm, capable older adult. Short sentences. Everyday words.",
+  "- No technical words at all: no 'artifacts', 'AI-generated', 'diffusion', 'compression',",
+  "  'metadata', 'pixels', 'rendering'. Say things like 'her fingers are blurry and there are six",
+  "  of them' or 'the writing on the sign is jumbled'.",
+  "- Never be alarming for no reason, and never be reassuring for no reason.",
+  "- Address the reader as 'you'. Do not mention that you are an AI model."
+].join('\n');
+
+var SCHEMA = {
+  type: 'object',
+  properties: {
+    verdict:   { type:'string', enum:['looks_real','not_sure','likely_ai'] },
+    headline:  { type:'string', description:'One short plain sentence, under 12 words.' },
+    summary:   { type:'string', description:'One or two short sentences expanding on the headline.' },
+    reasons:   { type:'array', minItems:1, maxItems:4,
+                 items:{ type:'string', description:'One short sentence about something visible.' } },
+    scam_risk: { type:'string', enum:['none','some','high'] },
+    scam_note: { type:'string', description:'Empty string when scam_risk is none.' },
+    what_to_do:{ type:'string', description:'One or two sentences of concrete advice.' }
+  },
+  required: ['verdict','headline','summary','reasons','scam_risk','scam_note','what_to_do'],
+  additionalProperties: false
+};
+
+function buildBody(){
+  var content = [];
+  for (var i = 0; i < current.images.length; i++){
+    content.push({
+      type: 'image',
+      source: { type:'base64', media_type: current.images[i].media_type, data: current.images[i].data }
+    });
+  }
+  content.push({
+    type: 'text',
+    text: current.kind === 'video'
+      ? ('These are ' + current.images.length + ' still pictures taken evenly through a short video '
+         + 'that was sent to me, in order from beginning to end. Look at them together and tell me '
+         + 'whether the video looks genuine or made by a computer, and whether it looks like a scam.')
+      : ('Someone sent me this picture. Tell me whether it looks genuine or made by a computer, '
+         + 'and whether it looks like part of a scam.')
+  });
+
+  return {
+    model: MODEL,
+    max_tokens: 2000,
+    system: SYSTEM,
+    output_config: {
+      effort: 'medium',
+      format: { type:'json_schema', schema: SCHEMA }
+    },
+    messages: [{ role:'user', content: content }]
+  };
+}
+
+/* ---------- calling the API ---------- */
+$('b-go').addEventListener('click', analyze);
+
+function loadingScreen(title, sub){
+  $('work-title').textContent = title;
+  $('work-sub').textContent = sub;
+  show('s-working');
+}
+
+function analyze(){
+  if (!current) return show('s-home');
+
+  var proxy = get('proxy','');
+  var key   = get('key','');
+
+  if (!proxy && !key){
+    return fail('This app has not been set up yet. Tap the &#9881; button at the top right and '
+      + 'add either a server address or an Anthropic key.', null, true);
+  }
+
+  loadingScreen('Taking a careful look…',
+    current.kind === 'video' ? 'Looking through the video. About half a minute.'
+                             : 'This usually takes about half a minute.');
+
+  var url, headers, body;
+  if (proxy){
+    url = proxy;
+    headers = { 'content-type':'application/json' };
+    body = JSON.stringify({ kind: current.kind, images: current.images });
+  } else {
+    url = API;
+    headers = {
+      'content-type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    };
+    body = JSON.stringify(buildBody());
+  }
+
+  fetch(url, { method:'POST', headers: headers, body: body })
+    .then(function(res){
+      return res.text().then(function(txt){
+        var json = null;
+        try { json = JSON.parse(txt); } catch(e){}
+        if (!res.ok){
+          var m = (json && json.error && json.error.message) || txt.slice(0,300) || ('HTTP ' + res.status);
+          throw new Error(friendlyHttp(res.status) + ' (' + m + ')');
+        }
+        return json;
+      });
+    })
+    .then(function(msg){
+      if (msg && msg.stop_reason === 'refusal'){
+        throw new Error("I wasn't able to look at that one. Please show it to someone you trust instead.");
+      }
+      var text = '';
+      var blocks = (msg && msg.content) || [];
+      for (var i = 0; i < blocks.length; i++){
+        if (blocks[i].type === 'text') text += blocks[i].text;
+      }
+      if (!text) throw new Error('The reply came back empty.');
+      var data;
+      try { data = JSON.parse(text); }
+      catch(e){ throw new Error('The reply came back in a form I could not read.'); }
+      render(data);
+    })
+    .catch(function(err){
+      fail("I couldn't finish checking that.", err);
+    });
+}
+
+function friendlyHttp(status){
+  if (status === 401 || status === 403) return 'The key was not accepted.';
+  if (status === 429) return 'Too many checks in a row. Wait a minute and try again.';
+  if (status >= 500)  return 'The service is busy right now.';
+  if (status === 413) return 'That file is too big.';
+  return 'The service returned an error.';
+}
+
+function fail(message, err, isSetup){
+  if (err && window.console) console.error(err);
+  var extra = err && err.message ? '<br><span style="font-size:.82em;color:var(--faint)">'
+    + esc(err.message) + '</span>' : '';
+  $('err-box').innerHTML = '<b>' + message + '</b>'
+    + (isSetup ? '' : 'You can try again, or ask a family member for help.') + extra;
+  show('s-error');
+}
+
+/* ---------- rendering the result ---------- */
+var VERDICTS = {
+  looks_real: { cls:'v-good', badge:'✅', title:'This looks genuine to me' },
+  not_sure:   { cls:'v-warn', badge:'❓', title:"I honestly can't tell" },
+  likely_ai:  { cls:'v-bad',  badge:'⚠️', title:'This looks made by a computer' }
+};
+
+function render(d){
+  lastResult = d;
+  var v = VERDICTS[d.verdict] || VERDICTS.not_sure;
+
+  var box = $('verdict');
+  box.className = 'verdict ' + v.cls;
+  $('v-badge').textContent = v.badge;
+  $('v-title').textContent = d.headline || v.title;
+  $('v-sub').textContent   = d.summary || '';
+
+  var ul = $('reasons');
+  ul.innerHTML = '';
+  var rs = Array.isArray(d.reasons) ? d.reasons : [];
+  for (var i = 0; i < rs.length; i++){
+    var li = document.createElement('li');
+    li.textContent = rs[i];
+    ul.appendChild(li);
+  }
+  $('reasons-card').classList.toggle('hidden', rs.length === 0);
+
+  var scam = $('scam');
+  if (d.scam_risk && d.scam_risk !== 'none' && d.scam_note){
+    $('scam-text').textContent = d.scam_note;
+    scam.classList.remove('hidden');
+  } else {
+    scam.classList.add('hidden');
+  }
+
+  $('advice').textContent = d.what_to_do || 'When in doubt, ask someone you trust before you act.';
+
+  var name = get('name','');
+  $('b-family2').innerHTML = '📞&nbsp; Ask ' + (name ? esc(name) : 'my family') + ' about this';
+
+  stopSpeech();
+  show('s-result');
+}
+
+/* ---------- read aloud ---------- */
+var speaking = false;
+function stopSpeech(){
+  if (window.speechSynthesis){ window.speechSynthesis.cancel(); }
+  speaking = false;
+  $('b-speak').innerHTML = '🔊&nbsp; Read this to me';
+}
+$('b-speak').addEventListener('click', function(){
+  if (!window.speechSynthesis){
+    $('b-speak').textContent = 'This phone cannot read aloud';
+    return;
+  }
+  if (speaking) return stopSpeech();
+  if (!lastResult) return;
+
+  var parts = [lastResult.headline, lastResult.summary];
+  if (Array.isArray(lastResult.reasons) && lastResult.reasons.length){
+    parts.push('Here is why. ' + lastResult.reasons.join(' '));
+  }
+  if (lastResult.scam_risk !== 'none' && lastResult.scam_note){
+    parts.push('Be careful. ' + lastResult.scam_note);
+  }
+  parts.push('What I would do next. ' + lastResult.what_to_do);
+
+  var u = new SpeechSynthesisUtterance(parts.filter(Boolean).join(' '));
+  u.rate = 0.92;
+  u.pitch = 1;
+  u.onend = stopSpeech;
+  u.onerror = stopSpeech;
+  speaking = true;
+  $('b-speak').innerHTML = '⏹&nbsp; Stop reading';
+  window.speechSynthesis.speak(u);
+});
+
+/* ---------- boot ---------- */
+applyPrefs();
+if (!get('proxy','') && !get('key','')){
+  loadSettings();
+  show('s-settings');
+}
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+})();
+</script>
+</body>
+</html>
