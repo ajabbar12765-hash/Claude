@@ -865,6 +865,75 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
 .order-thanks .leaf-mark { width: 2.4rem; height: 2.4rem; }
 .order-thanks p { max-width: 28rem; color: var(--ink-soft); }
 
+/* ---------- payment section ---------- */
+
+.pay-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  border: 1.5px solid var(--green);
+  border-radius: 16px;
+  padding: 1.2rem 1.3rem;
+  background: rgba(46, 92, 64, 0.06);
+}
+
+.pay-title { font-size: 1.35rem; }
+.pay-sub { font-size: 0.86rem; color: var(--ink-soft); }
+
+.pay-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  margin-top: 0.2rem;
+}
+
+.pay-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.9rem 1rem;
+  border: 1.5px solid var(--green);
+  border-radius: 13px;
+  background: var(--cream);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.2s var(--ease-out), background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pay-btn:hover {
+  transform: translateY(-2px);
+  background: var(--green);
+  box-shadow: 0 12px 24px -12px rgba(46, 92, 64, 0.6);
+}
+
+.pay-btn:hover .pay-btn-title,
+.pay-btn:hover .pay-btn-sub { color: #fff; }
+
+.pay-btn-title { font-weight: 600; font-size: 1rem; color: var(--green-dark); }
+.pay-btn-sub { font-size: 0.78rem; color: var(--ink-soft); }
+.pay-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+.bank-box {
+  width: 100%;
+  max-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: rgba(46, 92, 64, 0.06);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  text-align: left;
+  margin: 0.2rem 0 0.4rem;
+}
+
+.bank-box div { display: flex; flex-direction: column; gap: 0.1rem; }
+.bank-box span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); }
+.bank-box strong { font-size: 0.98rem; color: var(--green-dark); word-break: break-all; }
+
+.thanks-actions { display: flex; gap: 0.7rem; flex-wrap: wrap; justify-content: center; }
+
 /* ---------- contact ---------- */
 
 .section-dark {
@@ -1021,6 +1090,46 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
 
 .site-footer .fine { font-size: 0.8rem; opacity: 0.6; }
 
+.footer-contact {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0.4rem 0 0.2rem;
+}
+
+.footer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s var(--ease-out), background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.footer-btn:hover { transform: translateY(-2px); }
+.footer-btn svg { width: 1.2rem; height: 1.2rem; }
+
+.footer-btn.wa {
+  background: #25d366;
+  color: #06331b;
+  box-shadow: 0 8px 18px -8px rgba(37, 211, 102, 0.6);
+}
+.footer-btn.wa:hover { background: #22c65f; }
+
+.footer-btn.em {
+  background: rgba(250, 247, 240, 0.14);
+  color: var(--cream);
+  border: 1px solid rgba(250, 247, 240, 0.35);
+}
+.footer-btn.em:hover { background: rgba(250, 247, 240, 0.24); }
+
 /* The logo art sits on its own dark green; lighten-blend melts it into the footer. */
 .footer-logo {
   width: min(72vw, 280px);
@@ -1061,6 +1170,8 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
   .form-row { grid-template-columns: 1fr; }
 
   .contact-grid { grid-template-columns: 1fr; }
+
+  .pay-methods { grid-template-columns: 1fr; }
 
   .cart-line {
     grid-template-columns: 1fr auto auto;

@@ -11,6 +11,19 @@ const CONTACT = {
   email: 'freshleaf.essentials@gmail.com',
 };
 
+// WhatsApp uses the business number in international format (drop the leading 0).
+const WHATSAPP = '923290985503';
+const waLink = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+
+// Bank-transfer payment details shown at checkout.
+const BANK = {
+  bank: 'Meezan Bank',
+  title: 'NIDA ABBASI',
+  account: '99190103724123',
+  iban: 'PK42MEZN0099190103724123',
+  branch: 'Nursery Branch — Karachi',
+};
+
 // Product photos and logo are served from the repo (public on GitHub),
 // pinned to the commit that contains them.
 const IMG = 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/ad3c4a2f2e296f202b291dd55a756a9b44456691/public';
@@ -494,7 +507,8 @@ function AboutPage() {
 function CheckoutForm({ onBrowse }) {
   const { items, setQty, removeItem, clear, total } = useCart();
   const [status, setStatus] = useState('idle'); // idle | sending | error
-  const [placed, setPlaced] = useState(null); // { phone } after success
+  const [placed, setPlaced] = useState(null); // { phone, method, total } after success
+  const methodRef = useRef('cod'); // set by whichever payment button is clicked
 
   // Resolve cart lines against the product list (names, prices).
   const lines = items
@@ -508,6 +522,8 @@ function CheckoutForm({ onBrowse }) {
   async function handleSubmit(e) {
     e.preventDefault();
     if (lines.length === 0) return;
+    const method = methodRef.current;
+    const paymentLabel = method === 'bank' ? 'Bank Transfer' : 'Cash on Delivery';
     const data = new FormData(e.target);
     setStatus('sending');
     const summary = lines
@@ -520,10 +536,10 @@ function CheckoutForm({ onBrowse }) {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
           access_key: WEB3FORMS_KEY,
-          subject: `New FreshLeaf Order — ${data.get('name')} (${rs(total)})`,
+          subject: `New FreshLeaf Order (${paymentLabel}) — ${data.get('name')} (${rs(total)})`,
           from_name: 'FreshLeaf Website',
           replyto: data.get('email') || undefined,
-          'Order type': 'Cash on Delivery',
+          'Payment method': paymentLabel,
           Order: summary,
           Items: String(itemCount),
           Total: rs(total),
@@ -536,7 +552,7 @@ function CheckoutForm({ onBrowse }) {
       });
       const result = await res.json();
       if (result.success) {
-        setPlaced({ phone: data.get('phone') });
+        setPlaced({ phone: data.get('phone'), method, total });
         clear();
         setStatus('idle');
       } else {
@@ -548,6 +564,39 @@ function CheckoutForm({ onBrowse }) {
   }
 
   if (placed) {
+    if (placed.method === 'bank') {
+      return (
+        <div className="order-thanks">
+          <Leaf />
+          <h3>Order received — please complete your bank transfer</h3>
+          <p>
+            Thank you! To finish your order, transfer <strong>{rs(placed.total)}</strong> to
+            the account below, then send us your payment screenshot on WhatsApp or email.
+            We'll confirm and dispatch once payment is received.
+          </p>
+          <div className="bank-box">
+            <div><span>Bank</span><strong>{BANK.bank}</strong></div>
+            <div><span>Account title</span><strong>{BANK.title}</strong></div>
+            <div><span>Account number</span><strong>{BANK.account}</strong></div>
+            <div><span>IBAN</span><strong>{BANK.iban}</strong></div>
+            <div><span>Branch</span><strong>{BANK.branch}</strong></div>
+          </div>
+          <div className="thanks-actions">
+            <a
+              className="footer-btn wa"
+              href={waLink(`Hi FreshLeaf! I've placed an order for ${rs(placed.total)} and I'm sending my bank transfer receipt.`)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Send receipt on WhatsApp
+            </a>
+            <button className="btn btn-outline" onClick={() => setPlaced(null)}>
+              Place another order
+            </button>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="order-thanks">
         <Leaf />
@@ -644,33 +693,41 @@ function CheckoutForm({ onBrowse }) {
         <textarea name="notes" rows="2" placeholder="Delivery instructions…" />
       </label>
 
-      <div className="cod-note">
-        <div>
-          <strong>Payment: Cash on Delivery</strong>
-          <span>
-            Pay in cash when your order arrives at your door. Online card payment is
-            coming soon.
-          </span>
+      <div className="pay-section">
+        <h3 className="pay-title">Payment</h3>
+        <p className="pay-sub">Choose how you'd like to pay — your total is {rs(total)}.</p>
+        <div className="pay-methods">
+          <button
+            type="submit"
+            className="pay-btn"
+            onClick={() => { methodRef.current = 'cod'; }}
+            disabled={status === 'sending'}
+          >
+            <span className="pay-btn-title">Cash on Delivery</span>
+            <span className="pay-btn-sub">Pay in cash when your order arrives</span>
+          </button>
+          <button
+            type="submit"
+            className="pay-btn"
+            onClick={() => { methodRef.current = 'bank'; }}
+            disabled={status === 'sending'}
+          >
+            <span className="pay-btn-title">Bank Transfer</span>
+            <span className="pay-btn-sub">Pay now by bank transfer (Meezan)</span>
+          </button>
         </div>
-        <div className="total-box">
-          <span>Total</span>
-          <strong>{rs(total)}</strong>
-        </div>
-      </div>
-
-      <button type="submit" className="btn btn-primary" disabled={status === 'sending'}>
-        {status === 'sending' ? 'Placing order…' : `Place Order — ${rs(total)}`}
-      </button>
-      {status === 'error' && (
-        <p className="form-error dark-on-light">
-          Something went wrong sending your order. Please try again, or order directly by
-          calling {CONTACT.phone}.
+        {status === 'sending' && <p className="form-note">Placing your order…</p>}
+        {status === 'error' && (
+          <p className="form-error dark-on-light">
+            Something went wrong sending your order. Please try again, or order directly by
+            calling {CONTACT.phone}.
+          </p>
+        )}
+        <p className="form-note">
+          Your order is sent to us instantly — we'll confirm by phone. You can also order
+          directly by calling {CONTACT.phone}.
         </p>
-      )}
-      <p className="form-note">
-        Your order is sent to us instantly — we'll call you to confirm. You can also
-        order directly by calling {CONTACT.phone}.
-      </p>
+      </div>
     </form>
   );
 }
@@ -934,6 +991,27 @@ function App() {
       <footer className="site-footer">
         <img className="footer-logo" src={`${IMG}/logo-transparent.webp`} alt="freshleaf" />
         <p>Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+        <div className="footer-contact">
+          <a
+            className="footer-btn wa"
+            href={waLink("Hi FreshLeaf! I'd like to ask about your sprays.")}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.06L2 22l5.05-1.32A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3 .78.8-2.92-.2-.31A8.2 8.2 0 1 1 12 20.2z" />
+              <path fill="currentColor" d="M17.5 14.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.05 1.02-1.05 2.5 0 1.47 1.08 2.9 1.23 3.1.15.2 2.12 3.24 5.13 4.54.72.31 1.28.5 1.71.64.72.23 1.37.2 1.89.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z" />
+            </svg>
+            WhatsApp
+          </a>
+          <a className="footer-btn em" href={`mailto:${CONTACT.email}`}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" d="M3 6.5h18v11H3z" />
+              <path fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" strokeLinecap="round" d="M3.5 7l8.5 6 8.5-6" />
+            </svg>
+            Email Us
+          </a>
+        </div>
         <nav className="footer-nav">
           {NAV.map(([to, label]) => (
             <Link key={to} to={to}>{label}</Link>
