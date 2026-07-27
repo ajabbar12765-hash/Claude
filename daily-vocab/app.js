@@ -22,10 +22,10 @@
   function toast(m){var t=id("toast");t.textContent=m;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(function(){t.hidden=true;},2600);}
 
   /* ---------- rendering ---------- */
-  function explainHTML(w){return w.simple?'<button class="exp-btn" data-explain type="button">Show simple definition</button><div class="note" data-simplebox hidden><span class="lab">In plain words</span>'+esc(w.simple)+'</div>':"";}
+  function explainHTML(w){return w.simple?'<button class="exp-btn" data-explain type="button">Show simple definition</button><div class="note note-teal" data-simplebox hidden><span class="lab">In plain words</span>'+esc(w.simple)+'</div>':"";}
   function synHTML(w){return '<p class="syn-line"><span class="lbl">Synonyms: </span>'+w.synonyms.map(function(s){return '<span class="syn">'+esc(s)+'</span>';}).join("")+'</p>';}
-  function bodyHTML(w){return '<p class="def">'+esc(w.definition)+'</p>'+explainHTML(w)+'<p class="example">'+esc(w.example)+'</p>'+synHTML(w)+'<div class="note"><span class="lab">Memory tip</span>'+esc(w.tip)+'</div>';}
-  function metaHTML(w){return '<span class="ipa">'+esc(w.ipa)+'</span> · <span class="pos">'+esc(w.pos)+'</span>';}
+  function bodyHTML(w){return '<p class="def">'+esc(w.definition)+'</p>'+explainHTML(w)+'<p class="example">'+esc(w.example)+'</p>'+synHTML(w)+'<div class="note note-amber"><span class="lab">Memory tip</span>'+esc(w.tip)+'</div>';}
+  function metaHTML(w){return '<span class="ipa">'+esc(w.ipa)+'</span><span class="pos">'+esc(w.pos)+'</span>';}
   function detailHTML(w){return '<h3>'+esc(w.word)+'</h3><p class="meta">'+metaHTML(w)+'</p>'+bodyHTML(w);}
 
   function streak(){if(!state.history.length)return 0;var days={};state.history.forEach(function(h){days[h.date]=true;});var n=0,d=new Date();if(!days[tk(d)])d.setDate(d.getDate()-1);while(days[tk(d)]){n++;d.setDate(d.getDate()-1);}return n;}
