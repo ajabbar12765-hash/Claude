@@ -65,6 +65,10 @@ border-radius:var(--radius);padding:13px 15px;margin:0 0 16px;font-size:14.5px;l
 .note .lab{display:block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:4px}
 .note-teal{border-left-color:var(--teal)} .note-teal .lab{color:var(--teal)}
 .note-amber{border-left-color:var(--amber)} .note-amber .lab{color:var(--amber)}
+.note-rose{border-left-color:var(--rose)} .note-rose .lab{color:var(--rose)}
+.remember{margin:4px 0 0;padding-left:18px}
+.remember li{margin:0 0 6px;line-height:1.5}
+.remember li:last-child{margin-bottom:0}
 .note.warn{border-left-color:var(--warn)} .note.warn .lab{color:var(--warn)}
 .note.ok{border-left-color:var(--good)} .note.ok .lab{color:var(--good)}
 .sentence{width:100%;font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;resize:vertical;margin:0 0 14px}
