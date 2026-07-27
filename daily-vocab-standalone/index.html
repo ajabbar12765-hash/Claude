@@ -65,6 +65,11 @@ cursor:pointer;padding:0;margin:0 0 14px;font-family:var(--sans)}
 .note{background:var(--note);border:1px solid var(--line2);border-left:4px solid var(--link);
 border-radius:2px;padding:12px 14px;margin:0 0 16px;font-size:14.5px;line-height:1.55}
 .note .lab{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+.note.warn{border-left-color:var(--warn)}
+.note.ok{border-left-color:var(--good)}
+.sentence{width:100%;font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:2px;padding:12px 14px;resize:vertical;margin:0 0 14px}
+.sentence:focus{outline:2px solid var(--progressive);outline-offset:-1px;border-color:var(--progressive)}
+.result-head{font-weight:600;margin:0 0 10px}
 .example{margin:0 0 16px;padding:2px 0 2px 14px;border-left:3px solid var(--line2);
 font-style:italic;color:var(--muted)}
 .syn-line{font-size:15px;margin:0 0 18px}
@@ -142,6 +147,7 @@ background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:2px;fon
 </header>
 <nav class='tabs'>
 <button class='tab on' data-v='today'>Today</button>
+<button class='tab' data-v='practice'>Practice</button>
 <button class='tab' data-v='goals'>Goals</button>
 <button class='tab' data-v='history'>History</button>
 </nav>
@@ -158,6 +164,17 @@ background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:2px;fon
 <div id='streakWrap'></div>
 <div id='nhint' class='nhint' hidden></div>
 <div id='todayGoal'></div>
+</section>
+<section id='v-practice' class='view'>
+<h2 class='sec'>Sentence check</h2>
+<p class='hint'>Write a sentence — try using today&#39;s word, <b id='pcWord'></b> — and check it for common grammar and spelling mistakes.</p>
+<textarea id='sentence' class='sentence' rows='3' placeholder='Type a sentence here&hellip;'></textarea>
+<div class='actions'>
+<button class='btn btn-p' id='checkBtn'>Check my sentence</button>
+<button class='btn btn-g' id='clearBtn'>Clear</button>
+</div>
+<div id='checkResults'></div>
+<p class='muted' style='margin-top:14px'>This is a basic checker — it flags common mistakes but is not a full grammar engine.</p>
 </section>
 <section id='v-goals' class='view'>
 <h2 class='sec'>Practice goals</h2>
@@ -264,7 +281,7 @@ function detailHTML(w){return '<h3>'+esc(w.word)+'</h3><p class="meta">'+metaHTM
 function streak(){if(!state.history.length)return 0;var days={};state.history.forEach(function(h){days[h.date]=true});var n=0,d=new Date();if(!days[tk(d)])d.setDate(d.getDate()-1);while(days[tk(d)]){n++;d.setDate(d.getDate()-1)}return n}
 function renderStreak(){var el=id('streakWrap'),s=streak();el.innerHTML=s>=2?'<span class="streak">Current streak: '+s+' days</span>':''}
 
-function renderToday(){var w=wod();id('date').textContent='Word of the day &middot; '.replace('&middot;','·')+pretty(tk());id('date').textContent='Word of the day · '+pretty(tk());id('hw').textContent=w.word;id('meta').innerHTML=metaHTML(w);id('card').innerHTML=bodyHTML(w);renderStreak();var box=id('todayGoal');box.innerHTML='';var g=state.goals.filter(function(x){return x.word===w.word&&!done(x)})[0];if(g)box.appendChild(goalNode(g,true))}
+function renderToday(){var w=wod();id('date').textContent='Word of the day &middot; '.replace('&middot;','·')+pretty(tk());id('date').textContent='Word of the day · '+pretty(tk());id('hw').textContent=w.word;id('meta').innerHTML=metaHTML(w);id('card').innerHTML=bodyHTML(w);var pc=id('pcWord');if(pc)pc.textContent=w.word;renderStreak();var box=id('todayGoal');box.innerHTML='';var g=state.goals.filter(function(x){return x.word===w.word&&!done(x)})[0];if(g)box.appendChild(goalNode(g,true))}
 
 function done(g){return g.checkins.length>=g.target}
 function createGoal(word,days){var w=WORDS.filter(function(x){return x.word===word})[0];if(!w)return;if(state.goals.filter(function(g){return g.word===word&&!done(g)})[0]){toast('You already have an active goal for '+word);sv('goals');return}state.goals.unshift({id:'g'+Date.now(),word:word,def:w.def,target:days,checkins:[]});save();toast('Goal set — use '+word+' every day for '+days+' days.');renderAll();sv('goals')}
@@ -294,11 +311,16 @@ function nhint(){var box=id('nhint');if(state.nhintClosed){box.hidden=true;retur
 function showNotif(t,b){try{navigator.serviceWorker.ready.then(function(r){r.showNotification(t,{body:b,icon:'icon-192.png',badge:'icon-192.png',tag:'daily-vocab'})})}catch(e){if('Notification' in window&&Notification.permission==='granted')new Notification(t,{body:b})}}
 async function toggleNotify(){if(!('Notification' in window)){toast('Notifications are not supported here.');return}if(state.notify.enabled&&Notification.permission==='granted'){state.notify.enabled=false;save();notifyBtn();toast('Daily reminders off.');return}var p=Notification.permission;if(p!=='granted')p=await Notification.requestPermission();if(p!=='granted'){toast('Reminders need notification permission.');notifyBtn();return}state.notify.enabled=true;save();try{var r=await navigator.serviceWorker.ready;if('periodicSync' in r){var st=await navigator.permissions.query({name:'periodic-background-sync'});if(st.state==='granted')await r.periodicSync.register('daily-word',{minInterval:20*60*60*1000})}}catch(e){}var w=wod();showNotif('Daily Vocab: '+w.word,'Today word: '+w.def+' Try using it in a sentence.');notifyBtn();toast('Daily reminders on.')}
 
+function checkGrammar(raw){var text=(raw||'').trim();if(!text)return{empty:true};var issues=[];var first=text.match(/[a-zA-Z]/);if(first&&first[0]===first[0].toLowerCase()&&first[0]!==first[0].toUpperCase())issues.push('Start the sentence with a capital letter.');if(!/[.!?]["'\u2019\u201d)\]]?$/.test(text))issues.push('End with a period (.), question mark (?), or exclamation mark (!).');if(/ {2,}/.test(raw))issues.push('Remove the extra space(s) between words.');if(/\s[.,!?;:]/.test(text))issues.push('Remove the space before punctuation.');var rep=text.match(/\b(\w+)\s+\1\b/i);if(rep)issues.push('Repeated word: \u201c'+rep[1]+'\u201d appears twice in a row.');if(/\bi\b/.test(text))issues.push('Capitalize the word \u201cI\u201d.');var subs=[[/\balot\b/i,'\u201calot\u201d is not a word \u2014 use \u201ca lot\u201d.'],[/\bdefinately\b/i,'Spelling: use \u201cdefinitely\u201d.'],[/\brecieve\b/i,'Spelling: use \u201creceive\u201d (i before e except after c).'],[/\bteh\b/i,'Spelling: use \u201cthe\u201d.'],[/\buntill\b/i,'Spelling: use \u201cuntil\u201d.'],[/\bgonna\b/i,'Informal \u2014 use \u201cgoing to\u201d.'],[/\bwanna\b/i,'Informal \u2014 use \u201cwant to\u201d.'],[/\byour welcome\b/i,'Use \u201cyou\u2019re welcome\u201d.'],[/\bcould of\b/i,'Use \u201ccould have\u201d, not \u201ccould of\u201d.'],[/\bshould of\b/i,'Use \u201cshould have\u201d, not \u201cshould of\u201d.'],[/\bwould of\b/i,'Use \u201cwould have\u201d, not \u201cwould of\u201d.'],[/\b(he|she|it) don't\b/i,'Use \u201cdoesn\u2019t\u201d after he/she/it.'],[/\bi (is|are|was not|were)\b/i,'Use \u201cI am\u201d / \u201cI was\u201d.'],[/\b(they|we|you) is\b/i,'Use \u201care\u201d after they/we/you.'],[/\bmore better\b/i,'\u201cmore better\u201d is a double comparative \u2014 use \u201cbetter\u201d.']];subs.forEach(function(s){if(s[0].test(text))issues.push(s[1])});var an=text.match(/\ba ([aeiou]\w*)/i);if(an&&!/^(u|one|uni|use|user|euro|ubi)/i.test(an[1]))issues.push('Use \u201can\u201d before a vowel sound: \u201can '+an[1]+'\u201d.');var aa=text.match(/\ban ([b-df-hj-np-tv-z]\w*)/i);if(aa&&!/^(hour|honest|honou?r|heir)/i.test(aa[1]))issues.push('Use \u201ca\u201d before a consonant sound: \u201ca '+aa[1]+'\u201d.');return{issues:issues,words:(text.match(/\S+/g)||[]).length}}
+function runCheck(){var raw=id('sentence').value;var out=id('checkResults');var r=checkGrammar(raw);if(r.empty){out.innerHTML='<div class="note warn">Type a sentence first, then select \u201cCheck my sentence\u201d.</div>';return}var html='';if(!r.issues.length){html+='<div class="note ok"><span class="lab">Looks good</span>No obvious grammar or spelling issues found in your '+r.words+'-word sentence. Nice work!</div>'}else{html+='<p class="result-head">Found '+r.issues.length+' thing'+(r.issues.length>1?'s':'')+' to review:</p>';r.issues.forEach(function(t){html+='<div class="note warn">'+esc(t)+'</div>'})}var w=wod();var re=new RegExp('\\b'+w.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i');if(re.test(raw)){html+='<div class="note ok">\u2713 You used today\u2019s word, \u201c'+esc(w.word)+'\u201d.</div>';var g=state.goals.filter(function(x){return x.word===w.word&&!done(x)&&x.checkins.indexOf(tk())===-1})[0];if(g)html+='<div class="actions"><button class="btn btn-good" data-checkin="'+g.id+'">Count this as today\u2019s practice</button></div>'}out.innerHTML=html}
 function init(){if(!WORDS.length){id('card').innerHTML='<p class="empty">Word list failed to load.</p>';return}
 seen();renderAll();notifyBtn();sv('today');
 document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){sv(t.dataset.v)})});
 id('goalBtn').addEventListener('click',function(){openGoal(wod().word)});
 id('speakBtn').addEventListener('click',function(){speak(wod().word)});
+id('checkBtn').addEventListener('click',runCheck);
+id('clearBtn').addEventListener('click',function(){id('sentence').value='';id('checkResults').innerHTML=''});
+id('sentence').addEventListener('keydown',function(e){if((e.metaKey||e.ctrlKey)&&e.key==='Enter')runCheck()});
 id('notifyBtn').addEventListener('click',toggleNotify);
 id('chips').addEventListener('click',function(e){var c=e.target.closest('.chip');if(!c)return;document.querySelectorAll('#chips .chip').forEach(function(x){x.classList.remove('on')});c.classList.add('on');days=+c.dataset.d});
 id('gmCancel').addEventListener('click',closeGoal);
