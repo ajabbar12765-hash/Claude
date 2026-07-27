@@ -1,5 +1,5 @@
 /* Daily Vocab service worker: offline cache + daily reminder notifications. */
-var CACHE = "daily-vocab-v7";
+var CACHE = "daily-vocab-v8";
 var ASSETS = [
   "./",
   "index.html",

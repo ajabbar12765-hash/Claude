@@ -26,6 +26,7 @@
 
     <nav class="tabs" role="tablist">
       <button class="tab on" data-view="today" role="tab">Today</button>
+      <button class="tab" data-view="practice" role="tab">Practice</button>
       <button class="tab" data-view="goals" role="tab">Goals</button>
       <button class="tab" data-view="history" role="tab">History</button>
     </nav>
@@ -43,6 +44,18 @@
         <div id="streakWrap"></div>
         <div id="notifyHint" class="nhint" hidden></div>
         <div id="todayGoalBox"></div>
+      </section>
+
+      <section id="view-practice" class="view">
+        <h2 class="sec">Sentence check</h2>
+        <p class="hint">Write a sentence — try using today's word, <b id="pcWord"></b> — and check it for common grammar and spelling mistakes.</p>
+        <textarea id="sentence" class="sentence" rows="3" placeholder="Type a sentence here…"></textarea>
+        <div class="actions">
+          <button class="btn btn-p" id="checkBtn">Check my sentence</button>
+          <button class="btn btn-g" id="clearBtn">Clear</button>
+        </div>
+        <div id="checkResults"></div>
+        <p class="muted" style="margin-top:14px">This is a basic checker — it flags common mistakes but is not a full grammar engine.</p>
       </section>
 
       <section id="view-goals" class="view">
