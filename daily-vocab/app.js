@@ -17,7 +17,14 @@
   var state = load();
   function load(){
     try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==="object"){
-      s.history=s.history||[];s.goals=s.goals||[];s.notify=s.notify||{enabled:false};return s;}}catch(e){}
+      s.history=Array.isArray(s.history)?s.history:[];
+      s.notify=s.notify||{enabled:false};
+      /* migrate older goals that predate some fields, so new code can't crash on them */
+      s.goals=(Array.isArray(s.goals)?s.goals:[]).map(function(g){
+        g=g||{}; g.checkins=Array.isArray(g.checkins)?g.checkins:[];
+        g.target=g.target||5; if(!g.startDate)g.startDate=g.checkins[0]||tk(); return g;
+      });
+      return s;}}catch(e){}
     return {history:[],goals:[],notify:{enabled:false}};
   }
   function save(){localStorage.setItem(KEY,JSON.stringify(state));}
@@ -45,6 +52,7 @@
   function done(g){return g.checkins.length>=g.target;}
   /* any day from start up to (but not including) today without a check-in = missed */
   function hasMissedDay(g,T){
+    if(!g.startDate)return false;
     var d=parseK(g.startDate);
     while(tk(d)<T){ if(g.checkins.indexOf(tk(d))===-1) return true; d.setDate(d.getDate()+1); }
     return false;
@@ -272,8 +280,7 @@
   /* ---------- init ---------- */
   function init(){
     if(!WORDS.length){id("cardBody").innerHTML='<p class="empty">Word list failed to load.</p>';return;}
-    ensureCurrentWord();
-    renderAll();notifyBtn();sv("today");
+    /* attach listeners FIRST so the UI is always interactive even if a render throws */
     document.querySelectorAll(".tab").forEach(function(t){t.addEventListener("click",function(){sv(t.dataset.view);});});
     id("setGoalBtn").addEventListener("click",function(){openGoal(wod().word);});
     id("speakBtn").addEventListener("click",function(){speak(wod().word);});
@@ -294,8 +301,14 @@
       var ci=e.target.closest("[data-checkin]");if(ci){checkin(ci.getAttribute("data-checkin"));return;}
       var dl=e.target.closest("[data-del]");if(dl){if(confirm("End this goal? You'll get a new word."))delGoal(dl.getAttribute("data-del"));return;}
     });
-    document.addEventListener("visibilitychange",function(){if(!document.hidden){ensureCurrentWord();renderAll();}});
+    document.addEventListener("visibilitychange",function(){if(!document.hidden)refresh();});
     if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
+    /* first render — guarded so no data problem can leave a blank, dead screen */
+    refresh();notifyBtn();sv("today");
+  }
+  function refresh(){
+    try{ensureCurrentWord();}catch(e){try{state.curIdx=dayNum()%WORDS.length;state.curDate=tk();notice=null;save();}catch(_){}}
+    try{renderAll();}catch(e){try{var w=wod();id("headword").textContent=w.word;id("meta").innerHTML=metaHTML(w);id("cardBody").innerHTML=bodyHTML(w);}catch(_){}}
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
 })();
