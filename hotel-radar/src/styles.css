@@ -1175,6 +1175,13 @@ a {
   font-weight: 500;
 }
 
+.price__source {
+  flex-basis: 100%;
+  font-size: 0.68rem;
+  color: var(--good);
+  font-weight: 500;
+}
+
 .card__cta {
   display: flex;
   align-items: center;

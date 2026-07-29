@@ -90,8 +90,12 @@ export async function scan(trip, config) {
         const hotel = matchCatalog(row, pool)
         if (!hotel) continue
 
+        // nightly is the cheapest rate across the sites Hotellook checked;
+        // reference is the average, so discount is how far below typical the
+        // cheapest sits. Guard the order rather than assume it.
         const nightly = Math.round(row.nightly)
         const reference = Math.max(nightly, Math.round(row.reference ?? hotel.base))
+        const aggregated = true
 
         offers.push({
           hotelId: hotel.id,
@@ -104,6 +108,7 @@ export async function scan(trip, config) {
           roomsLeft: null,
           seenAt: now,
           source: 'travelpayouts',
+          aggregated,
         })
       }
       return offers

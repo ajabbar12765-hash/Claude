@@ -109,6 +109,11 @@ export default function DealCard({ deal, trip, money, saved, onToggleSave, rank 
             <span className="price__total">
               {money(deal.total)} total · {deal.nights} night{deal.nights === 1 ? '' : 's'}
             </span>
+            {deal.aggregated && (
+              <span className="price__source" title="Cheapest rate found across the booking sites this provider checks">
+                lowest across booking sites
+              </span>
+            )}
             {deal.roomsLeft && (
               <span className="price__urgency">
                 Only {deal.roomsLeft} room{deal.roomsLeft === 1 ? '' : 's'} at this rate
