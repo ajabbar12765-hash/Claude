@@ -44,7 +44,11 @@ export default function ConnectionTest({ provider }) {
       }
 
       const count = json.offers?.length ?? 0
-      const priced = (json.offers || []).filter((o) => o.nightly != null).length
+      // Providers differ in which price field they fill, so count any of them
+      // — otherwise a working provider reports "0 with a rate".
+      const priced = (json.offers || []).filter(
+        (o) => o.nightly != null || o.total != null || o.quotes?.length
+      ).length
 
       if (!count) {
         return setState({

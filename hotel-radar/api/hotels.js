@@ -16,7 +16,10 @@
 // GET /api/hotels?provider=travelpayouts&location=Lake%20Como
 //                &checkIn=2026-09-10&checkOut=2026-09-13&adults=2
 
-const CACHE_TTL_MS = 4 * 60 * 1000
+// The built-in engine is free to re-run; a licensed API is not. Live results
+// barely move within a quarter of an hour, so cache them for that long and
+// spend the quota on coverage instead.
+const CACHE_TTL_MS = 15 * 60 * 1000
 
 // A warm function instance reuses this, which keeps a scan loop from burning
 // through a free-tier quota. Cold starts simply refill it.
@@ -204,23 +207,38 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
   const dest = (destJson?.data || []).find((d) => d.dest_id) || destJson?.data?.[0]
   if (!dest?.dest_id) throw new Error(`RapidAPI could not resolve "${city}" to a destination`)
 
-  // Step 2: the actual price search.
-  const params = new URLSearchParams({
-    dest_id: String(dest.dest_id),
-    search_type: dest.search_type || 'CITY',
-    adults: String(adults || 2),
-    room_qty: String(rooms || 1),
-    currency_code: 'EUR',
-    page_number: '1',
+  // Step 2: the price search. One page is about twenty hotels, which is far
+  // fewer than a city actually has, so walk several pages. Each page is one
+  // upstream call, which is why the server cache below is generous.
+  const PAGES = 4
+  const pageResults = await Promise.all(
+    Array.from({ length: PAGES }, async (_, i) => {
+      const params = new URLSearchParams({
+        dest_id: String(dest.dest_id),
+        search_type: dest.search_type || 'CITY',
+        adults: String(adults || 2),
+        room_qty: String(rooms || 1),
+        currency_code: 'EUR',
+        page_number: String(i + 1),
+      })
+      if (checkIn) params.set('arrival_date', checkIn)
+      if (checkOut) params.set('departure_date', checkOut)
+
+      const r = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, { headers })
+      if (!r.ok) return []
+      const j = await r.json()
+      return j?.data?.hotels || j?.data?.result || []
+    })
+  )
+
+  // Later pages repeat entries once the list runs out, so de-duplicate.
+  const seen = new Set()
+  const rows = pageResults.flat().filter((row) => {
+    const id = row?.hotel_id ?? row?.property?.id ?? row?.property?.name ?? row?.hotel_name
+    if (!id || seen.has(id)) return false
+    seen.add(id)
+    return true
   })
-  if (checkIn) params.set('arrival_date', checkIn)
-  if (checkOut) params.set('departure_date', checkOut)
-
-  const res = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, { headers })
-  if (!res.ok) throw new Error(`RapidAPI hotel search returned ${res.status}`)
-  const json = await res.json()
-
-  const rows = json?.data?.hotels || json?.data?.result || []
   if (!rows.length) throw new Error(`RapidAPI returned no hotels for ${city} on these dates`)
 
   return rows.flatMap((row) => {
@@ -465,7 +483,7 @@ export default async function handler(req, res) {
     const offers = remember(key, await provider(q))
     res.setHeader('X-Radar-Cache', 'miss')
     // A short CDN cache absorbs several browser tabs scanning at once.
-    res.setHeader('Cache-Control', 's-maxage=240, stale-while-revalidate=600')
+    res.setHeader('Cache-Control', 's-maxage=900, stale-while-revalidate=1800')
     return res.status(200).json({ offers, cached: false })
   } catch (err) {
     return res.status(502).json({ error: err?.message || 'Upstream request failed' })
