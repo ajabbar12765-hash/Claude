@@ -9,9 +9,10 @@
 // engine to live inventory; the filters, alerts and UI stay put.
 
 import * as simulated from './providers/simulated.js'
+import * as travelpayouts from './providers/travelpayouts.js'
 import * as amadeus from './providers/amadeus.js'
 
-export const PROVIDERS = { simulated, amadeus }
+export const PROVIDERS = { simulated, travelpayouts, amadeus }
 
 export const PROVIDER_LIST = Object.values(PROVIDERS).map((p) => p.meta)
 

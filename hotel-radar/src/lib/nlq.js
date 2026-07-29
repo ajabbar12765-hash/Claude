@@ -132,7 +132,9 @@ export function parseQuery(raw) {
   }
 
   // ---- radius -----------------------------------------------------------
-  const radius = text.match(/within\s*(\d{1,3})\s*(km|kilometer|kilometre|kilometers|kilometres|mi|mile|miles)/)
+  const radius = text.match(
+    /within\s*(\d{1,3})\s*(kilometres|kilometers|kilometre|kilometer|miles|mile|km|mi)\b/
+  )
   if (radius) {
     const value = +radius[1]
     result.radiusKm = /mi/.test(radius[2]) ? value * 1.609 : value
@@ -142,6 +144,10 @@ export function parseQuery(raw) {
     result.radiusKm = result.radiusKm ?? 1.2
     text = text.replace(/\b(walking distance|walkable|walk to|steps from|right next to)\b/g, ' ')
   }
+
+  // City detection reads this snapshot, taken before the landmark pass
+  // consumes its match — otherwise "in Lake Como" loses the city entirely.
+  const textBeforeLandmark = text
 
   // ---- landmark ("near X") ---------------------------------------------
   // Prefer an explicit proximity phrase, but still match a bare landmark name.
@@ -178,27 +184,33 @@ export function parseQuery(raw) {
   text = text.replace(/\b(near|nearby|close to|next to|beside|around|overlooking)\b/g, ' ')
 
   // ---- city ("in X") ----------------------------------------------------
-  let cityHit = null
-  for (const c of CITIES) {
-    const n = norm(c.city)
-    if (text.includes(n) && (!cityHit || n.length > norm(cityHit.city).length)) cityHit = c
-  }
-  if (cityHit) {
-    result.city = cityHit
-    consume(norm(cityHit.city))
-  }
-  text = text.replace(/\b(in|at)\b/g, ' ')
+  // A phrase can name more than one place ("near Lake Como in Milan"), so
+  // collect every match, longest name first, and reconcile against the
+  // landmark rather than taking the first hit.
+  const cityMatches = CITIES.filter((c) => textBeforeLandmark.includes(norm(c.city))).sort(
+    (a, b) => norm(b.city).length - norm(a.city).length
+  )
 
-  // A landmark in one destination plus a city in another is usually a mental
-  // shortcut ("Lake Como in Milan"). Keep the landmark, keep the city as a
-  // hint, and say so rather than silently returning nothing.
-  if (result.landmark && result.city && result.landmark.destinationId !== result.city.id) {
-    const km = Math.round(distanceKm(result.landmark, result.city))
-    result.notes.push(
-      `${result.landmark.name} is about ${km} km from ${result.city.city}. Showing stays near ${result.landmark.name} — clear the city filter to widen the search.`
-    )
-    result.city = null
+  if (result.landmark) {
+    // A city that contains the landmark is consistent; keep it. A city
+    // somewhere else is a mental shortcut — the landmark wins, and we say
+    // why rather than silently returning nothing.
+    result.city = cityMatches.find((c) => c.id === result.landmark.destinationId) ?? null
+    const elsewhere = cityMatches.find((c) => c.id !== result.landmark.destinationId)
+    if (elsewhere) {
+      const km = Math.round(distanceKm(result.landmark, elsewhere))
+      result.notes.push(
+        `${result.landmark.name} is about ${km} km from ${elsewhere.city}. Showing stays near ${result.landmark.name} — clear the search text to look in ${elsewhere.city} instead.`
+      )
+    }
+  } else {
+    result.city = cityMatches[0] ?? null
   }
+
+  // Every place name mentioned is accounted for, so none should survive as
+  // a keyword.
+  for (const c of cityMatches) consume(norm(c.city))
+  text = text.replace(/\b(in|at)\b/g, ' ')
 
   // ---- amenities --------------------------------------------------------
   for (const [phrase, id] of AMENITY_PHRASES) {

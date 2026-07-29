@@ -158,13 +158,32 @@ export default function SettingsModal({
               </label>
             ))}
 
-            {active.needsKey && (
-              <p className="note">
-                <span aria-hidden="true">ⓘ</span> Keys are stored in this browser only and are
-                never sent anywhere except the provider. If a live scan fails, the app falls
-                back to the built-in engine rather than going blank.
+            {active.quotaNote && (
+              <p className="note note--ok">
+                <span aria-hidden="true">✓</span> {active.quotaNote}
               </p>
             )}
+
+            {active.serverKey && (
+              <p className="note">
+                <span aria-hidden="true">ⓘ</span> This provider reads its token from a server
+                environment variable, so nothing secret is stored in your browser. Set it in
+                Vercel under Settings → Environment Variables.
+              </p>
+            )}
+
+            {active.needsKey && (
+              <p className="note note--warn">
+                <span aria-hidden="true">⚠</span> Keys entered here are stored in this browser
+                and travel with the request. For anything public, prefer a provider that keeps
+                its key on the server.
+              </p>
+            )}
+
+            <p className="field__hint">
+              If a live scan fails, the app falls back to the built-in engine and says so in a
+              banner rather than going blank.
+            </p>
           </section>
 
           <section className="field">

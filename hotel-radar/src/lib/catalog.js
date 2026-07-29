@@ -111,6 +111,8 @@ export const DESTINATIONS = [
       h('Hotel Santa Maria', 'Trastevere', 3, 8.9, 1560, 165, 41.8896, 12.4676, 'wifi breakfast parking aircon familyfriendly petfriendly', 'Former cloister built around an orange-tree courtyard.'),
       h('Residenza Paolo VI', 'Vatican', 4, 9.1, 1930, 245, 41.9019, 12.4586, 'wifi breakfast bar rooftop aircon', 'Ex-monastery with a terrace looking straight into St Peter\'s Square.'),
       h('Generator Rome', 'Monti', 2, 8.4, 3210, 70, 41.8981, 12.5052, 'wifi bar breakfast aircon', 'Design hostel with private rooms in the Monti district.'),
+      h('Rome Cavalieri, A Waldorf Astoria Hotel', 'Monte Mario', 5, 9.0, 2380, 520, 41.9186, 12.4459, 'pool spa restaurant bar wifi gym parking aircon familyfriendly', 'Parkland above the city with outdoor pools and a rooftop restaurant.'),
+      h('Gran Melia Rome Villa Agrippina', 'Gianicolo', 5, 9.1, 1140, 460, 41.8987, 12.4636, 'pool spa restaurant bar wifi gym parking aircon', 'Garden pool on the Gianicolo hill, a short walk from Trastevere.'),
     ],
   },
   {
@@ -134,6 +136,7 @@ export const DESTINATIONS = [
       h('Hotel Antiche Figure', 'Santa Croce', 4, 9.1, 2460, 215, 45.4409, 12.3218, 'wifi breakfast bar aircon', 'Opposite the train station, across the water from the crowds.'),
       h('Generator Venice', 'Giudecca', 2, 8.5, 2870, 75, 45.4283, 12.3245, 'wifi bar breakfast', 'Waterfront hostel on Giudecca looking back at San Marco.'),
       h('Hotel Al Ponte Mocenigo', 'Santa Croce', 3, 9.2, 1640, 145, 45.4404, 12.3283, 'wifi breakfast aircon petfriendly', 'Seventeenth-century palazzo with a private courtyard.'),
+      h('Hilton Molino Stucky Venice', 'Giudecca', 5, 8.8, 4120, 285, 45.4272, 12.3196, 'pool spa restaurant bar wifi gym rooftop aircon familyfriendly', 'Converted flour mill on Giudecca with a rooftop pool over the lagoon.'),
     ],
   },
   {
@@ -181,6 +184,7 @@ export const DESTINATIONS = [
       h('Generator Paris', 'Belleville', 2, 8.3, 4120, 78, 48.8817, 2.3708, 'wifi bar breakfast rooftop', 'Rooftop bar with a Sacré-Cœur view, private and shared rooms.'),
       h('Hôtel Le Six', 'Montparnasse', 4, 8.9, 1210, 225, 48.8437, 2.3269, 'spa wifi breakfast bar aircon', 'Quiet Left Bank four-star with a small hammam.'),
       h('Citadines Tour Eiffel', 'Grenelle', 3, 8.4, 2870, 175, 48.8503, 2.2896, 'wifi gym aircon familyfriendly parking', 'Apartment-style rooms with kitchenettes near the Eiffel Tower.'),
+      h('Molitor Paris - MGallery', 'Auteuil', 5, 8.9, 2240, 340, 48.8447, 2.2537, 'pool spa restaurant bar wifi gym rooftop aircon', 'Built around the restored 1929 art deco swimming pools.'),
     ],
   },
   {

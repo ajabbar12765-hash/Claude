@@ -81,6 +81,20 @@ export default function App() {
   const inBudget = useMemo(() => deals.filter((d) => d.withinBudget), [deals])
   const unread = useMemo(() => alerts.filter((a) => !a.read).length, [alerts])
 
+  // Provider config travels by ref so that editing a filter does not restart
+  // the scan timer — a live provider would fire a request on every keystroke.
+  // Live providers read `filters` to scan only the destinations in view,
+  // which is what keeps a free-tier quota alive.
+  const scanConfigRef = useRef({})
+  scanConfigRef.current = {
+    ...(settings.providerConfig?.[settings.provider] || {}),
+    filters: {
+      cities: filters.cities,
+      parsedCityId: resolved.parsed.city?.id ?? null,
+      parsedLandmarkDestinationId: resolved.parsed.landmark?.destinationId ?? null,
+    },
+  }
+
   const pushToast = useCallback((toast) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
     setToasts((t) => [...t.slice(-3), { ...toast, id }])
@@ -94,7 +108,7 @@ export default function App() {
       const { offers: fresh, error } = await runScan(
         settings.provider,
         trip,
-        settings.providerConfig?.[settings.provider]
+        scanConfigRef.current
       )
       setOffers(fresh)
       setProviderError(error)
@@ -105,7 +119,7 @@ export default function App() {
     } finally {
       setScanning(false)
     }
-  }, [settings.provider, settings.providerConfig, trip])
+  }, [settings.provider, trip])
 
   // Kick off immediately, then on the chosen interval.
   useEffect(() => {
