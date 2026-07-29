@@ -102,6 +102,28 @@ export default function DealGrid({
   )
 }
 
+// A place the catalogue does not cover would otherwise be a dead end. The
+// query still describes a real destination, so hand it to Booking.com rather
+// than leaving the user with nothing.
+function OffCatalogue({ query }) {
+  const url =
+    'https://www.booking.com/searchresults.html?ss=' + encodeURIComponent(query)
+  return (
+    <div className="offCatalogue">
+      <p>
+        <strong>&ldquo;{query}&rdquo;</strong> is not in the catalogue yet, so there is
+        nothing here to watch for you.
+      </p>
+      <a className="btn btn--primary" href={url} target="_blank" rel="noopener noreferrer">
+        Search Booking.com for it <span aria-hidden="true">↗</span>
+      </a>
+      <p className="offCatalogue__note">
+        Tell me the place and I will add it, and the budget alerts will cover it too.
+      </p>
+    </div>
+  )
+}
+
 function Empty({ tab, resolved, money, onChange }) {
   if (tab === 'saved') {
     return (
@@ -138,16 +160,26 @@ function Empty({ tab, resolved, money, onChange }) {
     )
   }
 
+  // Nothing recognised at all, just leftover words: most likely a place the
+  // catalogue does not have, rather than filters that are too tight.
+  const q = resolved.parsed
+  const looksLikeUnknownPlace =
+    q.keywords.length > 0 && !q.city && !q.landmark && !q.amenities.length
+
   return (
     <div className="empty">
       <span className="empty__glyph" aria-hidden="true">
         ⌕
       </span>
       <h2>No stays match those filters</h2>
-      <p>
-        The combination is a little tight. Try dropping an amenity, widening the star
-        rating, or clearing the search text.
-      </p>
+      {looksLikeUnknownPlace ? (
+        <OffCatalogue query={resolved.query.trim()} />
+      ) : (
+        <p>
+          The combination is a little tight. Try dropping an amenity, widening the star
+          rating, or clearing the search text.
+        </p>
+      )}
       <div className="empty__actions">
         <button className="btn btn--ghost" onClick={() => onChange({ query: '' })}>
           Clear search text

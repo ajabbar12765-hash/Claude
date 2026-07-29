@@ -64,6 +64,27 @@ check('hotel near politecnico in milan', { landmark: 'Politecnico di Milano', ci
 check('near Linate Airport', { landmark: 'Linate Airport' })
 check('hotel near Fiera Milano', { landmark: 'Fiera Milano Rho' })
 
+// ---- world coverage, and short aliases must not match inside words ------
+// "isb" (Islamabad airport) once matched L-isb-on, so every one of these is
+// really a test that matching happens on words, not characters.
+check('a hotel in Cape Town', { city: 'Cape Town' })
+check('near Table Mountain', { landmark: 'Table Mountain' })
+check('hotel in Karachi near Clifton Beach', { landmark: 'Clifton Beach', city: 'Karachi' })
+check('5 star in Lahore', { city: 'Lahore', stars: 5 })
+check('near Faisal Mosque', { landmark: 'Faisal Mosque' })
+check('hotel in Tokyo near Shibuya', { landmark: 'Shibuya Crossing', city: 'Tokyo' })
+check('near the Pyramids of Giza', { landmark: 'Pyramids of Giza' })
+check('a hotel in Istanbul near Hagia Sophia', { landmark: 'Hagia Sophia', city: 'Istanbul' })
+check('beachfront in Bali under 300', { city: 'Bali', amenities: ['beach'], maxPrice: 300 })
+check('rooftop in Bangkok', { city: 'Bangkok', amenities: ['rooftop'] })
+check('near Times Square', { landmark: 'Times Square' })
+check('hotel in Sydney near Bondi Beach', { landmark: 'Bondi Beach', city: 'Sydney' })
+check('spa in Marrakech', { city: 'Marrakech', amenities: ['spa'] })
+check('3-star in Lisbon', { city: 'Lisbon', stars: 3 })   // "isb" inside Lisbon
+check('hotel in Dublin', { city: 'Dublin' })              // "lin" inside Dublin
+check('a hotel in Berlin', { city: 'Berlin' })            // "lin" inside Berlin
+check('four star hotel in Venice', { stars: 4, city: 'Venice' }) // vs Venice Beach
+
 // ---- radius -------------------------------------------------------------
 check('walking distance to the Colosseum', { landmark: 'Colosseum', radius: 1 })
 check('within 3 km of the Duomo di Milano', { landmark: 'Duomo di Milano', radius: 3 })

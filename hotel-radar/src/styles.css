@@ -1290,6 +1290,24 @@ a {
   line-height: 1.55;
   color: var(--text-2);
 }
+.offCatalogue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  max-width: 44ch;
+  margin-top: 0.2rem;
+}
+.offCatalogue p {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+.offCatalogue__note {
+  font-size: 0.76rem !important;
+  color: var(--text-3) !important;
+}
+
 .empty__actions {
   display: flex;
   flex-wrap: wrap;
