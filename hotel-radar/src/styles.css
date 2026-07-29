@@ -1452,6 +1452,13 @@ a {
   place-items: center;
   padding: 1rem;
 }
+
+/* The scrim is a child of .modalWrap, which is its own stacking context, so
+   its global z-index of 50 would paint it over the modal's 1 — blurring the
+   dialog and swallowing every click. Inside the modal it must sit beneath. */
+.modalWrap > .scrim {
+  z-index: 0;
+}
 .modal {
   position: relative;
   z-index: 1;
