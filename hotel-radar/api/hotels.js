@@ -41,18 +41,15 @@ async function travelpayouts({ location, checkIn, checkOut }) {
   const marker = process.env.TRAVELPAYOUTS_MARKER || ''
   if (!token) throw new Error('TRAVELPAYOUTS_TOKEN is not set on the server')
 
-  // The endpoint and parameter names below are confirmed against several
-  // independent working implementations, so a wrong URL is not the problem.
-  // What is not confirmed is which parameter shape this account is served,
-  // so the variants are tried in order and the first usable answer wins.
-  //
-  // Notes drawn from those implementations:
-  //   - currency is lowercased; the examples that work all pass it that way
-  //   - `adults` is not a cache.json parameter and is not sent
-  //   - a city name can be swapped for a locationId resolved via lookup.json
+  // engine.hotellook.com returns 404 for every path from this server,
+  // including an unauthenticated call and a different endpoint entirely.
+  // That is the host refusing the request, not the parameters being wrong,
+  // so the candidates below vary the HOST as well as the shape. api.
+  // hotellook.com and api.travelpayouts.com are the two other origins in
+  // active use by public implementations.
   const city = String(location || '').split(',')[0].trim()
 
-  const withDates = (extra) => {
+  const q = (extra) => {
     const p = { currency: 'eur', limit: '60', token, ...extra }
     if (checkIn) p.checkIn = checkIn
     if (checkOut) p.checkOut = checkOut
@@ -60,48 +57,34 @@ async function travelpayouts({ location, checkIn, checkOut }) {
   }
 
   const candidates = [
-    { label: 'cache.json location+dates', url: `https://engine.hotellook.com/api/v2/cache.json?${withDates({ location: city })}` },
-    { label: 'cache.json location only', url: `https://engine.hotellook.com/api/v2/cache.json?${new URLSearchParams({ location: city, currency: 'eur', limit: '60', token })}` },
-    { label: 'cache.json no token', url: `https://engine.hotellook.com/api/v2/cache.json?${withDates({ location: city })}`.replace(`&token=${token}`, '') },
-    { label: 'http cache.json', url: `http://engine.hotellook.com/api/v2/cache.json?${withDates({ location: city })}` },
+    { label: 'api.hotellook cache+dates', url: `https://api.hotellook.com/v2/cache.json?${q({ location: city })}` },
+    { label: 'api.hotellook cache', url: `https://api.hotellook.com/v2/cache.json?${new URLSearchParams({ location: city, currency: 'eur', limit: '60', token })}` },
+    {
+      label: 'api.travelpayouts prices/hotels',
+      url: `https://api.travelpayouts.com/v2/prices/hotels?${new URLSearchParams({
+        location: city, currency: 'eur', limit: '60', token,
+        ...(marker ? { marker } : {}),
+        ...(checkIn ? { check_in: checkIn } : {}),
+        ...(checkOut ? { check_out: checkOut } : {}),
+      })}`,
+    },
+    { label: 'engine.hotellook cache+dates', url: `https://engine.hotellook.com/api/v2/cache.json?${q({ location: city })}` },
   ]
 
   const attempts = []
-
-  // A locationId sidesteps any ambiguity in resolving the city name, so
-  // resolve one first and try it ahead of the plain-name variants.
-  try {
-    const lookupUrl = `https://engine.hotellook.com/api/v2/lookup.json?${new URLSearchParams({
-      query: city, lang: 'en', lookFor: 'city', limit: '1', token,
-    })}`
-    const lr = await fetch(lookupUrl, { headers: { Accept: 'application/json' } })
-    if (lr.ok) {
-      const lj = await lr.json().catch(() => null)
-      const id = lj?.results?.locations?.[0]?.id
-      if (id) {
-        candidates.unshift({
-          label: `cache.json locationId=${id}`,
-          url: `https://engine.hotellook.com/api/v2/cache.json?${withDates({ locationId: String(id) })}`,
-        })
-      } else {
-        attempts.push('lookup.json: 200 but no location id')
-      }
-    } else {
-      attempts.push(`lookup.json: HTTP ${lr.status}`)
-    }
-  } catch (err) {
-    attempts.push(`lookup.json: ${String(err).slice(0, 60)}`)
-  }
+  const statuses = []
 
   for (const c of candidates) {
     try {
       const res = await fetch(c.url, { headers: { Accept: 'application/json' } })
+      statuses.push(res.status)
       if (!res.ok) {
         attempts.push(`${c.label}: HTTP ${res.status}`)
         continue
       }
       const json = await res.json().catch(() => null)
-      const rows = Array.isArray(json) ? json : json?.results || []
+      // Different origins wrap the list differently.
+      const rows = Array.isArray(json) ? json : json?.results || json?.data || []
       if (!rows.length) {
         attempts.push(`${c.label}: 200 but no rows`)
         continue
@@ -111,10 +94,10 @@ async function travelpayouts({ location, checkIn, checkOut }) {
         name: row.hotelName ?? row.name ?? null,
         stars: row.stars ?? null,
         rating: typeof row.rating === 'number' ? row.rating / 10 : null,
-        lat: row.location?.geo?.lat ?? null,
-        lng: row.location?.geo?.lon ?? null,
-        // priceFrom is the cheapest rate Hotellook found across the booking
-        // sites it checks; priceAvg is the average across them.
+        lat: row.location?.geo?.lat ?? row.lat ?? null,
+        lng: row.location?.geo?.lon ?? row.lon ?? null,
+        // priceFrom is the cheapest rate found across the booking sites
+        // checked; priceAvg is the average across them.
         nightly: row.priceFrom != null ? Math.round(row.priceFrom) : null,
         reference: row.priceAvg != null ? Math.round(row.priceAvg) : null,
         marker,
@@ -125,11 +108,9 @@ async function travelpayouts({ location, checkIn, checkOut }) {
     }
   }
 
-  // Every variant failing the same way points at the request being refused
-  // rather than malformed — worth saying, since the fix differs completely.
-  const all404 = attempts.filter((a) => a.includes('HTTP 404')).length >= candidates.length
+  const all404 = statuses.length > 0 && statuses.every((s) => s === 404)
   throw new Error(
-    `Hotellook returned nothing usable${all404 ? ' (every variant 404 — the API is likely refusing this server, not rejecting the parameters)' : ''}. Tried — ${attempts.join(' | ')}`
+    `No Travelpayouts host answered${all404 ? ' — every origin returned 404, which means the account is not entitled to this data or these servers are blocked. This is not fixable in the app.' : ''}. Tried — ${attempts.join(' | ')}`
   )
 }
 
