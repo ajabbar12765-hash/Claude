@@ -58,6 +58,11 @@ check('near the duomo in milan', { landmark: 'Duomo di Milano', city: 'Milan' })
 check('hotel near Park Guell', { landmark: 'Park Güell' })
 check('near Burj Khalifa', { landmark: 'Burj Khalifa' })
 check('somewhere near Montmartre', { landmark: 'Montmartre' })
+check('a hotel in Milan near bocconi university', { landmark: 'Bocconi University', city: 'Milan' })
+check('near Bocconi', { landmark: 'Bocconi University' })
+check('hotel near politecnico in milan', { landmark: 'Politecnico di Milano', city: 'Milan' })
+check('near Linate Airport', { landmark: 'Linate Airport' })
+check('hotel near Fiera Milano', { landmark: 'Fiera Milano Rho' })
 
 // ---- radius -------------------------------------------------------------
 check('walking distance to the Colosseum', { landmark: 'Colosseum', radius: 1 })
