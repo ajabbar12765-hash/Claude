@@ -85,6 +85,10 @@ are read by `api/hotels.js` on the server and never reach the browser.
 
 Without any of them the app runs on the built-in engine, which is the default.
 
+Environment variables only take effect on a **new build**, so redeploy after
+adding them. Settings → Data source → **Test live connection** exercises the
+whole chain and reports the exact upstream error if something is wrong.
+
 ## Getting an API key for free
 
 Only you can do this part — the signups are tied to your identity, and none of
@@ -95,11 +99,20 @@ and no minimum traffic requirement, which is the usual blocker. Real live
 prices, and you earn commission if anyone books through your links.
 
 1. Sign up at [travelpayouts.com](https://www.travelpayouts.com/en/offers/hotellook-affiliate-program)
-2. Join the Hotellook programme
-3. Request API access from the dashboard — it is granted free on request
-4. Copy your API token and partner marker into the Vercel environment
-   variables above
-5. In the app: Settings → Data source → **Travelpayouts / Hotellook (live)**
+   and confirm your email.
+2. Join the **Hotellook** programme from the Affiliate Programs list. Approval
+   is automatic — there is no traffic minimum.
+3. Get the token: **Profile → API token**, or go straight to
+   [travelpayouts.com/developers/api](https://www.travelpayouts.com/developers/api).
+   There is a *Update token* button there if you ever need to rotate it.
+4. Get the marker: it is your partner ID, shown in the dashboard and in any
+   affiliate link. It is what credits bookings to you — the token authenticates
+   the API, the marker attributes the commission.
+5. Add `TRAVELPAYOUTS_TOKEN` and `TRAVELPAYOUTS_MARKER` in Vercel →
+   Settings → Environment Variables, then **redeploy** (env vars only apply to
+   new builds).
+6. In the app: Settings → Data source → **Travelpayouts / Hotellook (live)**,
+   then press **Test live connection** to confirm it works.
 
 **Amadeus Self-Service — instant key, but test data.** Free, no credit card,
 key in about five minutes at [developers.amadeus.com](https://developers.amadeus.com).
