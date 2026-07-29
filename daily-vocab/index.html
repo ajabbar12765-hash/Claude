@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="Learn one advanced English word every day and build practice goals." />
+  <title>Daily Vocab</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Daily Vocab" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead">
+      <div class="brand">
+        <img src="icons/icon-192.png" alt="" width="40" height="40" />
+        <div><div class="name">Daily Vocab</div><div class="sub">The daily word encyclopedia</div></div>
+      </div>
+      <button id="notifyBtn" class="bell" title="Daily reminders" aria-label="Daily reminders">🔔</button>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab on" data-view="today" role="tab">Today</button>
+      <button class="tab" data-view="practice" role="tab">Practice</button>
+      <button class="tab" data-view="goals" role="tab">Goals</button>
+      <button class="tab" data-view="history" role="tab">History</button>
+    </nav>
+
+    <main>
+      <section id="view-today" class="view on">
+        <p class="eyebrow" id="dateLine"></p>
+        <h1 class="headword" id="headword"></h1>
+        <p class="meta" id="meta"></p>
+        <div id="cardBody"></div>
+        <div class="actions">
+          <button class="btn btn-p" id="setGoalBtn">Set a practice goal</button>
+          <button class="btn btn-g" id="speakBtn">🔊 Pronounce</button>
+        </div>
+        <div id="streakWrap"></div>
+        <div id="notifyHint" class="nhint" hidden></div>
+        <div id="todayGoalBox"></div>
+      </section>
+
+      <section id="view-practice" class="view">
+        <h2 class="sec">Sentence check</h2>
+        <p class="hint">Write a sentence or a question — try using today's word, <b id="pcWord"></b> — and check it for grammar and spelling. If it's already correct, it'll just say so.</p>
+        <textarea id="sentence" class="sentence" rows="3" placeholder="Type a sentence or question here…"></textarea>
+        <div class="actions">
+          <button class="btn btn-p" id="checkBtn">Check my sentence</button>
+          <button class="btn btn-g" id="clearBtn">Clear</button>
+        </div>
+        <div id="checkResults"></div>
+        <p class="muted" style="margin-top:14px">This is a basic checker — it flags common mistakes but is not a full grammar engine.</p>
+      </section>
+
+      <section id="view-goals" class="view">
+        <h2 class="sec">Your streak</h2>
+        <div id="calWrap" class="calwrap"></div>
+        <h2 class="sec" style="margin-top:26px">Practice goals</h2>
+        <p class="hint">Set a goal to use a word every day for a few days. Check in each day you use it to build your streak.</p>
+        <div id="goalsList"></div>
+      </section>
+
+      <section id="view-history" class="view">
+        <h2 class="sec">Word history</h2>
+        <p class="hint">Every word you have seen, newest first. Select one to review it.</p>
+        <div id="historyList"></div>
+      </section>
+    </main>
+
+    <footer class="foot">Daily Vocab · one word at a time · your progress is saved on this device</footer>
+  </div>
+
+  <div class="modal-bg" id="goalModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+      <h3 id="goalModalTitle">Practice this word</h3>
+      <p class="mw" id="goalModalWord"></p>
+      <label class="flab">Use it every day for…</label>
+      <div class="chips" id="dayChoices">
+        <button class="chip" data-days="3">3 days</button>
+        <button class="chip on" data-days="5">5 days</button>
+        <button class="chip" data-days="7">7 days</button>
+        <button class="chip" data-days="14">14 days</button>
+      </div>
+      <div class="mact">
+        <button class="btn btn-g" id="goalCancel">Cancel</button>
+        <button class="btn btn-p" id="goalConfirm">Start goal</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-bg" id="detailModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div id="detailBody"></div>
+      <div class="mact">
+        <button class="btn btn-g" id="detailClose">Close</button>
+        <button class="btn btn-p" id="detailGoal">Set a goal</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
