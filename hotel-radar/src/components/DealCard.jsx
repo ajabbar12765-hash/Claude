@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AMENITY_ICON, AMENITY_LABEL } from '../lib/catalog.js'
 import { bookingLinks, PROVIDERS } from '../lib/deeplinks.js'
 import { hashUnit, ratingWord, timeAgo } from '../lib/format.js'
+import { hotelPhoto } from '../lib/photos.js'
 
 // Deterministic per-hotel artwork. Keeping it generative means no external
 // image requests, so cards never flash a broken thumbnail.
@@ -32,7 +33,20 @@ const TOP_AMENITIES = ['lakeview', 'seaview', 'beach', 'pool', 'spa', 'rooftop',
 
 export default function DealCard({ deal, trip, money, saved, onToggleSave, rank }) {
   const [linksOpen, setLinksOpen] = useState(false)
+  const [photo, setPhoto] = useState(null)
   const { hotel } = deal
+
+  // The generated artwork stays underneath and shows through until a photo
+  // arrives, so a card is never blank and never shows a broken image.
+  useEffect(() => {
+    let cancelled = false
+    hotelPhoto(hotel).then((found) => {
+      if (!cancelled && found) setPhoto(found)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [hotel])
   const art = artwork(hotel)
   const links = bookingLinks(hotel, trip)
   const pct = Math.round(deal.discount * 100)
@@ -43,9 +57,27 @@ export default function DealCard({ deal, trip, money, saved, onToggleSave, rank 
   return (
     <article className={`card ${deal.withinBudget ? 'card--match' : ''}`}>
       <div className="card__art" style={art.style}>
-        <span className="card__glyph" aria-hidden="true">
-          {art.glyph}
-        </span>
+        {photo ? (
+          <>
+            <img
+              className="card__photo"
+              src={photo.url}
+              alt={photo.kind === 'hotel' ? hotel.name : `${photo.label}, ${hotel.country}`}
+              loading="lazy"
+              decoding="async"
+              onError={() => setPhoto(null)}
+            />
+            {photo.kind === 'city' && (
+              <span className="card__photoNote" title="Photo of the area, not the property">
+                📍 {photo.label}
+              </span>
+            )}
+          </>
+        ) : (
+          <span className="card__glyph" aria-hidden="true">
+            {art.glyph}
+          </span>
+        )}
         <div className="card__artTags">
           {deal.withinBudget && <span className="tag tag--match">In budget</span>}
           {deal.flash && <span className="tag tag--flash">⚡ Flash drop</span>}

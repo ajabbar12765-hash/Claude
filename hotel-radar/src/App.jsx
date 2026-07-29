@@ -35,7 +35,7 @@ const DEFAULT_SETTINGS = {
   scanSeconds: 30,
   notifyBrowser: true,
   notifySound: true,
-  theme: 'dark',
+  theme: 'light',
   providerConfig: {},
 }
 
