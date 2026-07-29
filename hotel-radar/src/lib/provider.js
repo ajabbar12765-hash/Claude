@@ -10,10 +10,11 @@
 
 import * as simulated from './providers/simulated.js'
 import * as travelpayouts from './providers/travelpayouts.js'
+import * as multi from './providers/multi.js'
 import * as rapidapi from './providers/rapidapi.js'
 import * as amadeus from './providers/amadeus.js'
 
-export const PROVIDERS = { simulated, rapidapi, travelpayouts, amadeus }
+export const PROVIDERS = { simulated, multi, rapidapi, travelpayouts, amadeus }
 
 export const PROVIDER_LIST = Object.values(PROVIDERS).map((p) => p.meta)
 
