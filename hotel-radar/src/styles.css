@@ -1623,7 +1623,10 @@ a {
     top: 0;
     left: 0;
     z-index: 65;
-    width: min(360px, 92vw);
+    /* Leave a strip wide enough to be a real tap target, so tapping the page
+       to dismiss the sheet is reachable. 92vw left only 31px on a 390px
+       phone, under the 44px minimum. */
+    width: min(340px, 84vw);
     max-height: none;
     height: 100dvh;
     border-radius: 0;
