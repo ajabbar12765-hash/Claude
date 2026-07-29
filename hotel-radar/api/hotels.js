@@ -61,8 +61,13 @@ async function travelpayouts({ location, checkIn, checkOut, adults }) {
     rating: typeof row.rating === 'number' ? row.rating / 10 : null,
     lat: row.location?.geo?.lat ?? null,
     lng: row.location?.geo?.lon ?? null,
-    nightly: row.priceAvg != null ? Math.round(row.priceAvg) : null,
-    reference: row.priceFrom != null ? Math.round(row.priceFrom) : null,
+    // Hotellook aggregates several booking sites per hotel:
+    //   priceFrom = the cheapest rate it found anywhere
+    //   priceAvg  = the average across those sites
+    // A deal finder wants the cheapest as the headline and the average as
+    // the "was" figure, so the saving reflects beating the typical rate.
+    nightly: row.priceFrom != null ? Math.round(row.priceFrom) : null,
+    reference: row.priceAvg != null ? Math.round(row.priceAvg) : null,
     marker,
   }))
 }
