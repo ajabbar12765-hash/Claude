@@ -73,7 +73,10 @@ export function buildDeals(offers, filters, parsedOverride) {
 
   const deals = []
   for (const offer of offers) {
-    const hotel = hotelById(offer.hotelId)
+    // A live provider can return a hotel the catalog has never heard of and
+    // carry the details on the offer itself. Prefer that over a lookup, so
+    // coverage is not capped by what is listed locally.
+    const hotel = offer.hotel || hotelById(offer.hotelId)
     if (!hotel) continue
 
     const price = f.budgetBasis === 'total' ? offer.total : offer.nightly
