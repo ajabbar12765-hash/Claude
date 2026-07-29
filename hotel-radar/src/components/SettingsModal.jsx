@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { PROVIDER_LIST } from '../lib/provider.js'
 import { CURRENCIES } from '../lib/format.js'
+import ConnectionTest from './ConnectionTest.jsx'
 
 export default function SettingsModal({
   open,
@@ -186,6 +187,8 @@ export default function SettingsModal({
               If a live scan fails, the app falls back to the built-in engine and says so in a
               banner rather than going blank.
             </p>
+
+            {active.id !== 'simulated' && <ConnectionTest provider={active.id} />}
           </section>
 
           <section className="field">
