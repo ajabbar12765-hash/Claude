@@ -33,8 +33,20 @@ export default function SettingsModal({
     })
 
   return (
-    <div className="modalWrap" role="dialog" aria-modal="true" aria-label="Settings">
-      <div className="scrim is-open" onClick={onClose} aria-hidden="true" />
+    // The backdrop is a pseudo-element on this wrapper rather than a sibling
+    // of the dialog. A sibling has to be kept beneath the dialog by z-index,
+    // and getting that wrong once already shipped a Settings panel that was
+    // blurred and swallowed every click. A pseudo-element cannot outrank its
+    // own parent's children, so the failure is not expressible.
+    <div
+      className="modalWrap"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Settings"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
       <div className="modal">
         <header className="modal__head">
           <h2>Settings</h2>

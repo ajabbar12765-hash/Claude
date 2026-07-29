@@ -1453,11 +1453,23 @@ a {
   padding: 1rem;
 }
 
-/* The scrim is a child of .modalWrap, which is its own stacking context, so
-   its global z-index of 50 would paint it over the modal's 1 — blurring the
-   dialog and swallowing every click. Inside the modal it must sit beneath. */
-.modalWrap > .scrim {
-  z-index: 0;
+/* The backdrop is a pseudo-element of the wrapper, not a sibling of the
+   dialog, so no z-index relationship has to hold for the dialog to be
+   clickable. Clicks on it land on .modalWrap and close the modal. */
+.modalWrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 6, 11, 0.6);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fadeIn 0.2s var(--ease) both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
 }
 .modal {
   position: relative;
