@@ -50,6 +50,15 @@ function stripAccents(s) {
   return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
+// Whole-word containment. Raw substring matching let a short alias match
+// inside an unrelated word — the airport code "isb" matched L-isb-on, so
+// "3-star in Lisbon" resolved to Islamabad. Every short alias has that
+// failure mode, so the check has to be about words, not characters.
+function containsPhrase(hay, needle) {
+  if (!needle) return false
+  return new RegExp(`(^|[^a-z0-9])${escapeRe(needle)}([^a-z0-9]|$)`).test(hay)
+}
+
 function norm(s) {
   return stripAccents(String(s || '').toLowerCase()).replace(/[’']/g, '').replace(/\s+/g, ' ').trim()
 }
@@ -162,7 +171,7 @@ export function parseQuery(raw) {
     for (const c of candidates) {
       for (const n of c.names) {
         if (!n) continue
-        if (hay.includes(n) && (!best || n.length > best.matched.length)) {
+        if (containsPhrase(hay, n) && (!best || n.length > best.matched.length)) {
           best = { landmark: c.landmark, matched: n }
         }
       }
@@ -187,7 +196,7 @@ export function parseQuery(raw) {
   // A phrase can name more than one place ("near Lake Como in Milan"), so
   // collect every match, longest name first, and reconcile against the
   // landmark rather than taking the first hit.
-  const cityMatches = CITIES.filter((c) => textBeforeLandmark.includes(norm(c.city))).sort(
+  const cityMatches = CITIES.filter((c) => containsPhrase(textBeforeLandmark, norm(c.city))).sort(
     (a, b) => norm(b.city).length - norm(a.city).length
   )
 

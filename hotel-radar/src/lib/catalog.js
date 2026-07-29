@@ -24,7 +24,9 @@ function h(name, area, stars, rating, reviews, base, lat, lng, amenities, blurb)
   }
 }
 
-export const DESTINATIONS = [
+import { makeWorld } from './catalog-world.js'
+
+const CORE = [
   {
     id: 'lake-como',
     city: 'Lake Como',
@@ -210,7 +212,7 @@ export const DESTINATIONS = [
       { name: 'Sagrada Família', aliases: ['sagrada familia'], lat: 41.4036, lng: 2.1744 },
       { name: 'Las Ramblas', aliases: ['la rambla', 'ramblas'], lat: 41.3809, lng: 2.1734 },
       { name: 'Park Güell', aliases: ['park guell'], lat: 41.4145, lng: 2.1527 },
-      { name: 'Barceloneta Beach', aliases: ['barceloneta', 'the beach'], lat: 41.3784, lng: 2.1925 },
+      { name: 'Barceloneta Beach', aliases: ['barceloneta'], lat: 41.3784, lng: 2.1925 },
       { name: 'Gothic Quarter', aliases: ['barri gotic'], lat: 41.3833, lng: 2.1767 },
     ],
     hotels: [
@@ -337,6 +339,9 @@ export const DESTINATIONS = [
     ],
   },
 ]
+
+// The world set lives in its own file purely to keep this one readable.
+export const DESTINATIONS = [...CORE, ...makeWorld(h)]
 
 export const HOTELS = DESTINATIONS.flatMap((d) =>
   d.hotels.map((hotel) => ({
