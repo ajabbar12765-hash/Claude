@@ -55,6 +55,84 @@ yourself. Six sort modes; the default puts affordable stays first.
 Google Hotels, Expedia, Hotels.com and Trivago, built from the hotel name, city
 and your selected dates and occupancy. The app never handles payment.
 
+## Deploying to Vercel
+
+The repo is deploy-ready: `vercel.json` pins the framework, build command and
+output directory, and `api/hotels.js` is picked up automatically as a
+serverless function.
+
+1. Go to [vercel.com/new](https://vercel.com/new) and import
+   `ajabbar12765-hash/Claude`.
+2. Set **Root Directory** to `hotel-radar`. This is the only setting that
+   matters — the repo holds several apps, and Vercel needs to know which one.
+3. Deploy. Every push to the branch redeploys automatically from then on.
+
+Framework preset, build command (`npm run build`) and output directory
+(`dist`) are all read from `vercel.json`, so leave them on auto-detect.
+
+### Environment variables
+
+Set these in Vercel → Settings → Environment Variables, then redeploy. They
+are read by `api/hotels.js` on the server and never reach the browser.
+
+| Variable | Needed for |
+|---|---|
+| `TRAVELPAYOUTS_TOKEN` | live prices via Travelpayouts / Hotellook |
+| `TRAVELPAYOUTS_MARKER` | your partner marker, for commission on bookings |
+| `AMADEUS_KEY` / `AMADEUS_SECRET` | the Amadeus provider |
+
+Without any of them the app runs on the built-in engine, which is the default.
+
+## Getting an API key for free
+
+Only you can do this part — the signups are tied to your identity, and none of
+them issue keys programmatically.
+
+**Travelpayouts / Hotellook — the one to start with.** Free to join, no fees,
+and no minimum traffic requirement, which is the usual blocker. Real live
+prices, and you earn commission if anyone books through your links.
+
+1. Sign up at [travelpayouts.com](https://www.travelpayouts.com/en/offers/hotellook-affiliate-program)
+2. Join the Hotellook programme
+3. Request API access from the dashboard — it is granted free on request
+4. Copy your API token and partner marker into the Vercel environment
+   variables above
+5. In the app: Settings → Data source → **Travelpayouts / Hotellook (live)**
+
+**Amadeus Self-Service — instant key, but test data.** Free, no credit card,
+key in about five minutes at [developers.amadeus.com](https://developers.amadeus.com).
+Worth knowing before you invest time: the free test environment returns
+*cached, limited* data, not live market prices. Good for proving the
+integration works; it will not actually find you a deal. Live data needs a
+commercial agreement.
+
+**Booking.com Demand API — official, slower.** No minimum booking volume and
+no advance payment, but you submit a website URL and traffic details and then
+present your integration for approval, typically 1–5 business days. Apply at
+[developers.booking.com/demand](https://developers.booking.com/demand) once
+this app is deployed and you have a URL to point at.
+
+### On scraping
+
+Pulling prices straight off TripAdvisor, Booking.com or Expedia is not a
+route worth building on. All three run bot detection that blocks datacentre
+IPs — a Vercel function would be blocked almost immediately — the page markup
+changes without notice, and it is against their terms of service. That is why
+the proxy is built around APIs instead.
+
+### Not burning the free tier
+
+A 30-second scan loop is ~2,880 scans a day, which would exhaust any free tier
+within the hour. Two things prevent that:
+
+- The live provider scans at most **3 destinations per pass**, chosen from
+  your active city chips or the place named in the filter box.
+- `api/hotels.js` caches every upstream response for **4 minutes** in-instance
+  and at the CDN, so several open tabs share one request.
+
+Set scan frequency to 5 or 15 minutes in Settings and a free tier lasts
+comfortably.
+
 ## Where the prices come from
 
 The default data source is the built-in engine. It runs over a catalogue of
@@ -105,15 +183,21 @@ src/
     filters.js               filter evaluation, scoring, sorting
     alerts.js                which deals are worth a message
     provider.js              provider registry + fallback
-    providers/simulated.js   built-in deal engine
-    providers/amadeus.js     live API adapter
+    providers/simulated.js     built-in deal engine
+    providers/travelpayouts.js live prices via the proxy
+    providers/amadeus.js       live API adapter
+  nlq.test.mjs               62-case filter-box test suite
     deeplinks.js             outbound booking URLs
     notify.js                browser notifications, chime
     storage.js  format.js
   components/
     TopBar  FilterPanel  DealGrid  DealCard  AlertsDrawer
     SettingsModal  Toasts
+api/
+  hotels.js                  serverless price proxy (keys stay server-side)
 ```
+
+Run the filter-box tests with `node src/lib/nlq.test.mjs`.
 
 Filters, budget, dates, alerts, saved deals and settings all persist to
 `localStorage`. There is no backend and no account.
