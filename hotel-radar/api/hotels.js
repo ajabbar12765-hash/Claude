@@ -41,35 +41,63 @@ async function travelpayouts({ location, checkIn, checkOut, adults }) {
   const marker = process.env.TRAVELPAYOUTS_MARKER || ''
   if (!token) throw new Error('TRAVELPAYOUTS_TOKEN is not set on the server')
 
-  const params = new URLSearchParams({
-    location,
-    currency: 'EUR',
-    limit: '60',
-    token,
-  })
-  if (checkIn) params.set('checkIn', checkIn)
-  if (checkOut) params.set('checkOut', checkOut)
-  if (adults) params.set('adults', String(adults))
+  // The documented cache.json endpoint returned 404 in production and this
+  // environment cannot reach Hotellook to find out why. Rather than pin one
+  // guess, try the known request shapes in order and keep the first that
+  // answers with usable JSON. If they all fail the thrown error lists what
+  // each one did, so the cause is visible from the Test connection button
+  // instead of needing another deploy to investigate.
+  const city = String(location || '').split(',')[0].trim()
 
-  const res = await fetch(`https://engine.hotellook.com/api/v2/cache.json?${params}`)
-  if (!res.ok) throw new Error(`Hotellook responded ${res.status}`)
-  const json = await res.json()
+  const base = { currency: 'EUR', limit: '60', token }
+  if (adults) base.adults = String(adults)
+  const dated = { ...base }
+  if (checkIn) dated.checkIn = checkIn
+  if (checkOut) dated.checkOut = checkOut
 
-  return (Array.isArray(json) ? json : []).map((row) => ({
-    name: row.hotelName,
-    stars: row.stars ?? null,
-    rating: typeof row.rating === 'number' ? row.rating / 10 : null,
-    lat: row.location?.geo?.lat ?? null,
-    lng: row.location?.geo?.lon ?? null,
-    // Hotellook aggregates several booking sites per hotel:
-    //   priceFrom = the cheapest rate it found anywhere
-    //   priceAvg  = the average across those sites
-    // A deal finder wants the cheapest as the headline and the average as
-    // the "was" figure, so the saving reflects beating the typical rate.
-    nightly: row.priceFrom != null ? Math.round(row.priceFrom) : null,
-    reference: row.priceAvg != null ? Math.round(row.priceAvg) : null,
-    marker,
-  }))
+  const candidates = [
+    { label: 'cache.json city+dates', url: `https://engine.hotellook.com/api/v2/cache.json?${new URLSearchParams({ ...dated, location: city })}` },
+    { label: 'cache.json city only', url: `https://engine.hotellook.com/api/v2/cache.json?${new URLSearchParams({ ...base, location: city })}` },
+    { label: 'cache.json full location', url: `https://engine.hotellook.com/api/v2/cache.json?${new URLSearchParams({ ...dated, location })}` },
+    { label: 'cache.json no token', url: `https://engine.hotellook.com/api/v2/cache.json?${new URLSearchParams({ currency: 'EUR', limit: '60', location: city })}` },
+    { label: 'http cache.json', url: `http://engine.hotellook.com/api/v2/cache.json?${new URLSearchParams({ ...dated, location: city })}` },
+  ]
+
+  const attempts = []
+  for (const c of candidates) {
+    try {
+      const res = await fetch(c.url, { headers: { Accept: 'application/json' } })
+      if (!res.ok) {
+        attempts.push(`${c.label}: HTTP ${res.status}`)
+        continue
+      }
+      const json = await res.json().catch(() => null)
+      const rows = Array.isArray(json) ? json : json?.results || []
+      if (!rows.length) {
+        attempts.push(`${c.label}: 200 but no rows`)
+        continue
+      }
+
+      return rows.map((row) => ({
+        name: row.hotelName ?? row.name ?? null,
+        stars: row.stars ?? null,
+        rating: typeof row.rating === 'number' ? row.rating / 10 : null,
+        lat: row.location?.geo?.lat ?? null,
+        lng: row.location?.geo?.lon ?? null,
+        // priceFrom is the cheapest rate Hotellook found across the booking
+        // sites it checks; priceAvg is the average. A deal finder wants the
+        // cheapest as the headline and the average as the "was" figure.
+        nightly: row.priceFrom != null ? Math.round(row.priceFrom) : null,
+        reference: row.priceAvg != null ? Math.round(row.priceAvg) : null,
+        marker,
+        via: c.label,
+      }))
+    } catch (err) {
+      attempts.push(`${c.label}: ${String(err).slice(0, 80)}`)
+    }
+  }
+
+  throw new Error(`Hotellook returned nothing usable. Tried — ${attempts.join(' | ')}`)
 }
 
 let amadeusToken = null
