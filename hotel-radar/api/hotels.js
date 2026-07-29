@@ -251,7 +251,189 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
   })
 }
 
-const PROVIDERS = { travelpayouts, amadeus, rapidapi }
+// ------------------------------------------------------------------- multi
+//
+// Queries several licensed hotel APIs at once and merges them, so a hotel
+// carries a price from each site that quoted it and the cheapest wins. This
+// is the multi-site comparison done through sanctioned APIs; scraping the
+// same sites is not an alternative, since they refuse datacentre traffic and
+// their terms forbid it.
+//
+// Each source is optional. Whatever has a key configured is used, and a
+// source that fails is reported without sinking the others.
+//
+//   RAPIDAPI_KEY        booking-com15 and tripadvisor16 on RapidAPI
+//   MAKCORPS_API_KEY    api.makcorps.com, itself a multi-vendor comparator
+
+async function fromTripadvisor({ location, checkIn, checkOut, adults, rooms }) {
+  const key = process.env.RAPIDAPI_KEY
+  if (!key) return { site: 'Tripadvisor', skipped: 'RAPIDAPI_KEY not set', rows: [] }
+  const host = 'tripadvisor16.p.rapidapi.com'
+  const headers = { 'x-rapidapi-key': key, 'x-rapidapi-host': host, Accept: 'application/json' }
+  const city = String(location || '').split(',')[0].trim()
+
+  const geoRes = await fetch(
+    `https://${host}/api/v1/hotels/searchLocation?${new URLSearchParams({ query: city })}`,
+    { headers }
+  )
+  if (!geoRes.ok) return { site: 'Tripadvisor', error: `location lookup ${geoRes.status}`, rows: [] }
+  const geoJson = await geoRes.json()
+  const geoId = geoJson?.data?.[0]?.geoId
+  if (!geoId) return { site: 'Tripadvisor', error: `no geoId for ${city}`, rows: [] }
+
+  const params = new URLSearchParams({
+    geoId: String(geoId),
+    pageNumber: '1',
+    currencyCode: 'EUR',
+    adults: String(adults || 2),
+    rooms: String(rooms || 1),
+  })
+  if (checkIn) params.set('checkIn', checkIn)
+  if (checkOut) params.set('checkOut', checkOut)
+
+  const res = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, { headers })
+  if (!res.ok) return { site: 'Tripadvisor', error: `search ${res.status}`, rows: [] }
+  const json = await res.json()
+
+  const rows = (json?.data?.data || []).flatMap((r) => {
+    const raw = r.priceForDisplay || r.price || ''
+    const amount = Number(String(raw).replace(/[^0-9.]/g, ''))
+    if (!amount) return []
+    return [{
+      name: r.title ? String(r.title).replace(/^\d+\.\s*/, '') : null,
+      stars: null,
+      rating: typeof r.bubbleRating?.rating === 'number' ? r.bubbleRating.rating * 2 : null,
+      lat: null,
+      lng: null,
+      nightly: Math.round(amount),
+    }]
+  })
+  return { site: 'Tripadvisor', rows }
+}
+
+async function fromMakcorps({ location, checkIn, checkOut, adults, rooms }) {
+  const key = process.env.MAKCORPS_API_KEY
+  if (!key) return { site: 'Makcorps', skipped: 'MAKCORPS_API_KEY not set', rows: [] }
+  const city = String(location || '').split(',')[0].trim()
+
+  const mapRes = await fetch(
+    `https://api.makcorps.com/mapping?${new URLSearchParams({ api_key: key, name: city })}`
+  )
+  if (!mapRes.ok) return { site: 'Makcorps', error: `mapping ${mapRes.status}`, rows: [] }
+  const mapJson = await mapRes.json()
+  const cityId = Array.isArray(mapJson) ? mapJson[0]?.document_id : mapJson?.document_id
+  if (!cityId) return { site: 'Makcorps', error: `no id for ${city}`, rows: [] }
+
+  const params = new URLSearchParams({
+    api_key: key, cityid: String(cityId), pagination: '0',
+    cur: 'EUR', rooms: String(rooms || 1), adults: String(adults || 2),
+  })
+  if (checkIn) params.set('checkin', checkIn)
+  if (checkOut) params.set('checkout', checkOut)
+
+  const res = await fetch(`https://api.makcorps.com/city?${params}`)
+  if (!res.ok) return { site: 'Makcorps', error: `city ${res.status}`, rows: [] }
+  const json = await res.json()
+
+  // Makcorps returns one entry per hotel holding several vendor quotes, which
+  // is precisely the multi-site comparison wanted — keep every vendor.
+  const rows = []
+  for (const entry of Array.isArray(json) ? json : []) {
+    const fields = Array.isArray(entry) ? entry : [entry]
+    const nameField = fields.find((f) => f && f.name)
+    if (!nameField) continue
+    for (const f of fields) {
+      for (let i = 1; i <= 4; i++) {
+        const vendor = f?.[`vendor${i}`]
+        const price = f?.[`price${i}`]
+        const amount = Number(String(price ?? '').replace(/[^0-9.]/g, ''))
+        if (vendor && amount) {
+          rows.push({ name: nameField.name, vendor, nightly: Math.round(amount), stars: null, rating: null, lat: null, lng: null })
+        }
+      }
+    }
+  }
+  return { site: 'Makcorps', rows }
+}
+
+async function fromBooking(args) {
+  try {
+    const rows = await rapidapi(args)
+    const nights = 1
+    return {
+      site: 'Booking.com',
+      rows: rows.map((r) => ({ ...r, nightly: r.total != null ? Math.round(r.total / nights) : null })),
+    }
+  } catch (err) {
+    return { site: 'Booking.com', error: String(err.message || err).slice(0, 120), rows: [] }
+  }
+}
+
+function mergeKey(name) {
+  return String(name || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\b(hotel|the|resort|and|spa|by|a|of)\b/g, '')
+    .replace(/[^a-z0-9]+/g, '')
+    .slice(0, 28)
+}
+
+async function multi(args) {
+  const settled = await Promise.allSettled([
+    fromBooking(args),
+    fromTripadvisor(args),
+    fromMakcorps(args),
+  ])
+  const sources = settled.map((s) =>
+    s.status === 'fulfilled' ? s.value : { site: 'unknown', error: String(s.reason).slice(0, 100), rows: [] }
+  )
+
+  const merged = new Map()
+  for (const src of sources) {
+    for (const row of src.rows) {
+      const key = mergeKey(row.name)
+      if (!key || row.nightly == null) continue
+      const existing = merged.get(key)
+      const quote = { site: row.vendor || src.site, nightly: row.nightly }
+      if (existing) {
+        if (!existing.quotes.some((q) => q.site === quote.site)) existing.quotes.push(quote)
+        existing.stars = existing.stars ?? row.stars
+        existing.rating = existing.rating ?? row.rating
+        existing.lat = existing.lat ?? row.lat
+        existing.lng = existing.lng ?? row.lng
+      } else {
+        merged.set(key, {
+          name: row.name, stars: row.stars, rating: row.rating,
+          lat: row.lat, lng: row.lng, quotes: [quote],
+        })
+      }
+    }
+  }
+
+  const offers = [...merged.values()].map((m) => {
+    const cheapest = m.quotes.reduce((a, b) => (b.nightly < a.nightly ? b : a))
+    const dearest = m.quotes.reduce((a, b) => (b.nightly > a.nightly ? b : a))
+    return {
+      ...m,
+      nightly: cheapest.nightly,
+      reference: dearest.nightly,
+      cheapestSite: cheapest.site,
+      siteCount: m.quotes.length,
+      quotes: m.quotes.sort((a, b) => a.nightly - b.nightly),
+    }
+  })
+
+  if (!offers.length) {
+    const why = sources
+      .map((s) => `${s.site}: ${s.skipped || s.error || `${s.rows.length} rows`}`)
+      .join(' | ')
+    throw new Error(`No source returned prices. ${why}`)
+  }
+  return offers
+}
+
+const PROVIDERS = { travelpayouts, amadeus, rapidapi, multi }
 
 // ------------------------------------------------------------------ handler
 

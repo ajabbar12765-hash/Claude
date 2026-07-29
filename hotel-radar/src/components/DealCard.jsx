@@ -141,7 +141,12 @@ export default function DealCard({ deal, trip, money, saved, onToggleSave, rank 
             <span className="price__total">
               {money(deal.total)} total · {deal.nights} night{deal.nights === 1 ? '' : 's'}
             </span>
-            {deal.aggregated && (
+            {deal.quotes?.length > 1 && (
+              <span className="price__source">
+                cheapest of {deal.siteCount} sites · {deal.cheapestSite}
+              </span>
+            )}
+            {deal.aggregated && !deal.quotes?.length && (
               <span className="price__source" title="Cheapest rate found across the booking sites this provider checks">
                 lowest across booking sites
               </span>
@@ -176,6 +181,19 @@ export default function DealCard({ deal, trip, money, saved, onToggleSave, rank 
 
         {linksOpen && (
           <div className="card__links">
+            {deal.quotes?.length > 0 && (
+              <>
+                <span className="card__linksLead">What each site quoted</span>
+                <ul className="quotes">
+                  {deal.quotes.map((q) => (
+                    <li key={q.site} className={q.site === deal.cheapestSite ? 'is-best' : ''}>
+                      <span>{q.site}</span>
+                      <span>{money(q.nightly)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
             <span className="card__linksLead">Compare live prices</span>
             <div className="card__linkRow">
               {PROVIDERS.filter((p) => !p.primary).map((p) => (

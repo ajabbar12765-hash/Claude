@@ -77,7 +77,8 @@ are read by `api/hotels.js` on the server and never reach the browser.
 
 | Variable | Needed for |
 |---|---|
-| `RAPIDAPI_KEY` | live Booking.com prices via RapidAPI (recommended) |
+| `RAPIDAPI_KEY` | Booking.com and Tripadvisor, via RapidAPI |
+| `MAKCORPS_API_KEY` | a further multi-vendor price comparison |
 | `TRAVELPAYOUTS_TOKEN` | live prices via Travelpayouts / Hotellook |
 | `GEMINI_API_KEY` | smarter filter-box parsing (free key, see below) |
 | `TRAVELPAYOUTS_MARKER` | your partner marker, for commission on bookings |
@@ -89,6 +90,23 @@ Without any of them the app runs on the built-in engine, which is the default.
 Environment variables only take effect on a **new build**, so redeploy after
 adding them. Settings → Data source → **Test live connection** exercises the
 whole chain and reports the exact upstream error if something is wrong.
+
+## Comparing several sites
+
+The **Compare multiple sites** provider queries every licensed hotel API that
+has a key configured, merges the results by hotel, and keeps one quote per
+site. The cheapest becomes the headline price; the card shows what each site
+wanted and highlights the winner.
+
+| Source | Key | Covers |
+|---|---|---|
+| Booking.com | `RAPIDAPI_KEY` | Booking.com inventory |
+| Tripadvisor | `RAPIDAPI_KEY` | its own aggregated rates |
+| Makcorps | `MAKCORPS_API_KEY` | several OTAs per hotel |
+
+Any one key is enough to begin; each one added widens the comparison. A source
+without a key is skipped, and a source that fails is reported without sinking
+the others.
 
 ## Getting an API key for free
 
