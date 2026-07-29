@@ -4,7 +4,10 @@
 // can be installed, and make a tapped deal notification open the booking link.
 // Deal data is never cached — prices must always come from a live scan.
 
-const CACHE = 'hotel-radar-v1'
+// Bumping this purges every earlier cache on activate. It must change when
+// the cached shell changes, otherwise old entries survive forever — the
+// cleanup in `activate` only deletes caches whose name differs from this one.
+const CACHE = 'hotel-radar-v2'
 const SHELL = ['./', './index.html', './icon.svg', './manifest.webmanifest']
 
 self.addEventListener('install', (event) => {
