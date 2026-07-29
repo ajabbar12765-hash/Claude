@@ -1,21 +1,42 @@
 // Money, dates and small display helpers.
 
-// Base currency for the catalog is EUR. These are display conversions only.
+// Base currency for the catalog is EUR. These are display conversions at a
+// fixed reference rate, not a live FX feed — the booking site charges in its
+// own currency and its number is the one that counts.
 export const CURRENCIES = {
-  EUR: { symbol: '€', rate: 1, locale: 'de-DE' },
-  USD: { symbol: '$', rate: 1.08, locale: 'en-US' },
-  GBP: { symbol: '£', rate: 0.85, locale: 'en-GB' },
-  CHF: { symbol: 'CHF ', rate: 0.94, locale: 'de-CH' },
-  AED: { symbol: 'AED ', rate: 3.97, locale: 'en-AE' },
+  EUR: { symbol: '€', rate: 1, locale: 'de-DE', name: 'Euro' },
+  USD: { symbol: '$', rate: 1.08, locale: 'en-US', name: 'US Dollar' },
+  PKR: { symbol: '₨ ', rate: 302, locale: 'en-PK', name: 'Pakistani Rupee' },
+  AED: { symbol: 'AED ', rate: 3.97, locale: 'en-AE', name: 'UAE Dirham' },
+  GBP: { symbol: '£', rate: 0.85, locale: 'en-GB', name: 'Pound Sterling' },
+  CHF: { symbol: 'CHF ', rate: 0.94, locale: 'de-CH', name: 'Swiss Franc' },
 }
 
 export function convert(eur, currency) {
   return eur * (CURRENCIES[currency]?.rate ?? 1)
 }
 
-export function money(eur, currency = 'EUR', { decimals = 0 } = {}) {
+/**
+ * Format a EUR amount for display.
+ *
+ * High-magnitude currencies such as PKR turn a nightly rate into six or seven
+ * digits, which overflows the price and budget readouts. Anything at or above
+ * 10,000 units is shown compactly (₨76K) unless `exact` is asked for.
+ */
+export function money(eur, currency = 'EUR', { decimals = 0, exact = false } = {}) {
   const c = CURRENCIES[currency] ?? CURRENCIES.EUR
   const value = convert(eur, currency)
+
+  if (!exact && Math.abs(value) >= 10000) {
+    return (
+      c.symbol +
+      value.toLocaleString(c.locale, {
+        notation: 'compact',
+        maximumFractionDigits: 1,
+      })
+    )
+  }
+
   return (
     c.symbol +
     value.toLocaleString(c.locale, {

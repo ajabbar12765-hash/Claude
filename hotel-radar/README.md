@@ -78,8 +78,10 @@ are read by `api/hotels.js` on the server and never reach the browser.
 | Variable | Needed for |
 |---|---|
 | `TRAVELPAYOUTS_TOKEN` | live prices via Travelpayouts / Hotellook |
+| `GEMINI_API_KEY` | smarter filter-box parsing (free key, see below) |
 | `TRAVELPAYOUTS_MARKER` | your partner marker, for commission on bookings |
 | `AMADEUS_KEY` / `AMADEUS_SECRET` | the Amadeus provider |
+| `GEMINI_MODEL` | optional, defaults to `gemini-2.5-flash` |
 
 Without any of them the app runs on the built-in engine, which is the default.
 
@@ -132,6 +134,36 @@ within the hour. Two things prevent that:
 
 Set scan frequency to 5 or 15 minutes in Settings and a free tier lasts
 comfortably.
+
+## Smarter filter parsing with Gemini
+
+The built-in parser is regex over a fixed vocabulary. It handles the common
+shapes well — 62 cases are covered by `src/lib/nlq.test.mjs` — but it cannot
+read a phrase it has no pattern for: *"somewhere romantic on the water that
+won't break the bank"* means nothing to it.
+
+Adding a Gemini key turns that phrase into `adultsonly` + `lakeview` +
+`maxPrice 120`.
+
+1. Get a free key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+2. Add `GEMINI_API_KEY` in Vercel → Settings → Environment Variables
+3. Redeploy
+
+An **AI** badge appears next to "Reading that as" when Gemini did the reading.
+
+**How it stays trustworthy.** The model is handed the app's exact vocabulary —
+every city, landmark and amenity id — and may only return names from those
+lists. All coordinates, distances and matching still happen locally against
+the catalogue, so the model cannot invent a hotel, a price or a place. A name
+that fails to resolve produces a note rather than a silent wrong answer.
+
+**How it stays cheap.** It fires 550 ms after you stop typing, not per
+keystroke, and identical phrases are cached for 30 minutes server-side. If the
+key is missing the endpoint says so once and the client stops asking for the
+rest of the session — no key means no requests, not failed requests.
+
+Everything degrades to the built-in parser: no key, no network, a timeout, or
+a malformed reply all fall back silently. The app never blocks on it.
 
 ## Where the prices come from
 
@@ -186,6 +218,7 @@ src/
     providers/simulated.js     built-in deal engine
     providers/travelpayouts.js live prices via the proxy
     providers/amadeus.js       live API adapter
+smartParse.js              Gemini parsing client, falls back to nlq.js
   nlq.test.mjs               62-case filter-box test suite
     deeplinks.js             outbound booking URLs
     notify.js                browser notifications, chime
@@ -195,6 +228,7 @@ src/
     SettingsModal  Toasts
 api/
   hotels.js                  serverless price proxy (keys stay server-side)
+  parse.js                   Gemini filter parsing (key stays server-side)
 ```
 
 Run the filter-box tests with `node src/lib/nlq.test.mjs`.
@@ -208,5 +242,6 @@ Filters, budget, dates, alerts, saved deals and settings all persist to
   (it is a PWA) to keep it one tap away.
 - Notification permission is only requested from a button press — browsers
   block automatic prompts permanently.
-- Prices are held in EUR and converted for display at a fixed reference rate.
+- Prices are held in EUR and shown in EUR, USD, PKR, AED, GBP or CHF at a
+  fixed reference rate. High-magnitude currencies are abbreviated (₨ 76K).
 - Works in light and dark, down to 390px wide.

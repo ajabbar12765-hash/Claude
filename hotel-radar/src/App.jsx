@@ -14,6 +14,7 @@ import { bookingLinks } from './lib/deeplinks.js'
 import { money as fmtMoney, toISODate, addDays } from './lib/format.js'
 import * as notify from './lib/notify.js'
 import { load, save } from './lib/storage.js'
+import { smartParse, smartAvailability } from './lib/smartParse.js'
 
 const SCAN_INTERVALS = [
   { id: 15, label: 'Every 15s' },
@@ -54,6 +55,8 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [toasts, setToasts] = useState([])
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [smartParsed, setSmartParsed] = useState(null)
+  const [smartBusy, setSmartBusy] = useState(false)
 
   // Alert memory is a ref: it must not trigger a re-render or a re-scan.
   const seenRef = useRef(load('seen', {}))
@@ -76,7 +79,10 @@ export default function App() {
   }, [settings.theme])
 
   // ---- derived deals ----------------------------------------------------
-  const { deals, resolved } = useMemo(() => buildDeals(offers, filters), [offers, filters])
+  const { deals, resolved } = useMemo(
+    () => buildDeals(offers, filters, smartParsed),
+    [offers, filters, smartParsed]
+  )
 
   const inBudget = useMemo(() => deals.filter((d) => d.withinBudget), [deals])
   const unread = useMemo(() => alerts.filter((a) => !a.read).length, [alerts])
@@ -172,13 +178,48 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deals])
 
+  // ---- smart parsing ----------------------------------------------------
+  // The built-in parser runs instantly on every keystroke; this asks Gemini
+  // for a better reading a beat later. If no key is configured the endpoint
+  // says so once and this stops firing.
+  useEffect(() => {
+    const query = filters.query.trim()
+    if (!query || smartAvailability() === 'no') {
+      setSmartParsed(null)
+      setSmartBusy(false)
+      return
+    }
+
+    let cancelled = false
+    setSmartBusy(true)
+    const timer = setTimeout(async () => {
+      const parsed = await smartParse(query, { currency: settings.currency })
+      if (cancelled) return
+      setSmartBusy(false)
+      if (parsed) {
+        setSmartParsed(parsed)
+        // A better reading is a different search, so let it alert afresh
+        // rather than inheriting the memory from the rough parse.
+        resetAlertMemoryRef.current?.()
+      }
+    }, 550)
+
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+      setSmartBusy(false)
+    }
+  }, [filters.query, settings.currency])
+
   // Reset the alert memory when the search itself changes — a new budget or
   // new destination is a new question, and should be allowed to alert afresh.
+  const resetAlertMemoryRef = useRef(null)
   const resetAlertMemory = useCallback(() => {
     seenRef.current = {}
     save('seen', {})
     firstScanRef.current = true
   }, [])
+  resetAlertMemoryRef.current = resetAlertMemory
 
   const updateFilters = useCallback(
     (patch) => {
@@ -257,6 +298,8 @@ export default function App() {
           dealCount={deals.length}
           matchCount={inBudget.length}
           notificationState={notify.permission()}
+          smartBusy={smartBusy}
+          smartActive={Boolean(smartParsed) && smartParsed.raw === filters.query}
           onEnableNotifications={enableNotifications}
           onChange={updateFilters}
           onTripChange={setTrip}
