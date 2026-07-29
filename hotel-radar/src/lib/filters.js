@@ -30,8 +30,14 @@ export const DEFAULT_FILTERS = {
  * Explicit controls win where they conflict, except that the text box can
  * only tighten the budget, never loosen it past the slider.
  */
-export function resolveFilters(filters) {
-  const parsed = parseQuery(filters.query)
+export function resolveFilters(filters, parsedOverride) {
+  // Smart parsing is async and arrives a beat after the keystroke. Only use
+  // it when it belongs to the query currently in the box, so a stale result
+  // can never filter against text the user has already changed.
+  const parsed =
+    parsedOverride && parsedOverride.raw === filters.query
+      ? parsedOverride
+      : parseQuery(filters.query)
   // The star chips are an exact set; a typed "4 star" reads as 4 and up.
   const stars = filters.stars.length
     ? filters.stars
@@ -61,8 +67,8 @@ function keywordHit(hotel, keywords) {
 /**
  * @returns {Array} deals: offer + hotel + derived fields, filtered and sorted
  */
-export function buildDeals(offers, filters) {
-  const f = resolveFilters(filters)
+export function buildDeals(offers, filters, parsedOverride) {
+  const f = resolveFilters(filters, parsedOverride)
   const { parsed } = f
 
   const deals = []

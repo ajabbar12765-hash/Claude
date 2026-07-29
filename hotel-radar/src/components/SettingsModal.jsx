@@ -115,14 +115,16 @@ export default function SettingsModal({
               value={settings.currency}
               onChange={(e) => onChange({ currency: e.target.value })}
             >
-              {Object.keys(CURRENCIES).map((c) => (
-                <option key={c} value={c}>
-                  {c}
+              {Object.entries(CURRENCIES).map(([code, c]) => (
+                <option key={code} value={code}>
+                  {code} — {c.name}
                 </option>
               ))}
             </select>
             <p className="field__hint">
-              Rates are held in EUR and converted for display at a fixed reference rate.
+              Rates are held in EUR and converted at a fixed reference rate, so treat the
+              figure as a guide. The booking site charges in its own currency and its number
+              is the one that counts.
             </p>
           </section>
 

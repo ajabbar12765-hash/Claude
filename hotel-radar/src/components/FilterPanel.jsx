@@ -22,6 +22,8 @@ export default function FilterPanel({
   dealCount,
   matchCount,
   notificationState,
+  smartBusy,
+  smartActive,
   onEnableNotifications,
   onChange,
   onTripChange,
@@ -107,7 +109,11 @@ export default function FilterPanel({
 
           {chips.length > 0 && (
             <div className="parsed">
-              <span className="parsed__lead">Reading that as</span>
+              <span className="parsed__lead">
+                Reading that as
+                {smartActive && <span className="parsed__smart" title="Interpreted by Gemini">AI</span>}
+                {smartBusy && !smartActive && <span className="parsed__busy">thinking…</span>}
+              </span>
               <div className="parsed__chips">
                 {chips.map((c) => (
                   <span className="chip chip--parsed" key={c.key}>
