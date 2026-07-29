@@ -170,7 +170,88 @@ async function amadeus({ cityCode, checkIn, checkOut, adults, rooms }) {
   })
 }
 
-const PROVIDERS = { travelpayouts, amadeus }
+// ---------------------------------------------------------------- RapidAPI
+//
+// RapidAPI resells Booking.com inventory as a licensed API product, which is
+// the sanctioned way to get those prices. Scraping the site would be neither
+// legal under its terms nor workable — it blocks datacentre traffic, which is
+// exactly what a serverless function is.
+//
+// Free tier, no card. Subscribe at rapidapi.com/DataCrawler/api/booking-com15
+// then set RAPIDAPI_KEY in Vercel. RAPIDAPI_HOST can override the host if you
+// subscribe to a different Booking.com API on the same platform.
+async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
+  const key = process.env.RAPIDAPI_KEY
+  const host = process.env.RAPIDAPI_HOST || 'booking-com15.p.rapidapi.com'
+  if (!key) throw new Error('RAPIDAPI_KEY is not set on the server')
+
+  const headers = { 'x-rapidapi-key': key, 'x-rapidapi-host': host, Accept: 'application/json' }
+  const city = String(location || '').split(',')[0].trim()
+
+  // Step 1: turn the place name into the destination id the search needs.
+  const destRes = await fetch(
+    `https://${host}/api/v1/hotels/searchDestination?${new URLSearchParams({ query: city })}`,
+    { headers }
+  )
+  if (!destRes.ok) {
+    throw new Error(
+      destRes.status === 403
+        ? 'RapidAPI rejected the key (403). Check the key is correct and that you are subscribed to this API.'
+        : `RapidAPI destination lookup returned ${destRes.status}`
+    )
+  }
+  const destJson = await destRes.json()
+  const dest = (destJson?.data || []).find((d) => d.dest_id) || destJson?.data?.[0]
+  if (!dest?.dest_id) throw new Error(`RapidAPI could not resolve "${city}" to a destination`)
+
+  // Step 2: the actual price search.
+  const params = new URLSearchParams({
+    dest_id: String(dest.dest_id),
+    search_type: dest.search_type || 'CITY',
+    adults: String(adults || 2),
+    room_qty: String(rooms || 1),
+    currency_code: 'EUR',
+    page_number: '1',
+  })
+  if (checkIn) params.set('arrival_date', checkIn)
+  if (checkOut) params.set('departure_date', checkOut)
+
+  const res = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, { headers })
+  if (!res.ok) throw new Error(`RapidAPI hotel search returned ${res.status}`)
+  const json = await res.json()
+
+  const rows = json?.data?.hotels || json?.data?.result || []
+  if (!rows.length) throw new Error(`RapidAPI returned no hotels for ${city} on these dates`)
+
+  return rows.flatMap((row) => {
+    const p = row.property || row
+    // Gross price is what the guest actually pays, so prefer it.
+    const total =
+      p.priceBreakdown?.grossPrice?.value ??
+      p.priceBreakdown?.allInclusivePrice?.value ??
+      p.composite_price_breakdown?.gross_amount?.value ??
+      null
+    if (total == null) return []
+
+    const strike =
+      p.priceBreakdown?.strikethroughPrice?.value ??
+      p.composite_price_breakdown?.strikethrough_amount?.value ??
+      null
+
+    return [{
+      name: p.name ?? row.hotel_name ?? null,
+      stars: p.propertyClass ?? p.class ?? null,
+      rating: typeof p.reviewScore === 'number' ? p.reviewScore : null,
+      lat: p.latitude ?? row.latitude ?? null,
+      lng: p.longitude ?? row.longitude ?? null,
+      total: Math.round(total),
+      strike: strike != null ? Math.round(strike) : null,
+      via: 'rapidapi/booking',
+    }]
+  })
+}
+
+const PROVIDERS = { travelpayouts, amadeus, rapidapi }
 
 // ------------------------------------------------------------------ handler
 

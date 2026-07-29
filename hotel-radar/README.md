@@ -77,6 +77,7 @@ are read by `api/hotels.js` on the server and never reach the browser.
 
 | Variable | Needed for |
 |---|---|
+| `RAPIDAPI_KEY` | live Booking.com prices via RapidAPI (recommended) |
 | `TRAVELPAYOUTS_TOKEN` | live prices via Travelpayouts / Hotellook |
 | `GEMINI_API_KEY` | smarter filter-box parsing (free key, see below) |
 | `TRAVELPAYOUTS_MARKER` | your partner marker, for commission on bookings |
@@ -90,6 +91,31 @@ adding them. Settings → Data source → **Test live connection** exercises the
 whole chain and reports the exact upstream error if something is wrong.
 
 ## Getting an API key for free
+
+**Booking.com via RapidAPI — the one that works.** RapidAPI licenses
+Booking.com inventory and resells it as an API product, so the prices are the
+real ones and nothing has to be worked around.
+
+1. Sign up at [rapidapi.com](https://rapidapi.com) — free, no card
+2. Subscribe to [booking-com15](https://rapidapi.com/DataCrawler/api/booking-com15)
+   on its **Basic (free)** plan
+3. Copy the key from the endpoint page (`X-RapidAPI-Key`)
+4. Add `RAPIDAPI_KEY` in Vercel, redeploy
+5. Settings → Data source → **Booking.com via RapidAPI (live)** → Test live
+   connection
+
+This provider is not limited to the catalog. Booking.com knows about far more
+hotels than are listed here, and results it returns that the catalog has never
+seen are shown rather than dropped.
+
+### On scraping Booking.com directly
+
+Not viable, and not only for legal reasons. Booking.com refuses datacentre
+traffic — which is what any server running this app is — so a scraper returns
+404 before it returns a price. That is the same wall the Travelpayouts
+integration hit. The licensed API above is the same data without the problem.
+
+
 
 Only you can do this part — the signups are tied to your identity, and none of
 them issue keys programmatically.
