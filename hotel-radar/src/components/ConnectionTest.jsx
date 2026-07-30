@@ -36,16 +36,21 @@ export default function ConnectionTest({ provider }) {
       const json = await res.json().catch(() => ({}))
 
       if (!res.ok) {
+        const detail = json.error || ''
+        // "Upstream returned 502 / destination lookup returned 429" told the
+        // truth and explained nothing. Running out of free searches is the
+        // ordinary case here, so it gets said in words — and when several
+        // sources were tried, the headline must not name only one of them.
+        const multiSource = /No source returned prices/i.test(detail)
         return setState({
           status: 'error',
-          // "Upstream returned 502 / destination lookup returned 429" told the
-          // truth and explained nothing. Running out of free searches is the
-          // ordinary case here, so it gets said in words.
-          title: /\b429\b|rate limit|quota/i.test(json.error || '')
-            ? 'Out of searches for now'
-            : `Could not reach Booking.com (${res.status})`,
+          title: multiSource
+            ? 'No site could answer — see each one below'
+            : /\b429\b|rate limit|quota/i.test(detail)
+              ? 'Out of searches for now'
+              : `Could not reach the price source (${res.status})`,
           detail:
-            json.error ||
+            detail ||
             'No detail supplied. Check RAPIDAPI_KEY is set in Vercel and the project has been redeployed since.',
         })
       }

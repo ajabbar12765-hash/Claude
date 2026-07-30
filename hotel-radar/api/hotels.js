@@ -626,7 +626,13 @@ export default async function handler(req, res) {
 }
 
 function rateLimited(message) {
-  return /\b429\b|rate limit|quota/i.test(String(message))
+  const text = String(message)
+  // The multi provider reports every source's status in one string. Collapsing
+  // that into a single sentence about Booking.com hides whether the others are
+  // even configured — which, when the whole point is stacking several free
+  // tiers, is the one thing worth knowing.
+  if (/No source returned prices/i.test(text)) return false
+  return /\b429\b|rate limit|quota/i.test(text)
 }
 
 function describeAge(minutes) {
