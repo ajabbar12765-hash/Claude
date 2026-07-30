@@ -30,6 +30,13 @@ import { walkPages, pageBudget } from '../lib/paginate.js'
 // goes on covering the whole city instead of re-reading the first page.
 const CACHE_TTL_MS = Math.max(1, Number(process.env.PRICE_CACHE_MINUTES) || 30) * 60 * 1000
 
+// How long the paged walks may run before they stop starting new rounds, and
+// how long any single upstream page may take. Both sit well inside the
+// function's own limit: overrunning it returns a gateway timeout and no
+// hotels at all, which is far worse than returning fewer of them.
+const WALK_BUDGET_MS = 7000
+const PAGE_TIMEOUT_MS = 5000
+
 // A warm function instance reuses this, which keeps a scan loop from burning
 // through a free-tier quota. Cold starts simply refill it.
 const cache = new Map()
@@ -203,7 +210,7 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
   // Step 1: turn the place name into the destination id the search needs.
   const destRes = await fetch(
     `https://${host}/api/v1/hotels/searchDestination?${new URLSearchParams({ query: city })}`,
-    { headers }
+    { headers, signal: AbortSignal.timeout(PAGE_TIMEOUT_MS) }
   )
   if (!destRes.ok) {
     throw new Error(
@@ -221,6 +228,7 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
   // lib/paginate.js for why the walk is adaptive rather than a fixed count.
   const rows = await walkPages({
     maxPages: pageBudget(process.env.RAPIDAPI_MAX_PAGES, 16, 40),
+    timeBudgetMs: WALK_BUDGET_MS,
     idOf: (row) => row?.hotel_id ?? row?.property?.id ?? row?.property?.name ?? row?.hotel_name,
     fetchPage: async (pageNumber) => {
       const params = new URLSearchParams({
@@ -234,9 +242,14 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
       if (checkIn) params.set('arrival_date', checkIn)
       if (checkOut) params.set('departure_date', checkOut)
 
-      const r = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, { headers })
-      if (!r.ok) return []
-      const j = await r.json()
+      // A single stalled page must not spend the whole walk's budget; a page
+      // that never arrives is simply a page the search does without.
+      const r = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, {
+        headers,
+        signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
+      }).catch(() => null)
+      if (!r?.ok) return []
+      const j = await r.json().catch(() => null)
       return j?.data?.hotels || j?.data?.result || []
     },
   })
@@ -300,7 +313,7 @@ async function fromTripadvisor({ location, checkIn, checkOut, adults, rooms }) {
 
   const geoRes = await fetch(
     `https://${host}/api/v1/hotels/searchLocation?${new URLSearchParams({ query: city })}`,
-    { headers }
+    { headers, signal: AbortSignal.timeout(PAGE_TIMEOUT_MS) }
   )
   if (!geoRes.ok) return { site: 'Tripadvisor', error: `location lookup ${geoRes.status}`, rows: [] }
   const geoJson = await geoRes.json()
@@ -313,6 +326,9 @@ async function fromTripadvisor({ location, checkIn, checkOut, adults, rooms }) {
   let lastStatus = null
   const raw = await walkPages({
     maxPages: pageBudget(process.env.TRIPADVISOR_MAX_PAGES, 8, 20),
+    // Smaller than Booking's: in the multi-site path this runs alongside the
+    // other sources and they share one function invocation.
+    timeBudgetMs: Math.round(WALK_BUDGET_MS * 0.7),
     idOf: (r) => cleanTitle(r?.title),
     fetchPage: async (pageNumber) => {
       const params = new URLSearchParams({
@@ -325,10 +341,13 @@ async function fromTripadvisor({ location, checkIn, checkOut, adults, rooms }) {
       if (checkIn) params.set('checkIn', checkIn)
       if (checkOut) params.set('checkOut', checkOut)
 
-      const res = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, { headers })
-      lastStatus = res.status
-      if (!res.ok) return []
-      const json = await res.json()
+      const res = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, {
+        headers,
+        signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
+      }).catch(() => null)
+      lastStatus = res?.status ?? 'timeout'
+      if (!res?.ok) return []
+      const json = await res.json().catch(() => null)
       return json?.data?.data || []
     },
   })
@@ -358,7 +377,8 @@ async function fromMakcorps({ location, checkIn, checkOut, adults, rooms }) {
   const city = String(location || '').split(',')[0].trim()
 
   const mapRes = await fetch(
-    `https://api.makcorps.com/mapping?${new URLSearchParams({ api_key: key, name: city })}`
+    `https://api.makcorps.com/mapping?${new URLSearchParams({ api_key: key, name: city })}`,
+    { signal: AbortSignal.timeout(PAGE_TIMEOUT_MS) }
   )
   if (!mapRes.ok) return { site: 'Makcorps', error: `mapping ${mapRes.status}`, rows: [] }
   const mapJson = await mapRes.json()
@@ -372,7 +392,9 @@ async function fromMakcorps({ location, checkIn, checkOut, adults, rooms }) {
   if (checkIn) params.set('checkin', checkIn)
   if (checkOut) params.set('checkout', checkOut)
 
-  const res = await fetch(`https://api.makcorps.com/city?${params}`)
+  const res = await fetch(`https://api.makcorps.com/city?${params}`, {
+    signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
+  })
   if (!res.ok) return { site: 'Makcorps', error: `city ${res.status}`, rows: [] }
   const json = await res.json()
 

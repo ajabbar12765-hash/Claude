@@ -13,24 +13,45 @@
 // tail. It is deliberately not "this page was short" — page size is not
 // contractual, and a provider that returns fifteen rows a page would look
 // exhausted on page one.
+//
+// The walk is bounded by wall-clock time as well as page count. A serverless
+// function that overruns its limit returns a gateway timeout and therefore no
+// hotels at all, which is a much worse outcome than returning fewer.
 
 /**
  * @param {object} opts
  * @param {(page: number) => Promise<Array>} opts.fetchPage  resolves to a page of rows
  * @param {(row: any) => string|number|null} opts.idOf       stable id, for de-duplication
- * @param {number} [opts.maxPages=16]     hard ceiling on pages walked
- * @param {number} [opts.firstBatch=4]    pages in the first round
- * @param {number} [opts.batch=8]         pages in every later round
+ * @param {number} [opts.maxPages=16]      hard ceiling on pages walked
+ * @param {number} [opts.firstBatch=8]     pages in the first round
+ * @param {number} [opts.batch=8]          pages in every later round
+ * @param {number} [opts.timeBudgetMs=7000] stop starting rounds past this
+ * @param {() => number} [opts.now]        injectable clock, for tests
  * @returns {Promise<Array>} de-duplicated rows, in page order
  */
-export async function walkPages({ fetchPage, idOf, maxPages = 16, firstBatch = 4, batch = 8 }) {
+export async function walkPages({
+  fetchPage,
+  idOf,
+  maxPages = 16,
+  firstBatch = 8,
+  batch = 8,
+  timeBudgetMs = 7000,
+  now = Date.now,
+}) {
   const seen = new Set()
   const rows = []
+  const startedAt = now()
   let page = 1
   let size = firstBatch
   let exhausted = false
 
   while (page <= maxPages && !exhausted) {
+    // A page ceiling alone is not enough of a guard. The function has a hard
+    // wall-clock limit, and blowing it returns a gateway timeout — no hotels
+    // at all, which is far worse than fewer hotels. So rounds stop being
+    // started once the budget is spent, and the walk returns what it has.
+    if (page > 1 && now() - startedAt >= timeBudgetMs) break
+
     const count = Math.min(size, maxPages - page + 1)
     const pages = await Promise.all(
       Array.from({ length: count }, (_, i) => fetchPage(page + i))

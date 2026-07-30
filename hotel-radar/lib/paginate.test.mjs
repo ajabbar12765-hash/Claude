@@ -32,16 +32,16 @@ const idOf = (row) => row?.hotel_id
 
 const cases = [
   // Small places must not spend a second round on repeats.
-  { name: 'tiny town (12 hotels)', total: 12, expect: 12, calls: 4 },
-  { name: 'small city (60)', total: 60, expect: 60, calls: 4 },
-  { name: 'exactly one page (20)', total: 20, expect: 20, calls: 4 },
+  { name: 'tiny town (12 hotels)', total: 12, expect: 12, calls: 8 },
+  { name: 'small city (60)', total: 60, expect: 60, calls: 8 },
+  { name: 'exactly one page (20)', total: 20, expect: 20, calls: 8 },
   // Large places must not be capped at one page's worth.
-  { name: 'mid city (160)', total: 160, expect: 160, calls: 12 },
+  { name: 'mid city (160)', total: 160, expect: 160, calls: 16 },
   { name: 'big city (400) hits the ceiling', total: 400, expect: 320, calls: 16 },
   // Degenerate upstreams.
-  { name: 'no hotels at all', total: 0, expect: 0, calls: 4 },
+  { name: 'no hotels at all', total: 0, expect: 0, calls: 8 },
   // Page size is not contractual — a 15-row page must not read as "exhausted".
-  { name: 'short pages (15/page, 150 total)', total: 150, expect: 150, calls: 12, perPage: 15 },
+  { name: 'short pages (15/page, 150 total)', total: 150, expect: 150, calls: 16, perPage: 15 },
 ]
 
 let failed = 0
@@ -56,6 +56,49 @@ for (const c of cases) {
   console.log(
     `${ok ? 'PASS' : 'FAIL'}  ${c.name}: ${rows.length} rows (want ${c.expect}), ` +
     `${unique} unique, ${up.calls} calls (want ${c.calls})`
+  )
+}
+
+// The time budget must cut the walk short rather than let the function
+// overrun and return a gateway timeout — which is what actually happened on
+// the first deploy of this walk.
+{
+  const up = makeUpstream(400)
+  let clock = 0
+  // Each page is charged 1s, so a round of eight spends 8s and the 7s budget
+  // allows round one, then stops.
+  const rows = await walkPages({
+    fetchPage: async (p) => { const r = await up.fetchPage(p); clock += 1000; return r },
+    idOf,
+    now: () => clock,
+    timeBudgetMs: 7000,
+  })
+  const ok = rows.length === 160 && up.calls === 8
+  if (!ok) failed++
+  console.log(
+    `${ok ? 'PASS' : 'FAIL'}  time budget stops the walk: ${rows.length} rows (want 160), ` +
+    `${up.calls} calls (want 8)`
+  )
+}
+
+// A budget already spent must still allow the first round, so a slow cold
+// start cannot make the endpoint return nothing at all.
+{
+  const up = makeUpstream(400)
+  // Zero elapsed at start, then far past the budget — a constant clock would
+  // report no time passing at all and never trip the check.
+  let ticks = 0
+  const rows = await walkPages({
+    fetchPage: up.fetchPage,
+    idOf,
+    now: () => (ticks++ === 0 ? 0 : 1e9),
+    timeBudgetMs: 1,
+  })
+  const ok = rows.length === 160 && up.calls === 8
+  if (!ok) failed++
+  console.log(
+    `${ok ? 'PASS' : 'FAIL'}  exhausted budget still returns page one: ${rows.length} rows ` +
+    `(want 160), ${up.calls} calls (want 8)`
   )
 }
 
