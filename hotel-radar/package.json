@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node src/lib/nlq.test.mjs && node lib/paginate.test.mjs"
+    "test": "node src/lib/nlq.test.mjs && node lib/paginate.test.mjs && node lib/ratelimit.test.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

@@ -17,6 +17,7 @@
 //                &checkIn=2026-09-10&checkOut=2026-09-13&adults=2
 
 import { walkPages, pageBudget } from '../lib/paginate.js'
+import { createRateLimiter, fetchWithBackoff } from '../lib/ratelimit.js'
 
 // The built-in engine is free to re-run; a licensed API is not.
 //
@@ -41,6 +42,12 @@ const CACHE_TTL_MS = Math.max(1, Number(process.env.PRICE_CACHE_MINUTES) || 240)
 // hotels at all, which is far worse than returning fewer of them.
 const WALK_BUDGET_MS = 7000
 const PAGE_TIMEOUT_MS = 5000
+
+// Free API plans cap requests per second, not only per month. Firing a round
+// of pages simultaneously reads as a burst and gets refused with a 429 on an
+// account that has barely been used at all, so starts are spaced out.
+// RAPIDAPI_MIN_INTERVAL_MS tunes it if a plan turns out to be stricter.
+const MIN_INTERVAL_MS = Math.max(0, Number(process.env.RAPIDAPI_MIN_INTERVAL_MS) || 300)
 
 // A warm function instance reuses this, which keeps a scan loop from burning
 // through a free-tier quota. Cold starts simply refill it.
@@ -220,16 +227,26 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
   const headers = { 'x-rapidapi-key': key, 'x-rapidapi-host': host, Accept: 'application/json' }
   const city = String(location || '').split(',')[0].trim()
 
+  // Every call to this host goes through one limiter, so the pages of a walk
+  // and the lookup that precedes them share a single rate budget.
+  const schedule = createRateLimiter({ minIntervalMs: MIN_INTERVAL_MS })
+
   // Step 1: turn the place name into the destination id the search needs.
-  const destRes = await fetch(
-    `https://${host}/api/v1/hotels/searchDestination?${new URLSearchParams({ query: city })}`,
-    { headers, signal: AbortSignal.timeout(PAGE_TIMEOUT_MS) }
+  const destRes = await schedule(() =>
+    fetchWithBackoff(() =>
+      fetch(
+        `https://${host}/api/v1/hotels/searchDestination?${new URLSearchParams({ query: city })}`,
+        { headers, signal: AbortSignal.timeout(PAGE_TIMEOUT_MS) }
+      )
+    )
   )
-  if (!destRes.ok) {
+  if (!destRes?.ok) {
     throw new Error(
-      destRes.status === 403
+      destRes?.status === 403
         ? 'RapidAPI rejected the key (403). Check the key is correct and that you are subscribed to this API.'
-        : `RapidAPI destination lookup returned ${destRes.status}`
+        : destRes?.status === 429
+          ? 'RapidAPI is rate limiting these requests (429). Raise RAPIDAPI_MIN_INTERVAL_MS to slow them down.'
+          : `RapidAPI destination lookup returned ${destRes?.status ?? 'no response'}`
     )
   }
   const destJson = await destRes.json()
@@ -257,10 +274,14 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
 
       // A single stalled page must not spend the whole walk's budget; a page
       // that never arrives is simply a page the search does without.
-      const r = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, {
-        headers,
-        signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
-      }).catch(() => null)
+      const r = await schedule(() =>
+        fetchWithBackoff(() =>
+          fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, {
+            headers,
+            signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
+          })
+        )
+      )
       if (!r?.ok) return []
       const j = await r.json().catch(() => null)
       return j?.data?.hotels || j?.data?.result || []
@@ -324,12 +345,20 @@ async function fromTripadvisor({ location, checkIn, checkOut, adults, rooms }) {
   const headers = { 'x-rapidapi-key': key, 'x-rapidapi-host': host, Accept: 'application/json' }
   const city = String(location || '').split(',')[0].trim()
 
-  const geoRes = await fetch(
-    `https://${host}/api/v1/hotels/searchLocation?${new URLSearchParams({ query: city })}`,
-    { headers, signal: AbortSignal.timeout(PAGE_TIMEOUT_MS) }
+  const schedule = createRateLimiter({ minIntervalMs: MIN_INTERVAL_MS })
+
+  const geoRes = await schedule(() =>
+    fetchWithBackoff(() =>
+      fetch(
+        `https://${host}/api/v1/hotels/searchLocation?${new URLSearchParams({ query: city })}`,
+        { headers, signal: AbortSignal.timeout(PAGE_TIMEOUT_MS) }
+      )
+    )
   )
-  if (!geoRes.ok) return { site: 'Tripadvisor', error: `location lookup ${geoRes.status}`, rows: [] }
-  const geoJson = await geoRes.json()
+  if (!geoRes?.ok) {
+    return { site: 'Tripadvisor', error: `location lookup ${geoRes?.status ?? 'no response'}`, rows: [] }
+  }
+  const geoJson = await geoRes.json().catch(() => null)
   const geoId = geoJson?.data?.[0]?.geoId
   if (!geoId) return { site: 'Tripadvisor', error: `no geoId for ${city}`, rows: [] }
 
@@ -354,10 +383,14 @@ async function fromTripadvisor({ location, checkIn, checkOut, adults, rooms }) {
       if (checkIn) params.set('checkIn', checkIn)
       if (checkOut) params.set('checkOut', checkOut)
 
-      const res = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, {
-        headers,
-        signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
-      }).catch(() => null)
+      const res = await schedule(() =>
+        fetchWithBackoff(() =>
+          fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, {
+            headers,
+            signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
+          })
+        )
+      )
       lastStatus = res?.status ?? 'timeout'
       if (!res?.ok) return []
       const json = await res.json().catch(() => null)
