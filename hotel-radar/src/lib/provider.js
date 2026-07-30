@@ -31,7 +31,10 @@ export async function runScan(providerId, trip, config) {
   const provider = getProvider(providerId)
   try {
     const offers = await provider.scan(trip, config)
-    return { offers, source: provider.meta.id, error: null }
+    // A provider may return real results with something worth saying about
+    // them — prices served from cache because the API is out of searches, for
+    // instance. That is a note on a success, not a failure.
+    return { offers, source: provider.meta.id, error: offers.notice || null }
   } catch (err) {
     if (provider.meta.id === 'simulated') throw err
     return {

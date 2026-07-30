@@ -21,14 +21,19 @@ import { walkPages, pageBudget } from '../lib/paginate.js'
 // The built-in engine is free to re-run; a licensed API is not.
 //
 // This is the counterweight to walking the whole listing. A deep walk costs
-// around seventeen upstream calls for a large city where a single page cost
-// two, and the app rescans as often as every fifteen seconds — so without a
-// cache wide enough to absorb that, a free tier lasts about a day.
+// a dozen or more upstream calls for a large city where a single page cost
+// two, and the app rescans as often as every fifteen seconds. Free tiers are
+// measured in a few hundred calls a month, so the arithmetic is unforgiving:
+// nothing but a wide cache makes continuous watching survivable at all.
 //
-// Half an hour is the trade. Hotel rates do not move meaningfully inside it,
-// the scan loop keeps running and alerting off cached results, and the quota
-// goes on covering the whole city instead of re-reading the first page.
-const CACHE_TTL_MS = Math.max(1, Number(process.env.PRICE_CACHE_MINUTES) || 30) * 60 * 1000
+// Four hours is the trade, and it costs less than it sounds. Hotel rates move
+// on the scale of days, the scan loop keeps running and alerting off cached
+// results so the app still feels live, and the quota goes on covering a whole
+// city rather than re-reading its first page every few minutes.
+//
+// PRICE_CACHE_MINUTES overrides it — lower for fresher prices if the plan can
+// afford them, higher to stretch a free tier further.
+const CACHE_TTL_MS = Math.max(1, Number(process.env.PRICE_CACHE_MINUTES) || 240) * 60 * 1000
 
 // How long the paged walks may run before they stop starting new rounds, and
 // how long any single upstream page may take. Both sit well inside the
@@ -41,10 +46,18 @@ const PAGE_TIMEOUT_MS = 5000
 // through a free-tier quota. Cold starts simply refill it.
 const cache = new Map()
 
+// Entries are kept past their expiry on purpose. An expired result is still a
+// real set of hotels at nearly the right prices, and it is worth far more than
+// an error page when the upstream refuses — which on a free tier it eventually
+// will. See the handler: stale is served whenever a refresh fails.
 function cached(key) {
   const hit = cache.get(key)
-  if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.value
-  return null
+  if (!hit) return null
+  return {
+    value: hit.value,
+    fresh: Date.now() - hit.at < CACHE_TTL_MS,
+    ageMinutes: Math.round((Date.now() - hit.at) / 60000),
+  }
 }
 
 function remember(key, value) {
@@ -524,19 +537,60 @@ export default async function handler(req, res) {
 
   const key = `${q.provider}:${url.searchParams.toString()}`
   const hit = cached(key)
-  if (hit) {
+  if (hit?.fresh) {
     res.setHeader('X-Radar-Cache', 'hit')
-    return res.status(200).json({ offers: hit, cached: true, cacheMinutes })
+    return res.status(200).json({ offers: hit.value, cached: true, cacheMinutes })
   }
 
   try {
     const offers = remember(key, await provider(q))
     res.setHeader('X-Radar-Cache', 'miss')
-    // A CDN cache on top absorbs several browser tabs scanning at once.
+    // s-maxage       — the CDN answers repeat scans without touching the API.
+    // stale-if-error — and keeps answering from the last good response for a
+    //                  day if the API starts refusing. This is the durable half
+    //                  of the fallback below: the in-memory cache dies with the
+    //                  function instance, the CDN's copy does not.
     const sMaxAge = Math.round(CACHE_TTL_MS / 1000)
-    res.setHeader('Cache-Control', `s-maxage=${sMaxAge}, stale-while-revalidate=${sMaxAge * 2}`)
+    res.setHeader(
+      'Cache-Control',
+      `s-maxage=${sMaxAge}, stale-while-revalidate=86400, stale-if-error=86400`
+    )
     return res.status(200).json({ offers, cached: false, cacheMinutes })
   } catch (err) {
-    return res.status(502).json({ error: err?.message || 'Upstream request failed' })
+    const message = err?.message || 'Upstream request failed'
+
+    // A free tier runs out. When it does, yesterday's prices for the right
+    // hotels beat an error and a fallback to invented ones, so expired results
+    // are served rather than discarded — flagged, so the app can say so.
+    if (hit) {
+      res.setHeader('X-Radar-Cache', 'stale')
+      return res.status(200).json({
+        offers: hit.value,
+        cached: true,
+        stale: true,
+        ageMinutes: hit.ageMinutes,
+        cacheMinutes,
+        notice: rateLimited(message)
+          ? `Booking.com's free tier is out of searches for now, so these are the prices from ${describeAge(hit.ageMinutes)}. It refreshes by itself.`
+          : `Could not refresh just now, so these are the prices from ${describeAge(hit.ageMinutes)}.`,
+      })
+    }
+
+    return res.status(502).json({
+      error: rateLimited(message)
+        ? "Booking.com's free tier is out of searches for now. It resets on its own — try again shortly."
+        : message,
+    })
   }
+}
+
+function rateLimited(message) {
+  return /\b429\b|rate limit|quota/i.test(String(message))
+}
+
+function describeAge(minutes) {
+  if (minutes < 90) return `${Math.max(1, minutes)} minutes ago`
+  const hours = Math.round(minutes / 60)
+  if (hours < 36) return `${hours} hour${hours === 1 ? '' : 's'} ago`
+  return `${Math.round(hours / 24)} days ago`
 }

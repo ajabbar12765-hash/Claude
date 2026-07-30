@@ -55,6 +55,7 @@ export async function scan(trip, config) {
   const nights = nightsBetween(trip?.checkIn, trip?.checkOut)
   const ids = targetDestinations(config?.filters)
   const now = Date.now()
+  const notices = []
 
   const perDestination = await Promise.all(
     ids.map(async (id) => {
@@ -76,6 +77,10 @@ export async function scan(trip, config) {
         throw new Error(body.error || `Price proxy responded ${res.status}`)
       }
       const json = await res.json()
+      // The proxy serves its last good results when the API refuses rather
+      // than failing, so these are real hotels at slightly old prices. Say so,
+      // but keep them: it beats falling back to the invented ones.
+      if (json.notice) notices.push(json.notice)
       const pool = HOTELS.filter((h) => h.destinationId === id)
 
       return (json.offers || []).flatMap((row) => {
@@ -130,6 +135,10 @@ export async function scan(trip, config) {
   if (!offers.length) {
     throw new Error('Booking.com returned no hotels for these dates. Try widening the dates.')
   }
+  // Carried on the array so the app can show the notice without the offers
+  // being treated as a failure. Real hotels with slightly old prices are a
+  // result, not an error.
+  if (notices.length) offers.notice = notices[0]
   return offers
 }
 
@@ -141,5 +150,5 @@ export const meta = {
   description:
     'Real Booking.com prices through RapidAPI, which licenses the data. Free tier, no card. Subscribe at rapidapi.com/DataCrawler/api/booking-com15, then set RAPIDAPI_KEY in Vercel.',
   quotaNote:
-    'Walks the city listing until it runs out — up to 16 pages, so a few hundred hotels in a large city — and stops early in a small one rather than spending calls on repeats. The server caches for 15 minutes so the free tier is not burned.',
+    'Walks the city listing until it runs out — up to 16 pages, so a few hundred hotels in a large city — and stops early in a small one rather than spending calls on repeats. Results are cached for four hours, and if the free tier runs out of searches the last good prices are shown rather than an error.',
 }

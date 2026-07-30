@@ -38,8 +38,15 @@ export default function ConnectionTest({ provider }) {
       if (!res.ok) {
         return setState({
           status: 'error',
-          title: `Upstream returned ${res.status}`,
-          detail: json.error || 'No detail supplied.',
+          // "Upstream returned 502 / destination lookup returned 429" told the
+          // truth and explained nothing. Running out of free searches is the
+          // ordinary case here, so it gets said in words.
+          title: /\b429\b|rate limit|quota/i.test(json.error || '')
+            ? 'Out of searches for now'
+            : `Could not reach Booking.com (${res.status})`,
+          detail:
+            json.error ||
+            'No detail supplied. Check RAPIDAPI_KEY is set in Vercel and the project has been redeployed since.',
         })
       }
 
@@ -60,11 +67,15 @@ export default function ConnectionTest({ provider }) {
       }
 
       setState({
-        status: 'ok',
-        title: `Live prices working — ${count} hotels, ${priced} with a rate`,
-        detail: json.cached
-          ? `Served from the ${json.cacheMinutes ?? 30}-minute cache.`
-          : 'Fetched fresh from the API.',
+        status: json.stale ? 'warn' : 'ok',
+        title: json.stale
+          ? `Showing recent prices — ${count} hotels`
+          : `Live prices working — ${count} hotels, ${priced} with a rate`,
+        detail:
+          json.notice ||
+          (json.cached
+            ? `Served from the ${json.cacheMinutes ?? 240}-minute cache.`
+            : 'Fetched fresh from the API.'),
       })
     } catch (err) {
       setState({
