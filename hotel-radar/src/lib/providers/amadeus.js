@@ -1,126 +1,157 @@
-// Amadeus Self-Service adapter.
+// Amadeus Self-Service adapter — live, through the server proxy.
 //
-// Amadeus has a free test tier: sign up at developers.amadeus.com, create an
-// app, and paste the API key + secret into Settings. This adapter exchanges
-// them for a bearer token and queries Hotel Search v3, then maps the response
-// onto the same offer shape the simulated engine returns, so the rest of the
-// app does not change.
+// This exists as a *second* source of real prices. One free tier is a single
+// point of failure: when it runs out of requests the app has nothing real left
+// to show, and falls back to invented hotels. Amadeus has its own separate
+// free allowance that renews monthly, so with both configured a search that
+// one source refuses can still be answered by the other.
 //
-// Note: the token endpoint must be reachable from the browser. Amadeus does
-// not send permissive CORS headers on the test host, so in production you
-// would proxy these two calls through your own tiny backend and point
-// AMADEUS_BASE at it. The request/response mapping below stays identical.
+// It used to call Amadeus straight from the browser, which could not work:
+// Amadeus sends no permissive CORS headers, and it required the secret to be
+// shipped to the page. Both calls now go through /api/hotels, where the
+// credentials stay in server environment variables.
+//
+// Amadeus identifies a place by IATA city code rather than by name, so
+// destinations without a code are skipped rather than guessed at.
 
-import { HOTELS, distanceKm } from '../catalog.js'
+import { DESTINATIONS, HOTELS, distanceKm } from '../catalog.js'
+import { iataFor } from '../iata.js'
 import { nightsBetween } from '../format.js'
 
-const AMADEUS_BASE = 'https://test.api.amadeus.com'
+const MAX_DESTINATIONS = 2
 
-let token = null // { value, expiresAt }
-
-async function getToken(key, secret) {
-  if (token && token.expiresAt > Date.now() + 30_000) return token.value
-
-  const res = await fetch(`${AMADEUS_BASE}/v1/security/oauth2/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'client_credentials',
-      client_id: key,
-      client_secret: secret,
-    }),
-  })
-  if (!res.ok) throw new Error(`Amadeus auth failed (${res.status})`)
-  const json = await res.json()
-  token = { value: json.access_token, expiresAt: Date.now() + json.expires_in * 1000 }
-  return token.value
+function normalise(name) {
+  return String(name || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
 }
 
-/** Match an Amadeus hotel record back onto a catalog entry. */
-function matchCatalog(record) {
-  const name = String(record?.hotel?.name || '').toLowerCase()
-  const geo = record?.hotel?.latitude != null
-    ? { lat: record.hotel.latitude, lng: record.hotel.longitude }
-    : null
-
-  let best = null
-  for (const h of HOTELS) {
-    const byName = name && name.includes(h.name.toLowerCase().slice(0, 12))
-    const byGeo = geo && distanceKm(geo, h) < 0.35
-    if (byName || byGeo) {
-      best = h
-      break
+function matchCatalog(row, pool) {
+  if (row.lat != null && row.lng != null) {
+    for (const h of pool) {
+      if (distanceKm({ lat: row.lat, lng: row.lng }, h) < 0.3) return h
     }
   }
-  return best
+  const rowName = normalise(row.name)
+  if (!rowName) return null
+  for (const h of pool) {
+    const catName = normalise(h.name)
+    if (rowName === catName || rowName.includes(catName) || catName.includes(rowName)) return h
+  }
+  return null
+}
+
+function targetDestinations(filters) {
+  const ids = new Set()
+  for (const id of filters?.cities ?? []) ids.add(id)
+  if (filters?.parsedCityId) ids.add(filters.parsedCityId)
+  if (filters?.parsedLandmarkDestinationId) ids.add(filters.parsedLandmarkDestinationId)
+  const chosen = [...ids].filter(iataFor).slice(0, MAX_DESTINATIONS)
+  if (chosen.length) return chosen
+  return DESTINATIONS.filter((d) => iataFor(d.id))
+    .slice(0, MAX_DESTINATIONS)
+    .map((d) => d.id)
 }
 
 export async function scan(trip, config) {
-  const { apiKey, apiSecret, cityCodes = ['MIL', 'ROM', 'PAR', 'BCN', 'LON'] } = config || {}
-  if (!apiKey || !apiSecret) throw new Error('Amadeus API key and secret required')
-
-  const bearer = await getToken(apiKey, apiSecret)
+  const base = config?.proxyUrl || '/api/hotels'
   const nights = nightsBetween(trip?.checkIn, trip?.checkOut)
-  const offers = []
+  const ids = targetDestinations(config?.filters)
+  const now = Date.now()
 
-  for (const cityCode of cityCodes) {
-    const params = new URLSearchParams({
-      cityCode,
-      adults: String(trip?.adults ?? 2),
-      roomQuantity: String(trip?.rooms ?? 1),
-      currency: 'EUR',
-      bestRateOnly: 'true',
-    })
-    if (trip?.checkIn) params.set('checkInDate', trip.checkIn)
-    if (trip?.checkOut) params.set('checkOutDate', trip.checkOut)
-
-    const res = await fetch(`${AMADEUS_BASE}/v3/shopping/hotel-offers?${params}`, {
-      headers: { Authorization: `Bearer ${bearer}` },
-    })
-    if (!res.ok) continue
-    const json = await res.json()
-
-    for (const record of json.data || []) {
-      const hotel = matchCatalog(record)
-      if (!hotel) continue
-      const offer = record.offers?.[0]
-      if (!offer) continue
-
-      const total = Number(offer.price?.total ?? 0)
-      if (!total) continue
-      const nightly = Math.round(total / nights)
-      const reference = Math.round(
-        Number(offer.price?.base ?? total) / nights || hotel.base
-      )
-
-      offers.push({
-        hotelId: hotel.id,
-        nightly,
-        reference: Math.max(reference, nightly),
-        total: Math.round(total),
-        nights,
-        discount: reference > nightly ? 1 - nightly / reference : 0,
-        flash: false,
-        roomsLeft: null,
-        seenAt: Date.now(),
-        source: 'amadeus',
-        bookingRef: offer.id,
-      })
-    }
+  if (!ids.length) {
+    throw new Error('Amadeus has no city code for this destination.')
   }
 
-  if (!offers.length) throw new Error('Amadeus returned no offers for these dates')
+  const failures = []
+
+  const perDestination = await Promise.all(
+    ids.map(async (id) => {
+      const dest = DESTINATIONS.find((d) => d.id === id)
+      const cityCode = iataFor(id)
+      if (!dest || !cityCode) return []
+
+      const params = new URLSearchParams({
+        provider: 'amadeus',
+        cityCode,
+        adults: String(trip?.adults ?? 2),
+        rooms: String(trip?.rooms ?? 1),
+      })
+      if (trip?.checkIn) params.set('checkIn', trip.checkIn)
+      if (trip?.checkOut) params.set('checkOut', trip.checkOut)
+
+      const res = await fetch(`${base}?${params}`)
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        failures.push(body.error || `proxy ${res.status}`)
+        return []
+      }
+      const json = await res.json()
+      const pool = HOTELS.filter((h) => h.destinationId === id)
+
+      return (json.offers || []).flatMap((row) => {
+        if (row.total == null) return []
+        const nightly = Math.max(1, Math.round(row.total / nights))
+
+        const known = matchCatalog(row, pool)
+        // As with Booking, a hotel Amadeus knows and the catalogue does not is
+        // still a real hotel. Keeping it is what makes this a genuine second
+        // source rather than a lookup against the same short list.
+        const hotel = known || {
+          id: `amadeus-${id}-${normalise(row.name).replace(/\s+/g, '-').slice(0, 40)}`,
+          name: row.name || 'Hotel',
+          area: dest.city,
+          city: dest.city,
+          country: dest.country,
+          destinationId: id,
+          stars: Math.round(row.stars) || 3,
+          rating: row.rating != null ? Math.min(10, row.rating) : 8,
+          reviews: 0,
+          base: nightly,
+          lat: row.lat ?? dest.lat,
+          lng: row.lng ?? dest.lng,
+          amenities: ['wifi'],
+          blurb: `Live result from Amadeus for ${dest.city}.`,
+          synthetic: true,
+        }
+
+        return [{
+          hotelId: hotel.id,
+          hotel,
+          nightly,
+          reference: nightly,
+          total: Math.round(row.total),
+          nights,
+          discount: 0,
+          flash: false,
+          roomsLeft: null,
+          seenAt: now,
+          source: 'amadeus',
+          aggregated: true,
+        }]
+      })
+    })
+  )
+
+  const offers = perDestination.flat()
+  if (!offers.length) {
+    throw new Error(
+      failures.length ? failures[0] : 'Amadeus returned no hotels for these dates.'
+    )
+  }
   return offers
 }
 
 export const meta = {
   id: 'amadeus',
   label: 'Amadeus (live)',
-  needsKey: true,
+  needsKey: false,
+  serverKey: true,
   description:
-    'Live rates from the Amadeus Self-Service Hotel Search API. Free test tier at developers.amadeus.com — paste your API key and secret below.',
-  fields: [
-    { id: 'apiKey', label: 'API key', type: 'text' },
-    { id: 'apiSecret', label: 'API secret', type: 'password' },
-  ],
+    'Live rates from the Amadeus Self-Service Hotel Search API — a second source of real prices with its own free allowance, so the app has somewhere to turn when Booking.com has run out. Sign up at developers.amadeus.com, create an app, then set AMADEUS_KEY and AMADEUS_SECRET in Vercel.',
+  quotaNote:
+    'Amadeus renews its free test quota monthly and it is separate from RapidAPI’s, which is the point of having both. Covers the destinations that have an IATA city code.',
 }

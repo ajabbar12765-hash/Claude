@@ -163,6 +163,7 @@ async function amadeusAuth() {
 
   const res = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
     method: 'POST',
+    signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       grant_type: 'client_credentials',
@@ -190,8 +191,15 @@ async function amadeus({ cityCode, checkIn, checkOut, adults, rooms }) {
 
   const res = await fetch(`https://test.api.amadeus.com/v3/shopping/hotel-offers?${params}`, {
     headers: { Authorization: `Bearer ${bearer}` },
+    signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
   })
-  if (!res.ok) throw new Error(`Amadeus responded ${res.status}`)
+  if (!res.ok) {
+    throw new Error(
+      res.status === 429
+        ? 'Amadeus is out of free requests for this month.'
+        : `Amadeus responded ${res.status}`
+    )
+  }
   const json = await res.json()
 
   return (json.data || []).flatMap((record) => {
