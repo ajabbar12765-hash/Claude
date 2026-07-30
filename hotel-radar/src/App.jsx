@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import TopBar from './components/TopBar.jsx'
 import FilterPanel from './components/FilterPanel.jsx'
@@ -15,6 +15,10 @@ import { money as fmtMoney, toISODate, addDays } from './lib/format.js'
 import * as notify from './lib/notify.js'
 import { load, save } from './lib/storage.js'
 import { smartParse, smartAvailability } from './lib/smartParse.js'
+
+// Three.js is most of the bundle. Loading it separately keeps the prices — the
+// part anyone actually opened the app for — on screen while the globe arrives.
+const Globe3D = lazy(() => import('./components/Globe3D.jsx'))
 
 const SCAN_INTERVALS = [
   { id: 15, label: 'Every 15s' },
@@ -306,19 +310,32 @@ export default function App() {
           onClose={() => setFiltersOpen(false)}
         />
 
-        <DealGrid
-          deals={deals}
-          resolved={resolved}
-          trip={trip}
-          money={money}
-          saved={saved}
-          scanning={scanning}
-          scanCount={scanCount}
-          providerError={providerError}
-          onToggleSave={toggleSave}
-          onChange={updateFilters}
-          onOpenSettings={() => setSettingsOpen(true)}
-        />
+        {/* The globe and the grid share one column. Without this wrapper they
+            become separate items in the two-column layout grid, and the results
+            get placed underneath the filter panel instead of beside it. */}
+        <div className="layout__main">
+          <Suspense fallback={<div className="globe globe--loading" aria-hidden="true" />}>
+            <Globe3D
+              deals={deals}
+              resolved={resolved}
+              onPickCity={(id) => updateFilters({ cities: [id], query: '' })}
+            />
+          </Suspense>
+
+          <DealGrid
+            deals={deals}
+            resolved={resolved}
+            trip={trip}
+            money={money}
+            saved={saved}
+            scanning={scanning}
+            scanCount={scanCount}
+            providerError={providerError}
+            onToggleSave={toggleSave}
+            onChange={updateFilters}
+            onOpenSettings={() => setSettingsOpen(true)}
+          />
+        </div>
       </main>
 
       <AlertsDrawer

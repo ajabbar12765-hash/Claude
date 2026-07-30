@@ -902,6 +902,83 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.1rem;
+  /* Gives every card its own depth to lift into on hover. Set on the container
+     rather than each card so they share one vanishing point and the row reads
+     as a shelf rather than as unrelated tilting rectangles. */
+  perspective: 1400px;
+}
+
+/* Holds the globe and the results in the layout grid's second column. */
+.layout__main {
+  min-width: 0; /* lets the grid inside actually shrink rather than overflow */
+}
+
+/* ---- 3D globe ---- */
+.globe {
+  position: relative;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(56, 189, 248, 0.16), transparent 60%),
+    linear-gradient(180deg, #0b1220 0%, #070c16 100%);
+  box-shadow: var(--shadow-sm);
+}
+.globe--loading {
+  height: clamp(220px, 32vw, 340px);
+}
+.globe__canvas {
+  height: clamp(220px, 32vw, 340px);
+  width: 100%;
+  cursor: grab;
+  touch-action: pan-y; /* let the page scroll vertically; the globe takes the rest */
+}
+.globe__canvas:active {
+  cursor: grabbing;
+}
+.globe__legend {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.78rem;
+  color: rgba(226, 232, 240, 0.82);
+  background: linear-gradient(180deg, transparent, rgba(3, 7, 18, 0.75));
+  pointer-events: none;
+}
+.globe__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.globe__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+.globe__dot--budget {
+  background: #facc15;
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.9);
+}
+.globe__dot--deal {
+  background: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+}
+.globe__hint {
+  margin-left: auto;
+  opacity: 0.66;
+}
+@media (max-width: 560px) {
+  .globe__hint {
+    display: none;
+  }
 }
 
 /* ---- deal card ---- */
@@ -917,9 +994,11 @@ a {
   animation: rise 0.35s var(--ease) both;
 }
 .card:hover {
-  transform: translateY(-3px);
+  /* Lifts toward the viewer and tips back very slightly. Kept small on purpose
+     — a card that swings is a toy, a card that leans is a physical object. */
+  transform: translateZ(38px) rotateX(2.2deg);
   border-color: var(--text-3);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow), 0 22px 40px -24px rgba(2, 6, 23, 0.55);
 }
 .card--match {
   border-color: var(--accent-line);
@@ -1781,5 +1860,14 @@ a {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  /* Killing the duration alone would leave the card snapping into a tilt with
+     no transition, which is more jarring than the animation it replaced. Drop
+     the depth entirely and keep the plain lift. */
+  .card:hover {
+    transform: translateY(-3px);
+  }
+  .grid {
+    perspective: none;
   }
 }
