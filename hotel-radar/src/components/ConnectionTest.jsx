@@ -62,7 +62,9 @@ export default function ConnectionTest({ provider }) {
       setState({
         status: 'ok',
         title: `Live prices working — ${count} hotels, ${priced} with a rate`,
-        detail: json.cached ? 'Served from the 4-minute cache.' : 'Fetched fresh from the API.',
+        detail: json.cached
+          ? `Served from the ${json.cacheMinutes ?? 30}-minute cache.`
+          : 'Fetched fresh from the API.',
       })
     } catch (err) {
       setState({

@@ -18,10 +18,17 @@
 
 import { walkPages, pageBudget } from '../lib/paginate.js'
 
-// The built-in engine is free to re-run; a licensed API is not. Live results
-// barely move within a quarter of an hour, so cache them for that long and
-// spend the quota on coverage instead.
-const CACHE_TTL_MS = 15 * 60 * 1000
+// The built-in engine is free to re-run; a licensed API is not.
+//
+// This is the counterweight to walking the whole listing. A deep walk costs
+// around seventeen upstream calls for a large city where a single page cost
+// two, and the app rescans as often as every fifteen seconds — so without a
+// cache wide enough to absorb that, a free tier lasts about a day.
+//
+// Half an hour is the trade. Hotel rates do not move meaningfully inside it,
+// the scan loop keeps running and alerting off cached results, and the quota
+// goes on covering the whole city instead of re-reading the first page.
+const CACHE_TTL_MS = Math.max(1, Number(process.env.PRICE_CACHE_MINUTES) || 30) * 60 * 1000
 
 // A warm function instance reuses this, which keeps a scan loop from burning
 // through a free-tier quota. Cold starts simply refill it.
@@ -488,19 +495,25 @@ export default async function handler(req, res) {
     })
   }
 
+  // Reported to the client so the UI can describe the cache without keeping
+  // its own copy of the number, which is how it came to claim "4 minutes"
+  // long after this was fifteen.
+  const cacheMinutes = Math.round(CACHE_TTL_MS / 60000)
+
   const key = `${q.provider}:${url.searchParams.toString()}`
   const hit = cached(key)
   if (hit) {
     res.setHeader('X-Radar-Cache', 'hit')
-    return res.status(200).json({ offers: hit, cached: true })
+    return res.status(200).json({ offers: hit, cached: true, cacheMinutes })
   }
 
   try {
     const offers = remember(key, await provider(q))
     res.setHeader('X-Radar-Cache', 'miss')
-    // A short CDN cache absorbs several browser tabs scanning at once.
-    res.setHeader('Cache-Control', 's-maxage=900, stale-while-revalidate=1800')
-    return res.status(200).json({ offers, cached: false })
+    // A CDN cache on top absorbs several browser tabs scanning at once.
+    const sMaxAge = Math.round(CACHE_TTL_MS / 1000)
+    res.setHeader('Cache-Control', `s-maxage=${sMaxAge}, stale-while-revalidate=${sMaxAge * 2}`)
+    return res.status(200).json({ offers, cached: false, cacheMinutes })
   } catch (err) {
     return res.status(502).json({ error: err?.message || 'Upstream request failed' })
   }
