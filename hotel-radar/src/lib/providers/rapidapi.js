@@ -141,5 +141,5 @@ export const meta = {
   description:
     'Real Booking.com prices through RapidAPI, which licenses the data. Free tier, no card. Subscribe at rapidapi.com/DataCrawler/api/booking-com15, then set RAPIDAPI_KEY in Vercel.',
   quotaNote:
-    'Walks 4 pages per city for roughly 80 hotels, and the server caches for 15 minutes so the free tier is not burned.',
+    'Walks the city listing until it runs out — up to 16 pages, so a few hundred hotels in a large city — and stops early in a small one rather than spending calls on repeats. The server caches for 15 minutes so the free tier is not burned.',
 }

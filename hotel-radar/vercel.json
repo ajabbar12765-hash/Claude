@@ -3,6 +3,9 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "functions": {
+    "api/hotels.js": { "maxDuration": 30 }
+  },
   "headers": [
     {
       "source": "/sw.js",

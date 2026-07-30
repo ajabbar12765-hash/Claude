@@ -145,5 +145,5 @@ export const meta = {
   description:
     'Queries every licensed hotel API that has a key set, merges them by hotel and shows what each site quoted. Set RAPIDAPI_KEY for Booking.com and Tripadvisor, and MAKCORPS_API_KEY for a further multi-vendor comparison. Any one of them is enough to start.',
   quotaNote:
-    'Sources queried in parallel, several pages deep, and the server caches for 15 minutes so free tiers hold up.',
+    'Sources queried in parallel and walked until the listing runs out, so a large city returns a few hundred hotels rather than one page. The server caches for 15 minutes so free tiers hold up.',
 }

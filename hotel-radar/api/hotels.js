@@ -16,6 +16,8 @@
 // GET /api/hotels?provider=travelpayouts&location=Lake%20Como
 //                &checkIn=2026-09-10&checkOut=2026-09-13&adults=2
 
+import { walkPages, pageBudget } from '../lib/paginate.js'
+
 // The built-in engine is free to re-run; a licensed API is not. Live results
 // barely move within a quarter of an hour, so cache them for that long and
 // spend the quota on coverage instead.
@@ -207,19 +209,20 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
   const dest = (destJson?.data || []).find((d) => d.dest_id) || destJson?.data?.[0]
   if (!dest?.dest_id) throw new Error(`RapidAPI could not resolve "${city}" to a destination`)
 
-  // Step 2: the price search. One page is about twenty hotels, which is far
-  // fewer than a city actually has, so walk several pages. Each page is one
-  // upstream call, which is why the server cache below is generous.
-  const PAGES = 4
-  const pageResults = await Promise.all(
-    Array.from({ length: PAGES }, async (_, i) => {
+  // Step 2: the price search. One page is about twenty hotels, far fewer than
+  // a city actually has, so walk the listing until it runs out — see
+  // lib/paginate.js for why the walk is adaptive rather than a fixed count.
+  const rows = await walkPages({
+    maxPages: pageBudget(process.env.RAPIDAPI_MAX_PAGES, 16, 40),
+    idOf: (row) => row?.hotel_id ?? row?.property?.id ?? row?.property?.name ?? row?.hotel_name,
+    fetchPage: async (pageNumber) => {
       const params = new URLSearchParams({
         dest_id: String(dest.dest_id),
         search_type: dest.search_type || 'CITY',
         adults: String(adults || 2),
         room_qty: String(rooms || 1),
         currency_code: 'EUR',
-        page_number: String(i + 1),
+        page_number: String(pageNumber),
       })
       if (checkIn) params.set('arrival_date', checkIn)
       if (checkOut) params.set('departure_date', checkOut)
@@ -228,17 +231,9 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
       if (!r.ok) return []
       const j = await r.json()
       return j?.data?.hotels || j?.data?.result || []
-    })
-  )
-
-  // Later pages repeat entries once the list runs out, so de-duplicate.
-  const seen = new Set()
-  const rows = pageResults.flat().filter((row) => {
-    const id = row?.hotel_id ?? row?.property?.id ?? row?.property?.name ?? row?.hotel_name
-    if (!id || seen.has(id)) return false
-    seen.add(id)
-    return true
+    },
   })
+
   if (!rows.length) throw new Error(`RapidAPI returned no hotels for ${city} on these dates`)
 
   return rows.flatMap((row) => {
@@ -283,6 +278,12 @@ async function rapidapi({ location, checkIn, checkOut, adults, rooms }) {
 //   RAPIDAPI_KEY        booking-com15 and tripadvisor16 on RapidAPI
 //   MAKCORPS_API_KEY    api.makcorps.com, itself a multi-vendor comparator
 
+// Tripadvisor prefixes result titles with their rank ("1. Hotel Danieli"),
+// which changes between pages, so strip it before using the name as an id.
+function cleanTitle(title) {
+  return title ? String(title).replace(/^\d+\.\s*/, '') : null
+}
+
 async function fromTripadvisor({ location, checkIn, checkOut, adults, rooms }) {
   const key = process.env.RAPIDAPI_KEY
   if (!key) return { site: 'Tripadvisor', skipped: 'RAPIDAPI_KEY not set', rows: [] }
@@ -299,26 +300,41 @@ async function fromTripadvisor({ location, checkIn, checkOut, adults, rooms }) {
   const geoId = geoJson?.data?.[0]?.geoId
   if (!geoId) return { site: 'Tripadvisor', error: `no geoId for ${city}`, rows: [] }
 
-  const params = new URLSearchParams({
-    geoId: String(geoId),
-    pageNumber: '1',
-    currencyCode: 'EUR',
-    adults: String(adults || 2),
-    rooms: String(rooms || 1),
+  // Same reasoning as Booking above — one page is a fraction of a city. Fewer
+  // pages than Booking, because this side is mainly here to add a second quote
+  // to hotels the merge already has.
+  let lastStatus = null
+  const raw = await walkPages({
+    maxPages: pageBudget(process.env.TRIPADVISOR_MAX_PAGES, 8, 20),
+    idOf: (r) => cleanTitle(r?.title),
+    fetchPage: async (pageNumber) => {
+      const params = new URLSearchParams({
+        geoId: String(geoId),
+        pageNumber: String(pageNumber),
+        currencyCode: 'EUR',
+        adults: String(adults || 2),
+        rooms: String(rooms || 1),
+      })
+      if (checkIn) params.set('checkIn', checkIn)
+      if (checkOut) params.set('checkOut', checkOut)
+
+      const res = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, { headers })
+      lastStatus = res.status
+      if (!res.ok) return []
+      const json = await res.json()
+      return json?.data?.data || []
+    },
   })
-  if (checkIn) params.set('checkIn', checkIn)
-  if (checkOut) params.set('checkOut', checkOut)
 
-  const res = await fetch(`https://${host}/api/v1/hotels/searchHotels?${params}`, { headers })
-  if (!res.ok) return { site: 'Tripadvisor', error: `search ${res.status}`, rows: [] }
-  const json = await res.json()
+  if (!raw.length && lastStatus !== 200) {
+    return { site: 'Tripadvisor', error: `search ${lastStatus}`, rows: [] }
+  }
 
-  const rows = (json?.data?.data || []).flatMap((r) => {
-    const raw = r.priceForDisplay || r.price || ''
-    const amount = Number(String(raw).replace(/[^0-9.]/g, ''))
+  const rows = raw.flatMap((r) => {
+    const amount = Number(String(r.priceForDisplay || r.price || '').replace(/[^0-9.]/g, ''))
     if (!amount) return []
     return [{
-      name: r.title ? String(r.title).replace(/^\d+\.\s*/, '') : null,
+      name: cleanTitle(r.title),
       stars: null,
       rating: typeof r.bubbleRating?.rating === 'number' ? r.bubbleRating.rating * 2 : null,
       lat: null,
