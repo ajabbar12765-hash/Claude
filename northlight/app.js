@@ -59,7 +59,11 @@ chapters.forEach((c) => visibilityObserver.observe(c));
    ------------------------------------------------------------ */
 const topbar = document.getElementById('chrome');
 const progressBar = document.getElementById('progressBar');
+const tickLinks = new Map(
+  Array.from(document.querySelectorAll('.ticks-nav a')).map((a) => [a.dataset.tick, a])
+);
 let ticking = false;
+let activeChapter = '';
 
 function onScrollFrame() {
   ticking = false;
@@ -99,16 +103,23 @@ function onScrollFrame() {
       section.style.setProperty('--exit-o', clamp(1 - away * 1.15, 0, 1).toFixed(3));
       section.style.setProperty('--exit-y', `${(p * 34).toFixed(1)}px`);
       section.style.setProperty('--exit-s', (1 - away * 0.05).toFixed(3));
+      section.style.setProperty('--back-s', (1 + away * 0.07).toFixed(3));
     }
 
-    /* hero visuals drift slower than the copy */
-    const stage = section.querySelector('[data-parallax] .scene');
-    if (stage) stage.style.setProperty('--par', `${(-p * 30).toFixed(1)}px`);
+    /* the object drifts slower than the copy and settles into full size
+       as its chapter reaches the middle of the screen */
+    const object = section.querySelector('[data-parallax] .scene');
+    if (object) {
+      object.style.setProperty('--par', `${(-p * 30).toFixed(1)}px`);
+      object.style.setProperty('--obj-s', (1 - away * 0.07).toFixed(3));
+    }
   });
 
-  /* the chrome picks up the accent of whichever chapter you're on */
-  if (nearest && nearest.dataset.accent && document.body.dataset.accent !== nearest.dataset.accent) {
-    document.body.dataset.accent = nearest.dataset.accent;
+  /* chrome + chapter dots pick up the accent of whichever chapter you're on */
+  if (nearest && nearest.id !== activeChapter) {
+    activeChapter = nearest.id;
+    if (nearest.dataset.accent) document.body.dataset.accent = nearest.dataset.accent;
+    tickLinks.forEach((link, id) => link.classList.toggle('is-active', id === activeChapter));
   }
 }
 
