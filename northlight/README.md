@@ -94,19 +94,19 @@ in `index.html`.
 
 | What it says | Where | Section |
 |---|---|---|
-| `from £900` / `from £2,400` / `from £4,500` | `.tier-price` | What we build |
+| `from PKR 25,000` / `60,000` / `150,000` | `.tier-price` | What we build |
 | 10 days / 4 weeks / 6 weeks delivery | `.tiers ul` + `.pane-when` | What we build, Process |
 | Two rounds of revisions included | Process pane 02, FAQ | Process, FAQ |
 | 50% deposit, 50% on launch | `.footnote`, FAQ | Process, FAQ |
 | 30 days of free fixes after launch | Process pane 04, FAQ | Process, FAQ |
-| "Walk away and keep your deposit" | FAQ | FAQ |
+| Booking deposit is non-refundable | FAQ | FAQ |
 | Up to 50 products on a store build | `.tiers ul` | What we build |
 | Ten founding slots | Headline + perks | Waitlist |
 | `hello@northlight.studio` | footer | Footer |
 
-The refund line in the FAQ ("you can walk away and keep your deposit") is the
-one with real money attached — decide whether you actually want to offer that
-before it goes live.
+Prices are set for **local Pakistani clients, starting rates** — deliberately
+low to win the first few projects. Raise them once you have two or three
+finished sites to point at; the numbers live in one place (`.tier-price`).
 
 ## Editing the page
 
