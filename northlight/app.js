@@ -108,11 +108,12 @@ function onScrollFrame() {
 
     /* the object drifts slower than the copy and settles into full size
        as its chapter reaches the middle of the screen */
-    const object = section.querySelector('[data-parallax] .scene');
-    if (object) {
+    section.querySelectorAll('[data-parallax] .scene').forEach((object) => {
       object.style.setProperty('--par', `${(-p * 30).toFixed(1)}px`);
       object.style.setProperty('--obj-s', (1 - away * 0.07).toFixed(3));
-    }
+      /* the object turns on its axis as its chapter passes through */
+      object.style.setProperty('--scroll-ry', `${(p * 15).toFixed(2)}deg`);
+    });
   });
 
   /* chrome + chapter dots pick up the accent of whichever chapter you're on */

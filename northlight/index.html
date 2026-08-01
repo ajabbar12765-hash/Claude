@@ -4,10 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Northlight — Web design studio</title>
-<meta name="description" content="Northlight is a web design studio. Sites that look expensive and load instantly. Join the waitlist for one of ten founding client slots." />
+<meta name="description" content="Northlight is a web design studio. Sites that look expensive and load instantly. Fixed price, four weeks, you own everything. Join the waitlist for one of ten founding client slots." />
 <meta name="theme-color" content="#05060a" />
 <meta property="og:title" content="Northlight — Web design studio" />
-<meta property="og:description" content="Design that stops the scroll. Now taking founding clients." />
+<meta property="og:description" content="Design that stops the scroll. Fixed price, four weeks, now taking founding clients." />
 <meta property="og:type" content="website" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2305060a'/><path d='M10 22V10l12 12V10' stroke='%23b9a2ff' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,7 +19,6 @@
 
 <a class="skip-link" href="#waitlist">Skip to the waitlist</a>
 
-<!-- ───────────────────────── fixed chrome ───────────────────────── -->
 <header class="chrome" id="chrome">
   <a class="wordmark" href="#top" aria-label="Northlight, back to top">
     <svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
@@ -34,12 +33,11 @@
 
 <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
 
-<!-- chapter indicator, keynote-style -->
 <nav class="ticks-nav" id="ticksNav" aria-label="Sections">
   <a href="#hero"      data-tick="hero"      aria-label="Opening"><span></span></a>
   <a href="#problem"   data-tick="problem"   aria-label="The problem"><span></span></a>
-  <a href="#answer"    data-tick="answer"    aria-label="The difference"><span></span></a>
-  <a href="#build"     data-tick="build"     aria-label="What we build"><span></span></a>
+  <a href="#answer"    data-tick="answer"    aria-label="What you get"><span></span></a>
+  <a href="#build"     data-tick="build"     aria-label="What we build and what it costs"><span></span></a>
   <a href="#process"   data-tick="process"   aria-label="How it works"><span></span></a>
   <a href="#standards" data-tick="standards" aria-label="Our standards"><span></span></a>
   <a href="#waitlist"  data-tick="waitlist"  aria-label="Waitlist"><span></span></a>
@@ -56,23 +54,36 @@
     <p class="line" data-anim style="--i:2">Sites that look expensive and load instantly.</p>
     <div class="actions" data-anim style="--i:3">
       <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
-      <a class="btn btn-ghost" href="#build">See the work we do</a>
+      <a class="btn btn-ghost" href="#build">See what it costs</a>
     </div>
 
-    <div class="stage" data-anim style="--i:4" data-parallax>
+    <ul class="strip" data-anim style="--i:4">
+      <li>Fixed price, agreed up front</li>
+      <li>Live in four weeks</li>
+      <li>You own everything</li>
+    </ul>
+
+    <div class="stage" data-anim style="--i:5" data-parallax>
       <div class="scene" data-tilt>
-        <div class="browser">
-          <div class="browser-bar">
-            <span class="tl"></span><span class="tl"></span><span class="tl"></span>
-            <span class="url">northlight.studio</span>
+        <div class="slab browser-slab" style="--sw: clamp(250px, 34vw, 430px); --sh: clamp(165px, 22vw, 275px); --d: 24px;">
+          <div class="face f-front browser">
+            <div class="browser-bar">
+              <span class="tl"></span><span class="tl"></span><span class="tl"></span>
+              <span class="url">northlight.studio</span>
+            </div>
+            <div class="browser-body">
+              <div class="bb-nav"><span class="bb-logo"></span><span class="bb-pill"></span></div>
+              <div class="bb-hero"></div>
+              <div class="bb-line w70"></div>
+              <div class="bb-line w45"></div>
+              <div class="bb-grid"><i></i><i></i><i></i></div>
+            </div>
           </div>
-          <div class="browser-body">
-            <div class="bb-nav"><span class="bb-logo"></span><span class="bb-pill"></span></div>
-            <div class="bb-hero"></div>
-            <div class="bb-line w70"></div>
-            <div class="bb-line w45"></div>
-            <div class="bb-grid"><i></i><i></i><i></i></div>
-          </div>
+          <div class="face f-back"></div>
+          <div class="face f-left"></div>
+          <div class="face f-right"></div>
+          <div class="face f-top"></div>
+          <div class="face f-bottom"></div>
         </div>
         <div class="chip chip-a"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4.5 13H11l-1 9 8.5-11H12l1-9z"/></svg><span>Fast by default</span></div>
         <div class="chip chip-b"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17V7m6 10V4m6 13v-6m4 10H4"/></svg><span>Built to convert</span></div>
@@ -87,7 +98,7 @@
   </a>
 </section>
 
-<!-- ───── 2. the problem — headline over the visual ───── -->
+<!-- ───── 2. the problem ───── -->
 <section class="chapter overlay" data-accent="magenta" data-snap id="problem">
   <div class="glow"></div>
 
@@ -106,36 +117,68 @@
     <p class="eyebrow" data-anim style="--i:0">The problem</p>
     <h2 class="display" data-anim style="--i:1">Most sites<br />are wallpaper.</h2>
     <p class="line" data-anim style="--i:2">Seen once. Never remembered.</p>
+
+    <ul class="symptoms" data-anim style="--i:3">
+      <li>
+        <span class="sym-no">01</span>
+        <strong>A template everyone recognises</strong>
+        <span>Same layout, same stock photos, same six competitors.</span>
+      </li>
+      <li>
+        <span class="sym-no">02</span>
+        <strong>Four seconds before anything appears</strong>
+        <span>Half your visitors are gone before the page paints.</span>
+      </li>
+      <li>
+        <span class="sym-no">03</span>
+        <strong>No obvious reason to get in touch</strong>
+        <span>No price, no proof, no next step. So they leave.</span>
+      </li>
+    </ul>
   </div>
 </section>
 
-<!-- ───── 3. the answer — one lit object ───── -->
-<section class="chapter overlay" data-accent="amber" data-snap id="answer">
+<!-- ───── 3. what you actually get ───── -->
+<section class="chapter" data-accent="amber" data-snap id="answer">
   <div class="glow"></div>
+  <div class="beat">
+    <p class="eyebrow" data-anim style="--i:0">What you get</p>
+    <h2 class="display" data-anim style="--i:1">Yours won't be.</h2>
+    <p class="line" data-anim style="--i:2">Every project includes all of it. Nothing is an add-on.</p>
 
-  <div class="backdrop" data-parallax aria-hidden="true">
-    <div class="scene">
-      <div class="monolith">
-        <div class="mono-face">
-          <span class="mono-bar"></span>
-          <span class="mono-hero"></span>
-          <span class="mono-line w60"></span>
-          <span class="mono-line w35"></span>
+    <div class="split" data-anim style="--i:3">
+      <div class="stage" data-parallax>
+        <div class="scene" data-tilt>
+          <div class="slab spin" style="--sw: clamp(180px, 22vw, 260px); --sh: clamp(240px, 30vw, 350px); --d: 34px;">
+            <div class="face f-front mono-face">
+              <span class="mono-bar"></span>
+              <span class="mono-hero"></span>
+              <span class="mono-line w60"></span>
+              <span class="mono-line w35"></span>
+            </div>
+            <div class="face f-back mono-back"></div>
+            <div class="face f-left"></div>
+            <div class="face f-right"></div>
+            <div class="face f-top"></div>
+            <div class="face f-bottom"></div>
+          </div>
+          <div class="reflection"></div>
         </div>
-        <div class="mono-edge"></div>
       </div>
-      <div class="reflection"></div>
+
+      <ul class="gets">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>A design made for you</strong>No templates, no theme with your logo dropped in.</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>The words written for you</strong>You answer questions on one call; we write the copy.</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>Built mobile-first</strong>Designed for a phone, then scaled up. Not the reverse.</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>Domain and analytics set up</strong>Connected, tested and working before you see it live.</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>A walkthrough at handover</strong>A recorded session so you can edit it yourself.</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>The code is yours</strong>No lock-in, no monthly fee to keep it online.</li>
+      </ul>
     </div>
   </div>
-
-  <div class="beat">
-    <p class="eyebrow" data-anim style="--i:0">The difference</p>
-    <h2 class="display" data-anim style="--i:1">Yours won't be.</h2>
-    <p class="line" data-anim style="--i:2">Art-directed, hand-built, unmistakably yours.</p>
-  </div>
 </section>
 
-<!-- ───── 4. what we build ───── -->
+<!-- ───── 4. what we build + what it costs ───── -->
 <section class="chapter" data-accent="cyan" data-snap id="build">
   <div class="glow"></div>
   <div class="beat">
@@ -146,19 +189,55 @@
       <div class="scene devices" data-tilt>
         <figure class="device desktop">
           <div class="screen"><span class="s-bar"></span><span class="s-hero"></span><span class="s-line"></span></div>
-          <figcaption>Brand sites</figcaption>
         </figure>
         <figure class="device tablet">
           <div class="screen"><span class="s-hero tall"></span><span class="s-line"></span></div>
-          <figcaption>Landing pages</figcaption>
         </figure>
         <figure class="device phone">
           <div class="screen"><span class="s-hero tall"></span><span class="s-cart"></span></div>
-          <figcaption>Online stores</figcaption>
         </figure>
         <div class="reflection"></div>
       </div>
     </div>
+
+    <!-- ▸▸ PRICES ARE PLACEHOLDERS — set these to your real numbers ◂◂ -->
+    <ul class="tiers" data-anim style="--i:3">
+      <li>
+        <h3>Landing pages</h3>
+        <p class="tier-price"><span>from</span> £900</p>
+        <ul>
+          <li>One page, built to convert</li>
+          <li>Copy written with you</li>
+          <li>Analytics and goal tracking</li>
+          <li>Live in about 10 days</li>
+        </ul>
+      </li>
+      <li class="featured">
+        <span class="tier-flag">Most asked for</span>
+        <h3>Brand sites</h3>
+        <p class="tier-price"><span>from</span> £2,400</p>
+        <ul>
+          <li>Four to six pages, art-directed</li>
+          <li>Full copywriting included</li>
+          <li>Contact forms and booking links</li>
+          <li>Live in about four weeks</li>
+        </ul>
+      </li>
+      <li>
+        <h3>Online stores</h3>
+        <p class="tier-price"><span>from</span> £4,500</p>
+        <ul>
+          <li>Shopify or custom build</li>
+          <li>Up to 50 products loaded</li>
+          <li>Checkout, shipping and tax set up</li>
+          <li>Live in about six weeks</li>
+        </ul>
+      </li>
+    </ul>
+
+    <p class="footnote" data-anim style="--i:4">
+      Founding-client pricing, fixed in writing before anything starts. No hourly billing, no surprise invoices.
+    </p>
   </div>
 </section>
 
@@ -172,12 +251,40 @@
 
     <div class="stage wide" data-anim style="--i:3" data-parallax>
       <ol class="scene panes" data-tilt>
-        <li class="pane"><span class="pane-no">01</span><span class="pane-label">Discovery</span></li>
-        <li class="pane"><span class="pane-no">02</span><span class="pane-label">Design</span></li>
-        <li class="pane"><span class="pane-no">03</span><span class="pane-label">Build</span></li>
-        <li class="pane"><span class="pane-no">04</span><span class="pane-label">Launch</span></li>
+        <li class="pane">
+          <span class="pane-no">01</span>
+          <span class="pane-label">Discovery</span>
+          <span class="pane-when">Day 1</span>
+          <span class="pane-detail">One 45-minute call. What you sell, who buys it, what the site has to do.</span>
+          <span class="pane-you">You bring: logo, photos, anything you already have.</span>
+        </li>
+        <li class="pane">
+          <span class="pane-no">02</span>
+          <span class="pane-label">Design</span>
+          <span class="pane-when">Week 1</span>
+          <span class="pane-detail">A real clickable design of your actual site — not a mood board.</span>
+          <span class="pane-you">You bring: one round of notes. Two revisions included.</span>
+        </li>
+        <li class="pane">
+          <span class="pane-no">03</span>
+          <span class="pane-label">Build</span>
+          <span class="pane-when">Weeks 2–3</span>
+          <span class="pane-detail">Hand-built and tested on real phones, not just a browser window.</span>
+          <span class="pane-you">You bring: nothing. This part is on us.</span>
+        </li>
+        <li class="pane">
+          <span class="pane-no">04</span>
+          <span class="pane-label">Launch</span>
+          <span class="pane-when">Week 4</span>
+          <span class="pane-detail">Domain connected, analytics on, walkthrough recorded, keys handed over.</span>
+          <span class="pane-you">Then: 30 days of fixes included, free.</span>
+        </li>
       </ol>
     </div>
+
+    <p class="footnote" data-anim style="--i:4">
+      Half to book your slot, half on launch day. Nothing in between.
+    </p>
   </div>
 </section>
 
@@ -188,20 +295,27 @@
     <p class="eyebrow" data-anim style="--i:0">Our standards</p>
     <h2 class="display" data-anim style="--i:1">Fast is a<br />design decision.</h2>
 
-    <div class="stage" data-anim style="--i:2" data-parallax>
-      <div class="scene" data-tilt>
-        <div class="gauge">
-          <svg viewBox="0 0 120 120" aria-hidden="true">
-            <circle class="g-track" cx="60" cy="60" r="52" />
-            <circle class="g-fill" cx="60" cy="60" r="52" />
-          </svg>
-          <div class="gauge-num"><strong data-count="100">100</strong><span>Performance target</span></div>
+    <div class="split" data-anim style="--i:2">
+      <div class="stage" data-parallax>
+        <div class="scene" data-tilt>
+          <div class="gauge">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="g-track" cx="60" cy="60" r="52" />
+              <circle class="g-fill" cx="60" cy="60" r="52" />
+            </svg>
+            <div class="gauge-num"><strong data-count="100">100</strong><span>Performance target</span></div>
+          </div>
+          <div class="reflection"></div>
         </div>
-        <div class="reflection"></div>
       </div>
-    </div>
 
-    <p class="line" data-anim style="--i:3">Sub-second loads. AA contrast. Yours to own.</p>
+      <ul class="gets">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>Sub-second first paint on 4G</strong>Tested on a mid-range Android, not just fast office wifi.</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>Tested at four screen widths</strong>375, 768, 1024 and 1440 pixels, every page, every time.</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>WCAG AA contrast, full keyboard access</strong>Usable with a screen reader and without a mouse.</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><strong>You own the code, domain and analytics</strong>In your accounts, in your name, from day one.</li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -241,7 +355,6 @@
           </div>
         </div>
 
-        <!-- honeypot: hidden from people, catches bots -->
         <div class="hp" aria-hidden="true">
           <label for="wl-company">Company</label>
           <input id="wl-company" name="company" type="text" tabindex="-1" autocomplete="off" />
@@ -283,6 +396,45 @@
         <strong>A direct line</strong><span>You talk to the designer.</span>
       </li>
     </ul>
+
+    <div class="faq" data-anim style="--i:5">
+      <h3 class="faq-title">Before you ask</h3>
+
+      <details>
+        <summary>How long does it really take?<span class="chev" aria-hidden="true"></span></summary>
+        <p>Four weeks for a brand site, about ten days for a single landing page, roughly six for a store — counted from the discovery call, not from the deposit. The clock pauses if we're waiting on you for photos or feedback, which is the only thing that usually slips a date.</p>
+      </details>
+
+      <details>
+        <summary>What if I don't like the design?<span class="chev" aria-hidden="true"></span></summary>
+        <p>You see a real clickable design in week one, before any of it is built. Two rounds of revisions are included at that stage, because changing a design is cheap and changing a finished site is not. If it's still not right after that, you can walk away and keep your deposit.</p>
+      </details>
+
+      <details>
+        <summary>Do I have to write the copy?<span class="chev" aria-hidden="true"></span></summary>
+        <p>No. You answer questions on the discovery call and we write it. If you'd rather write it yourself, that's fine too — just get it to us before the build week.</p>
+      </details>
+
+      <details>
+        <summary>Can I edit the site myself afterwards?<span class="chev" aria-hidden="true"></span></summary>
+        <p>Yes. At handover you get a recorded walkthrough showing how to change text, swap images and add pages. No monthly fee, no permission needed, no calling us to change a phone number.</p>
+      </details>
+
+      <details>
+        <summary>What happens after launch?<span class="chev" aria-hidden="true"></span></summary>
+        <p>Thirty days of fixes included, free — anything broken, anything wrong, anything you spot late. After that you can keep it yourself or ask us about ongoing care, but nothing is compulsory.</p>
+      </details>
+
+      <details>
+        <summary>How does payment work?<span class="chev" aria-hidden="true"></span></summary>
+        <p>Half to book your slot in the calendar, half on launch day. The price is fixed in writing before anything starts, so the number you agree is the number you pay.</p>
+      </details>
+
+      <details>
+        <summary>Who will I actually be working with?<span class="chev" aria-hidden="true"></span></summary>
+        <p>The designer who builds your site, directly. No account manager, no handover to a junior, no ticket queue. That's also why the number of slots is capped.</p>
+      </details>
+    </div>
   </div>
 </section>
 

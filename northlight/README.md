@@ -85,6 +85,29 @@ JSON.parse(localStorage.getItem('northlight:waitlist'))
 
 ---
 
+## ⚠ Numbers and promises you need to confirm
+
+The page now states prices, timelines and terms. They are **placeholders written
+to be plausible**, not decisions you've made. Check every one of these before
+you send the link to anyone who might hold you to it. All of them are plain text
+in `index.html`.
+
+| What it says | Where | Section |
+|---|---|---|
+| `from £900` / `from £2,400` / `from £4,500` | `.tier-price` | What we build |
+| 10 days / 4 weeks / 6 weeks delivery | `.tiers ul` + `.pane-when` | What we build, Process |
+| Two rounds of revisions included | Process pane 02, FAQ | Process, FAQ |
+| 50% deposit, 50% on launch | `.footnote`, FAQ | Process, FAQ |
+| 30 days of free fixes after launch | Process pane 04, FAQ | Process, FAQ |
+| "Walk away and keep your deposit" | FAQ | FAQ |
+| Up to 50 products on a store build | `.tiers ul` | What we build |
+| Ten founding slots | Headline + perks | Waitlist |
+| `hello@northlight.studio` | footer | Footer |
+
+The refund line in the FAQ ("you can walk away and keep your deposit") is the
+one with real money attached — decide whether you actually want to offer that
+before it goes live.
+
 ## Editing the page
 
 Everything a non-developer would want to change is in `index.html` as plain
