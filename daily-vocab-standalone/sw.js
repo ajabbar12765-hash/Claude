@@ -1,4 +1,4 @@
-var CACHE='daily-vocab-wiki-v7';
+var CACHE='daily-vocab-wiki-v8';
 var ASSETS=['./','index.html','manifest.webmanifest','icon-192.png'];
 self.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(ASSETS)}).then(function(){return self.skipWaiting()}))});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.map(function(x){if(x!==CACHE)return caches.delete(x)}))}).then(function(){return self.clients.claim()}))});
