@@ -16,7 +16,7 @@
    ============================================================ */
 
 const CONFIG = {
-  WAITLIST_ENDPOINT: '',
+  WAITLIST_ENDPOINT: 'https://formspree.io/f/xlgqygjn',
   STORAGE_KEY: 'northlight:waitlist',
   SUCCESS_MESSAGE: "We'll be in touch before we open to everyone else.",
 };
