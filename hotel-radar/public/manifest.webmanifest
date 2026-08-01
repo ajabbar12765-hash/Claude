@@ -1,0 +1,26 @@
+{
+  "name": "Hotel Radar",
+  "short_name": "Radar",
+  "description": "Always-on hotel deal watch. Set a budget, get a message the moment a stay drops into range.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0d14",
+  "theme_color": "#0a0d14",
+  "categories": ["travel", "shopping", "utilities"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

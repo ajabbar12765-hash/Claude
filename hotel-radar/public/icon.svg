@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hotel Radar">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#151b28" />
+      <stop offset="1" stop-color="#080b12" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd977" />
+      <stop offset="1" stop-color="#e2a012" />
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+
+  <!-- radar rings -->
+  <g fill="none" stroke="url(#gold)" stroke-linecap="round">
+    <circle cx="256" cy="256" r="150" stroke-opacity="0.18" stroke-width="10" />
+    <circle cx="256" cy="256" r="104" stroke-opacity="0.3" stroke-width="10" />
+    <circle cx="256" cy="256" r="58" stroke-opacity="0.5" stroke-width="10" />
+  </g>
+
+  <!-- sweep -->
+  <path d="M256 256 L256 96 A160 160 0 0 1 369 143 Z" fill="url(#gold)" opacity="0.22" />
+
+  <!-- ping -->
+  <circle cx="256" cy="256" r="22" fill="url(#gold)" />
+  <circle cx="342" cy="180" r="16" fill="#fb7185" />
+</svg>
