@@ -132,6 +132,8 @@ border:1px solid var(--line);border-radius:var(--radius);background:var(--card);
 .hist:active{transform:scale(.99)}
 .hist .hw{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--brand)}
 .hist .hd{color:var(--muted);font-size:13.5px;margin-top:2px}
+.missed{font-family:var(--sans);font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+color:var(--amber);background:rgba(217,131,36,.12);border:1px solid rgba(217,131,36,.35);border-radius:999px;padding:2px 8px;vertical-align:2px;margin-left:6px}
 .hist .hdt{color:var(--faint);font-size:12.5px;white-space:nowrap}
 .empty{color:var(--muted);text-align:center;padding:40px 12px;font-size:15px}
 .empty .big{font-size:32px;display:block;margin-bottom:10px}
