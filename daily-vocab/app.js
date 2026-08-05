@@ -48,6 +48,27 @@
     if(i===state.curIdx)i=(i+1)%WORDS.length; /* goal just ended today: don't repeat the same word */
     state.curIdx=i; state.curDate=T; logHistory();
   }
+  /* Days you didn't open the app left gaps in History. The word for a date is
+     derived from that date, so past days can be reconstructed exactly. They're
+     tagged so they never inflate the streak or the calendar. */
+  function backfillHistory(){
+    if(!WORDS.length||!state.history.length)return false;
+    var have={};state.history.forEach(function(h){have[h.date]=1;});
+    var earliest=state.history.map(function(h){return h.date;}).sort()[0];
+    var d=parseK(earliest),T=tk(),added=0,guard=0;
+    while(tk(d)<T&&guard<400){
+      var k=tk(d);
+      if(!have[k]){
+        var i=dailyIdx(d);
+        state.history.push({date:k,index:i,word:WORDS[i].word,backfilled:true});
+        have[k]=1;added++;
+      }
+      d.setDate(d.getDate()+1);guard++;
+    }
+    if(added)state.history.sort(function(a,b){return a.date<b.date?-1:1;});
+    return added>0;
+  }
+
   /* index handed over from the widget via ?w= */
   function handoffIdx(){
     try{
@@ -105,7 +126,7 @@
   function metaHTML(w){return '<span class="ipa">'+esc(w.ipa)+'</span><span class="pos">'+esc(w.pos)+'</span>';}
   function detailHTML(w){return '<h3>'+esc(w.word)+'</h3><p class="meta">'+metaHTML(w)+'</p>'+bodyHTML(w);}
 
-  function streak(){if(!state.history.length)return 0;var days={};state.history.forEach(function(h){days[h.date]=true;});var n=0,d=new Date();if(!days[tk(d)])d.setDate(d.getDate()-1);while(days[tk(d)]){n++;d.setDate(d.getDate()-1);}return n;}
+  function streak(){if(!state.history.length)return 0;var days={};state.history.forEach(function(h){if(!h.backfilled)days[h.date]=true;});var n=0,d=new Date();if(!days[tk(d)])d.setDate(d.getDate()-1);while(days[tk(d)]){n++;d.setDate(d.getDate()-1);}return n;}
   function renderStreak(){var el=id("streakWrap"),s=streak();el.innerHTML=s>=2?'<span class="streak">Current streak: '+s+' days</span>':"";}
 
   function renderToday(){
@@ -138,8 +159,12 @@
   /* ---------- goals ---------- */
   function createGoal(word,days){
     if(activeGoal()){toast("Finish your current word first.");sv("goals");return;}
-    var w=WORDS.filter(function(x){return x.word===word;})[0];if(!w)return;
+    var wi=-1;for(var wj=0;wj<WORDS.length;wj++){if(WORDS[wj].word===word){wi=wj;break;}}
+    if(wi<0)return;
+    var w=WORDS[wi];
     state.goals.unshift({id:"g"+Date.now(),word:word,def:w.definition,target:days,startDate:tk(),checkins:[]});
+    /* practising a word from History makes it the current word, so the goal locks it */
+    state.curIdx=wi;state.curDate=tk();logHistory();
     save();toast("Goal set — practice \u201c"+word+"\u201d for "+days+" days. The word stays until you finish.");renderAll();sv("today");
   }
   function checkin(gid){
@@ -169,8 +194,8 @@
     return el;
   }
   function renderGoals(){var l=id("goalsList");l.innerHTML="";if(!state.goals.length){l.innerHTML='<div class="empty"><span class="big">&#9873;</span>No goals yet. On Today, select Set a practice goal to lock a word until you master it.</div>';return;}state.goals.forEach(function(g){l.appendChild(goalNode(g,false));});}
-  function renderHist(){var l=id("historyList");var items=state.history.slice().sort(function(a,b){return a.date<b.date?1:-1;});l.innerHTML="";if(!items.length){l.innerHTML='<div class="empty"><span class="big">&#128214;</span>No words yet — check back tomorrow.</div>';return;}items.forEach(function(h){var w=WORDS[h.index];if(!w)return;var n=document.createElement("div");n.className="hist";n.innerHTML='<div><div class="hw">'+esc(w.word)+'</div><div class="hd">'+esc(w.definition)+'</div></div><div class="hdt">'+(h.date===tk()?"Today":shortD(h.date))+'</div>';n.addEventListener("click",function(){openDetail(w);});l.appendChild(n);});}
-  function activeDaySet(){var s={};state.history.forEach(function(h){s[h.date]=1;});state.goals.forEach(function(g){g.checkins.forEach(function(d){s[d]=1;});});return s;}
+  function renderHist(){var l=id("historyList");var items=state.history.slice().sort(function(a,b){return a.date<b.date?1:-1;});l.innerHTML="";if(!items.length){l.innerHTML='<div class="empty"><span class="big">&#128214;</span>No words yet — check back tomorrow.</div>';return;}items.forEach(function(h){var w=WORDS[h.index];if(!w)return;var n=document.createElement("div");n.className="hist";n.innerHTML='<div><div class="hw">'+esc(w.word)+(h.backfilled?' <span class="missed">missed</span>':"")+'</div><div class="hd">'+esc(w.definition)+'</div></div><div class="hdt">'+(h.date===tk()?"Today":shortD(h.date))+'</div>';n.addEventListener("click",function(){openDetail(w);});l.appendChild(n);});}
+  function activeDaySet(){var s={};state.history.forEach(function(h){if(!h.backfilled)s[h.date]=1;});state.goals.forEach(function(g){g.checkins.forEach(function(d){s[d]=1;});});return s;}
   function renderCalendar(){
     var wrap=id("calWrap");if(!wrap)return;
     var active=activeDaySet();
@@ -334,6 +359,7 @@
     refresh();notifyBtn();sv("today");
   }
   function refresh(){
+    try{if(backfillHistory())save();}catch(e){}
     try{ensureCurrentWord();}catch(e){try{state.curIdx=dayNum()%WORDS.length;state.curDate=tk();notice=null;save();}catch(_){}}
     try{renderAll();}catch(e){try{var w=wod();id("headword").textContent=w.word;id("meta").innerHTML=metaHTML(w);id("cardBody").innerHTML=bodyHTML(w);}catch(_){}}
   }
