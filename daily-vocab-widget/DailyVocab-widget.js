@@ -208,14 +208,26 @@ function buildWidget(family) {
 const family = config.widgetFamily || "large";
 const widget = buildWidget(family);
 
-if (config.runsInWidget) {
-  Script.setWidget(widget);
-} else if (OPEN_APP_WHEN_TAPPED && APP_URL) {
-  // Tapped while the widget is set to "Run Script" -> hand over to the app.
-  Safari.open(appLink(wordOfDay().idx));
-} else {
-  if (family === "small") await widget.presentSmall();
-  else if (family === "medium") await widget.presentMedium();
-  else await widget.presentLarge();
+// Everything is braced and wrapped in an async function on purpose: a bare
+// top-level "await" inside a braceless if/else fails to parse in Scriptable.
+async function run() {
+  if (config.runsInWidget) {
+    Script.setWidget(widget);
+  } else if (OPEN_APP_WHEN_TAPPED && APP_URL) {
+    // Tapped while the widget is set to "Run Script" -> hand over to the app.
+    Safari.open(appLink(wordOfDay().idx));
+  } else if (family === "small") {
+    await widget.presentSmall();
+  } else if (family === "medium") {
+    await widget.presentMedium();
+  } else {
+    await widget.presentLarge();
+  }
+  Script.complete();
 }
-Script.complete();
+run();
+
+// ---------------------------------------------------------------------------
+// END OF FILE. If this line is missing in Scriptable, the paste was cut short
+// -- select all, delete, and paste the whole file again.
+// ---------------------------------------------------------------------------
