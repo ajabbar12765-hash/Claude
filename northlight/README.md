@@ -99,6 +99,7 @@ in `index.html`.
 | "Founding rates for the first ten projects only" | `.footnote` | What we build |
 | 10 days / 4 weeks / 6 weeks delivery | `.tiers ul` + `.pane-when` | What we build, Process |
 | Two rounds of revisions included | Process pane 02, FAQ | Process, FAQ |
+| Client supplies all copy and photos (you do not write) | `.gets`, tiers, FAQ | What you get, What we build, FAQ |
 | 50% deposit, 50% on launch | `.footnote`, FAQ | Process, FAQ |
 | 30 days of free fixes after launch | Process pane 04, FAQ | Process, FAQ |
 | Booking deposit is non-refundable | FAQ | FAQ |
