@@ -95,6 +95,8 @@ in `index.html`.
 | What it says | Where | Section |
 |---|---|---|
 | `from PKR 25,000` / `60,000` / `150,000` | `.tier-price` | What we build |
+| Struck standard rates `40,000` / `95,000` / `240,000` | `.tier-was` | What we build |
+| "Founding rates for the first ten projects only" | `.footnote` | What we build |
 | 10 days / 4 weeks / 6 weeks delivery | `.tiers ul` + `.pane-when` | What we build, Process |
 | Two rounds of revisions included | Process pane 02, FAQ | Process, FAQ |
 | 50% deposit, 50% on launch | `.footnote`, FAQ | Process, FAQ |

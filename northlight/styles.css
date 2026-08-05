@@ -913,6 +913,29 @@ button, input, select { font: inherit; color: inherit; }
   text-transform: uppercase;
   color: var(--fg-faint);
 }
+
+/* founding discount: struck standard rate + the money saved */
+.tier-was {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--fg-faint);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  letter-spacing: -.02em;
+}
+.tier-save {
+  justify-self: start;
+  margin-top: -4px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent-soft);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
 .tiers ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
 .tiers ul li {
   position: relative;
