@@ -39,9 +39,23 @@
     if(last && last.date===k && last.index===i) return;
     state.history.push({date:k,index:i,word:WORDS[i].word});
   }
+  /* The daily word is derived from the date, so the app and the home-screen
+     widget always agree. (Previously this incremented by one per opened day,
+     which drifted apart from the widget whenever a day was skipped.) */
+  function dailyIdx(d){return ((dayNum(d)%WORDS.length)+WORDS.length)%WORDS.length;}
   function advanceWord(T){
-    state.curIdx=((state.curIdx==null?dayNum()%WORDS.length:state.curIdx)+1)%WORDS.length;
-    state.curDate=T; logHistory();
+    var i=dailyIdx();
+    if(i===state.curIdx)i=(i+1)%WORDS.length; /* goal just ended today: don't repeat the same word */
+    state.curIdx=i; state.curDate=T; logHistory();
+  }
+  /* index handed over from the widget via ?w= */
+  function handoffIdx(){
+    try{
+      var v=new URLSearchParams(location.search).get("w");
+      if(v===null)return null;
+      var n=parseInt(v,10);
+      return (isFinite(n)&&n>=0&&n<WORDS.length)?n:null;
+    }catch(e){return null;}
   }
   /* the active (incomplete, unbroken) goal for the current word, if any */
   function activeGoal(){
@@ -57,9 +71,12 @@
     while(tk(d)<T){ if(g.checkins.indexOf(tk(d))===-1) return true; d.setDate(d.getDate()+1); }
     return false;
   }
+  var widgetWordIdx=null; /* set when opened from the home-screen widget */
   function ensureCurrentWord(){
     var T=tk();
-    if(state.curIdx==null){ state.curIdx=dayNum()%WORDS.length; state.curDate=T; logHistory(); save(); return; }
+    var handoff=handoffIdx();
+    if(handoff!==null)widgetWordIdx=handoff;
+    if(state.curIdx==null){ state.curIdx=(handoff!==null?handoff:dailyIdx()); state.curDate=T; logHistory(); save(); return; }
     var g=activeGoal();
     if(g){
       if(hasMissedDay(g,T)){
@@ -70,8 +87,9 @@
       /* goal on track and incomplete -> keep the word locked */
       return;
     }
-    /* no active goal -> a fresh word each new day */
-    if(state.curDate!==T){ advanceWord(T); save(); }
+    /* no goal: follow the date (or the widget's word if we were opened from it) */
+    var want=(handoff!==null?handoff:dailyIdx());
+    if(state.curIdx!==want || state.curDate!==T){ state.curIdx=want; state.curDate=T; logHistory(); save(); }
   }
 
   /* ---------- rendering ---------- */
@@ -105,6 +123,14 @@
     var pc=id("pcWord");if(pc)pc.textContent=w.word;
     renderStreak();
     var box=id("todayGoalBox");box.innerHTML="";
+    /* opened from the widget while a goal locks a different word — explain, don't confuse */
+    if(g && widgetWordIdx!==null && widgetWordIdx!==state.curIdx){
+      var other=WORDS[widgetWordIdx];
+      var n=document.createElement("div");
+      n.className="note note-teal";
+      n.innerHTML='<span class="lab">Why this differs from your widget</span>You’re still practising <b>'+esc(w.word)+'</b> for this goal, so the app keeps showing it. Today’s calendar word is <b>'+esc(other.word)+'</b> — it’ll appear here once the goal finishes.';
+      box.appendChild(n);
+    }
     if(g)box.appendChild(goalNode(g,true));
     if(notice){toast(notice);notice=null;}
   }
