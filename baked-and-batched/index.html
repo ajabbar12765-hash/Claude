@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baked and Batched — Small-batch cookies, baked to order</title>
+<meta name="description" content="Baked and Batched bakes small-batch cookies to order — chocolate chunk, marbled, Nutella, Lotus, red velvet, oatmeal and raisin. Boxes of six and twelve, delivered fresh.">
+<meta name="theme-color" content="#FBF7F5">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Baked and Batched — Small-batch cookies, baked to order">
+<meta property="og:description" content="Small-batch cookies, baked to order. Pick any two flavours per box.">
+<meta property="og:image" content="assets/cookies/marbled.png">
+
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+
+<!-- Fonts are self-hosted: no third-party requests, nothing to break if a CDN is down. -->
+<link rel="preload" href="assets/fonts/PlayfairDisplay-400-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Inter-400-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Parisienne-400-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ══ persistent chrome ══════════════════════════════════════════════ -->
+<header class="topbar" id="topbar">
+  <a class="wordmark" href="#top" aria-label="Baked and Batched — home">
+    <span class="wordmark__circle" aria-hidden="true"></span>
+    <span class="wordmark__lines">
+      <span class="wordmark__top">Baked</span>
+      <span class="wordmark__and">and</span>
+      <span class="wordmark__bot">Batched</span>
+    </span>
+  </a>
+
+  <nav class="nav" aria-label="Primary">
+    <ul class="nav__list" id="navList">
+      <li><a href="#flavours">Flavours</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#boxes">Boxes</a></li>
+      <li><a href="#visit">Order</a></li>
+    </ul>
+  </nav>
+
+  <a class="pill pill--solid topbar__cta" data-wa="Hi Baked and Batched! I'd like to place a cookie order.">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.13h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.36c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24Zm4.52-6.17c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.2-.58.2-1.08.15-1.18-.06-.11-.23-.17-.48-.29Z"/></svg>
+    <span>Order</span>
+  </a>
+
+  <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="navList">
+    <span></span><span></span>
+  </button>
+</header>
+
+<main id="main">
+
+<!-- ══ 1. hero ════════════════════════════════════════════════════════ -->
+<section class="scene scene--hero" id="top" style="--accent:#C98B87; --glow:#F0DCD6; --glow-2:#EFE2D4">
+  <div class="scene__glow" data-par="0.10" aria-hidden="true"></div>
+
+  <div class="scene__inner">
+    <p class="eyebrow reveal">Small batch · Baked to order</p>
+
+    <h1 class="hero__title reveal">
+      <span class="hero__l1">Warm from</span>
+      <span class="hero__l2"><em>the</em> oven</span>
+    </h1>
+
+    <div class="hero__stage" aria-hidden="true">
+      <div class="hero__cookie hero__cookie--l" data-par="-0.16">
+        <picture><source srcset="assets/cookies/double-chocolate.webp" type="image/webp">
+        <img src="assets/cookies/double-chocolate.png" width="755" height="527" alt="" loading="eager" decoding="async"></picture>
+      </div>
+      <div class="hero__cookie hero__cookie--c" data-par="-0.28">
+        <picture><source srcset="assets/cookies/marbled.webp" type="image/webp">
+        <img src="assets/cookies/marbled.png" width="713" height="692" alt="" loading="eager" decoding="async" fetchpriority="high"></picture>
+      </div>
+      <div class="hero__cookie hero__cookie--r" data-par="-0.20">
+        <picture><source srcset="assets/cookies/red-velvet.webp" type="image/webp">
+        <img src="assets/cookies/red-velvet.png" width="1063" height="640" alt="" loading="eager" decoding="async"></picture>
+      </div>
+    </div>
+
+    <p class="hero__sub reveal">Nine flavours, mixed and rolled the morning they go out.<br>Pick any two per box.</p>
+
+    <div class="hero__cta reveal">
+      <a class="pill pill--solid pill--lg" data-wa="Hi Baked and Batched! I'd like to place a cookie order.">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.13h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.36c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24Zm4.52-6.17c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.2-.58.2-1.08.15-1.18-.06-.11-.23-.17-.48-.29Z"/></svg>
+        <span>Order on WhatsApp</span>
+      </a>
+      <a class="pill pill--ghost pill--lg" href="#menu">See the menu</a>
+    </div>
+  </div>
+
+  <a class="scrollcue" href="#flavours" aria-label="Scroll to flavours">
+    <span class="scrollcue__line" aria-hidden="true"></span>
+  </a>
+</section>
+
+<!-- ══ 2–5. flavour showcase ══════════════════════════════════════════ -->
+<div id="flavours">
+
+  <!-- Marbled Chocolate Chunk -->
+  <section class="scene scene--flavour" style="--accent:#B98A55; --glow:#F3E3CE; --glow-2:#EFDCC8">
+    <div class="scene__glow" data-par="0.12" aria-hidden="true"></div>
+    <div class="scene__inner">
+      <p class="eyebrow reveal">Classic · Rs.&nbsp;250 each</p>
+      <div class="flavour__stack">
+        <h2 class="flavour__name" data-fx="name">Marbled</h2>
+        <div class="flavour__shot" data-fx="shot">
+          <picture><source srcset="assets/cookies/marbled.webp" type="image/webp">
+          <img src="assets/cookies/marbled.png" width="713" height="692" alt="A stack of four marbled chocolate chunk cookies, vanilla and dark chocolate dough swirled together with crackled, sugary tops." loading="lazy" decoding="async"></picture>
+        </div>
+      </div>
+      <div class="flavour__copy reveal">
+        <h3 class="flavour__sub">Marbled Chocolate Chunk</h3>
+        <p>The dreamy duo of our classic chocolate chunk and double chocolate chunk cookie gives you the best of both worlds.</p>
+        <a class="pill pill--solid" data-wa="Hi! I'd like to order the Marbled Chocolate Chunk cookies.">Order Marbled</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Double Chocolate -->
+  <section class="scene scene--flavour" style="--accent:#7B4B33; --glow:#E8D6CB; --glow-2:#DFC9BD">
+    <div class="scene__glow" data-par="0.12" aria-hidden="true"></div>
+    <div class="scene__inner">
+      <p class="eyebrow reveal">Premium · Rs.&nbsp;350 each</p>
+      <div class="flavour__stack">
+        <h2 class="flavour__name" data-fx="name">Double</h2>
+        <div class="flavour__shot" data-fx="shot">
+          <picture><source srcset="assets/cookies/double-chocolate.webp" type="image/webp">
+          <img src="assets/cookies/double-chocolate.png" width="755" height="527" alt="Four dark double chocolate cookies stacked, with crisp thin edges and dense fudgy centres." loading="lazy" decoding="async"></picture>
+        </div>
+      </div>
+      <div class="flavour__copy reveal">
+        <h3 class="flavour__sub">Double Chocolate</h3>
+        <p>Danger: our double chocolate chip cookie is overflooding with chocolate and can put you in a chocolate coma.</p>
+        <a class="pill pill--solid" data-wa="Hi! I'd like to order the Double Chocolate cookies.">Order Double Chocolate</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Red Velvet -->
+  <section class="scene scene--flavour" style="--accent:#A2565C; --glow:#EFD8D8; --glow-2:#E3C6CB">
+    <div class="scene__glow" data-par="0.12" aria-hidden="true"></div>
+    <div class="scene__inner">
+      <p class="eyebrow reveal">Premium · Rs.&nbsp;350 each</p>
+      <div class="flavour__stack">
+        <h2 class="flavour__name" data-fx="name">Red Velvet</h2>
+        <div class="flavour__shot flavour__shot--wide" data-fx="shot">
+          <picture><source srcset="assets/cookies/red-velvet.webp" type="image/webp">
+          <img src="assets/cookies/red-velvet.png" width="1063" height="640" alt="Three deep red velvet cookies with white chocolate chunks, finished with a criss-cross white chocolate drizzle." loading="lazy" decoding="async"></picture>
+        </div>
+      </div>
+      <div class="flavour__copy reveal">
+        <h3 class="flavour__sub">Red Velvet</h3>
+        <p>Filled with white chocolate chunks and topped with creamy white chocolate — all the cookie lovers are in for a treat.</p>
+        <a class="pill pill--solid" data-wa="Hi! I'd like to order the Red Velvet cookies.">Order Red Velvet</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Oatmeal and Raisins -->
+  <section class="scene scene--flavour" style="--accent:#9A6A3C; --glow:#F2E6D2; --glow-2:#E9D9C2">
+    <div class="scene__glow" data-par="0.12" aria-hidden="true"></div>
+    <div class="scene__inner">
+      <p class="eyebrow reveal">Premium · Rs.&nbsp;350 each</p>
+      <div class="flavour__stack">
+        <h2 class="flavour__name" data-fx="name">Oatmeal</h2>
+        <div class="flavour__shot flavour__shot--tall" data-fx="shot">
+          <picture><source srcset="assets/cookies/oatmeal-raisin.webp" type="image/webp">
+          <img src="assets/cookies/oatmeal-raisin.png" width="726" height="885" alt="A hand holding a thick golden oatmeal and raisin cookie studded with dark plump raisins." loading="lazy" decoding="async"></picture>
+        </div>
+      </div>
+      <div class="flavour__copy reveal">
+        <h3 class="flavour__sub">Oatmeal and Raisins</h3>
+        <p>Packed with the most scrumptious flavours, our oatmeal and raisin cookies are the answer to your cookie cravings.</p>
+        <a class="pill pill--solid" data-wa="Hi! I'd like to order the Oatmeal and Raisin cookies.">Order Oatmeal</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══ 6. full menu ═══════════════════════════════════════════════════ -->
+<section class="menu" id="menu">
+  <div class="wrap">
+    <p class="eyebrow reveal">The full list</p>
+    <h2 class="section-title reveal"><span class="script">Every</span> flavour</h2>
+
+    <div class="menu__group reveal">
+      <div class="menu__head">
+        <h3 class="menu__tier">Classic Cookies</h3>
+        <span class="tag">Rs.&nbsp;250 each</span>
+      </div>
+      <ul class="menu__list">
+        <li class="item">
+          <h4>Chocolate Chunk</h4>
+          <p>The ultimate star of the show — our classic cookie made with gooey chocolate chunks is oh, so satisfying.</p>
+        </li>
+        <li class="item">
+          <h4>Marbled Chocolate Chunk</h4>
+          <p>The dreamy duo of our classic chocolate chunk and double chocolate chunk cookie gives you the best of both worlds.</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="menu__group reveal">
+      <div class="menu__head">
+        <h3 class="menu__tier">Premium Cookies</h3>
+        <span class="tag">Rs.&nbsp;350 each</span>
+      </div>
+      <ul class="menu__list">
+        <li class="item">
+          <h4>Hershey’s Chocolate Chip</h4>
+          <p>Our Hershey’s chocolate chip cookie oozes with divine chocolate that melts in your mouth with every bite.</p>
+        </li>
+        <li class="item">
+          <h4>Nutella</h4>
+          <p>There’s no such thing as too much Nutella in our mouthwatering and decadent Nutella-filled cookie.</p>
+        </li>
+        <li class="item">
+          <h4>Lotus</h4>
+          <p>Made with Lotus and melted chocolate chunks, this cookie is heaven for cookie addicts.</p>
+        </li>
+        <li class="item">
+          <h4>Double Chocolate</h4>
+          <p>Danger: our double chocolate chip cookie is overflooding with chocolate and can put you in a chocolate coma.</p>
+        </li>
+        <li class="item">
+          <h4>Red Velvet</h4>
+          <p>Filled with white chocolate chunks and topped with creamy white chocolate, all the cookie lovers are in for a treat!</p>
+        </li>
+        <li class="item">
+          <h4>Oatmeal and Raisins</h4>
+          <p>Packed with the most scrumptious flavours, our oatmeal and raisin cookies are the answer to your cookie cravings.</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="menu__group menu__group--signature reveal">
+      <div class="menu__head">
+        <h3 class="menu__tier">Signature</h3>
+        <span class="tag tag--accent">Rs.&nbsp;500 each</span>
+      </div>
+      <ul class="menu__list">
+        <li class="item">
+          <h4>NYC Style</h4>
+          <p>Our thickest bake — a bakery-style cookie with a molten centre, sold on its own rather than by the box.</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 7. boxes ═══════════════════════════════════════════════════════ -->
+<section class="boxes" id="boxes">
+  <div class="wrap">
+    <p class="eyebrow reveal">By the box</p>
+    <h2 class="section-title reveal">Pick <span class="script">any two</span> flavours</h2>
+    <p class="lede reveal">Every box is mixed to order. Choose two flavours from the tier you’re buying and we’ll split the box evenly between them.</p>
+
+    <div class="boxgrid">
+      <article class="box reveal">
+        <p class="box__label">Box of 6</p>
+        <h3 class="box__name">Classic</h3>
+        <p class="box__price">Rs.&nbsp;1,500</p>
+        <p class="box__note">Any 2 classic flavours</p>
+        <a class="pill pill--ghost" data-wa="Hi! I'd like to order a box of 6 Classic cookies (Rs. 1,500).">Order this box</a>
+      </article>
+
+      <article class="box box--feature reveal">
+        <p class="box__label">Box of 12</p>
+        <h3 class="box__name">Classic</h3>
+        <p class="box__price">Rs.&nbsp;3,000</p>
+        <p class="box__note">Any 2 classic flavours · best value</p>
+        <a class="pill pill--solid" data-wa="Hi! I'd like to order a box of 12 Classic cookies (Rs. 3,000).">Order this box</a>
+      </article>
+
+      <article class="box reveal">
+        <p class="box__label">Box of 6</p>
+        <h3 class="box__name">Premium</h3>
+        <p class="box__price">Rs.&nbsp;2,100</p>
+        <p class="box__note">Any 2 premium flavours</p>
+        <a class="pill pill--ghost" data-wa="Hi! I'd like to order a box of 6 Premium cookies (Rs. 2,100).">Order this box</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 8. order / contact ═════════════════════════════════════════════ -->
+<section class="visit" id="visit">
+  <div class="visit__glow" aria-hidden="true"></div>
+  <div class="wrap visit__inner">
+    <img class="visit__badge reveal" src="assets/logo-badge.png" width="720" height="720"
+         alt="Baked and Batched logo — a whisk and a pink ribbon inside a hand-drawn circle." loading="lazy" decoding="async">
+    <p class="eyebrow reveal">How to order</p>
+    <h2 class="section-title reveal">Message us <span class="script">and</span> we’ll bake</h2>
+    <p class="lede reveal">
+      Send a WhatsApp with your flavours, box size and the date you need them.
+      Orders need <strong data-cfg="lead">48 hours’ notice</strong>, and we deliver across
+      <strong data-cfg="city">your city</strong>.
+    </p>
+
+    <div class="visit__cta reveal">
+      <a class="pill pill--solid pill--lg" data-wa="Hi Baked and Batched! I'd like to place a cookie order.">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.13h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.36c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24Zm4.52-6.17c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.2-.58.2-1.08.15-1.18-.06-.11-.23-.17-.48-.29Z"/></svg>
+        <span>Order on WhatsApp</span>
+      </a>
+      <a class="pill pill--ghost pill--lg" id="igLink" href="#" target="_blank" rel="noopener noreferrer">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 1.8c-3.15 0-3.52.01-4.76.07-1.15.05-1.77.24-2.19.4-.55.21-.94.47-1.35.88-.41.41-.67.8-.88 1.35-.16.42-.35 1.04-.4 2.19-.06 1.24-.07 1.61-.07 4.76s.01 3.52.07 4.76c.05 1.15.24 1.77.4 2.19.21.55.47.94.88 1.35.41.41.8.67 1.35.88.42.16 1.04.35 2.19.4 1.24.06 1.61.07 4.76.07s3.52-.01 4.76-.07c1.15-.05 1.77-.24 2.19-.4.55-.21.94-.47 1.35-.88.41-.41.67-.8.88-1.35.16-.42.35-1.04.4-2.19.06-1.24.07-1.61.07-4.76s-.01-3.52-.07-4.76c-.05-1.15-.24-1.77-.4-2.19a3.6 3.6 0 0 0-.88-1.35 3.6 3.6 0 0 0-1.35-.88c-.42-.16-1.04-.35-2.19-.4-1.24-.06-1.61-.07-4.76-.07Zm0 3.06a4.98 4.98 0 1 1 0 9.96 4.98 4.98 0 0 1 0-9.96Zm0 8.21a3.23 3.23 0 1 0 0-6.46 3.23 3.23 0 0 0 0 6.46Zm6.34-8.41a1.16 1.16 0 1 1-2.33 0 1.16 1.16 0 0 1 2.33 0Z"/></svg>
+        <span id="igLabel">Instagram</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <a class="wordmark wordmark--lg" href="#top" aria-label="Baked and Batched — back to top">
+      <span class="wordmark__circle" aria-hidden="true"></span>
+      <span class="wordmark__lines">
+        <span class="wordmark__top">Baked</span>
+        <span class="wordmark__and">and</span>
+        <span class="wordmark__bot">Batched</span>
+      </span>
+    </a>
+    <nav class="footer__nav" aria-label="Footer">
+      <a href="#flavours">Flavours</a>
+      <a href="#menu">Menu</a>
+      <a href="#boxes">Boxes</a>
+      <a href="#visit">Order</a>
+    </nav>
+    <p class="footer__meta">
+      <span data-cfg="city">Your city</span> · Baked to order ·
+      <a id="igLink2" href="#" target="_blank" rel="noopener noreferrer"><span id="igLabel2">Instagram</span></a>
+    </p>
+    <p class="footer__fine">© <span id="yr">2026</span> Baked and Batched. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
