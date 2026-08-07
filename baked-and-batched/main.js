@@ -216,22 +216,26 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
    next to the real product photography. */
 (function bite() {
   const section = document.querySelector('.scene--bite');
+  const stage = document.getElementById('biteStage');
   const img = document.getElementById('biteImg');
   const crumbs = document.getElementById('crumbs');
-  if (!section || !img || !crumbs) return;
+  if (!section || !stage || !img || !crumbs) return;
 
+  // set on the shared stage, not the img — the depth-shadow overlay and the
+  // crumb particles are siblings of the img, not descendants, so they can
+  // only read --bite-r if it lives on an ancestor they all share
   const maxRadius = () => img.getBoundingClientRect().width * 0.42;
 
   function update() {
     const r = section.getBoundingClientRect();
     const t = clamp(1 - r.top / innerHeight, 0, 1);
     const eased = 1 - Math.pow(1 - t, 2);        // ease-out — the bite lands fast, doesn't linger
-    img.style.setProperty('--bite-r', `${(eased * maxRadius()).toFixed(1)}px`);
+    stage.style.setProperty('--bite-r', `${(eased * maxRadius()).toFixed(1)}px`);
     crumbs.classList.toggle('is-crumbling', t > 0.55);
   }
 
   if (reduceMotion) {
-    img.style.setProperty('--bite-r', `${(maxRadius() * 0.55).toFixed(1)}px`);
+    stage.style.setProperty('--bite-r', `${(maxRadius() * 0.55).toFixed(1)}px`);
     crumbs.classList.add('is-crumbling');
     return;
   }

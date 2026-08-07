@@ -316,31 +316,70 @@ body::after{
   font-family:var(--display); font-size:clamp(2rem,5vw,3.6rem); font-weight:400;
   letter-spacing:-.01em; line-height:1.08; margin-bottom:var(--s-4);
 }
-.bite__stage{ position:relative; width:min(100%,420px); margin-inline:auto }
+/* --bite-r lives on the shared stage element (set by JS) so both the img's
+   mask and the depth-shadow overlay below can read the same value. */
+.bite__stage{
+  position:relative; width:min(100%,420px); margin-inline:auto;
+  --bite-r:0px; --bite-x:78%; --bite-y:24%;
+}
 .bite__img{
-  width:100%; height:auto; display:block;
+  position:relative; z-index:1; width:100%; height:auto; display:block;
   filter:drop-shadow(0 30px 40px rgba(96,62,48,.32));
   -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
-  /* the "bite" hole: JS drives --bite-r from 0 to ~42% as the chapter scrolls */
-  -webkit-mask-image:radial-gradient(circle var(--bite-r,0px) at 78% 24%, transparent 98%, black 100%);
-          mask-image:radial-gradient(circle var(--bite-r,0px) at 78% 24%, transparent 98%, black 100%);
+  -webkit-mask-position:0 0; mask-position:0 0;
+  /* Default layer compositing ("add") is a normal over-blend: a pixel only
+     stays hidden where EVERY layer agrees, i.e. the intersection of the
+     holes — with four holes in different spots that's almost always empty.
+     "intersect" (legacy: source-in) instead hides a pixel if ANY layer's
+     hole covers it, which is the union we actually want. */
+  -webkit-mask-composite:source-in; mask-composite:intersect;
+  /* the bite: one main hole plus three smaller "tooth mark" nibbles along its
+     inner rim, all scaling together off --bite-r — a real bite is never a
+     perfect circle, and one smooth circle read as a hole-punch, not a bite */
+  -webkit-mask-image:
+    radial-gradient(circle var(--bite-r) at var(--bite-x) var(--bite-y), transparent 97%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .24) at calc(var(--bite-x) - var(--bite-r) * .92) calc(var(--bite-y) + var(--bite-r) * .26), transparent 96%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .3)  at calc(var(--bite-x) - var(--bite-r) * .5)  calc(var(--bite-y) - var(--bite-r) * .82), transparent 96%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .19) at calc(var(--bite-x) - var(--bite-r) * .88) calc(var(--bite-y) - var(--bite-r) * .34), transparent 96%, black 100%);
+          mask-image:
+    radial-gradient(circle var(--bite-r) at var(--bite-x) var(--bite-y), transparent 97%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .24) at calc(var(--bite-x) - var(--bite-r) * .92) calc(var(--bite-y) + var(--bite-r) * .26), transparent 96%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .3)  at calc(var(--bite-x) - var(--bite-r) * .5)  calc(var(--bite-y) - var(--bite-r) * .82), transparent 96%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .19) at calc(var(--bite-x) - var(--bite-r) * .88) calc(var(--bite-y) - var(--bite-r) * .34), transparent 96%, black 100%);
+}
+/* a soft dark ring right at the main bite's boundary, fading onto the
+   surrounding crumb — the torn cookie face has thickness, so it casts a
+   little shadow of its own onto the surface next to it */
+.bite__depth{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:radial-gradient(circle at var(--bite-x) var(--bite-y),
+    transparent calc(var(--bite-r) - 5px),
+    rgba(35,18,10,.58) var(--bite-r),
+    rgba(35,18,10,.24) calc(var(--bite-r) + 11px),
+    transparent calc(var(--bite-r) + 24px));
 }
 .bite__caption{
   margin-top:var(--s-4); font-size:.95rem; color:var(--ink-3); font-style:italic;
 }
 .bite__crumbs{ position:absolute; inset:0; pointer-events:none; z-index:2 }
 .bite__crumbs span{
-  position:absolute; top:22%; left:78%; width:7px; height:7px; border-radius:35% 65% 60% 40%;
-  background:var(--rose-text); opacity:0; transform:translate(-50%,-50%) scale(.4);
-  transition:transform .6s cubic-bezier(.2,.8,.2,1), opacity .5s ease;
+  position:absolute; top:var(--bite-y); left:var(--bite-x);
+  width:6px; height:6px; border-radius:40% 60% 55% 45%;
+  background:var(--rose-text); box-shadow:0 2px 3px rgba(60,35,20,.35);
+  opacity:0; transform:translate(-50%,-50%) scale(.4);
+  transition:transform .65s cubic-bezier(.2,.8,.2,1), opacity .5s ease;
 }
-.bite__crumbs.is-crumbling span{ opacity:.85 }
-.bite__crumbs.is-crumbling span:nth-child(1){ transform:translate(6px,38px) scale(1) rotate(30deg) }
-.bite__crumbs.is-crumbling span:nth-child(2){ transform:translate(-28px,50px) scale(.8) rotate(-20deg) }
-.bite__crumbs.is-crumbling span:nth-child(3){ transform:translate(34px,60px) scale(.7) rotate(60deg) }
-.bite__crumbs.is-crumbling span:nth-child(4){ transform:translate(-10px,74px) scale(.9) rotate(10deg) }
-.bite__crumbs.is-crumbling span:nth-child(5){ transform:translate(52px,44px) scale(.6) rotate(-45deg) }
-.bite__crumbs.is-crumbling span:nth-child(6){ transform:translate(-44px,30px) scale(.65) rotate(15deg) }
+.bite__crumbs span:nth-child(3n+1){ width:8px; height:7px; background:#8B5A3C }
+.bite__crumbs span:nth-child(3n+2){ width:4px; height:4px; background:#C98B6C }
+.bite__crumbs.is-crumbling span{ opacity:.9 }
+.bite__crumbs.is-crumbling span:nth-child(1){ transform:translate(4px,42px) scale(1) rotate(30deg) }
+.bite__crumbs.is-crumbling span:nth-child(2){ transform:translate(-32px,54px) scale(.85) rotate(-20deg) }
+.bite__crumbs.is-crumbling span:nth-child(3){ transform:translate(38px,64px) scale(.75) rotate(60deg) }
+.bite__crumbs.is-crumbling span:nth-child(4){ transform:translate(-12px,80px) scale(.95) rotate(10deg) }
+.bite__crumbs.is-crumbling span:nth-child(5){ transform:translate(58px,46px) scale(.65) rotate(-45deg) }
+.bite__crumbs.is-crumbling span:nth-child(6){ transform:translate(-50px,32px) scale(.7) rotate(15deg) }
+.bite__crumbs.is-crumbling span:nth-child(7){ transform:translate(20px,92px) scale(.55) rotate(-70deg) }
+.bite__crumbs.is-crumbling span:nth-child(8){ transform:translate(-20px,20px) scale(.6) rotate(85deg) }
 
 /* ── faq ──────────────────────────────────────────────────────────── */
 .faq{ padding:var(--s-6) 0; background:var(--cream-2) }
