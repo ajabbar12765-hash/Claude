@@ -37,7 +37,6 @@ which flavour, the box buttons say which box — so orders arrive already labell
 | Lead time | `main.js` | "48 hours' notice" is an assumption, not supplied |
 | Prices | `index.html` | See §3 — reconciled from two sources, needs a sign-off |
 | NYC Style description | `index.html`, "Signature" block | Written from the price alone; no photo or blurb supplied |
-| Chocolate Chunk photo | — | The menu calls it "the ultimate star of the show"; still the only flavour with no photo |
 
 ---
 
@@ -132,10 +131,17 @@ rather than a cut-out — it is there to show the blush branded box, so the sett
 point.
 
 **A note on resolution.** The first set of photos came in at ~1125px wide; the later sets
-at ~740px, and the two story screenshots are compressed on top of that. The Nutella
-cut-out is only 329px across after masking, so its display width is capped to avoid
-visible upscaling. Higher-resolution originals — particularly of Hershey's and Lotus —
-would let those chapters carry a proper cut-out instead of a circular crop.
+at ~740px, and the two story screenshots are compressed on top of that. The Nutella and
+Chocolate Chunk cut-outs are only ~330-410px across after masking, so their display width
+is capped to avoid visible upscaling. Higher-resolution originals — particularly of
+Hershey's and Lotus — would let those chapters carry a proper cut-out instead of a
+circular crop.
+
+**A note on the Chocolate Chunk photo.** The source image carries the client's own
+"double chocolate chunk" caption and cocoa-dark dough, which reads more like the existing
+Double Chocolate flavour than the golden Classic Chocolate Chunk the menu describes. It's
+wired in as Chocolate Chunk per direct confirmation — worth a glance once it's live, since
+the visual doesn't match the "classic golden cookie" mental model the copy sets up.
 
 To swap in a new photo: cut it out on transparency, export `.webp` into
 `assets/cookies/`, and update the `src` and the `width`/`height` on that `<img>`.
@@ -160,7 +166,7 @@ everything renders in its final state.
 
 ## 7. Checks run
 
-- All 13 WhatsApp order buttons resolve to a valid `wa.me` link
+- All 14 WhatsApp order buttons resolve to a valid `wa.me` link
 - No horizontal scroll at 320 / 390 / 768 / 1440 px
 - All body and heading text passes WCAG AA contrast (measured against computed styles)
 - All interactive targets ≥ 44 × 44 px
