@@ -311,6 +311,37 @@ body::after{
 .menu__group--signature .menu__list{ grid-template-columns:minmax(0,1fr) }
 .menu__group--signature .item{ padding:var(--s-4) }
 
+/* ── the bite ─────────────────────────────────────────────────────── */
+.bite__title{
+  font-family:var(--display); font-size:clamp(2rem,5vw,3.6rem); font-weight:400;
+  letter-spacing:-.01em; line-height:1.08; margin-bottom:var(--s-4);
+}
+.bite__stage{ position:relative; width:min(100%,420px); margin-inline:auto }
+.bite__img{
+  width:100%; height:auto; display:block;
+  filter:drop-shadow(0 30px 40px rgba(96,62,48,.32));
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  /* the "bite" hole: JS drives --bite-r from 0 to ~42% as the chapter scrolls */
+  -webkit-mask-image:radial-gradient(circle var(--bite-r,0px) at 78% 24%, transparent 98%, black 100%);
+          mask-image:radial-gradient(circle var(--bite-r,0px) at 78% 24%, transparent 98%, black 100%);
+}
+.bite__caption{
+  margin-top:var(--s-4); font-size:.95rem; color:var(--ink-3); font-style:italic;
+}
+.bite__crumbs{ position:absolute; inset:0; pointer-events:none; z-index:2 }
+.bite__crumbs span{
+  position:absolute; top:22%; left:78%; width:7px; height:7px; border-radius:35% 65% 60% 40%;
+  background:var(--rose-text); opacity:0; transform:translate(-50%,-50%) scale(.4);
+  transition:transform .6s cubic-bezier(.2,.8,.2,1), opacity .5s ease;
+}
+.bite__crumbs.is-crumbling span{ opacity:.85 }
+.bite__crumbs.is-crumbling span:nth-child(1){ transform:translate(6px,38px) scale(1) rotate(30deg) }
+.bite__crumbs.is-crumbling span:nth-child(2){ transform:translate(-28px,50px) scale(.8) rotate(-20deg) }
+.bite__crumbs.is-crumbling span:nth-child(3){ transform:translate(34px,60px) scale(.7) rotate(60deg) }
+.bite__crumbs.is-crumbling span:nth-child(4){ transform:translate(-10px,74px) scale(.9) rotate(10deg) }
+.bite__crumbs.is-crumbling span:nth-child(5){ transform:translate(52px,44px) scale(.6) rotate(-45deg) }
+.bite__crumbs.is-crumbling span:nth-child(6){ transform:translate(-44px,30px) scale(.65) rotate(15deg) }
+
 /* ── boxes ────────────────────────────────────────────────────────── */
 .boxes{ padding:var(--s-6) 0 }
 .boxes .lede{ margin-bottom:var(--s-5) }

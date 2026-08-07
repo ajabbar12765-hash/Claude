@@ -207,3 +207,43 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
   }
   requestAnimationFrame(frame);
 })();
+
+/* ── 7. the bite ──────────────────────────────────────────────────── */
+/* A circular mask carved out of the cookie image, radius driven by how
+   far the chapter has scrolled through the viewport — reads as someone
+   taking a bite as you scroll past. CSS mask-image, not a photo composite:
+   no stock "mouth" photo would match this shoot's lighting or feel honest
+   next to the real product photography. */
+(function bite() {
+  const section = document.querySelector('.scene--bite');
+  const img = document.getElementById('biteImg');
+  const crumbs = document.getElementById('crumbs');
+  if (!section || !img || !crumbs) return;
+
+  const maxRadius = () => img.getBoundingClientRect().width * 0.42;
+
+  function update() {
+    const r = section.getBoundingClientRect();
+    const t = clamp(1 - r.top / innerHeight, 0, 1);
+    const eased = 1 - Math.pow(1 - t, 2);        // ease-out — the bite lands fast, doesn't linger
+    img.style.setProperty('--bite-r', `${(eased * maxRadius()).toFixed(1)}px`);
+    crumbs.classList.toggle('is-crumbling', t > 0.55);
+  }
+
+  if (reduceMotion) {
+    img.style.setProperty('--bite-r', `${(maxRadius() * 0.55).toFixed(1)}px`);
+    crumbs.classList.add('is-crumbling');
+    return;
+  }
+
+  let ticking = false;
+  function request() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { update(); ticking = false; });
+  }
+  addEventListener('scroll', request, { passive: true });
+  addEventListener('resize', request);
+  addEventListener('load', request);
+  request();
+})();
