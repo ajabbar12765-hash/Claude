@@ -172,3 +172,38 @@ onStick();
 
 // keep the sticky bar working even when choreography is disabled
 if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
+
+/* ── 6. pointer-reactive tilt ─────────────────────────────────────── */
+/* A cookie tilts in 3D toward the cursor, like it's a real object catching
+   light — the depth cue a flat product photo can't give on its own. Applied
+   to the <img> inside each cookie wrapper, never the wrapper itself, so it
+   composes cleanly with the wrapper's own scroll-driven transform instead
+   of one overwriting the other. Skipped on touch devices (no cursor to react
+   to) and under prefers-reduced-motion. */
+(function tilt() {
+  if (reduceMotion || matchMedia('(hover: none)').matches) return;
+
+  const targets = [...document.querySelectorAll('.hero__cookie img, [data-fx="shot"] img')];
+  if (!targets.length) return;
+
+  let px = innerWidth / 2, py = innerHeight / 2;
+  addEventListener('pointermove', e => { px = e.clientX; py = e.clientY; }, { passive: true });
+
+  const state = targets.map(() => ({ rx: 0, ry: 0 }));
+
+  function frame() {
+    targets.forEach((img, i) => {
+      const r = img.getBoundingClientRect();
+      if (r.bottom < -50 || r.top > innerHeight + 50) return;   // offscreen, skip the work
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const targetRy = clamp(((px - cx) / innerWidth) * 16, -8, 8);
+      const targetRx = clamp((-(py - cy) / innerHeight) * 16, -8, 8);
+      const s = state[i];
+      s.rx += (targetRx - s.rx) * 0.07;
+      s.ry += (targetRy - s.ry) * 0.07;
+      img.style.transform = `perspective(900px) rotateX(${s.rx.toFixed(2)}deg) rotateY(${s.ry.toFixed(2)}deg)`;
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
