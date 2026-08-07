@@ -160,6 +160,29 @@ everything renders in its final state.
 
 ## 8. Hosting
 
-Static files — any host works. Netlify, Vercel, Cloudflare Pages and GitHub Pages will
-all take this folder as-is with no build command. Upload the whole `baked-and-batched`
-directory, keeping the `assets/` folder alongside `index.html`.
+Static files — any host works, with no build step. Keep the `assets/` folder alongside
+`index.html`; every path in the site is relative.
+
+### Vercel (recommended — auto-deploys on every push)
+
+`vercel.json` is already committed, so the framework, caching and security headers are
+set on import. In Vercel: **Add New → Project → import this repo**, then set
+
+- **Root Directory:** `baked-and-batched`
+- **Framework Preset:** Other
+- **Build Command:** none
+
+Fonts are cached for a year (they never change), images for a week, CSS/JS for an hour
+so edits go live quickly.
+
+### Netlify Drop (fastest way to show the client)
+
+Drag the `baked-and-batched` folder onto <https://app.netlify.com/drop>. Live in about
+thirty seconds, no account needed for a first look.
+
+### A note on deploying by API
+
+The site carries ~5 MB of binary assets (fonts and photography). Push-based tooling that
+inlines file contents in a single request is not a practical channel for it — connect the
+git repo instead, or drag the folder. Nothing about the site needs changing to deploy; it
+is the upload method that has to suit the payload.
