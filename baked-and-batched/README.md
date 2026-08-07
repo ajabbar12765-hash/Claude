@@ -37,8 +37,7 @@ which flavour, the box buttons say which box — so orders arrive already labell
 | Lead time | `main.js` | "48 hours' notice" is an assumption, not supplied |
 | Prices | `index.html` | See §3 — reconciled from two sources, needs a sign-off |
 | NYC Style description | `index.html`, "Signature" block | Written from the price alone; no photo or blurb supplied |
-| Chocolate Chunk photo | — | The menu calls it "the ultimate star of the show" but no photo exists yet |
-| Lotus / Hershey's photos | — | No confirmed shot of either |
+| Chocolate Chunk photo | — | The menu calls it "the ultimate star of the show"; still the only flavour with no photo |
 
 ---
 
@@ -50,7 +49,7 @@ styles.css      design tokens + layout
 main.js         CONFIG block, then scroll behaviour
 fonts.css       @font-face rules for the self-hosted fonts
 assets/
-  cookies/      cut-out product shots (.webp served, .png fallback)
+  cookies/      cut-out product shots (WebP)
   fonts/        Playfair Display, Inter, Parisienne — latin subsets
   logo-badge.png, favicon.png
 ```
@@ -107,25 +106,39 @@ break if a CDN goes down, and no visitor data leaves the host.
 
 ## 5. Photography
 
-The supplied photos had their backgrounds shot in (powder blue, slate, cream, white).
-Each cookie was masked out to a transparent PNG so it floats in the section lighting
+The supplied photos had their backgrounds shot in (powder blue, slate, cream, white, red
+gingham). Each cookie was masked out to transparency so it floats in the section lighting
 instead of sitting in a visible rectangle.
 
-Served as WebP (~60–100 KB each) with PNG fallback via `<picture>`. Every `<img>` carries
-explicit `width`/`height` so nothing shifts as the page loads.
+**Hershey's and Lotus are handled differently.** Both arrived as Instagram story
+screenshots, with interface chrome across the top and the cookie bleeding off the frame
+edges — no clean cut-out was possible from either. Both are top-down shots, so each is
+presented as a soft-edged circular crop that reads as a cookie disc, which sits naturally
+beside the cut-outs. Both also carried a heavy yellow cast from story compression; that is
+corrected with a partial grey-world white balance (35%, then biased back warm, or baked
+dough turns khaki).
+
+**Images are served as WebP only, with no PNG fallback.** This is deliberate: every
+browser without WebP support also lacks `IntersectionObserver` and CSS custom properties,
+both of which this page already requires. A fallback that can never fire is not
+robustness — it was 4.3 MB of dead weight, and removing it took the folder from 6.0 MB to
+1.9 MB. The one JPEG that remains is `box-flatlay.jpg`, kept because social scrapers do
+not reliably render WebP share cards.
+
+Every `<img>` carries explicit `width`/`height` so nothing shifts as the page loads.
 
 The flat lay in the box section (`assets/box-flatlay.jpg`) is used as a framed photo
 rather than a cut-out — it is there to show the blush branded box, so the setting is the
 point.
 
-**A note on resolution.** The first set of photos came in at ~1125px wide; the later set
-at ~740px. The Nutella cut-out in particular is only 329px across after masking, so its
-display width is capped to avoid visible upscaling. Higher-resolution originals of any
-of these would let the cookies run larger on screen.
+**A note on resolution.** The first set of photos came in at ~1125px wide; the later sets
+at ~740px, and the two story screenshots are compressed on top of that. The Nutella
+cut-out is only 329px across after masking, so its display width is capped to avoid
+visible upscaling. Higher-resolution originals — particularly of Hershey's and Lotus —
+would let those chapters carry a proper cut-out instead of a circular crop.
 
-To swap in a new photo: cut it out on transparency, export `.webp` + `.png` into
-`assets/cookies/`, and update both the `srcset`/`src` and the `width`/`height` on that
-`<img>`.
+To swap in a new photo: cut it out on transparency, export `.webp` into
+`assets/cookies/`, and update the `src` and the `width`/`height` on that `<img>`.
 
 ---
 
@@ -147,7 +160,7 @@ everything renders in its final state.
 
 ## 7. Checks run
 
-- All 11 WhatsApp order buttons resolve to a valid `wa.me` link
+- All 13 WhatsApp order buttons resolve to a valid `wa.me` link
 - No horizontal scroll at 320 / 390 / 768 / 1440 px
 - All body and heading text passes WCAG AA contrast (measured against computed styles)
 - All interactive targets ≥ 44 × 44 px
