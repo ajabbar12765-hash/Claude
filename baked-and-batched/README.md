@@ -11,18 +11,20 @@ Everything the business needs to set lives in one block at the top of **`main.js
 
 ```js
 const CONFIG = {
-  whatsapp:  '',          // REQUIRED — full international format, digits only
-  instagram: '',          // handle without the @ ('' hides the Instagram buttons)
-  city:      'Karachi',   // delivery city, shown in the order section + footer
+  whatsapp:  '923212008851',   // set — +92 321 2008851
+  instagram: '',               // STILL NEEDED — handle without the @
+  city:      'Karachi',        // set
   lead:      '48 hours’ notice',
 };
 ```
 
-**`whatsapp` is required.** Until it is filled in, every order button renders dimmed and
-inert (and logs a warning to the console) rather than linking somewhere broken.
+The WhatsApp number is in and all 11 order buttons are live. If it ever needs changing:
+country code + number, digits only, no `+`, spaces or dashes — `0300 1234567` in Pakistan
+becomes `923001234567`. If the field is ever emptied, every order button renders dimmed
+and inert rather than linking somewhere broken.
 
-Format: country code + number, digits only, no `+`, spaces or dashes.
-`0300 1234567` in Pakistan becomes `923001234567`.
+`instagram` is still blank, so the Instagram buttons are hidden. Add the handle and they
+appear in the order section and the footer automatically.
 
 Each button opens WhatsApp with its own message pre-written — the flavour buttons say
 which flavour, the box buttons say which box — so orders arrive already labelled.
@@ -31,9 +33,12 @@ which flavour, the box buttons say which box — so orders arrive already labell
 
 | Item | Where | Note |
 |---|---|---|
+| Instagram handle | `main.js` | Buttons stay hidden until it's set |
+| Lead time | `main.js` | "48 hours' notice" is an assumption, not supplied |
 | Prices | `index.html` | See §3 — reconciled from two sources, needs a sign-off |
 | NYC Style description | `index.html`, "Signature" block | Written from the price alone; no photo or blurb supplied |
 | Chocolate Chunk photo | — | The menu calls it "the ultimate star of the show" but no photo exists yet |
+| Lotus / Hershey's photos | — | No confirmed shot of either |
 
 ---
 
@@ -109,6 +114,15 @@ instead of sitting in a visible rectangle.
 Served as WebP (~60–100 KB each) with PNG fallback via `<picture>`. Every `<img>` carries
 explicit `width`/`height` so nothing shifts as the page loads.
 
+The flat lay in the box section (`assets/box-flatlay.jpg`) is used as a framed photo
+rather than a cut-out — it is there to show the blush branded box, so the setting is the
+point.
+
+**A note on resolution.** The first set of photos came in at ~1125px wide; the later set
+at ~740px. The Nutella cut-out in particular is only 329px across after masking, so its
+display width is capped to avoid visible upscaling. Higher-resolution originals of any
+of these would let the cookies run larger on screen.
+
 To swap in a new photo: cut it out on transparency, export `.webp` + `.png` into
 `assets/cookies/`, and update both the `srcset`/`src` and the `width`/`height` on that
 `<img>`.
@@ -133,6 +147,7 @@ everything renders in its final state.
 
 ## 7. Checks run
 
+- All 11 WhatsApp order buttons resolve to a valid `wa.me` link
 - No horizontal scroll at 320 / 390 / 768 / 1440 px
 - All body and heading text passes WCAG AA contrast (measured against computed styles)
 - All interactive targets ≥ 44 × 44 px

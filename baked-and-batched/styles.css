@@ -223,6 +223,7 @@ body::after{
 .flavour__shot{ position:relative; z-index:1; width:min(100%,430px); will-change:transform }
 .flavour__shot--wide{ width:min(100%,600px) }
 .flavour__shot--tall{ width:min(100%,360px) }
+.flavour__shot--squat{ width:min(100%,400px) }
 .flavour__shot img{ filter:drop-shadow(0 34px 40px rgba(96,62,48,.3)) }
 .flavour__shot::after{
   content:''; position:absolute; z-index:-1; left:14%; right:14%; bottom:-5%; height:9%;
@@ -264,6 +265,11 @@ body::after{
 /* ── boxes ────────────────────────────────────────────────────────── */
 .boxes{ padding:var(--s-6) 0 }
 .boxes .lede{ margin-bottom:var(--s-5) }
+.boxshot{
+  margin:var(--s-4) auto var(--s-5); width:min(100%,540px);
+  border-radius:26px; overflow:hidden; line-height:0;
+  box-shadow:0 30px 60px -32px rgba(96,62,48,.55);
+}
 .boxgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:var(--s-3); align-items:stretch }
 .box{
   display:grid; gap:.4rem; justify-items:center; text-align:center;
@@ -311,6 +317,7 @@ body::after{
 @media (max-width:1024px) and (min-width:721px){
   /* keep the ghosted flavour name reading out either side of the cookie */
   .flavour__shot{ width:min(66%,350px) }
+  .flavour__shot--squat{ width:min(70%,340px) }
   .flavour__shot--wide{ width:min(74%,400px) }
   .flavour__shot--tall{ width:min(54%,280px) }
 }
@@ -343,7 +350,7 @@ body::after{
   .hero__cookie--c{ height:82% }
   .hero__cookie--r{ height:50%; margin-left:-8%; margin-bottom:2% }
   .flavour__name{ font-size:clamp(2.8rem,19vw,5.5rem) }
-  .flavour__shot,.flavour__shot--wide{ width:min(72%,285px) }
+  .flavour__shot,.flavour__shot--wide,.flavour__shot--squat{ width:min(72%,285px) }
   .flavour__shot--tall{ width:min(58%,230px) }
   .menu__list{ grid-template-columns:minmax(0,1fr); gap:var(--s-3) }
   .hero__cta .pill,.visit__cta .pill{ width:100% }

@@ -10,13 +10,13 @@
 const CONFIG = {
   // WhatsApp number in full international format, digits only, no + or spaces.
   // Pakistan example: 0300 1234567  ->  '923001234567'
-  whatsapp: '',                       // ←  REQUIRED. Order buttons are disabled until this is filled in.
+  whatsapp: '923212008851',           // +92 321 2008851
 
   // Instagram handle without the @. Leave '' to hide the Instagram buttons.
-  instagram: '',                      // ←  e.g. 'bakedandbatched'
+  instagram: '',                      // ←  STILL NEEDED. Leave '' to hide the Instagram buttons.
 
   // Shown in the "How to order" paragraph and the footer.
-  city: 'Karachi',                    // ←  delivery city / area
+  city: 'Karachi',                    // delivery city / area
   lead: '48 hours’ notice',           // ←  how much notice an order needs
 };
 
