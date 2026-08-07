@@ -234,10 +234,11 @@ body::after{
 .flavour__copy p{ color:var(--ink-2) }
 
 /* ── menu ─────────────────────────────────────────────────────────── */
-.menu{ padding:var(--s-7) 0; background:linear-gradient(180deg, var(--cream), var(--cream-2) 45%, var(--cream)) }
+.menu{ padding:var(--s-7) 0 var(--s-6); background:linear-gradient(180deg, var(--cream), var(--cream-2) 45%, var(--cream)) }
 .menu .eyebrow,.menu .section-title,.boxes .eyebrow,.boxes .section-title,.boxes .lede{ text-align:center }
 .menu .section-title{ margin-bottom:var(--s-6) }
 .menu__group{ margin-bottom:var(--s-6) }
+.menu__group:last-child{ margin-bottom:0 }   /* don't stack with the section padding */
 .menu__head{
   display:flex; align-items:baseline; justify-content:space-between; gap:var(--s-2);
   padding-bottom:var(--s-2); margin-bottom:var(--s-4); border-bottom:1px solid var(--line);
@@ -261,7 +262,7 @@ body::after{
 }
 
 /* ── boxes ────────────────────────────────────────────────────────── */
-.boxes{ padding:var(--s-7) 0 var(--s-6) }
+.boxes{ padding:var(--s-6) 0 }
 .boxes .lede{ margin-bottom:var(--s-5) }
 .boxgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:var(--s-3); align-items:stretch }
 .box{
