@@ -105,7 +105,21 @@ in `index.html`.
 | Booking deposit is non-refundable | FAQ | FAQ |
 | Up to 50 products on a store build | `.tiers ul` | What we build |
 | Ten founding slots | Headline + perks | Waitlist |
-| `hello@northlight.studio` | footer | Footer |
+| The three site mockups are **example builds, not client work** | `.work-grid` | Selected work |
+| "Tested on real mid-range Androids" | `.vs` table | The honest comparison |
+| "One designer … the reply comes from the person who'd be doing the work" | `.founder` | Waitlist |
+| "Where you are in Pakistan makes no difference to the price" | FAQ | FAQ |
+
+**No contact email is published anywhere on the site.** `hello@northlight.studio`
+was a placeholder for a domain nobody owns, so every link that pointed at it now
+points at the waitlist form instead. If you buy a domain and set up a mailbox,
+put the address back in the footer, the JSON-LD block and `app.js`'s error
+message — until then the form is the only way in, and it works.
+
+The "Selected work" section carries a disclosure line saying the three sites are
+Northlight's own builds rather than client projects. **Leave that line in place
+until real client work replaces the mockups** — showing example builds as if they
+were commissioned work is the one thing here that would actually get you caught out.
 
 Prices are set for **local Pakistani clients, starting rates** — deliberately
 low to win the first few projects. Raise them once you have two or three

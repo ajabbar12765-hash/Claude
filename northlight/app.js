@@ -277,7 +277,7 @@ form.addEventListener('submit', async (event) => {
     }
   } catch (err) {
     formError.textContent =
-      "We couldn't add you just now. Try again, or email hello@northlight.studio and we'll add you by hand.";
+      "We couldn't add you just now — that's on us, not you. Give it a moment and try again.";
     formError.hidden = false;
   } finally {
     submitBtn.disabled = false;

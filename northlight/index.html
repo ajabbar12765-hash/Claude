@@ -12,7 +12,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2305060a'/><path d='M10 22V10l12 12V10' stroke='%23b9a2ff' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
 <link rel="canonical" href="https://northlight-rho.vercel.app/" />
 <link rel="stylesheet" href="styles.css" />
 <!-- Structured data: tells Google what this business is. Add your real
@@ -28,7 +28,6 @@
   "areaServed": { "@type": "Country", "name": "Pakistan" },
   "serviceType": "Web design and development",
   "priceRange": "PKR 25,000 - PKR 150,000",
-  "email": "hello@northlight.studio",
   "knowsAbout": ["web design", "landing pages", "e-commerce websites", "Shopify"]
 }
 </script>
@@ -36,6 +35,9 @@
 <body>
 
 <a class="skip-link" href="#waitlist">Skip to the waitlist</a>
+
+<!-- film grain: a fixed, non-interactive texture layer over the whole page -->
+<div class="grain" aria-hidden="true"></div>
 
 <header class="chrome" id="chrome">
   <a class="wordmark" href="#top" aria-label="Northlight, back to top">
@@ -55,7 +57,9 @@
   <a href="#hero"      data-tick="hero"      aria-label="Opening"><span></span></a>
   <a href="#problem"   data-tick="problem"   aria-label="The problem"><span></span></a>
   <a href="#answer"    data-tick="answer"    aria-label="What you get"><span></span></a>
+  <a href="#work"      data-tick="work"      aria-label="Selected work"><span></span></a>
   <a href="#build"     data-tick="build"     aria-label="What we build and what it costs"><span></span></a>
+  <a href="#compare"   data-tick="compare"   aria-label="How we compare"><span></span></a>
   <a href="#process"   data-tick="process"   aria-label="How it works"><span></span></a>
   <a href="#standards" data-tick="standards" aria-label="Our standards"><span></span></a>
   <a href="#waitlist"  data-tick="waitlist"  aria-label="Waitlist"><span></span></a>
@@ -68,7 +72,7 @@
   <div class="glow"></div>
   <div class="beat">
     <p class="eyebrow" data-anim style="--i:0"><span class="dot"></span> Web design studio</p>
-    <h1 class="display" data-anim style="--i:1">Design that<br />stops the scroll.</h1>
+    <h1 class="display" data-anim style="--i:1">Design that<br /><em>stops the scroll.</em></h1>
     <p class="line" data-anim style="--i:2">Sites that look expensive and load instantly.</p>
     <div class="actions" data-anim style="--i:3">
       <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
@@ -83,7 +87,7 @@
 
     <div class="stage" data-anim style="--i:5" data-parallax>
       <div class="scene" data-tilt>
-        <div class="slab browser-slab" style="--sw: clamp(250px, 34vw, 430px); --sh: clamp(165px, 22vw, 275px); --d: 24px;">
+        <div class="slab browser-slab" style="--sw: clamp(232px, 29vw, 370px); --sh: clamp(150px, 19vw, 238px); --d: 24px;">
           <div class="face f-front browser">
             <div class="browser-bar">
               <span class="tl"></span><span class="tl"></span><span class="tl"></span>
@@ -133,7 +137,7 @@
 
   <div class="beat">
     <p class="eyebrow" data-anim style="--i:0">The problem</p>
-    <h2 class="display" data-anim style="--i:1">Most sites<br />are wallpaper.</h2>
+    <h2 class="display" data-anim style="--i:1">Most sites<br />are <em>wallpaper.</em></h2>
     <p class="line" data-anim style="--i:2">Seen once. Never remembered.</p>
 
     <ul class="symptoms" data-anim style="--i:3">
@@ -161,7 +165,7 @@
   <div class="glow"></div>
   <div class="beat">
     <p class="eyebrow" data-anim style="--i:0">What you get</p>
-    <h2 class="display" data-anim style="--i:1">Yours won't be.</h2>
+    <h2 class="display" data-anim style="--i:1">Yours <em>won't be.</em></h2>
     <p class="line" data-anim style="--i:2">Every project includes all of it. Nothing is an add-on.</p>
 
     <div class="split" data-anim style="--i:3">
@@ -196,12 +200,105 @@
   </div>
 </section>
 
-<!-- ───── 4. what we build + what it costs ───── -->
+<!-- ───── 4. selected work ─────
+     These are example builds, not client work. The disclosure line at the
+     bottom of the section says so — do not remove it until real projects
+     replace these. -->
+<section class="chapter tall" data-accent="violet" id="work">
+  <div class="glow"></div>
+  <div class="beat">
+    <p class="eyebrow" data-anim style="--i:0">Selected work</p>
+    <h2 class="display" data-anim style="--i:1">The standard<br /><em>everything is held to.</em></h2>
+    <p class="line" data-anim style="--i:2">Three builds, designed and coded exactly the way yours would be.</p>
+
+    <div class="work-grid" data-anim style="--i:3">
+
+      <figure class="site-card" data-tilt>
+        <div class="site-frame" aria-hidden="true">
+          <div class="site-bar"><i></i><i></i><i></i><span>sanaskitchen.pk</span></div>
+          <div class="site-view v-food">
+            <div class="m-nav"><span class="m-logo"></span><span class="m-links"><i></i><i></i><i></i></span></div>
+            <div class="m-hero">
+              <span class="m-kicker"></span>
+              <span class="m-title"></span>
+              <span class="m-title short"></span>
+              <span class="m-cta">Book a table</span>
+            </div>
+            <div class="m-rows">
+              <div class="m-row"><span class="m-rl"></span><span class="m-rp"></span></div>
+              <div class="m-row"><span class="m-rl w80"></span><span class="m-rp"></span></div>
+              <div class="m-row"><span class="m-rl w60"></span><span class="m-rp"></span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <strong>Sana's Kitchen</strong>
+          <span>Restaurant — menu, hours, table bookings</span>
+        </figcaption>
+      </figure>
+
+      <figure class="site-card" data-tilt>
+        <div class="site-frame" aria-hidden="true">
+          <div class="site-bar"><i></i><i></i><i></i><span>meridian.store</span></div>
+          <div class="site-view v-store">
+            <div class="m-nav"><span class="m-logo"></span><span class="m-bag"></span></div>
+            <div class="m-grid">
+              <div class="m-prod"><span class="m-shot"></span><span class="m-pl"></span><span class="m-pp"></span></div>
+              <div class="m-prod"><span class="m-shot alt"></span><span class="m-pl"></span><span class="m-pp"></span></div>
+              <div class="m-prod"><span class="m-shot alt"></span><span class="m-pl"></span><span class="m-pp"></span></div>
+              <div class="m-prod"><span class="m-shot"></span><span class="m-pl"></span><span class="m-pp"></span></div>
+            </div>
+            <span class="m-cta wide">Add to bag</span>
+          </div>
+        </div>
+        <figcaption>
+          <strong>Meridian</strong>
+          <span>Online store — 40 products, checkout, shipping</span>
+        </figcaption>
+      </figure>
+
+      <figure class="site-card" data-tilt>
+        <div class="site-frame" aria-hidden="true">
+          <div class="site-bar"><i></i><i></i><i></i><span>northlineclinic.pk</span></div>
+          <div class="site-view v-clinic">
+            <div class="m-nav"><span class="m-logo"></span><span class="m-links"><i></i><i></i></span></div>
+            <div class="m-split">
+              <div class="m-copy">
+                <span class="m-title"></span>
+                <span class="m-title short"></span>
+                <span class="m-body"></span>
+                <span class="m-body w70"></span>
+              </div>
+              <div class="m-book">
+                <span class="m-book-t"></span>
+                <span class="m-slots"><i></i><i class="on"></i><i></i></span>
+                <span class="m-cta">Confirm</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>
+          <strong>Northline Clinic</strong>
+          <span>Services — appointments, team, directions</span>
+        </figcaption>
+      </figure>
+
+    </div>
+
+    <p class="footnote disclosure" data-anim style="--i:4">
+      Straight answer: Northlight is new, so these are our own builds rather than
+      client work. We'd rather show you the standard than borrow someone else's
+      logos. Your project gets the same care — and you'll be the first name here.
+    </p>
+  </div>
+</section>
+
+<!-- ───── 5. what we build + what it costs ───── -->
 <section class="chapter" data-accent="cyan" data-snap id="build">
   <div class="glow"></div>
   <div class="beat">
     <p class="eyebrow" data-anim style="--i:0">What we build</p>
-    <h2 class="display" data-anim style="--i:1">Three things,<br />done properly.</h2>
+    <h2 class="display" data-anim style="--i:1">Three things,<br /><em>done properly.</em></h2>
 
     <div class="stage wide" data-anim style="--i:2" data-parallax>
       <div class="scene devices" data-tilt>
@@ -262,12 +359,85 @@
   </div>
 </section>
 
-<!-- ───── 5. process ───── -->
+<!-- ───── 6. the honest comparison ───── -->
+<section class="chapter tall" data-accent="magenta" id="compare">
+  <div class="glow"></div>
+  <div class="beat">
+    <p class="eyebrow" data-anim style="--i:0">The honest comparison</p>
+    <h2 class="display" data-anim style="--i:1">Why not just<br /><em>use a template?</em></h2>
+    <p class="line" data-anim style="--i:2">Fair question. Here's the whole picture, including the parts that don't flatter us.</p>
+
+    <div class="vs-wrap" data-anim style="--i:3">
+      <table class="vs">
+        <caption class="sr-only">How a template, the cheapest quote and Northlight compare</caption>
+        <thead>
+          <tr>
+            <th scope="col"><span class="sr-only">What you're comparing</span></th>
+            <th scope="col">A template</th>
+            <th scope="col">The cheapest quote</th>
+            <th scope="col" class="vs-us">Northlight</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">The design</th>
+            <td data-label="A template">Thousands of other businesses are using it</td>
+            <td data-label="Cheapest quote">Whatever was fastest to copy</td>
+            <td data-label="Northlight" class="vs-us">Drawn for your business, used once</td>
+          </tr>
+          <tr>
+            <th scope="row">On a phone</th>
+            <td data-label="A template">Heavy — themes ship code you'll never use</td>
+            <td data-label="Cheapest quote">Rarely tested past the laptop it was built on</td>
+            <td data-label="Northlight" class="vs-us">Tested on real mid-range Androids</td>
+          </tr>
+          <tr>
+            <th scope="row">The timeline</th>
+            <td data-label="A template">Live today, then weeks of fighting it</td>
+            <td data-label="Cheapest quote">"Two weeks" that becomes two months</td>
+            <td data-label="Northlight" class="vs-us">A date agreed before we start</td>
+          </tr>
+          <tr>
+            <th scope="row">The price</th>
+            <td data-label="A template">Low — plus plugins, plus your weekends</td>
+            <td data-label="Cheapest quote">Lowest, until the revisions get billed</td>
+            <td data-label="Northlight" class="vs-us">Fixed in writing. No hourly, no surprises</td>
+          </tr>
+          <tr>
+            <th scope="row">Who you deal with</th>
+            <td data-label="A template">A help forum</td>
+            <td data-label="Cheapest quote">Whoever replies that day</td>
+            <td data-label="Northlight" class="vs-us">The designer building it</td>
+          </tr>
+          <tr>
+            <th scope="row">Who owns it</th>
+            <td data-label="A template">Rented. Stop paying and it's gone</td>
+            <td data-label="Cheapest quote">Often sitting in their account</td>
+            <td data-label="Northlight" class="vs-us">Code, domain and analytics in your name</td>
+          </tr>
+          <tr>
+            <th scope="row">After launch</th>
+            <td data-label="A template">Your problem</td>
+            <td data-label="Cheapest quote">Usually silence</td>
+            <td data-label="Northlight" class="vs-us">30 days of fixes, free</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="footnote" data-anim style="--i:4">
+      If a template genuinely covers what you need, use one — we'll tell you so on
+      the call rather than sell you a build you don't need.
+    </p>
+  </div>
+</section>
+
+<!-- ───── 7. process ───── -->
 <section class="chapter" data-accent="emerald" data-snap id="process">
   <div class="glow"></div>
   <div class="beat">
     <p class="eyebrow" data-anim style="--i:0">How it works</p>
-    <h2 class="display" data-anim style="--i:1">Four weeks.<br />Start to launch.</h2>
+    <h2 class="display" data-anim style="--i:1">Four weeks.<br /><em>Start to launch.</em></h2>
     <p class="line" data-anim style="--i:2">Fixed scope, fixed price, one designer.</p>
 
     <div class="stage wide" data-anim style="--i:3" data-parallax>
@@ -309,12 +479,12 @@
   </div>
 </section>
 
-<!-- ───── 6. standards ───── -->
+<!-- ───── 8. standards ───── -->
 <section class="chapter" data-accent="blue" data-snap id="standards">
   <div class="glow"></div>
   <div class="beat">
     <p class="eyebrow" data-anim style="--i:0">Our standards</p>
-    <h2 class="display" data-anim style="--i:1">Fast is a<br />design decision.</h2>
+    <h2 class="display" data-anim style="--i:1">Fast is a<br /><em>design decision.</em></h2>
 
     <div class="split" data-anim style="--i:2">
       <div class="stage" data-parallax>
@@ -340,12 +510,12 @@
   </div>
 </section>
 
-<!-- ───── 7. waitlist ───── -->
+<!-- ───── 9. waitlist ───── -->
 <section class="chapter tall" data-accent="violet" id="waitlist">
   <div class="glow"></div>
   <div class="beat">
     <p class="eyebrow" data-anim style="--i:0"><span class="dot"></span> Founding clients</p>
-    <h2 class="display" data-anim style="--i:1">Ten slots.<br />Then we close.</h2>
+    <h2 class="display" data-anim style="--i:1">Ten slots.<br /><em>Then we close.</em></h2>
     <p class="line" data-anim style="--i:2">Join the waitlist for founding pricing and the first build dates.</p>
 
     <div class="panel" data-anim style="--i:3">
@@ -418,7 +588,20 @@
       </li>
     </ul>
 
-    <div class="faq" data-anim style="--i:5">
+    <div class="founder" data-anim style="--i:5">
+      <span class="founder-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32"><path d="M10 22V10l12 12V10" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <blockquote>
+        <p>You're not writing to an agency inbox. Northlight is one designer who
+        draws and builds every site personally — that's the whole reason there are
+        ten slots and not a hundred. When you join the list, the reply comes from
+        the person who'd be doing the work.</p>
+        <footer>The designer behind Northlight</footer>
+      </blockquote>
+    </div>
+
+    <div class="faq" data-anim style="--i:6">
       <h3 class="faq-title">Before you ask</h3>
 
       <details>
@@ -452,6 +635,16 @@
       </details>
 
       <details>
+        <summary>I already have a site. Do we start over?<span class="chev" aria-hidden="true"></span></summary>
+        <p>Not always. Sometimes the structure is fine and it's the design, speed or the way it reads on a phone that's letting it down — that's a redesign, and it's cheaper and faster than a rebuild. Send the link when you join the list and you'll get a straight answer about which one you actually need, including "keep what you have" if that's the truth.</p>
+      </details>
+
+      <details>
+        <summary>Do we need to meet in person?<span class="chev" aria-hidden="true"></span></summary>
+        <p>No. Everything runs over a call and messages — discovery, design review, launch — so where you are in Pakistan makes no difference to the price or the timeline. If you're local and would rather do the first call face to face, that's fine too.</p>
+      </details>
+
+      <details>
         <summary>Who will I actually be working with?<span class="chev" aria-hidden="true"></span></summary>
         <p>The designer who builds your site, directly. No account manager, no handover to a junior, no ticket queue. That's also why the number of slots is capped.</p>
       </details>
@@ -470,7 +663,7 @@
       <span>Northlight</span>
     </a>
     <p class="footer-note">Web design studio. Currently taking founding clients.</p>
-    <a class="footer-mail" href="mailto:hello@northlight.studio">hello@northlight.studio</a>
+    <a class="footer-mail" href="#waitlist">Join the waitlist</a>
   </div>
   <p class="copyright">© <span id="year">2026</span> Northlight Studio</p>
 </footer>
