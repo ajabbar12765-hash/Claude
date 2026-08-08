@@ -94,8 +94,10 @@ in `index.html`.
 
 | What it says | Where | Section |
 |---|---|---|
-| `from PKR 25,000` / `60,000` / `150,000` | `.tier-price` | What we build |
-| Struck standard rates `40,000` / `95,000` / `240,000` | `.tier-was` | What we build |
+| With domain: `30,000` / `65,000` / `155,000` | `.tier-now[data-with]` | What we build |
+| Without domain: `25,000` / `60,000` / `150,000` | `.tier-now[data-without]` | What we build |
+| Struck standard rates, both sets | `.tier-was` | What we build |
+| Domain first year included, ~PKR 3,500/yr to renew after | `.footnote` | What we build |
 | "Founding rates for the first ten projects only" | `.footnote` | What we build |
 | 10 days / 4 weeks / 6 weeks delivery | `.tiers ul` + `.pane-when` | What we build, Process |
 | Two rounds of revisions included | Process pane 02, FAQ | Process, FAQ |
@@ -123,7 +125,28 @@ were commissioned work is the one thing here that would actually get you caught 
 
 Prices are set for **local Pakistani clients, starting rates** — deliberately
 low to win the first few projects. Raise them once you have two or three
-finished sites to point at; the numbers live in one place (`.tier-price`).
+finished sites to point at.
+
+### Changing a price
+
+Every number lives in the markup, as a pair of `data-` attributes — `app.js`
+only reads them, so you never touch the JavaScript:
+
+```html
+<b class="tier-now" data-with="30,000" data-without="25,000">30,000</b>
+<s class="tier-was" data-with="45,000" data-without="40,000">45,000</s>
+```
+
+`data-with` is the domain-included price, `data-without` is the price when the
+client already owns a domain. Keep the visible text matching `data-with`, since
+that's the option the toggle starts on. The gap between the two is currently
+**PKR 5,000** across all three tiers: roughly PKR 3,500 for a `.com`/`.pk` first
+year plus a little for registering and connecting it.
+
+**Before you sell this:** confirm you can actually buy a domain for a client —
+you need a card that works on an international registrar, or a local reseller
+account. If you can't, switch the toggle default to "I already have one" and
+drop the included option until you can.
 
 ## Editing the page
 

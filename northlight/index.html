@@ -315,13 +315,33 @@
       </div>
     </div>
 
-    <!-- ▸▸ PRICES ARE PLACEHOLDERS — set these to your real numbers ◂◂ -->
-    <ul class="tiers" data-anim style="--i:3">
+    <!-- ▸▸ PRICES ARE PLACEHOLDERS — set these to your real numbers ◂◂
+         Every number lives in the data-* attributes below. app.js swaps
+         between the "with" and "without" set when the toggle changes;
+         nothing is calculated, so edit the attributes directly. -->
+    <fieldset class="plan-toggle" data-anim style="--i:3">
+      <legend class="sr-only">Do you need a domain name?</legend>
+      <div class="seg">
+        <input type="radio" name="domainplan" id="plan-with" value="with" checked />
+        <label for="plan-with">Domain included</label>
+        <input type="radio" name="domainplan" id="plan-without" value="without" />
+        <label for="plan-without">I already have one</label>
+      </div>
+    </fieldset>
+
+    <ul class="tiers" data-anim style="--i:4">
       <li>
         <h3>Landing pages</h3>
-        <p class="tier-price"><span>from PKR</span> 25,000 <s class="tier-was">40,000</s></p>
+        <p class="tier-price">
+          <span>from PKR</span>
+          <b class="tier-now" data-with="30,000" data-without="25,000">30,000</b>
+          <s class="tier-was" data-with="45,000" data-without="40,000">45,000</s>
+        </p>
         <p class="tier-save">Save PKR 15,000</p>
         <ul>
+          <li class="tier-domain"
+              data-with="Domain registered in your name"
+              data-without="Your existing domain connected">Domain registered in your name</li>
           <li>One page, built to convert</li>
           <li>Your text and photos, laid out properly</li>
           <li>Analytics and goal tracking</li>
@@ -331,9 +351,16 @@
       <li class="featured">
         <span class="tier-flag">Most asked for</span>
         <h3>Brand sites</h3>
-        <p class="tier-price"><span>from PKR</span> 60,000 <s class="tier-was">95,000</s></p>
+        <p class="tier-price">
+          <span>from PKR</span>
+          <b class="tier-now" data-with="65,000" data-without="60,000">65,000</b>
+          <s class="tier-was" data-with="100,000" data-without="95,000">100,000</s>
+        </p>
         <p class="tier-save">Save PKR 35,000</p>
         <ul>
+          <li class="tier-domain"
+              data-with="Domain registered in your name"
+              data-without="Your existing domain connected">Domain registered in your name</li>
           <li>Four to six pages, art-directed</li>
           <li>Your content across every page</li>
           <li>Contact forms and booking links</li>
@@ -342,9 +369,16 @@
       </li>
       <li>
         <h3>Online stores</h3>
-        <p class="tier-price"><span>from PKR</span> 150,000 <s class="tier-was">240,000</s></p>
+        <p class="tier-price">
+          <span>from PKR</span>
+          <b class="tier-now" data-with="155,000" data-without="150,000">155,000</b>
+          <s class="tier-was" data-with="245,000" data-without="240,000">245,000</s>
+        </p>
         <p class="tier-save">Save PKR 90,000</p>
         <ul>
+          <li class="tier-domain"
+              data-with="Domain registered in your name"
+              data-without="Your existing domain connected">Domain registered in your name</li>
           <li>Shopify or custom build</li>
           <li>Up to 50 products loaded</li>
           <li>Checkout, shipping and tax set up</li>
@@ -353,7 +387,16 @@
       </li>
     </ul>
 
-    <p class="footnote" data-anim style="--i:4">
+    <p class="footnote" data-anim style="--i:5">
+      <strong class="fn-lead">On the domain:</strong> the included option covers
+      buying it and the first year of registration, in your name and your account
+      — a <code>.com</code> or <code>.pk</code> at the normal going rate, not a
+      marked-up one. After year one you renew it yourself for roughly PKR 3,500 a
+      year, and nothing on your site depends on us to keep it running. Already own
+      a domain? Take PKR 5,000 off and we'll connect the one you have.
+    </p>
+
+    <p class="footnote" data-anim style="--i:6">
       Founding rates for the first ten projects only — after that the standard prices above apply. Fixed in writing before anything starts. No hourly billing, no surprise invoices.
     </p>
   </div>

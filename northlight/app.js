@@ -302,7 +302,45 @@ againBtn.addEventListener('click', () => {
 });
 
 /* ------------------------------------------------------------
-   6. odds and ends
+   6. domain-included / bring-your-own pricing toggle
+
+   Every number and every line of copy lives in the markup as
+   data-with / data-without. This only reads them, so changing a
+   price means editing index.html and nothing here.
+   ------------------------------------------------------------ */
+const planRadios = document.querySelectorAll('input[name="domainplan"]');
+const tierList = document.querySelector('.tiers');
+
+function applyPlan(plan) {
+  if (!tierList) return;
+
+  const swap = () => {
+    tierList.querySelectorAll('[data-with][data-without]').forEach((node) => {
+      const next = node.dataset[plan];
+      if (next) node.textContent = next;
+    });
+  };
+
+  /* fade the digits out, swap, fade back — so the change is noticed */
+  if (reduceMotion) {
+    swap();
+    return;
+  }
+  tierList.classList.add('is-swapping');
+  setTimeout(() => {
+    swap();
+    tierList.classList.remove('is-swapping');
+  }, 180);
+}
+
+planRadios.forEach((radio) => {
+  radio.addEventListener('change', () => {
+    if (radio.checked) applyPlan(radio.value);
+  });
+});
+
+/* ------------------------------------------------------------
+   7. odds and ends
    ------------------------------------------------------------ */
 document.getElementById('year').textContent = String(new Date().getFullYear());
 

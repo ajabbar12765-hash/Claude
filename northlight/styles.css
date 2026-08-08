@@ -1592,6 +1592,85 @@ button, input, select { font: inherit; color: inherit; }
 }
 
 /* ============================================================
+   domain-included / bring-your-own price toggle
+   Real radio inputs so keyboard and screen readers work for free;
+   the inputs sit under the labels rather than display:none, which
+   would take them out of the tab order.
+   ============================================================ */
+.plan-toggle {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  justify-content: center;
+}
+.seg {
+  position: relative;
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, .04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.seg input {
+  position: absolute;
+  opacity: 0;
+  width: 1px; height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+.seg label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  color: var(--fg-muted);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.seg label:hover { color: var(--fg); }
+.seg input:checked + label {
+  background: var(--fg);
+  color: #05060a;
+  font-weight: 600;
+  box-shadow: 0 8px 26px -12px color-mix(in srgb, var(--accent) 90%, transparent);
+}
+.seg input:focus-visible + label {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
+/* the price digits swap in rather than cutting */
+.tier-now {
+  font-weight: inherit;
+  transition: opacity .18s var(--ease);
+}
+.tiers.is-swapping .tier-now,
+.tiers.is-swapping .tier-was { opacity: .25; }
+
+.tier-domain { font-weight: 500; }
+.tier-domain::before { background: var(--accent-soft) !important; }
+
+.fn-lead { color: var(--fg-muted); font-weight: 600; }
+.footnote code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .07);
+  font-size: .92em;
+}
+
+@media (max-width: 420px) {
+  .seg { width: 100%; }
+  .seg label { flex: 1; justify-content: center; padding: 0 12px; font-size: 13.5px; }
+}
+
+/* ============================================================
    the note from the person doing the work
    ============================================================ */
 .founder {
