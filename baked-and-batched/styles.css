@@ -277,6 +277,54 @@ body::after{
 }
 .process__item p{ font-size:.86rem; color:var(--ink-3); line-height:1.55 }
 
+/* ── flavour finder quiz ──────────────────────────────────────────── */
+.quiz{ padding:var(--s-6) 0; background:var(--white) }
+.quiz .eyebrow,.quiz .section-title{ text-align:center }
+.quiz .section-title{ margin-bottom:var(--s-5) }
+.quiz__card{
+  max-width:520px; margin-inline:auto; padding:var(--s-5) var(--s-4);
+  background:var(--cream-2); border:1px solid var(--line); border-radius:28px;
+  box-shadow:0 24px 48px -30px rgba(96,62,48,.35);
+}
+.quiz__dots{ display:flex; gap:.5rem; justify-content:center; margin-bottom:var(--s-4) }
+.quiz__dots span{ width:7px; height:7px; border-radius:50%; background:var(--blush-2); transition:background-color .3s var(--ease), transform .3s var(--ease) }
+.quiz__panel{ display:none; text-align:center }
+.quiz__panel.is-active{ display:block; animation:quiz-in .4s var(--ease) both }
+@keyframes quiz-in{ from{ opacity:0; transform:translateY(10px) } to{ opacity:1; transform:none } }
+.quiz__q{
+  font-family:var(--display); font-size:clamp(1.3rem,2.6vw,1.6rem); font-weight:400;
+  color:var(--ink); margin-bottom:var(--s-4); line-height:1.3;
+}
+.quiz__opts{ display:grid; gap:.75rem }
+.quiz__opt{
+  min-height:56px; padding:.9rem 1.5rem; border-radius:18px;
+  background:var(--white); border:1px solid var(--line);
+  font-family:var(--body); font-size:.98rem; font-weight:500; color:var(--ink-2);
+  cursor:pointer; transition:border-color .2s var(--ease), background-color .2s var(--ease), transform .2s var(--ease);
+}
+.quiz__opt:hover{ border-color:var(--rose-text); background:var(--blush); color:var(--ink); transform:translateY(-2px) }
+.quiz__opt:active{ transform:translateY(0) }
+.quiz__result{ display:grid; gap:var(--s-3); justify-items:center }
+.quiz__result img{
+  width:min(100%,190px); height:auto; border-radius:50%;
+  filter:drop-shadow(0 20px 30px rgba(96,62,48,.28));
+}
+.quiz__resultCopy{ display:grid; gap:.5rem; justify-items:center }
+.quiz__resultEyebrow{ font-size:.76rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--rose-text) }
+.quiz__resultName{ font-family:var(--display); font-size:clamp(1.6rem,3vw,2.1rem); font-weight:400; color:var(--ink) }
+.quiz__resultDesc{ font-size:.95rem; color:var(--ink-2); max-width:38ch }
+.quiz__resultActions{ display:flex; flex-direction:column; align-items:center; gap:.6rem; margin-top:.5rem }
+.quiz__restart{
+  min-height:44px; padding:.4rem .8rem; background:none; border:0; cursor:pointer;
+  font-size:.86rem; color:var(--ink-3); text-decoration:underline; text-underline-offset:3px;
+  transition:color .2s var(--ease);
+}
+.quiz__restart:hover{ color:var(--rose-text) }
+@media (prefers-reduced-motion:reduce){
+  .quiz__panel.is-active{ animation:none }
+  .quiz__opt{ transition:none }
+}
+
 /* ── flavour chapters ─────────────────────────────────────────────── */
 .flavour__stack{ position:relative; display:grid; place-items:center; margin-bottom:var(--s-4) }
 .flavour__name{

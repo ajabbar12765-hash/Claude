@@ -390,3 +390,88 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
 
   update();
 })();
+
+/* ── 11. flavour finder quiz ───────────────────────────────────────── */
+/* 3 binary questions = 8 paths, mapped 1:1 to the 8 flavours already on
+   the menu. Every image/blurb/WhatsApp message below is copied verbatim
+   from the matching flavour chapter or menu entry — nothing new written
+   for this feature, so there's nothing here that could be inaccurate. */
+(function quizFinder() {
+  const card = document.getElementById('quizCard');
+  if (!card) return;
+
+  const panels = [...card.querySelectorAll('.quiz__panel')];
+  const dots = [...card.querySelectorAll('.quiz__dots span')];
+  const resultImg = document.getElementById('quizResultImg');
+  const resultName = document.getElementById('quizResultName');
+  const resultDesc = document.getElementById('quizResultDesc');
+  const resultCta = document.getElementById('quizResultCta');
+  const restartBtn = document.getElementById('quizRestart');
+
+  // index = bit0*4 + bit1*2 + bit2, in the same order the 3 questions ask
+  const FLAVOURS = [
+    { name: 'Double Chocolate', img: 'assets/cookies/double-chocolate.webp', w: 1057, h: 737,
+      desc: 'Danger: overflowing with chocolate and can put you in a chocolate coma.',
+      wa: "Hi! I'd like to order the Double Chocolate cookies." },
+    { name: 'Nutella', img: 'assets/cookies/nutella.webp', w: 658, h: 394,
+      desc: "There's no such thing as too much Nutella in our mouthwatering, decadent Nutella-filled cookie.",
+      wa: "Hi! I'd like to order the Nutella cookies." },
+    { name: 'Chocolate Chunk', img: 'assets/cookies/chocolate-chunk.webp', w: 732, h: 626,
+      desc: 'The ultimate star of the show — our classic cookie made with gooey chocolate chunks.',
+      wa: "Hi! I'd like to order the Chocolate Chunk cookies." },
+    { name: "Hershey's Chocolate Chip", img: 'assets/cookies/hersheys.webp', w: 1200, h: 1200,
+      desc: 'Oozes with divine chocolate that melts in your mouth with every bite.',
+      wa: "Hi! I'd like to order the Hershey's Chocolate Chip cookies." },
+    { name: 'Red Velvet', img: 'assets/cookies/red-velvet.webp', w: 1381, h: 832,
+      desc: 'Filled with white chocolate chunks and topped with creamy white chocolate.',
+      wa: "Hi! I'd like to order the Red Velvet cookies." },
+    { name: 'Lotus', img: 'assets/cookies/lotus.webp', w: 1200, h: 1200,
+      desc: 'Made with Lotus and melted chocolate chunks — heaven for cookie addicts.',
+      wa: "Hi! I'd like to order the Lotus cookies." },
+    { name: 'Marbled Chocolate Chunk', img: 'assets/cookies/marbled.webp', w: 998, h: 968,
+      desc: 'The dreamy duo of our classic and double chocolate chunk cookie, in one.',
+      wa: "Hi! I'd like to order the Marbled Chocolate Chunk cookies." },
+    { name: 'Oatmeal and Raisins', img: 'assets/cookies/oatmeal-raisin.webp', w: 943, h: 1150,
+      desc: 'Packed with the most scrumptious flavours — the answer to your cookie cravings.',
+      wa: "Hi! I'd like to order the Oatmeal and Raisin cookies." },
+  ];
+
+  let answers = [];
+
+  function showPanel(i) {
+    panels.forEach((p, idx) => p.classList.toggle('is-active', idx === i));
+    dots.forEach((d, idx) => d.style.background = idx < answers.length ? 'var(--rose-text)' : '');
+  }
+
+  function showResult() {
+    const index = answers[0] * 4 + answers[1] * 2 + answers[2];
+    const f = FLAVOURS[index];
+    resultImg.src = f.img;
+    resultImg.width = f.w;
+    resultImg.height = f.h;
+    resultImg.alt = f.name;
+    resultName.textContent = f.name;
+    resultDesc.textContent = f.desc;
+    const digits = String(CONFIG.whatsapp).replace(/\D/g, '');
+    if (digits) {
+      resultCta.href = `https://wa.me/${digits}?text=${encodeURIComponent(f.wa)}`;
+      resultCta.target = '_blank';
+      resultCta.rel = 'noopener noreferrer';
+    }
+    showPanel(3);
+  }
+
+  card.addEventListener('click', e => {
+    const opt = e.target.closest('.quiz__opt');
+    if (opt) {
+      answers.push(Number(opt.dataset.bit));
+      if (answers.length === 3) showResult();
+      else showPanel(answers.length);
+      return;
+    }
+    if (e.target.closest('#quizRestart')) {
+      answers = [];
+      showPanel(0);
+    }
+  });
+})();
