@@ -18,7 +18,6 @@ const CONFIG = {
   // Shown in the "How to order" paragraph and the footer.
   city: 'Karachi',                    // delivery city / area
   lead: '48 hours’ notice',           // ←  how much notice an order needs
-  leadHours: 48,                      // ←  same notice period, as a number — used for the live "ready by" estimate
 };
 
 /* ═══════════════ nothing below here needs editing ══════════════════ */
@@ -94,6 +93,18 @@ onStick();
 /* ── 4. reveal on enter ───────────────────────────────────────────── */
 (function reveals() {
   const items = document.querySelectorAll('.reveal');
+
+  // stagger index is scoped per parent, not global — each group of
+  // siblings (a menu list, a box grid, a FAQ list…) cascades from its
+  // own start instead of inheriting a huge delay from earlier sections
+  const seen = new Map();
+  items.forEach(el => {
+    const parent = el.parentElement;
+    const i = seen.get(parent) || 0;
+    el.style.setProperty('--reveal-i', Math.min(i, 5));
+    seen.set(parent, i + 1);
+  });
+
   if (reduceMotion || !('IntersectionObserver' in window)) {
     items.forEach(el => el.classList.add('is-in'));
     return;
@@ -207,24 +218,6 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
-})();
-
-/* ── 7. fresh, not shelved ────────────────────────────────────────── */
-/* A live "ready by" estimate computed from CONFIG.leadHours off the
-   visitor's own clock — genuinely tied to how this bakery actually runs
-   (made to order, never pre-baked), not a decorative flourish. */
-(function fresh() {
-  const out = document.getElementById('freshReady');
-  if (!out) return;
-
-  function render() {
-    const ready = new Date(Date.now() + CONFIG.leadHours * 60 * 60 * 1000);
-    const weekday = ready.toLocaleDateString(undefined, { weekday: 'long' });
-    const time = ready.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-    out.textContent = `${weekday}, ${time}`;
-  }
-  render();
-  setInterval(render, 60 * 1000);   // stays accurate if the tab is left open
 })();
 
 /* ── 8. first-load intro ──────────────────────────────────────────── */

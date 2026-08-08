@@ -419,6 +419,10 @@ body::after{
   box-shadow:0 24px 48px -28px rgba(96,62,48,.55);
 }
 .boxgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:var(--s-3); align-items:stretch }
+/* boxes settle in from alternating sides rather than a uniform rise —
+   reads like items sliding into place on a counter, not a fade template */
+.boxgrid .box.reveal:not(.is-in):nth-child(1){ transform:translate(-16px,22px) }
+.boxgrid .box.reveal:not(.is-in):nth-child(3){ transform:translate(16px,22px) }
 .box{
   position:relative; display:grid; gap:.4rem; justify-items:center; text-align:center;
   background:var(--white); border:1px solid var(--line); border-radius:24px;
@@ -514,11 +518,16 @@ body::after{
 .footer__fine{ font-size:.78rem; color:var(--ink-3) }
 
 /* ── scroll reveal (JS adds .is-in) ───────────────────────────────── */
-.reveal{ opacity:0; transform:translateY(22px); transition:opacity .7s var(--ease), transform .7s var(--ease) }
+/* --reveal-i is set per element by JS, scoped to its position among its
+   own .reveal siblings — so any group (menu items, FAQ entries, box
+   cards…) cascades in on its own, without hand-written nth-child rules
+   for every new list on the page. */
+.reveal{
+  opacity:0; transform:translateY(22px);
+  transition:opacity .7s var(--ease), transform .7s var(--ease);
+  transition-delay:calc(var(--reveal-i, 0) * 70ms);
+}
 .reveal.is-in{ opacity:1; transform:none }
-.reveal:nth-child(2){ transition-delay:.06s }
-.reveal:nth-child(3){ transition-delay:.12s }
-.reveal:nth-child(4){ transition-delay:.18s }
 
 /* ── responsive ───────────────────────────────────────────────────── */
 @media (max-width:1024px) and (min-width:721px){
