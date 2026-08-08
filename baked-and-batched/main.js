@@ -18,6 +18,7 @@ const CONFIG = {
   // Shown in the "How to order" paragraph and the footer.
   city: 'Karachi',                    // delivery city / area
   lead: '48 hours’ notice',           // ←  how much notice an order needs
+  leadHours: 48,                      // ←  same notice period, as a number — used for the live "ready by" estimate
 };
 
 /* ═══════════════ nothing below here needs editing ══════════════════ */
@@ -208,51 +209,22 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
   requestAnimationFrame(frame);
 })();
 
-/* ── 7. the bite ──────────────────────────────────────────────────── */
-/* A circular mask carved out of the cookie image, radius driven by how
-   far the chapter has scrolled through the viewport — reads as someone
-   taking a bite as you scroll past. CSS mask-image, not a photo composite:
-   no stock "mouth" photo would match this shoot's lighting or feel honest
-   next to the real product photography. */
-(function bite() {
-  const section = document.querySelector('.scene--bite');
-  const stage = document.getElementById('biteStage');
-  const img = document.getElementById('biteImg');
-  const crumbs = document.getElementById('crumbs');
-  const debris = document.getElementById('debris');
-  if (!section || !stage || !img || !crumbs || !debris) return;
+/* ── 7. fresh, not shelved ────────────────────────────────────────── */
+/* A live "ready by" estimate computed from CONFIG.leadHours off the
+   visitor's own clock — genuinely tied to how this bakery actually runs
+   (made to order, never pre-baked), not a decorative flourish. */
+(function fresh() {
+  const out = document.getElementById('freshReady');
+  if (!out) return;
 
-  // set on the shared stage, not the img — the depth-shadow overlay and the
-  // crumb particles are siblings of the img, not descendants, so they can
-  // only read --bite-r if it lives on an ancestor they all share
-  const maxRadius = () => img.getBoundingClientRect().width * 0.42;
-
-  function update() {
-    const r = section.getBoundingClientRect();
-    const t = clamp(1 - r.top / innerHeight, 0, 1);
-    const eased = 1 - Math.pow(1 - t, 2);        // ease-out — the bite lands fast, doesn't linger
-    stage.style.setProperty('--bite-r', `${(eased * maxRadius()).toFixed(1)}px`);
-    debris.classList.toggle('is-nibbling', t > 0.15);
-    crumbs.classList.toggle('is-crumbling', t > 0.55);
+  function render() {
+    const ready = new Date(Date.now() + CONFIG.leadHours * 60 * 60 * 1000);
+    const weekday = ready.toLocaleDateString(undefined, { weekday: 'long' });
+    const time = ready.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    out.textContent = `${weekday}, ${time}`;
   }
-
-  if (reduceMotion) {
-    stage.style.setProperty('--bite-r', `${(maxRadius() * 0.55).toFixed(1)}px`);
-    debris.classList.add('is-nibbling');
-    crumbs.classList.add('is-crumbling');
-    return;
-  }
-
-  let ticking = false;
-  function request() {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => { update(); ticking = false; });
-  }
-  addEventListener('scroll', request, { passive: true });
-  addEventListener('resize', request);
-  addEventListener('load', request);
-  request();
+  render();
+  setInterval(render, 60 * 1000);   // stays accurate if the tab is left open
 })();
 
 /* ── 8. first-load intro ──────────────────────────────────────────── */

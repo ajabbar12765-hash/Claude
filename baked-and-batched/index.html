@@ -521,26 +521,30 @@
   </div>
 </section>
 
-<!-- ══ 7b. the bite ══════════════════════════════════════════════════ -->
-<section class="scene scene--bite" style="--accent:#B98A55; --glow:#F3E3CE; --glow-2:#EFDCC8">
+<!-- ══ 7b. fresh, not shelved ════════════════════════════════════════ -->
+<section class="scene scene--fresh" style="--accent:#B98A55; --glow:#F3E3CE; --glow-2:#EFDCC8">
   <div class="scene__glow" data-par="0.12" aria-hidden="true"></div>
   <div class="scene__inner">
-    <p class="eyebrow reveal">Fair warning</p>
-    <h2 class="bite__title reveal">Good luck<br>making it <span class="script">last</span>.</h2>
+    <p class="eyebrow reveal">Nothing pre-made</p>
+    <h2 class="section-title reveal">Baked <span class="script">after</span> you order, not before</h2>
 
-    <div class="bite__stage" id="biteStage">
-      <img id="biteImg" class="bite__img" src="assets/cookies/marbled.webp" width="998" height="968"
-           alt="A marbled chocolate chunk cookie, bitten into." loading="lazy" decoding="async">
-      <div class="bite__depth" aria-hidden="true"></div>
-      <div class="bite__crumbs" id="crumbs" aria-hidden="true">
-        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <div class="fresh reveal">
+      <div class="fresh__stage">
+        <div class="fresh__glow" aria-hidden="true"></div>
+        <div class="fresh__steam" aria-hidden="true"><span></span><span></span><span></span></div>
+        <img src="assets/cookies/hersheys.webp" width="1200" height="1200"
+             alt="A warm Hershey&rsquo;s chocolate chip cookie, fresh out of the oven." loading="lazy" decoding="async">
       </div>
-      <div class="bite__debris" id="debris" aria-hidden="true">
-        <span></span><span></span><span></span><span></span><span></span><span></span>
+
+      <div class="fresh__copy">
+        <p class="fresh__eta">
+          Order right now, and your box could be ready as soon as
+          <strong id="freshReady">—</strong>.
+        </p>
+        <p class="fresh__note">Every batch is mixed, baked and boxed after your WhatsApp order lands — never off a shelf.</p>
+        <a class="pill pill--solid" data-wa="Hi Baked and Batched! I'd like to place a cookie order.">Order on WhatsApp</a>
       </div>
     </div>
-
-    <p class="bite__caption reveal">Scroll on. We won't tell anyone.</p>
   </div>
 </section>
 

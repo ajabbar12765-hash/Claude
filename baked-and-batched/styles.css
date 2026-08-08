@@ -334,103 +334,53 @@ body::after{
 .menu__group--signature .menu__list{ grid-template-columns:minmax(0,1fr) }
 .menu__group--signature .item{ padding:var(--s-4) }
 
-/* ── the bite ─────────────────────────────────────────────────────── */
-.bite__title{
-  font-family:var(--display); font-size:clamp(2rem,5vw,3.6rem); font-weight:400;
-  letter-spacing:-.01em; line-height:1.08; margin-bottom:var(--s-4);
+/* ── fresh, not shelved ───────────────────────────────────────────── */
+.fresh{
+  display:grid; grid-template-columns:minmax(0,340px) minmax(0,1fr);
+  align-items:center; gap:var(--s-5); max-width:900px; margin-inline:auto; text-align:left;
 }
-/* --bite-r lives on the shared stage element (set by JS) so both the img's
-   mask and the depth-shadow overlay below can read the same value. */
-.bite__stage{
-  position:relative; width:min(100%,420px); margin-inline:auto;
-  --bite-r:0px; --bite-x:78%; --bite-y:24%;
+.fresh__stage{ position:relative; isolation:isolate }
+.fresh__stage img{
+  position:relative; z-index:1; width:100%; height:auto; border-radius:50%;
+  filter:drop-shadow(0 30px 40px rgba(96,62,48,.3));
 }
-.bite__img{
-  position:relative; z-index:1; width:100%; height:auto; display:block;
-  filter:drop-shadow(0 30px 40px rgba(96,62,48,.32));
-  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
-  -webkit-mask-position:0 0; mask-position:0 0;
-  /* Default layer compositing ("add") is a normal over-blend: a pixel only
-     stays hidden where EVERY layer agrees, i.e. the intersection of the
-     holes — with four holes in different spots that's almost always empty.
-     "intersect" (legacy: source-in) instead hides a pixel if ANY layer's
-     hole covers it, which is the union we actually want. */
-  -webkit-mask-composite:source-in; mask-composite:intersect;
-  /* the bite: one main hole — an ellipse, not a perfect circle — plus two
-     smaller "tooth mark" nibbles along its rim, all scaling off --bite-r.
-     A soft 78%-100% feather (not a hard edge) reads as torn cookie crumb
-     rather than a die-cut hole. */
-  -webkit-mask-image:
-    radial-gradient(ellipse calc(var(--bite-r) * 1.08) calc(var(--bite-r) * .89) at var(--bite-x) var(--bite-y), transparent 78%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .27) at calc(var(--bite-x) - var(--bite-r) * .96) calc(var(--bite-y) + var(--bite-r) * .32), transparent 75%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .35) at calc(var(--bite-x) - var(--bite-r) * .46) calc(var(--bite-y) - var(--bite-r) * .87), transparent 75%, black 100%);
-          mask-image:
-    radial-gradient(ellipse calc(var(--bite-r) * 1.08) calc(var(--bite-r) * .89) at var(--bite-x) var(--bite-y), transparent 78%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .27) at calc(var(--bite-x) - var(--bite-r) * .96) calc(var(--bite-y) + var(--bite-r) * .32), transparent 75%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .35) at calc(var(--bite-x) - var(--bite-r) * .46) calc(var(--bite-y) - var(--bite-r) * .87), transparent 75%, black 100%);
+/* a warm pulse behind the cookie stands in for oven heat — cheap to build,
+   reads instantly, and needs no photo we don't already have */
+.fresh__glow{
+  position:absolute; inset:-12%; z-index:0; border-radius:50%;
+  background:radial-gradient(circle, rgba(233,158,79,.55), transparent 70%);
+  filter:blur(18px); animation:fresh-pulse 3.2s ease-in-out infinite;
 }
-/* a soft dark ring right at the main bite's boundary, fading onto the
-   surrounding crumb — the torn cookie face has thickness, so it casts a
-   little shadow of its own onto the surface next to it */
-.bite__depth{
-  position:absolute; inset:0; z-index:1; pointer-events:none;
-  background:radial-gradient(circle at var(--bite-x) var(--bite-y),
-    transparent calc(var(--bite-r) - 5px),
-    rgba(35,18,10,.58) var(--bite-r),
-    rgba(35,18,10,.24) calc(var(--bite-r) + 11px),
-    transparent calc(var(--bite-r) + 24px));
+@keyframes fresh-pulse{ 0%,100%{ opacity:.55; transform:scale(.96) } 50%{ opacity:.85; transform:scale(1.04) } }
+.fresh__steam{ position:absolute; z-index:2; inset:-18% 0 auto 0; height:70%; pointer-events:none }
+.fresh__steam span{
+  position:absolute; bottom:0; width:10px; height:46%; border-radius:50%;
+  background:linear-gradient(rgba(255,255,255,.85), transparent 75%);
+  filter:blur(4px); opacity:0;
+  animation:fresh-steam 3.6s ease-in infinite;
 }
-.bite__caption{
-  margin-top:var(--s-4); font-size:.95rem; color:var(--ink-3); font-style:italic;
+.fresh__steam span:nth-child(1){ left:34%; animation-delay:0s }
+.fresh__steam span:nth-child(2){ left:50%; height:56%; animation-delay:1.1s }
+.fresh__steam span:nth-child(3){ left:64%; animation-delay:2.2s }
+@keyframes fresh-steam{
+  0%{ opacity:0; transform:translateY(0) scaleX(1) }
+  25%{ opacity:.65 }
+  100%{ opacity:0; transform:translateY(-85%) scaleX(1.6) }
 }
-.bite__crumbs{ position:absolute; inset:0; pointer-events:none; z-index:2 }
-.bite__crumbs span{
-  position:absolute; top:var(--bite-y); left:var(--bite-x);
-  width:6px; height:6px; border-radius:40% 60% 55% 45%;
-  background:var(--rose-text); box-shadow:0 2px 3px rgba(60,35,20,.35);
-  opacity:0; transform:translate(-50%,-50%) scale(.4);
-  transition:transform .65s cubic-bezier(.2,.8,.2,1), opacity .5s ease;
+.fresh__copy{ display:grid; gap:var(--s-3) }
+.fresh__eta{ font-family:var(--display); font-size:clamp(1.25rem,2.4vw,1.7rem); line-height:1.35; color:var(--ink) }
+.fresh__eta strong{ color:var(--rose-text); font-weight:500 }
+.fresh__note{ font-size:.95rem; color:var(--ink-2) }
+.fresh__copy .pill{ justify-self:start }
+@media (max-width:720px){
+  .fresh{ grid-template-columns:1fr; text-align:center; max-width:380px }
+  .fresh__stage{ width:min(62%,220px); margin-inline:auto }
+  .fresh__copy .pill{ justify-self:center }
 }
-.bite__crumbs span:nth-child(3n+1){ width:8px; height:7px; background:#8B5A3C }
-.bite__crumbs span:nth-child(3n+2){ width:4px; height:4px; background:#C98B6C }
-.bite__crumbs.is-crumbling span{ opacity:.9 }
-.bite__crumbs.is-crumbling span:nth-child(1){ transform:translate(4px,42px) scale(1) rotate(30deg) }
-.bite__crumbs.is-crumbling span:nth-child(2){ transform:translate(-32px,54px) scale(.85) rotate(-20deg) }
-.bite__crumbs.is-crumbling span:nth-child(3){ transform:translate(38px,64px) scale(.75) rotate(60deg) }
-.bite__crumbs.is-crumbling span:nth-child(4){ transform:translate(-12px,80px) scale(.95) rotate(10deg) }
-.bite__crumbs.is-crumbling span:nth-child(5){ transform:translate(58px,46px) scale(.65) rotate(-45deg) }
-.bite__crumbs.is-crumbling span:nth-child(6){ transform:translate(-50px,32px) scale(.7) rotate(15deg) }
-.bite__crumbs.is-crumbling span:nth-child(7){ transform:translate(20px,92px) scale(.55) rotate(-70deg) }
-.bite__crumbs.is-crumbling span:nth-child(8){ transform:translate(-20px,20px) scale(.6) rotate(85deg) }
-
-/* debris: crumbs left behind ON the cookie, right at the torn edge — unlike
-   the spans above, these don't fly off. They ride --bite-r outward as the
-   bite grows, so they always sit just past the rim on the intact surface. */
-.bite__debris{ position:absolute; inset:0; pointer-events:none; z-index:2 }
-.bite__debris span{
-  position:absolute; top:var(--bite-y); left:var(--bite-x);
-  width:5px; height:4px; border-radius:38% 62% 58% 42%;
-  /* interior crumb is lighter than the toasted surface it sits on, plus a
-     dark drop shadow, so it reads as a raised bit and not a texture blotch */
-  box-shadow:0 1px 2px rgba(45,25,14,.55), 0 -0.5px 0 rgba(255,244,228,.4) inset;
-  opacity:0; transition:opacity .5s ease .1s;
+@media (prefers-reduced-motion:reduce){
+  .fresh__glow{ animation:none; opacity:.7 }
+  .fresh__steam span{ animation:none; opacity:0 }
 }
-.bite__debris.is-nibbling span{ opacity:1 }
-/* each position verified against the mask's actual hole geometry (main
-   ellipse + all four nibbles) at max --bite-r, so every crumb lands on
-   cookie pixels, clear of every hole, not floating over exposed background */
-.bite__debris span:nth-child(1){ width:8px; height:7px; background:#EACB9E;
-  transform:translate(calc(-50% - var(--bite-r) * 1.24), -50%) rotate(12deg) }
-.bite__debris span:nth-child(2){ width:7px; height:6px; background:#E0B583;
-  transform:translate(-50%, calc(-50% + var(--bite-r) * 1.02)) rotate(-30deg) }
-.bite__debris span:nth-child(3){ width:9px; height:8px; background:#EDD3AB;
-  transform:translate(calc(-50% - var(--bite-r) * .82), calc(-50% + var(--bite-r) * .77)) rotate(50deg) }
-.bite__debris span:nth-child(4){ width:6px; height:5px; background:#DDA96E;
-  transform:translate(calc(-50% + var(--bite-r) * .49), calc(-50% + var(--bite-r) * .69)) rotate(-15deg) }
-.bite__debris span:nth-child(5){ width:7px; height:6px; background:#E8C79A;
-  transform:translate(calc(-50% - var(--bite-r) * 1.31), calc(-50% + var(--bite-r) * .29)) rotate(70deg) }
-.bite__debris span:nth-child(6){ width:6px; height:5px; background:#DDA96E;
-  transform:translate(calc(-50% + var(--bite-r) * .28), calc(-50% + var(--bite-r) * .86)) rotate(-60deg) }
 
 /* ── faq ──────────────────────────────────────────────────────────── */
 .faq{ padding:var(--s-6) 0; background:var(--cream-2) }
