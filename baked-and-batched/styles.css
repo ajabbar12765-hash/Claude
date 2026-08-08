@@ -44,6 +44,7 @@
   --z-header:  100;   /* sticky top bar */
   --z-overlay: 200;   /* full-page grain texture, above all content */
   --z-skiplink:300;   /* must always win focus, above the overlay too */
+  --z-intro:   400;   /* first-load intro, above everything else briefly */
 }
 
 *,*::before,*::after{ box-sizing:border-box }
@@ -71,6 +72,17 @@ body::after{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
   mix-blend-mode:multiply;
 }
+
+/* ── first-load intro ────────────────────────────────────────────── */
+.intro{
+  position:fixed; inset:0; z-index:var(--z-intro);
+  display:flex; align-items:center; justify-content:center;
+  background:var(--cream);
+  transition:opacity .45s var(--ease);
+}
+.intro__mark{ opacity:0; transform:scale(.88); transition:opacity .45s var(--ease), transform .45s var(--ease) }
+.intro.is-ready .intro__mark{ opacity:1; transform:scale(1) }
+.intro.is-done{ opacity:0; pointer-events:none }
 
 :focus-visible{ outline:2px solid var(--rose-text); outline-offset:3px; border-radius:4px }
 
@@ -344,22 +356,18 @@ body::after{
      "intersect" (legacy: source-in) instead hides a pixel if ANY layer's
      hole covers it, which is the union we actually want. */
   -webkit-mask-composite:source-in; mask-composite:intersect;
-  /* the bite: one main hole — an ellipse, not a perfect circle — plus four
-     smaller "tooth mark" nibbles of unequal size at uneven angles along its
-     rim, all scaling together off --bite-r. A real bite is never symmetric;
-     one smooth circle read as a hole-punch, not a bite. */
+  /* the bite: one main hole — an ellipse, not a perfect circle — plus two
+     smaller "tooth mark" nibbles along its rim, all scaling off --bite-r.
+     A soft 78%-100% feather (not a hard edge) reads as torn cookie crumb
+     rather than a die-cut hole. */
   -webkit-mask-image:
-    radial-gradient(ellipse calc(var(--bite-r) * 1.08) calc(var(--bite-r) * .89) at var(--bite-x) var(--bite-y), transparent 96%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .27) at calc(var(--bite-x) - var(--bite-r) * .96) calc(var(--bite-y) + var(--bite-r) * .32), transparent 95%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .35) at calc(var(--bite-x) - var(--bite-r) * .46) calc(var(--bite-y) - var(--bite-r) * .87), transparent 95%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .16) at calc(var(--bite-x) - var(--bite-r) * .92) calc(var(--bite-y) - var(--bite-r) * .3),  transparent 95%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .12) at calc(var(--bite-x) - var(--bite-r) * .3)  calc(var(--bite-y) + var(--bite-r) * .96), transparent 95%, black 100%);
+    radial-gradient(ellipse calc(var(--bite-r) * 1.08) calc(var(--bite-r) * .89) at var(--bite-x) var(--bite-y), transparent 78%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .27) at calc(var(--bite-x) - var(--bite-r) * .96) calc(var(--bite-y) + var(--bite-r) * .32), transparent 75%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .35) at calc(var(--bite-x) - var(--bite-r) * .46) calc(var(--bite-y) - var(--bite-r) * .87), transparent 75%, black 100%);
           mask-image:
-    radial-gradient(ellipse calc(var(--bite-r) * 1.08) calc(var(--bite-r) * .89) at var(--bite-x) var(--bite-y), transparent 96%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .27) at calc(var(--bite-x) - var(--bite-r) * .96) calc(var(--bite-y) + var(--bite-r) * .32), transparent 95%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .35) at calc(var(--bite-x) - var(--bite-r) * .46) calc(var(--bite-y) - var(--bite-r) * .87), transparent 95%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .16) at calc(var(--bite-x) - var(--bite-r) * .92) calc(var(--bite-y) - var(--bite-r) * .3),  transparent 95%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .12) at calc(var(--bite-x) - var(--bite-r) * .3)  calc(var(--bite-y) + var(--bite-r) * .96), transparent 95%, black 100%);
+    radial-gradient(ellipse calc(var(--bite-r) * 1.08) calc(var(--bite-r) * .89) at var(--bite-x) var(--bite-y), transparent 78%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .27) at calc(var(--bite-x) - var(--bite-r) * .96) calc(var(--bite-y) + var(--bite-r) * .32), transparent 75%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .35) at calc(var(--bite-x) - var(--bite-r) * .46) calc(var(--bite-y) - var(--bite-r) * .87), transparent 75%, black 100%);
 }
 /* a soft dark ring right at the main bite's boundary, fading onto the
    surrounding crumb — the torn cookie face has thickness, so it casts a
@@ -483,6 +491,55 @@ body::after{
 .box__name{ font-family:var(--display); font-size:clamp(1.6rem,2.6vw,2.1rem) }
 .box__price{ font-family:var(--display); font-size:clamp(1.5rem,2.4vw,1.95rem); color:var(--ink); margin-top:.2rem }
 .box__note{ font-size:.86rem; color:var(--ink-3); margin-bottom:var(--s-2) }
+
+/* ── box builder ──────────────────────────────────────────────────── */
+.builder{ margin-top:var(--s-6); padding-top:var(--s-5); border-top:1px solid var(--line) }
+.builder__head{ max-width:52ch; margin:0 auto var(--s-4); text-align:center }
+.builder__title{ font-family:var(--display); font-size:clamp(1.5rem,3vw,2rem); margin:.3rem 0 .5rem }
+.builder__sub{ font-size:.94rem; color:var(--ink-2) }
+.builder__step{ max-width:640px; margin:0 auto var(--s-4) }
+.builder__label{
+  font-size:.76rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--rose-text); margin-bottom:.75rem; text-align:center;
+}
+.builder__boxes{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.65rem }
+.builder__opt{ position:relative; display:block; cursor:pointer; min-height:44px }
+.builder__opt input{ position:absolute; inset:0; margin:0; opacity:0; cursor:pointer }
+.builder__opt span{
+  display:flex; flex-direction:column; align-items:center; gap:.15rem;
+  padding:1rem .85rem; border-radius:16px; border:1px solid var(--line); background:var(--white);
+  font-size:.92rem; color:var(--ink-2);
+  transition:border-color .2s var(--ease), background-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.builder__opt span em{ font-style:normal; font-size:.76rem; color:var(--ink-3) }
+.builder__opt span b{ font-family:var(--display); font-weight:500; font-size:1.05rem; color:var(--ink); margin-top:.2rem }
+.builder__opt input:checked + span{ border-color:var(--rose-text); background:var(--blush); box-shadow:0 10px 26px -18px rgba(96,62,48,.5) }
+.builder__opt input:focus-visible + span{ outline:2px solid var(--rose-text); outline-offset:2px }
+
+.builder__flavours{ display:flex; flex-wrap:wrap; gap:.55rem; justify-content:center }
+.builder__chip{ position:relative; display:inline-flex; cursor:pointer }
+.builder__chip.is-hidden{ display:none }
+.builder__chip input{ position:absolute; inset:0; margin:0; opacity:0; cursor:pointer }
+.builder__chip input:disabled{ cursor:not-allowed }
+.builder__chip span{
+  display:inline-flex; align-items:center; min-height:44px; padding:.55rem 1.1rem;
+  border-radius:var(--radius); border:1px solid var(--line); background:var(--white);
+  font-size:.86rem; color:var(--ink-2);
+  transition:border-color .2s var(--ease), background-color .2s var(--ease), color .2s var(--ease), opacity .2s var(--ease);
+}
+.builder__chip input:checked + span{ border-color:var(--ink); background:var(--ink); color:var(--cream) }
+.builder__chip input:disabled:not(:checked) + span{ opacity:.4 }
+.builder__chip input:focus-visible + span{ outline:2px solid var(--rose-text); outline-offset:2px }
+.builder__hint{ margin-top:.75rem; font-size:.84rem; color:var(--ink-3); text-align:center }
+
+.builder__summary{
+  max-width:520px; margin:0 auto; text-align:center; display:grid; gap:var(--s-3);
+  padding:var(--s-3) var(--s-3) var(--s-4); background:var(--cream-2); border-radius:20px; border:1px solid var(--line);
+}
+.builder__summary p{ font-size:.98rem; color:var(--ink-2) }
+.builder__summary strong{ color:var(--ink); font-weight:600 }
+.builder__summary .pill{ justify-self:center }
+#builderCta[aria-disabled="true"]{ opacity:.5; pointer-events:none }
 
 /* ── order / contact ──────────────────────────────────────────────── */
 .visit{ position:relative; padding:var(--s-6) 0 var(--s-7); text-align:center; overflow:hidden; isolation:isolate }

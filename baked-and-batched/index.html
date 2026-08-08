@@ -30,6 +30,20 @@
 </head>
 <body>
 
+<!-- ══ first-load intro (skipped after the first visit this session, and
+     entirely under prefers-reduced-motion — see main.js) ══════════════ -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro__mark wordmark wordmark--lg">
+    <span class="wordmark__circle" aria-hidden="true"></span>
+    <span class="wordmark__lines">
+      <span class="wordmark__top">Baked</span>
+      <span class="wordmark__and">and</span>
+      <span class="wordmark__bot">Batched</span>
+    </span>
+  </div>
+</div>
+<noscript><style>.intro{ display:none }</style></noscript>
+
 <a class="skip-link" href="#main">Skip to content</a>
 
 <!-- ══ persistent chrome ══════════════════════════════════════════════ -->
@@ -410,6 +424,68 @@
         <p class="box__note">Any 2 premium flavours</p>
         <a class="pill pill--ghost" data-wa="Hi! I'd like to order a box of 6 Premium cookies (Rs. 2,100).">Order this box</a>
       </article>
+    </div>
+
+    <div class="builder reveal" id="builder">
+      <div class="builder__head">
+        <p class="eyebrow">Or build it yourself</p>
+        <h3 class="builder__title">Pick your box, pick your two</h3>
+        <p class="builder__sub">Choose a box below, then your two flavours — we'll total it and open WhatsApp with everything already filled in.</p>
+      </div>
+
+      <div class="builder__step">
+        <p class="builder__label">1 · Choose a box</p>
+        <div class="builder__boxes" role="radiogroup" aria-label="Box size and tier">
+          <label class="builder__opt">
+            <input type="radio" name="builderBox" value="classic6" data-tier="classic" data-price="Rs. 1,500" data-label="Box of 6 — Classic">
+            <span>Box of 6<em>Classic</em><b>Rs. 1,500</b></span>
+          </label>
+          <label class="builder__opt">
+            <input type="radio" name="builderBox" value="classic12" data-tier="classic" data-price="Rs. 3,000" data-label="Box of 12 — Classic">
+            <span>Box of 12<em>Classic</em><b>Rs. 3,000</b></span>
+          </label>
+          <label class="builder__opt">
+            <input type="radio" name="builderBox" value="premium6" data-tier="premium" data-price="Rs. 2,100" data-label="Box of 6 — Premium">
+            <span>Box of 6<em>Premium</em><b>Rs. 2,100</b></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="builder__step">
+        <p class="builder__label">2 · Choose two flavours</p>
+        <div class="builder__flavours" id="builderFlavours">
+          <label class="builder__chip" data-tier="classic">
+            <input type="checkbox" value="Chocolate Chunk"><span>Chocolate Chunk</span>
+          </label>
+          <label class="builder__chip" data-tier="classic">
+            <input type="checkbox" value="Marbled Chocolate Chunk"><span>Marbled Chocolate Chunk</span>
+          </label>
+          <label class="builder__chip" data-tier="premium">
+            <input type="checkbox" value="Hershey's Chocolate Chip"><span>Hershey's Chocolate Chip</span>
+          </label>
+          <label class="builder__chip" data-tier="premium">
+            <input type="checkbox" value="Nutella"><span>Nutella</span>
+          </label>
+          <label class="builder__chip" data-tier="premium">
+            <input type="checkbox" value="Lotus"><span>Lotus</span>
+          </label>
+          <label class="builder__chip" data-tier="premium">
+            <input type="checkbox" value="Double Chocolate"><span>Double Chocolate</span>
+          </label>
+          <label class="builder__chip" data-tier="premium">
+            <input type="checkbox" value="Red Velvet"><span>Red Velvet</span>
+          </label>
+          <label class="builder__chip" data-tier="premium">
+            <input type="checkbox" value="Oatmeal and Raisins"><span>Oatmeal and Raisins</span>
+          </label>
+        </div>
+        <p class="builder__hint" id="builderHint">Choose a box first.</p>
+      </div>
+
+      <div class="builder__summary">
+        <p id="builderSummary">Pick a box and two flavours to see your total.</p>
+        <a class="pill pill--solid pill--lg" id="builderCta" aria-disabled="true">Order this box on WhatsApp</a>
+      </div>
     </div>
   </div>
 </section>

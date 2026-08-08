@@ -254,3 +254,98 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
   addEventListener('load', request);
   request();
 })();
+
+/* ── 8. first-load intro ──────────────────────────────────────────── */
+/* A brief branded moment before the hero appears — skipped entirely under
+   reduced motion, and only ever played once per browser session so repeat
+   visits (or scrolling back to #top) never re-trigger it. */
+(function intro() {
+  const el = document.getElementById('intro');
+  if (!el) return;
+
+  let seen = false;
+  try { seen = sessionStorage.getItem('bnb-intro-seen') === '1'; } catch (e) { /* storage blocked — just skip */ }
+
+  if (reduceMotion || seen) {
+    el.remove();
+    return;
+  }
+  try { sessionStorage.setItem('bnb-intro-seen', '1'); } catch (e) { /* ignore */ }
+
+  document.body.style.overflow = 'hidden';
+  requestAnimationFrame(() => el.classList.add('is-ready'));
+  setTimeout(() => {
+    el.classList.add('is-done');
+    document.body.style.overflow = '';
+    setTimeout(() => el.remove(), 500);
+  }, 750);
+})();
+
+/* ── 9. build-your-box calculator ─────────────────────────────────── */
+/* Real prices and flavours pulled from the menu above — nothing invented.
+   Picking a box filters the flavour chips to that tier, caps the pick at
+   two, and turns the total + WhatsApp message into one pre-filled link. */
+(function boxBuilder() {
+  const root = document.getElementById('builder');
+  if (!root) return;
+
+  const boxInputs = [...root.querySelectorAll('input[name="builderBox"]')];
+  const chipLabels = [...root.querySelectorAll('.builder__chip')];
+  const flavourInputs = chipLabels.map(l => l.querySelector('input'));
+  const hint = document.getElementById('builderHint');
+  const summary = document.getElementById('builderSummary');
+  const cta = document.getElementById('builderCta');
+
+  function selectedBox() {
+    const input = boxInputs.find(i => i.checked);
+    return input ? { tier: input.dataset.tier, price: input.dataset.price, label: input.dataset.label } : null;
+  }
+
+  function update() {
+    const box = selectedBox();
+
+    chipLabels.forEach((label, i) => {
+      const matches = !!box && label.dataset.tier === box.tier;
+      label.classList.toggle('is-hidden', !matches);
+      if (!matches) flavourInputs[i].checked = false;
+    });
+
+    const checkedCount = flavourInputs.filter(i => i.checked).length;
+    flavourInputs.forEach((input, i) => {
+      if (chipLabels[i].classList.contains('is-hidden')) return;
+      input.disabled = !input.checked && checkedCount >= 2;
+    });
+
+    if (!box) {
+      hint.textContent = 'Choose a box first.';
+      summary.textContent = 'Pick a box and two flavours to see your total.';
+      cta.setAttribute('aria-disabled', 'true');
+      cta.removeAttribute('href');
+      return;
+    }
+
+    const names = flavourInputs.filter(i => i.checked).map(i => i.value);
+    if (names.length < 2) {
+      hint.textContent = `Choose ${2 - names.length} more flavour${names.length === 1 ? '' : 's'}.`;
+      summary.innerHTML = `<strong>${box.label}</strong> — ${box.price}. Pick two flavours.`;
+      cta.setAttribute('aria-disabled', 'true');
+      cta.removeAttribute('href');
+      return;
+    }
+
+    hint.textContent = 'Ready to order.';
+    summary.innerHTML = `<strong>${box.label}</strong> — ${names.join(' + ')} — <strong>${box.price}</strong>`;
+    const digits = String(CONFIG.whatsapp).replace(/\D/g, '');
+    const msg = `Hi! I'd like to order a ${box.label} with ${names.join(' and ')} (${box.price}).`;
+    if (digits) {
+      cta.href = `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
+      cta.target = '_blank';
+      cta.rel = 'noopener noreferrer';
+      cta.removeAttribute('aria-disabled');
+    }
+  }
+
+  boxInputs.forEach(i => i.addEventListener('change', update));
+  flavourInputs.forEach(i => i.addEventListener('change', update));
+  update();
+})();
