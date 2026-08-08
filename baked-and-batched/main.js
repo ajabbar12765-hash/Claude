@@ -342,11 +342,10 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
 
   function update() {
     const box = selectedBox();
-    chipLabels.forEach((label, i) => {
-      const matches = !!box && label.dataset.tier === box.tier;
-      label.classList.toggle('is-hidden', !matches);
-      if (!matches) flavourInputs[i].checked = false;
-    });
+    // every flavour is available in every box, at that box's price — the
+    // chips just stay hidden until a box is picked at all, so the list
+    // doesn't dump all 8 on you before you've engaged with step 1
+    chipLabels.forEach(label => label.classList.toggle('is-hidden', !box));
     const checkedCount = flavourInputs.filter(i => i.checked).length;
     flavourInputs.forEach((input, i) => {
       if (chipLabels[i].classList.contains('is-hidden')) return;
