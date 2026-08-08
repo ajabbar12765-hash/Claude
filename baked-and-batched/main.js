@@ -401,6 +401,37 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
 
   const panels = [...card.querySelectorAll('.quiz__panel')];
   const dots = [...card.querySelectorAll('.quiz__dots span')];
+
+  // Several phrasings per question slot, each keeping the same 0/1 meaning
+  // as the flavour-matching logic below — only the wording changes, picked
+  // fresh on every page load so the quiz doesn't read the same way twice.
+  const QUESTION_BANK = [
+    [
+      { q: "Chocolate all the way, or keep it interesting?", a0: 'Chocolate all the way', a1: 'Something different' },
+      { q: 'Straight-up chocolate, or something with a twist?', a0: 'Straight-up chocolate', a1: 'Something with a twist' },
+      { q: "A cookie that's all about the cocoa, or one with a surprise baked in?", a0: 'All about the cocoa', a1: 'A surprise baked in' },
+    ],
+    [
+      { q: 'Rich and indulgent, or light and classic?', a0: 'Rich and indulgent', a1: 'Light and classic' },
+      { q: 'Deep and fudgy, or crisp and classic?', a0: 'Deep and fudgy', a1: 'Crisp and classic' },
+      { q: 'Melt-in-your-mouth decadent, or simple and timeless?', a0: 'Decadent', a1: 'Simple and timeless' },
+    ],
+    [
+      { q: 'Something familiar, or a little adventurous?', a0: 'Familiar', a1: 'Adventurous' },
+      { q: 'Stick with a classic, or try something new?', a0: 'A classic', a1: 'Something new' },
+      { q: "A flavour you already love, or one you haven't tried?", a0: 'One I already love', a1: "One I haven't tried" },
+    ],
+  ];
+
+  panels.slice(0, 3).forEach((panel, i) => {
+    const variants = QUESTION_BANK[i];
+    const pick = variants[Math.floor(Math.random() * variants.length)];
+    const qEl = panel.querySelector('.quiz__q');
+    const opts = panel.querySelectorAll('.quiz__opt');
+    if (qEl) qEl.textContent = pick.q;
+    if (opts[0]) opts[0].textContent = pick.a0;
+    if (opts[1]) opts[1].textContent = pick.a1;
+  });
   const resultImg = document.getElementById('quizResultImg');
   const resultName = document.getElementById('quizResultName');
   const resultDesc = document.getElementById('quizResultDesc');
@@ -473,4 +504,55 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
       showPanel(0);
     }
   });
+})();
+
+/* ── 12. scroll progress ──────────────────────────────────────────── */
+/* A thin fill line under the header, tracking how far down the page you
+   are — always driven by the visitor's own scroll input, not an autoplay
+   loop, so it runs regardless of prefers-reduced-motion. */
+(function scrollProgress() {
+  const bar = document.getElementById('scrollProgress');
+  if (!bar) return;
+
+  function update() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? clamp(scrollY / max, 0, 1) : 0;
+    bar.style.transform = `scaleX(${p.toFixed(4)})`;
+  }
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  update();
+})();
+
+/* ── 13. box price count-up ───────────────────────────────────────── */
+/* Prices tick up from zero the first time each box card scrolls into
+   view — the number itself never changes, this just gives it a moment
+   of ceremony instead of appearing flat and pre-printed. */
+(function priceCountUp() {
+  if (reduceMotion) return;
+  const nodes = [...document.querySelectorAll('.box__price')];
+  if (!nodes.length || !('IntersectionObserver' in window)) return;
+
+  function animate(el) {
+    const target = Number(el.textContent.replace(/[^\d]/g, ''));
+    if (!target) return;
+    const start = performance.now();
+    const dur = 900;
+    function frame(now) {
+      const t = clamp((now - start) / dur, 0, 1);
+      const val = Math.round(target * easeOut(t));
+      el.textContent = `Rs. ${val.toLocaleString('en-US')}`;
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      animate(entry.target);
+      obs.unobserve(entry.target);
+    });
+  }, { threshold: 0.4 });
+  nodes.forEach(el => io.observe(el));
 })();
