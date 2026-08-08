@@ -314,3 +314,147 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
   flavourInputs.forEach(i => i.addEventListener('change', update));
   update();
 })();
+
+/* ── 10. hero bite ═══════════════════════════════════════════════════
+   SELF-CONTAINED — to remove, delete this whole function, the
+   ".herobite__*" CSS block in styles.css, and the three ".herobite__*"
+   elements inside .hero__cookie--c in index.html. Nothing else on the
+   page reads any of this.
+
+   Uses clip-path: path(evenodd, "<outer rect> <inner hole>") instead of
+   the mask-image circle-layering tried before: a single jagged polygon
+   (16 points at hand-tuned angle/radius, not a circle) subtracted from
+   the image's own rectangle, anchored at the cookie's actual upper-right
+   rim rather than floating over the middle of the surface — a bite
+   removes material from the edge, it doesn't punch a hole in the centre.
+   Growing every point outward together (not stacking separate shapes)
+   is what keeps the edge looking torn instead of "a circle appeared". ── */
+(function heroBite() {
+  const section = document.querySelector('.scene--hero');
+  const img = document.getElementById('heroBiteImg');
+  const shadow = document.getElementById('heroBiteShadow');
+  const dust = document.getElementById('heroBiteDust');
+  const crumbsHost = document.getElementById('heroBiteCrumbs');
+  if (!section || !img || !shadow || !dust || !crumbsHost) return;
+
+  // [angle in degrees, radius as a fraction of the current bite radius]
+  // radius alternates deep/shallow around the circle — a real bite tears
+  // unevenly, it doesn't leave a smooth curve
+  const POINTS = [
+    [0, .95], [22.5, .55], [45, .9], [67.5, .7], [90, 1], [112.5, .6], [135, .85], [157.5, .5],
+    [180, .8], [202.5, .95], [225, .65], [247.5, .88], [270, .58], [292.5, .82], [315, .7], [337.5, .92],
+  ];
+  const ANCHOR_X = 0.84, ANCHOR_Y = 0.16;   // the cookie's own upper-right rim, not its middle
+
+  const crumbs = [];
+  for (let i = 0; i < 14; i++) {
+    const span = document.createElement('span');
+    crumbsHost.appendChild(span);
+    crumbs.push(span);
+  }
+
+  function clipPathAt(iw, ih, ax, ay, cr) {
+    const pts = POINTS.map(([a, f]) => {
+      const rad = a * Math.PI / 180;
+      return `${(ax + Math.cos(rad) * cr * f).toFixed(1)},${(ay + Math.sin(rad) * cr * f).toFixed(1)}`;
+    });
+    const outer = `M0,0 L${iw},0 L${iw},${ih} L0,${ih} Z`;
+    const inner = `M${pts[0]} ${pts.slice(1).map(p => `L${p}`).join(' ')} Z`;
+    return `path(evenodd, "${outer} ${inner}")`;
+  }
+
+  // painted once per load (not per frame) — a static speckle field reads
+  // as "countless crumbs" without animating hundreds of DOM nodes
+  let dustPainted = false;
+  function paintDust(size) {
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const shades = ['#EACB9E', '#E0B583', '#DDA96E', '#8B5A3C', '#C98B6C'];
+    for (let i = 0; i < 600; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const d = Math.pow(Math.random(), 0.6) * (size / 2);
+      const x = size / 2 + Math.cos(a) * d;
+      const y = size / 2 + Math.sin(a) * d;
+      ctx.fillStyle = shades[(Math.random() * shades.length) | 0];
+      ctx.globalAlpha = 0.35 + Math.random() * 0.5;
+      const s = 0.8 + Math.random() * 2;
+      ctx.beginPath();
+      ctx.ellipse(x, y, s, s * (0.6 + Math.random() * 0.6), Math.random() * Math.PI, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    dust.style.backgroundImage = `url(${canvas.toDataURL()})`;
+    dust.style.backgroundSize = '100% 100%';
+    dust.style.width = dust.style.height = `${size}px`;
+    dustPainted = true;
+  }
+
+  function placeCrumbs(ax, ay, maxR) {
+    crumbs.forEach((span, i) => {
+      const [a, f] = POINTS[i % POINTS.length];
+      const rad = a * Math.PI / 180;
+      const dist = maxR * f * (1.08 + (i % 3) * 0.06);
+      const size = 4 + (i % 4) * 1.6;
+      span.style.left = `${(ax + Math.cos(rad) * dist).toFixed(1)}px`;
+      span.style.top = `${(ay + Math.sin(rad) * dist).toFixed(1)}px`;
+      span.style.width = `${size}px`;
+      span.style.height = `${(size * 0.85).toFixed(1)}px`;
+      span.style.background = i % 2 ? '#8B5A3C' : '#DDA96E';
+      span.classList.add('is-in');
+    });
+  }
+
+  function update() {
+    const r = section.getBoundingClientRect();
+    // t=0 while the hero sits at rest (r.top===0 on load); rises to 1 as the
+    // hero scrolls up and out — "as you scroll past", not "already bitten"
+    const t = clamp(-r.top / (r.height * 0.6), 0, 1);
+    const iw = img.clientWidth, ih = img.clientHeight;
+    if (!iw || !ih) return;
+
+    const eased = 1 - Math.pow(1 - t, 2);
+    const maxR = iw * 0.48;
+    const cr = eased * maxR;
+    const ax = iw * ANCHOR_X, ay = ih * ANCHOR_Y;
+
+    img.style.clipPath = cr < 1 ? 'none' : clipPathAt(iw, ih, ax, ay, cr);
+    shadow.style.setProperty('--hb-x', `${(ax / iw * 100).toFixed(1)}%`);
+    shadow.style.setProperty('--hb-y', `${(ay / ih * 100).toFixed(1)}%`);
+    shadow.style.setProperty('--hb-r', `${cr.toFixed(1)}px`);
+
+    if (t > 0.3) {
+      if (!dustPainted) paintDust(Math.round(maxR * 2.4));
+      dust.style.left = `${(ax - dust.clientWidth / 2).toFixed(1)}px`;
+      dust.style.top = `${(ay - dust.clientHeight / 2).toFixed(1)}px`;
+      dust.classList.add('is-visible');
+    }
+    if (t > 0.45) placeCrumbs(ax, ay, maxR);
+  }
+
+  if (reduceMotion) {
+    const iw = img.clientWidth || img.width, ih = img.clientHeight || img.height;
+    const maxR = iw * 0.48, cr = maxR * 0.62;
+    const ax = iw * ANCHOR_X, ay = ih * ANCHOR_Y;
+    img.style.clipPath = clipPathAt(iw, ih, ax, ay, cr);
+    shadow.style.setProperty('--hb-x', `${(ANCHOR_X * 100).toFixed(1)}%`);
+    shadow.style.setProperty('--hb-y', `${(ANCHOR_Y * 100).toFixed(1)}%`);
+    shadow.style.setProperty('--hb-r', `${cr.toFixed(1)}px`);
+    paintDust(Math.round(maxR * 2.4));
+    dust.style.left = `${(ax - dust.clientWidth / 2).toFixed(1)}px`;
+    dust.style.top = `${(ay - dust.clientHeight / 2).toFixed(1)}px`;
+    dust.classList.add('is-visible');
+    placeCrumbs(ax, ay, maxR);
+    return;
+  }
+
+  let ticking = false;
+  function request() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { update(); ticking = false; });
+  }
+  addEventListener('scroll', request, { passive: true });
+  addEventListener('resize', request);
+  addEventListener('load', request);
+  request();
+})();

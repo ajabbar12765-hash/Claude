@@ -241,6 +241,49 @@ body::after{
 .hero__cookie--l{ height:60%;  z-index:2; margin-right:-3% }
 .hero__cookie--c{ height:100%; z-index:3 }
 .hero__cookie--r{ height:64%;  z-index:1; margin-left:-4%; margin-bottom:3% }
+
+/* ═══ HERO BITE — remove this whole block (down to /HERO BITE) to revert
+   the centre hero cookie to a plain image. Matching HTML lives inside
+   .hero__cookie--c in index.html; matching JS is heroBite() in main.js. ═══ */
+/* the img has no position of its own, so without this it paints in a lower
+   stacking layer than its absolutely-positioned siblings regardless of DOM
+   order — the shadow would sit ON TOP of the whole cookie instead of only
+   showing through the clipped hole */
+#heroBiteImg{ position:relative; z-index:1 }
+/* the shadow sits BEHIND the (clipped) img, so it only ever shows through
+   the bite itself — never painted over the intact cookie surface */
+/* transparent through the middle of the hole (the page's own cream shows
+   there, same as the hole itself) — the dark tone is a thin ring right at
+   the torn edge only, not a flat disc filling the whole bite */
+.herobite__shadow{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(circle at var(--hb-x,50%) var(--hb-y,50%),
+    transparent calc(var(--hb-r,0px) - 9px),
+    rgba(40,20,10,.55) var(--hb-r,0px),
+    rgba(40,20,10,.22) calc(var(--hb-r,0px) + 13px),
+    transparent calc(var(--hb-r,0px) + 26px));
+}
+.herobite__dust{
+  position:absolute; z-index:2; pointer-events:none;
+  opacity:0; transition:opacity .6s ease;
+  -webkit-mask-image:radial-gradient(circle, black 42%, transparent 76%);
+          mask-image:radial-gradient(circle, black 42%, transparent 76%);
+}
+.herobite__dust.is-visible{ opacity:.92 }
+.herobite__crumbs{ position:absolute; inset:0; z-index:3; pointer-events:none }
+.herobite__crumbs span{
+  position:absolute; border-radius:38% 62% 58% 42%;
+  box-shadow:0 1px 2px rgba(45,25,14,.5);
+  opacity:0; transform:translate(-50%,-50%) scale(.5);
+  transition:opacity .5s ease, transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.herobite__crumbs span.is-in{ opacity:1; transform:translate(-50%,-50%) scale(1) }
+@media (prefers-reduced-motion:reduce){
+  .herobite__dust{ transition:none }
+  .herobite__crumbs span{ transition:none }
+}
+/* ═══ /HERO BITE ═══ */
+
 .hero__stage::after{           /* one soft shadow pooling under the whole group */
   content:''; position:absolute; z-index:0; left:16%; right:16%; bottom:-2%; height:7%;
   border-radius:50%; filter:blur(14px);
