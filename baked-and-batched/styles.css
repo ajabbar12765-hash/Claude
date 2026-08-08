@@ -424,9 +424,9 @@ body::after{
 .boxes{ padding:var(--s-6) 0 }
 .boxes .lede{ margin-bottom:var(--s-5) }
 .boxshot{
-  margin:var(--s-4) auto var(--s-5); width:min(100%,540px);
-  border-radius:26px; overflow:hidden; line-height:0;
-  box-shadow:0 30px 60px -32px rgba(96,62,48,.55);
+  margin:var(--s-4) auto var(--s-5); width:min(72%,360px);
+  border-radius:22px; overflow:hidden; line-height:0;
+  box-shadow:0 24px 48px -28px rgba(96,62,48,.55);
 }
 .boxgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:var(--s-3); align-items:stretch }
 .box{
