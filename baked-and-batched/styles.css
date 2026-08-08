@@ -344,19 +344,22 @@ body::after{
      "intersect" (legacy: source-in) instead hides a pixel if ANY layer's
      hole covers it, which is the union we actually want. */
   -webkit-mask-composite:source-in; mask-composite:intersect;
-  /* the bite: one main hole plus three smaller "tooth mark" nibbles along its
-     inner rim, all scaling together off --bite-r — a real bite is never a
-     perfect circle, and one smooth circle read as a hole-punch, not a bite */
+  /* the bite: one main hole — an ellipse, not a perfect circle — plus four
+     smaller "tooth mark" nibbles of unequal size at uneven angles along its
+     rim, all scaling together off --bite-r. A real bite is never symmetric;
+     one smooth circle read as a hole-punch, not a bite. */
   -webkit-mask-image:
-    radial-gradient(circle var(--bite-r) at var(--bite-x) var(--bite-y), transparent 97%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .24) at calc(var(--bite-x) - var(--bite-r) * .92) calc(var(--bite-y) + var(--bite-r) * .26), transparent 96%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .3)  at calc(var(--bite-x) - var(--bite-r) * .5)  calc(var(--bite-y) - var(--bite-r) * .82), transparent 96%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .19) at calc(var(--bite-x) - var(--bite-r) * .88) calc(var(--bite-y) - var(--bite-r) * .34), transparent 96%, black 100%);
+    radial-gradient(ellipse calc(var(--bite-r) * 1.08) calc(var(--bite-r) * .89) at var(--bite-x) var(--bite-y), transparent 96%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .27) at calc(var(--bite-x) - var(--bite-r) * .96) calc(var(--bite-y) + var(--bite-r) * .32), transparent 95%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .35) at calc(var(--bite-x) - var(--bite-r) * .46) calc(var(--bite-y) - var(--bite-r) * .87), transparent 95%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .16) at calc(var(--bite-x) - var(--bite-r) * .92) calc(var(--bite-y) - var(--bite-r) * .3),  transparent 95%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .12) at calc(var(--bite-x) - var(--bite-r) * .3)  calc(var(--bite-y) + var(--bite-r) * .96), transparent 95%, black 100%);
           mask-image:
-    radial-gradient(circle var(--bite-r) at var(--bite-x) var(--bite-y), transparent 97%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .24) at calc(var(--bite-x) - var(--bite-r) * .92) calc(var(--bite-y) + var(--bite-r) * .26), transparent 96%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .3)  at calc(var(--bite-x) - var(--bite-r) * .5)  calc(var(--bite-y) - var(--bite-r) * .82), transparent 96%, black 100%),
-    radial-gradient(circle calc(var(--bite-r) * .19) at calc(var(--bite-x) - var(--bite-r) * .88) calc(var(--bite-y) - var(--bite-r) * .34), transparent 96%, black 100%);
+    radial-gradient(ellipse calc(var(--bite-r) * 1.08) calc(var(--bite-r) * .89) at var(--bite-x) var(--bite-y), transparent 96%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .27) at calc(var(--bite-x) - var(--bite-r) * .96) calc(var(--bite-y) + var(--bite-r) * .32), transparent 95%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .35) at calc(var(--bite-x) - var(--bite-r) * .46) calc(var(--bite-y) - var(--bite-r) * .87), transparent 95%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .16) at calc(var(--bite-x) - var(--bite-r) * .92) calc(var(--bite-y) - var(--bite-r) * .3),  transparent 95%, black 100%),
+    radial-gradient(circle calc(var(--bite-r) * .12) at calc(var(--bite-x) - var(--bite-r) * .3)  calc(var(--bite-y) + var(--bite-r) * .96), transparent 95%, black 100%);
 }
 /* a soft dark ring right at the main bite's boundary, fading onto the
    surrounding crumb — the torn cookie face has thickness, so it casts a
@@ -391,6 +394,35 @@ body::after{
 .bite__crumbs.is-crumbling span:nth-child(6){ transform:translate(-50px,32px) scale(.7) rotate(15deg) }
 .bite__crumbs.is-crumbling span:nth-child(7){ transform:translate(20px,92px) scale(.55) rotate(-70deg) }
 .bite__crumbs.is-crumbling span:nth-child(8){ transform:translate(-20px,20px) scale(.6) rotate(85deg) }
+
+/* debris: crumbs left behind ON the cookie, right at the torn edge — unlike
+   the spans above, these don't fly off. They ride --bite-r outward as the
+   bite grows, so they always sit just past the rim on the intact surface. */
+.bite__debris{ position:absolute; inset:0; pointer-events:none; z-index:2 }
+.bite__debris span{
+  position:absolute; top:var(--bite-y); left:var(--bite-x);
+  width:5px; height:4px; border-radius:38% 62% 58% 42%;
+  /* interior crumb is lighter than the toasted surface it sits on, plus a
+     dark drop shadow, so it reads as a raised bit and not a texture blotch */
+  box-shadow:0 1px 2px rgba(45,25,14,.55), 0 -0.5px 0 rgba(255,244,228,.4) inset;
+  opacity:0; transition:opacity .5s ease .1s;
+}
+.bite__debris.is-nibbling span{ opacity:1 }
+/* each position verified against the mask's actual hole geometry (main
+   ellipse + all four nibbles) at max --bite-r, so every crumb lands on
+   cookie pixels, clear of every hole, not floating over exposed background */
+.bite__debris span:nth-child(1){ width:8px; height:7px; background:#EACB9E;
+  transform:translate(calc(-50% - var(--bite-r) * 1.24), -50%) rotate(12deg) }
+.bite__debris span:nth-child(2){ width:7px; height:6px; background:#E0B583;
+  transform:translate(-50%, calc(-50% + var(--bite-r) * 1.02)) rotate(-30deg) }
+.bite__debris span:nth-child(3){ width:9px; height:8px; background:#EDD3AB;
+  transform:translate(calc(-50% - var(--bite-r) * .82), calc(-50% + var(--bite-r) * .77)) rotate(50deg) }
+.bite__debris span:nth-child(4){ width:6px; height:5px; background:#DDA96E;
+  transform:translate(calc(-50% + var(--bite-r) * .49), calc(-50% + var(--bite-r) * .69)) rotate(-15deg) }
+.bite__debris span:nth-child(5){ width:7px; height:6px; background:#E8C79A;
+  transform:translate(calc(-50% - var(--bite-r) * 1.31), calc(-50% + var(--bite-r) * .29)) rotate(70deg) }
+.bite__debris span:nth-child(6){ width:6px; height:5px; background:#DDA96E;
+  transform:translate(calc(-50% + var(--bite-r) * .28), calc(-50% + var(--bite-r) * .86)) rotate(-60deg) }
 
 /* ── faq ──────────────────────────────────────────────────────────── */
 .faq{ padding:var(--s-6) 0; background:var(--cream-2) }

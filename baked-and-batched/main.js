@@ -219,7 +219,8 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
   const stage = document.getElementById('biteStage');
   const img = document.getElementById('biteImg');
   const crumbs = document.getElementById('crumbs');
-  if (!section || !stage || !img || !crumbs) return;
+  const debris = document.getElementById('debris');
+  if (!section || !stage || !img || !crumbs || !debris) return;
 
   // set on the shared stage, not the img — the depth-shadow overlay and the
   // crumb particles are siblings of the img, not descendants, so they can
@@ -231,11 +232,13 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
     const t = clamp(1 - r.top / innerHeight, 0, 1);
     const eased = 1 - Math.pow(1 - t, 2);        // ease-out — the bite lands fast, doesn't linger
     stage.style.setProperty('--bite-r', `${(eased * maxRadius()).toFixed(1)}px`);
+    debris.classList.toggle('is-nibbling', t > 0.15);
     crumbs.classList.toggle('is-crumbling', t > 0.55);
   }
 
   if (reduceMotion) {
     stage.style.setProperty('--bite-r', `${(maxRadius() * 0.55).toFixed(1)}px`);
+    debris.classList.add('is-nibbling');
     crumbs.classList.add('is-crumbling');
     return;
   }
