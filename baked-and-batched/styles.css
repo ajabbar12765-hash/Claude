@@ -98,9 +98,12 @@ body::after{
 
 /* ── wordmark ─────────────────────────────────────────────────────── */
 .wordmark{ position:relative; display:inline-block; padding:2px 14px 2px 0; cursor:pointer }
+/* the real logo mark, not just a flat colour dot — background-color shows
+   through any transparent edge of the badge art while it loads/if it fails */
 .wordmark__circle{
   position:absolute; right:0; top:-2px; width:30px; height:30px; border-radius:50%;
-  background:var(--blush); z-index:0;
+  background:var(--blush) url(assets/logo-badge.webp) center/cover no-repeat;
+  z-index:0;
 }
 .wordmark__lines{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:flex-start }
 .wordmark__top,.wordmark__bot{
