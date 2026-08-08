@@ -266,8 +266,8 @@ body::after{
 .herobite__dust{
   position:absolute; z-index:2; pointer-events:none;
   opacity:0; transition:opacity .6s ease;
-  -webkit-mask-image:radial-gradient(circle, black 42%, transparent 76%);
-          mask-image:radial-gradient(circle, black 42%, transparent 76%);
+  -webkit-mask-image:radial-gradient(circle, black 34%, transparent 72%);
+          mask-image:radial-gradient(circle, black 34%, transparent 72%);
 }
 .herobite__dust.is-visible{ opacity:.92 }
 .herobite__crumbs{ position:absolute; inset:0; z-index:3; pointer-events:none }

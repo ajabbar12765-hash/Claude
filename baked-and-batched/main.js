@@ -321,14 +321,14 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
    elements inside .hero__cookie--c in index.html. Nothing else on the
    page reads any of this.
 
-   Uses clip-path: path(evenodd, "<outer rect> <inner hole>") instead of
-   the mask-image circle-layering tried before: a single jagged polygon
-   (16 points at hand-tuned angle/radius, not a circle) subtracted from
-   the image's own rectangle, anchored at the cookie's actual upper-right
-   rim rather than floating over the middle of the surface — a bite
-   removes material from the edge, it doesn't punch a hole in the centre.
-   Growing every point outward together (not stacking separate shapes)
-   is what keeps the edge looking torn instead of "a circle appeared". ── */
+   Geometry, matched to what a real bitten cookie actually looks like:
+   the cookie is a centred disc, so the bite is a second circle whose
+   CENTRE SITS ON THAT DISC'S RIM — it tears a chunk out of the edge and
+   leaves a concave arc. (Earlier attempts put the hole in the middle of
+   the photo, which is why it read as "a circle appeared", and used a
+   stacked-cookie photo that had no round rim to bite in the first place.)
+   The rim is scalloped by only ±8% so it reads as tooth marks; bigger
+   deviation turns it into a flower, not a bite. ── */
 (function heroBite() {
   const section = document.querySelector('.scene--hero');
   const img = document.getElementById('heroBiteImg');
@@ -337,113 +337,128 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
   const crumbsHost = document.getElementById('heroBiteCrumbs');
   if (!section || !img || !shadow || !dust || !crumbsHost) return;
 
-  // [angle in degrees, radius as a fraction of the current bite radius]
-  // radius alternates deep/shallow around the circle — a real bite tears
-  // unevenly, it doesn't leave a smooth curve
-  const POINTS = [
-    [0, .95], [22.5, .55], [45, .9], [67.5, .7], [90, 1], [112.5, .6], [135, .85], [157.5, .5],
-    [180, .8], [202.5, .95], [225, .65], [247.5, .88], [270, .58], [292.5, .82], [315, .7], [337.5, .92],
-  ];
-  const ANCHOR_X = 0.84, ANCHOR_Y = 0.16;   // the cookie's own upper-right rim, not its middle
+  const CR = 0.5;                      // cookie radius, as a fraction of the square image
+  const ANGLE = 22 * Math.PI / 180;    // down-and-right, like the reference photo
+  const DIST = 0.94;                   // bite centre distance from cookie centre, × CR
+  const MAX = 0.62;                    // final bite radius, × CR
+  const STEPS = 30;
 
-  const crumbs = [];
-  for (let i = 0; i < 14; i++) {
-    const span = document.createElement('span');
-    crumbsHost.appendChild(span);
-    crumbs.push(span);
+  // ±8% scalloping: three rounded tooth marks with a finer ripple on top
+  const lobe = t => 1 + 0.075 * Math.cos(3 * t + 0.6) + 0.028 * Math.cos(7 * t + 2.1);
+
+  // deterministic scatter so crumbs land in the same place every load
+  const rnd = i => { const x = Math.sin(i * 12.9898) * 43758.5453; return x - Math.floor(x); };
+
+  const CRUMBS = 16;
+  const crumbEls = [];
+  for (let i = 0; i < CRUMBS; i++) {
+    const s = document.createElement('span');
+    crumbsHost.appendChild(s);
+    crumbEls.push(s);
   }
 
-  function clipPathAt(iw, ih, ax, ay, cr) {
-    const pts = POINTS.map(([a, f]) => {
-      const rad = a * Math.PI / 180;
-      return `${(ax + Math.cos(rad) * cr * f).toFixed(1)},${(ay + Math.sin(rad) * cr * f).toFixed(1)}`;
-    });
-    const outer = `M0,0 L${iw},0 L${iw},${ih} L0,${ih} Z`;
+  function biteCentre(w, h) {
+    return { x: w * (0.5 + Math.cos(ANGLE) * DIST * CR), y: h * (0.5 + Math.sin(ANGLE) * DIST * CR) };
+  }
+
+  function clipFor(w, h, r) {
+    const c = biteCentre(w, h);
+    const pts = [];
+    for (let i = 0; i < STEPS; i++) {
+      const t = (i / STEPS) * Math.PI * 2;
+      const rr = r * lobe(t);
+      pts.push(`${(c.x + Math.cos(t) * rr).toFixed(1)},${(c.y + Math.sin(t) * rr).toFixed(1)}`);
+    }
+    const outer = `M0,0 L${w},0 L${w},${h} L0,${h} Z`;
     const inner = `M${pts[0]} ${pts.slice(1).map(p => `L${p}`).join(' ')} Z`;
     return `path(evenodd, "${outer} ${inner}")`;
   }
 
-  // painted once per load (not per frame) — a static speckle field reads
-  // as "countless crumbs" without animating hundreds of DOM nodes
-  let dustPainted = false;
+  // one canvas of fine specks, painted once — this is what gives the
+  // "countless crumbs" look without animating hundreds of DOM nodes
+  let painted = 0;
   function paintDust(size) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size; canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    const shades = ['#EACB9E', '#E0B583', '#DDA96E', '#8B5A3C', '#C98B6C'];
-    for (let i = 0; i < 600; i++) {
+    if (painted === size) return;
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = size;
+    const ctx = cv.getContext('2d');
+    const shades = ['#EACB9E', '#DDA96E', '#B98A55', '#8B5A3C', '#6E4327'];
+    for (let i = 0; i < 900; i++) {
       const a = Math.random() * Math.PI * 2;
-      const d = Math.pow(Math.random(), 0.6) * (size / 2);
-      const x = size / 2 + Math.cos(a) * d;
-      const y = size / 2 + Math.sin(a) * d;
+      const d = Math.pow(Math.random(), 0.75) * (size / 2);
+      const s = 0.5 + Math.random() * 1.9;
       ctx.fillStyle = shades[(Math.random() * shades.length) | 0];
-      ctx.globalAlpha = 0.35 + Math.random() * 0.5;
-      const s = 0.8 + Math.random() * 2;
+      ctx.globalAlpha = 0.3 + Math.random() * 0.6;
       ctx.beginPath();
-      ctx.ellipse(x, y, s, s * (0.6 + Math.random() * 0.6), Math.random() * Math.PI, 0, Math.PI * 2);
+      ctx.ellipse(size / 2 + Math.cos(a) * d, size / 2 + Math.sin(a) * d,
+                  s, s * (0.55 + Math.random() * 0.6), Math.random() * Math.PI, 0, Math.PI * 2);
       ctx.fill();
     }
-    dust.style.backgroundImage = `url(${canvas.toDataURL()})`;
+    dust.style.backgroundImage = `url(${cv.toDataURL()})`;
     dust.style.backgroundSize = '100% 100%';
     dust.style.width = dust.style.height = `${size}px`;
-    dustPainted = true;
+    painted = size;
   }
 
-  function placeCrumbs(ax, ay, maxR) {
-    crumbs.forEach((span, i) => {
-      const [a, f] = POINTS[i % POINTS.length];
-      const rad = a * Math.PI / 180;
-      const dist = maxR * f * (1.08 + (i % 3) * 0.06);
-      const size = 4 + (i % 4) * 1.6;
-      span.style.left = `${(ax + Math.cos(rad) * dist).toFixed(1)}px`;
-      span.style.top = `${(ay + Math.sin(rad) * dist).toFixed(1)}px`;
-      span.style.width = `${size}px`;
-      span.style.height = `${(size * 0.85).toFixed(1)}px`;
-      span.style.background = i % 2 ? '#8B5A3C' : '#DDA96E';
-      span.classList.add('is-in');
+  // crumbs sit OUTSIDE the cookie's rim, fanned around the bite — on the
+  // page background, exactly where they fall in the reference photo
+  function placeCrumbs(w, h, r) {
+    crumbEls.forEach((el, i) => {
+      const spread = (rnd(i) - 0.42) * 1.5;                 // fan either side of the bite
+      const a = ANGLE + spread;
+      const d = CR * (1.04 + rnd(i + 90) * 0.42);           // just past the rim, outward
+      const size = 2.5 + rnd(i + 40) * 4.5;
+      el.style.left = `${(w * (0.5 + Math.cos(a) * d)).toFixed(1)}px`;
+      el.style.top = `${(h * (0.5 + Math.sin(a) * d)).toFixed(1)}px`;
+      el.style.width = `${size.toFixed(1)}px`;
+      el.style.height = `${(size * (0.6 + rnd(i + 7) * 0.5)).toFixed(1)}px`;
+      el.style.background = ['#EACB9E', '#DDA96E', '#B98A55', '#8B5A3C'][i % 4];
+      el.style.transitionDelay = `${(rnd(i + 3) * 0.25).toFixed(2)}s`;
+      el.classList.add('is-in');
     });
   }
 
-  function update() {
-    const r = section.getBoundingClientRect();
-    // t=0 while the hero sits at rest (r.top===0 on load); rises to 1 as the
-    // hero scrolls up and out — "as you scroll past", not "already bitten"
-    const t = clamp(-r.top / (r.height * 0.6), 0, 1);
-    const iw = img.clientWidth, ih = img.clientHeight;
-    if (!iw || !ih) return;
+  function apply(w, h, r, t) {
+    const c = biteCentre(w, h);
+    img.style.clipPath = r < 1 ? 'none' : clipFor(w, h, r);
+    shadow.style.setProperty('--hb-x', `${(c.x / w * 100).toFixed(1)}%`);
+    shadow.style.setProperty('--hb-y', `${(c.y / h * 100).toFixed(1)}%`);
+    shadow.style.setProperty('--hb-r', `${r.toFixed(1)}px`);
 
-    const eased = 1 - Math.pow(1 - t, 2);
-    const maxR = iw * 0.48;
-    const cr = eased * maxR;
-    const ax = iw * ANCHOR_X, ay = ih * ANCHOR_Y;
-
-    img.style.clipPath = cr < 1 ? 'none' : clipPathAt(iw, ih, ax, ay, cr);
-    shadow.style.setProperty('--hb-x', `${(ax / iw * 100).toFixed(1)}%`);
-    shadow.style.setProperty('--hb-y', `${(ay / ih * 100).toFixed(1)}%`);
-    shadow.style.setProperty('--hb-r', `${cr.toFixed(1)}px`);
-
-    if (t > 0.3) {
-      if (!dustPainted) paintDust(Math.round(maxR * 2.4));
-      dust.style.left = `${(ax - dust.clientWidth / 2).toFixed(1)}px`;
-      dust.style.top = `${(ay - dust.clientHeight / 2).toFixed(1)}px`;
+    if (t > 0.35) {
+      const size = Math.round(w * CR * 1.5);
+      paintDust(size);
+      // sits just beyond the bite, drifting away from the cookie
+      const da = ANGLE + 0.18, dd = CR * 1.16;
+      dust.style.left = `${(w * (0.5 + Math.cos(da) * dd) - size / 2).toFixed(1)}px`;
+      dust.style.top = `${(h * (0.5 + Math.sin(da) * dd) - size / 2).toFixed(1)}px`;
       dust.classList.add('is-visible');
     }
-    if (t > 0.45) placeCrumbs(ax, ay, maxR);
+    if (t > 0.45) placeCrumbs(w, h, r);
+  }
+
+  let settled = false;
+  function update() {
+    const rect = section.getBoundingClientRect();
+    // once the hero is fully past, the bite is finished — stop rebuilding a
+    // 30-point path on every scroll frame for the rest of the page
+    if (rect.bottom < 0) { settled = true; return; }
+    if (settled) settled = false;
+    // Completes within the first flick of scroll (~18% of a viewport). The
+    // hero cookie sits high on the page, so a longer travel would finish the
+    // bite only after the cookie had already scrolled out of sight — the
+    // payoff has to land while it's still fully visible.
+    const travel = Math.max(120, innerHeight * 0.18);
+    const t = clamp(-rect.top / travel, 0, 1);
+    const w = img.clientWidth, h = img.clientHeight;
+    if (!w || !h) return;
+    const eased = 1 - Math.pow(1 - t, 2);
+    apply(w, h, eased * MAX * CR * w, t);
   }
 
   if (reduceMotion) {
-    const iw = img.clientWidth || img.width, ih = img.clientHeight || img.height;
-    const maxR = iw * 0.48, cr = maxR * 0.62;
-    const ax = iw * ANCHOR_X, ay = ih * ANCHOR_Y;
-    img.style.clipPath = clipPathAt(iw, ih, ax, ay, cr);
-    shadow.style.setProperty('--hb-x', `${(ANCHOR_X * 100).toFixed(1)}%`);
-    shadow.style.setProperty('--hb-y', `${(ANCHOR_Y * 100).toFixed(1)}%`);
-    shadow.style.setProperty('--hb-r', `${cr.toFixed(1)}px`);
-    paintDust(Math.round(maxR * 2.4));
-    dust.style.left = `${(ax - dust.clientWidth / 2).toFixed(1)}px`;
-    dust.style.top = `${(ay - dust.clientHeight / 2).toFixed(1)}px`;
-    dust.classList.add('is-visible');
-    placeCrumbs(ax, ay, maxR);
+    const w = img.clientWidth || img.width, h = img.clientHeight || img.height;
+    apply(w, h, MAX * CR * w, 1);
     return;
   }
 
