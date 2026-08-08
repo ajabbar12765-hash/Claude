@@ -345,11 +345,14 @@ body::after{
   filter:drop-shadow(0 30px 40px rgba(96,62,48,.3));
 }
 /* a warm pulse behind the cookie stands in for oven heat — cheap to build,
-   reads instantly, and needs no photo we don't already have */
+   reads instantly, and needs no photo we don't already have. Runs a handful
+   of cycles then holds: an infinite decorative loop is exactly the
+   anti-pattern flagged for ambient elements like this — see the bokeh
+   background above for the same fix. */
 .fresh__glow{
   position:absolute; inset:-12%; z-index:0; border-radius:50%;
   background:radial-gradient(circle, rgba(233,158,79,.55), transparent 70%);
-  filter:blur(18px); animation:fresh-pulse 3.2s ease-in-out infinite;
+  filter:blur(18px); animation:fresh-pulse 3.2s ease-in-out 4;
 }
 @keyframes fresh-pulse{ 0%,100%{ opacity:.55; transform:scale(.96) } 50%{ opacity:.85; transform:scale(1.04) } }
 .fresh__steam{ position:absolute; z-index:2; inset:-18% 0 auto 0; height:70%; pointer-events:none }
@@ -357,7 +360,7 @@ body::after{
   position:absolute; bottom:0; width:10px; height:46%; border-radius:50%;
   background:linear-gradient(rgba(255,255,255,.85), transparent 75%);
   filter:blur(4px); opacity:0;
-  animation:fresh-steam 3.6s ease-in infinite;
+  animation:fresh-steam 3.6s ease-in 4;
 }
 .fresh__steam span:nth-child(1){ left:34%; animation-delay:0s }
 .fresh__steam span:nth-child(2){ left:50%; height:56%; animation-delay:1.1s }
