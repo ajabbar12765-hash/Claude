@@ -42,6 +42,8 @@
      local to its own component and never needs to compete globally,
      so those keep their own small 0-4 values. */
   --z-header:  100;   /* sticky top bar */
+  --z-orderbar:110;   /* sticky order bar, bottom of viewport — never
+                          overlaps the header, but keep it in the scale */
   --z-overlay: 200;   /* full-page grain texture, above all content */
   --z-skiplink:300;   /* must always win focus, above the overlay too */
   --z-intro:   400;   /* first-load intro, above everything else briefly */
@@ -520,6 +522,50 @@ body::after{
 .footer__meta a{ color:var(--rose-text); border-bottom:1px solid transparent; transition:border-color .2s var(--ease) }
 .footer__meta a:hover{ border-color:var(--rose-text) }
 .footer__fine{ font-size:.78rem; color:var(--ink-3) }
+
+/* ── sticky order bar ─────────────────────────────────────────────── */
+/* Mirrors the box builder's own state (main.js keeps one calculation for
+   both) — appears once a box is picked there and the builder itself has
+   scrolled out of view, so it never duplicates a control already on screen. */
+.orderbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:var(--z-orderbar);
+  display:flex; align-items:center; gap:var(--s-3);
+  padding:.75rem clamp(1rem,3vw,2rem);
+  padding-bottom:calc(.75rem + env(safe-area-inset-bottom, 0px));
+  background:rgba(251,247,245,.94); backdrop-filter:blur(14px) saturate(1.1);
+  -webkit-backdrop-filter:blur(14px) saturate(1.1);
+  border-top:1px solid var(--line);
+  box-shadow:0 -8px 28px -18px rgba(96,62,48,.35);
+  transform:translateY(100%);
+  transition:transform .35s var(--ease);
+}
+.orderbar.is-visible{ transform:none }
+.orderbar__text{
+  flex:1; min-width:0; text-align:left; background:none; border:0; padding:.55rem 0;
+  min-height:44px; display:flex; align-items:center;
+  font-family:var(--body); font-size:.92rem; color:var(--ink); cursor:pointer;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.orderbar__text:hover{ color:var(--rose-text) }
+.orderbar__text strong{ font-weight:600 }
+.orderbar__actions{ flex:none; display:flex; align-items:center; gap:.5rem }
+.orderbar__actions .pill{ padding:.6rem 1.2rem; font-size:.86rem }
+#orderBarCta[aria-disabled="true"]{ opacity:.5; pointer-events:none }
+.orderbar__close{
+  flex:none; width:44px; height:44px; display:grid; place-items:center;
+  background:none; border:0; border-radius:50%; color:var(--ink-3); cursor:pointer;
+  transition:background-color .2s var(--ease), color .2s var(--ease);
+}
+.orderbar__close:hover{ background:var(--blush); color:var(--ink) }
+.orderbar__close svg{ width:16px; height:16px }
+@media (max-width:560px){
+  .orderbar__text{ font-size:.86rem }
+  .orderbar__actions .pill span{ display:none }   /* icon-only "Order" button at this width */
+  .orderbar__actions .pill{ padding:.6rem; width:44px }
+}
+@media (prefers-reduced-motion:reduce){
+  .orderbar{ transition:none }
+}
 
 /* ── scroll reveal (JS adds .is-in) ───────────────────────────────── */
 /* --reveal-i is set per element by JS, scoped to its position among its

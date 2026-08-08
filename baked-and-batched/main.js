@@ -261,26 +261,37 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
   const summary = document.getElementById('builderSummary');
   const cta = document.getElementById('builderCta');
 
+  // sticky order bar — a second view onto the exact same state, not a
+  // second calculation. Every number/link it shows comes from the one
+  // `state` object below, so the bar and the builder can never disagree.
+  const bar = document.getElementById('orderBar');
+  const barText = document.getElementById('orderBarText');
+  const barCta = document.getElementById('orderBarCta');
+  const barClose = document.getElementById('orderBarClose');
+  let dismissed = false;
+  let builderInView = true;
+
   function selectedBox() {
     const input = boxInputs.find(i => i.checked);
     return input ? { tier: input.dataset.tier, price: input.dataset.price, label: input.dataset.label } : null;
   }
 
-  function update() {
+  function computeState() {
     const box = selectedBox();
+    if (!box) return { box: null, names: [], ready: false };
+    const names = flavourInputs.filter(i => i.checked).map(i => i.value);
+    return { box, names, ready: names.length >= 2 };
+  }
 
-    chipLabels.forEach((label, i) => {
-      const matches = !!box && label.dataset.tier === box.tier;
-      label.classList.toggle('is-hidden', !matches);
-      if (!matches) flavourInputs[i].checked = false;
-    });
+  function waLink(box, names) {
+    const digits = String(CONFIG.whatsapp).replace(/\D/g, '');
+    if (!digits) return null;
+    const msg = `Hi! I'd like to order a ${box.label} with ${names.join(' and ')} (${box.price}).`;
+    return `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
+  }
 
-    const checkedCount = flavourInputs.filter(i => i.checked).length;
-    flavourInputs.forEach((input, i) => {
-      if (chipLabels[i].classList.contains('is-hidden')) return;
-      input.disabled = !input.checked && checkedCount >= 2;
-    });
-
+  function renderBuilder(state) {
+    const { box, names, ready } = state;
     if (!box) {
       hint.textContent = 'Choose a box first.';
       summary.textContent = 'Pick a box and two flavours to see your total.';
@@ -288,29 +299,89 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
       cta.removeAttribute('href');
       return;
     }
-
-    const names = flavourInputs.filter(i => i.checked).map(i => i.value);
-    if (names.length < 2) {
+    if (!ready) {
       hint.textContent = `Choose ${2 - names.length} more flavour${names.length === 1 ? '' : 's'}.`;
       summary.innerHTML = `<strong>${box.label}</strong> — ${box.price}. Pick two flavours.`;
       cta.setAttribute('aria-disabled', 'true');
       cta.removeAttribute('href');
       return;
     }
-
     hint.textContent = 'Ready to order.';
     summary.innerHTML = `<strong>${box.label}</strong> — ${names.join(' + ')} — <strong>${box.price}</strong>`;
-    const digits = String(CONFIG.whatsapp).replace(/\D/g, '');
-    const msg = `Hi! I'd like to order a ${box.label} with ${names.join(' and ')} (${box.price}).`;
-    if (digits) {
-      cta.href = `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
+    const link = waLink(box, names);
+    if (link) {
+      cta.href = link;
       cta.target = '_blank';
       cta.rel = 'noopener noreferrer';
       cta.removeAttribute('aria-disabled');
     }
   }
 
-  boxInputs.forEach(i => i.addEventListener('change', update));
-  flavourInputs.forEach(i => i.addEventListener('change', update));
+  function renderBar(state) {
+    if (!bar) return;
+    const { box, names, ready } = state;
+    const shouldShow = !!box && !builderInView && !dismissed;
+    bar.classList.toggle('is-visible', shouldShow);
+    if (!box) return;   // nothing meaningful to render while hidden anyway
+
+    if (!ready) {
+      barText.textContent = `${box.label} — choose ${2 - names.length} more flavour${names.length === 1 ? '' : 's'}`;
+      barCta.setAttribute('aria-disabled', 'true');
+      barCta.removeAttribute('href');
+    } else {
+      barText.innerHTML = `${box.label} — ${names.join(' + ')} · <strong>${box.price}</strong>`;
+      const link = waLink(box, names);
+      if (link) {
+        barCta.href = link;
+        barCta.target = '_blank';
+        barCta.rel = 'noopener noreferrer';
+        barCta.removeAttribute('aria-disabled');
+      }
+    }
+  }
+
+  function update() {
+    const box = selectedBox();
+    chipLabels.forEach((label, i) => {
+      const matches = !!box && label.dataset.tier === box.tier;
+      label.classList.toggle('is-hidden', !matches);
+      if (!matches) flavourInputs[i].checked = false;
+    });
+    const checkedCount = flavourInputs.filter(i => i.checked).length;
+    flavourInputs.forEach((input, i) => {
+      if (chipLabels[i].classList.contains('is-hidden')) return;
+      input.disabled = !input.checked && checkedCount >= 2;
+    });
+
+    const state = computeState();
+    renderBuilder(state);
+    renderBar(state);
+  }
+
+  boxInputs.forEach(i => i.addEventListener('change', () => { dismissed = false; update(); }));
+  flavourInputs.forEach(i => i.addEventListener('change', () => { dismissed = false; update(); }));
+
+  if (barClose) {
+    barClose.addEventListener('click', () => {
+      dismissed = true;
+      if (bar) bar.classList.remove('is-visible');
+    });
+  }
+  if (barText) {
+    barText.addEventListener('click', () => root.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }));
+  }
+
+  // the bar only makes sense once the real builder has scrolled out of
+  // view — otherwise it's a duplicate control sitting right on top of
+  // the one already on screen
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      builderInView = entries[0].isIntersecting;
+      renderBar(computeState());
+    }, { threshold: 0 }).observe(root);
+  } else {
+    builderInView = false;
+  }
+
   update();
 })();
