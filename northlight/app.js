@@ -191,6 +191,8 @@ const successMsg = document.getElementById('wlSuccessMsg');
 const submitBtn = document.getElementById('wlSubmit');
 const emailInput = document.getElementById('wl-email');
 const emailError = document.getElementById('wl-email-error');
+const companyInput = document.getElementById('wl-company');
+const companyError = document.getElementById('wl-company-error');
 const demoNote = document.getElementById('demoNote');
 const againBtn = document.getElementById('wlAgain');
 
@@ -206,22 +208,31 @@ submitBtn.insertAdjacentElement('afterend', formError);
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-function setEmailError(message) {
+function setFieldError(input, node, message) {
   if (message) {
-    emailError.textContent = message;
-    emailError.hidden = false;
-    emailInput.setAttribute('aria-invalid', 'true');
+    node.textContent = message;
+    node.hidden = false;
+    input.setAttribute('aria-invalid', 'true');
   } else {
-    emailError.textContent = '';
-    emailError.hidden = true;
-    emailInput.removeAttribute('aria-invalid');
+    node.textContent = '';
+    node.hidden = true;
+    input.removeAttribute('aria-invalid');
   }
 }
 
-/* clear the error as soon as they start fixing it */
+const setEmailError = (message) => setFieldError(emailInput, emailError, message);
+const setCompanyError = (message) => setFieldError(companyInput, companyError, message);
+
+/* clear each error as soon as they start fixing it */
 emailInput.addEventListener('input', () => {
   if (emailInput.getAttribute('aria-invalid') === 'true' && EMAIL_RE.test(emailInput.value.trim())) {
     setEmailError('');
+  }
+});
+
+companyInput.addEventListener('input', () => {
+  if (companyInput.getAttribute('aria-invalid') === 'true' && companyInput.value.trim()) {
+    setCompanyError('');
   }
 });
 
@@ -240,19 +251,38 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formError.hidden = true;
 
+  /* validated in the order the fields appear, so focus lands on the
+     first thing that actually needs fixing */
+  const company = companyInput.value.trim();
+  if (!company) {
+    setCompanyError('We need the business name — it tells us what to look at before we call.');
+    companyInput.focus();
+    return;
+  }
+  setCompanyError('');
+
   const email = emailInput.value.trim();
-  if (!email) return setEmailError('We need an email to add you to the list.');
-  if (!EMAIL_RE.test(email)) return setEmailError("That doesn't look like a complete email address.");
+  if (!email) {
+    setEmailError('We need an email to add you to the list.');
+    emailInput.focus();
+    return;
+  }
+  if (!EMAIL_RE.test(email)) {
+    setEmailError("That doesn't look like a complete email address.");
+    emailInput.focus();
+    return;
+  }
   setEmailError('');
 
   /* honeypot — only bots fill this in. Pretend it worked. */
-  if (form.company.value) {
+  if (form.fax.value) {
     showSuccess();
     return;
   }
 
   const entry = {
     name: form.name.value.trim(),
+    company,
     email,
     project: form.project.value,
     submittedAt: new Date().toISOString(),
@@ -295,10 +325,11 @@ function showSuccess() {
 againBtn.addEventListener('click', () => {
   form.reset();
   setEmailError('');
+  setCompanyError('');
   formError.hidden = true;
   success.hidden = true;
   form.hidden = false;
-  emailInput.focus();
+  companyInput.focus();
 });
 
 /* ------------------------------------------------------------

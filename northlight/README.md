@@ -55,8 +55,13 @@ The form sends a JSON `POST` with this body, so any of them — or your own API 
 will work:
 
 ```json
-{ "name": "Alex Rivera", "email": "alex@company.com", "project": "landing-page", "submittedAt": "2026-07-31T12:00:00.000Z" }
+{ "name": "Ali Raza", "company": "Sana's Kitchen", "email": "ali@sanaskitchen.pk", "project": "landing-page", "submittedAt": "2026-07-31T12:00:00.000Z" }
 ```
+
+`company` and `email` are required; `name` and `project` are optional and may
+arrive as empty strings. To make the business name optional instead, drop
+`required` from `#wl-company` in `index.html` and delete the `if (!company)`
+block in `app.js`.
 
 ### Google Sheets option
 
@@ -187,5 +192,8 @@ no output directory.
   form fields with inline errors, a skip link, 44px+ touch targets, and
   `prefers-reduced-motion` support that turns off the parallax, tilt, float and
   scroll-snap.
-- **Anti-spam** — an off-screen honeypot field. Bots that fill it in get the
-  success screen and nothing is sent.
+- **Anti-spam** — an off-screen honeypot field named `fax`. Bots that fill it in
+  get the success screen and nothing is sent. It is deliberately *not* named
+  `company`, `website` or anything else a real field might want later — renaming
+  it without updating the `form.fax.value` check in `app.js` silently disables
+  spam filtering, or worse, drops every genuine signup.
