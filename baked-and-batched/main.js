@@ -371,14 +371,19 @@ if (reduceMotion) addEventListener('scroll', onStick, { passive: true });
     barText.addEventListener('click', () => root.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }));
   }
 
-  // the bar only makes sense once the real builder has scrolled out of
-  // view — otherwise it's a duplicate control sitting right on top of
-  // the one already on screen
+  // the bar only makes sense once you've scrolled meaningfully past the
+  // real builder — otherwise it's a duplicate control sitting right on
+  // top of the one already on screen. threshold:0 (only fully off-screen)
+  // meant the whole builder block — box picker, chips, summary, all of
+  // it — had to clear the viewport first, which on a tall device needs
+  // far more scrolling than "away" actually feels like. Shrinking the
+  // observed root to its top half means the bar shows as soon as the
+  // builder has scrolled past the midpoint of the screen instead.
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(entries => {
       builderInView = entries[0].isIntersecting;
       renderBar(computeState());
-    }, { threshold: 0 }).observe(root);
+    }, { threshold: 0, rootMargin: '-50% 0px 0px 0px' }).observe(root);
   } else {
     builderInView = false;
   }
