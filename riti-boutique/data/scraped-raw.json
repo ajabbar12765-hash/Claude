@@ -1,0 +1,843 @@
+{
+  "scrapedAt": "2026-08-12",
+  "sources": [
+    "compass/crawler-google-places",
+    "apify/instagram-scraper"
+  ],
+  "googleMaps": {
+    "imageUrls": [
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmmZC7e3dSo2iBxeTstsgEMIOpuPuyC6C4-0hGAtwTgt_-u-A1gq9ue4O_xwJCjKm5Es0NoBxwqaV4CflOOqpjt_q_OqFNM2lqhwXsLoZueb-To8pnnW33Nk9qsVKQV0uBPlgb79w=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnTUoOTMn7q4NqQQkAnS6iFOMFx-HfQ-2X2gqBNRG-EXVxPNEyhhcagYcQidXtY8lupAzDmEWvNdMP1lKddBVgoTmVAUQmE5RDZmpLj8NB7AX20hpFZQ7G8u-s45-fk91W63YEN=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnE257QyraTZR1246n7iCnltM1koJgZRuQaE4fE4wO0knsuosgVEziw53HLj33vM-5wOo6m8etyWT5HHu8klO6tWfYihJkW06wE1T1Y4BJB-X_y_CPdUr-noeE0PuFhR2bgsJg=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlg8wTkrpeQ7oztcVKePcMCTmfpdEnKSa6u_QHYRDVcLTMYO_5H66SCiCmKjTim0SJuqGtdC2bpl-TFzSTqgpKXBGLKxzayO-IH20rxiQvhTEmlSTR96bghT4A9gCve6HX87l_ggQ=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkCaVDqoZm5A9VvPJI563U0UPR9WrjjFYDqn6JZB2OuiSyXJ44LVwO71-nItKseDXvZFSxJFMe5Bx5rmAt1QU9shg0-H60nt3TA_1hAAX9esNpvKKtte6o7CTX8vO3yqNih9DbJJzWh71wI=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmYU10xlrNr-H2uPoVE7uXG6H5hOqIjY1vX1I4BqfEjqtrKV_hCbdf0YHgQA1ZsLUx9MRiAM18xN3heFc1SbsZdt3tvYPqy31oTEjNsMF7Jwn3TSI3dg79KSeaIxK_sYnOdPxZinf1FLGE=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk6KyYVHb5Y0Rri4-6Ap9chXG1cfA4s9O41D6ChnD-IpAarfoXviTNGG-6gMwqrsx5doYYdyfbOAonVHnYBRBLiE3tEew48Nk9w7QooZtm8XQkpq6iJJ2LLUOLjqghXIbNnIpDbrM6QvqNs=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk6o_w_ZNKmByzJsp9eDb7refNzRAo0_EIWQgU4fuOAFgzYN1hpztdLJ0duoxlQJLZrwXFkdJ9-80ccTTATvIVNZfhchDefqY97KX89yJE9Ye4F6cPnJJJUe1ptfZxBcXXIQRTrbmEsRDRZ=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkHkK-GY7miNgDTlwMkYgAZkEbxWVUeKqKncmGasd6J8XimA-2ZFuaa7eGCogKc2u7ONp3TWBMfQ6lVyXIJ8LMURktmS3kpe3XZUAftUNErd0nGHhntFPvNFaEv4CeC_JsK2KSq=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWltLaJTQhGRh1b8625wv7AfEkVRvkAzjQmQ62GcD_uuEHN8sefdN5SA-Bd6qzyIho_ifmB4hvokrFBA8-_M5x8jKOJf88fdC5B84njcyfKIKa3FpFWWbhPiwaEhPSjabM09rADtkQ=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl5Zq13TR9pU2K-nXzEH0obQy6Ii4zqFTEDKESk4n6HARn-ddSwqP97fYCxO-v86fcm9gZQh_Os6WbvZtLhOILNoGfgK9dAH6gAn7Fej2CT_1dFIV6I1FxUrHSrhrk71POuEBKN=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmZ62MXg7umJLOB_w0KZdCw5cC5_KlJq35t2nKSrPEhZTxf7okQDOP6eybWxh481Uo9mUzidLyumH9OKPO3xC8PlSr83fT5NbUxKdBd1MMbphb8d71bBHEp2MIJWXV2nZnHuioiNA=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkGo4sStD1Qo6VFsUKyae6S2A-44icF0pi-yXifx8qv10JADsrLvF4NPdEr3ApWmtG4-0TJyc445U_ORzfVIWOyuokt7zmAcoJNcXtXaxk_P1Fq9hVUpu1HzBWgG2DnxZzLBzhfWX5Nvh6O=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk9PGK7yn6ZCHCM2w19idSBjKvN1rB2uhJAymNwHbmfniWYV2fqdiu17Ok91mZcbsdcYIDbKngiGCihZ9JQ2XULooKm69vCPPNKEa3K30uAeGj3asjBJyAol4LglWpKFglVBSkU=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmMFA6WcxRW-5UHtXvj-bZJE7kHQ8rjemKSRyN9tdzPBt7oyJ5pPmCnBtXOCFSvP_vm3ifB4W9q_Q4vYJ47XLtwpM6YTDYnQ_mul3oVouBtFy3I1QMZ3ov-AIYlacsilC4NOyk-=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWm3Me8lSicpsbdGwg0KJnuP3MfPim0pNFjBN5hXrsdtDPCOP-CSYFtFHShngw8q1LcYwhlONu-mZhy1gNMmHrWqlbVxyOsLRLzE4N79TpDmm5epxK0mmWG7O9nqey4GUWcf_sw=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnbF4GFxd0vL1JbT9jEbgbxsTTI29xIBjNxKuOxQ00SKlUTIio9sf6wG9Dyn7dv70-nBuuEgjMYaDvy4ZKiNTNPHU_ORCUKjUi5EuM-sgndywuzXv3oCCoed6RQyW13rw615cRy=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkG_gkB03HPmBwoilKwNVqIw00TOhbgXi775Xx2RTe0J-8LiSmtf5sZkF9Q5h05oXXbULD03YJvb1aEOHOJxWfHlRWmj4FCzhLfrwn7h29zskqRg2Ya499PfpeZ8lOxLPVqcvlXpy8G3RE=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkVa0Elhe47Ppxhdi6lqOBvxzmfXVH1M-7c0YaF5avaqxmWXinVC0a7vJXFpBuy0KShL_EQXBZmYr0388-m0yxUIpYAcGtc9Jpmdcm_1YirhgalRQ52hKe7mOiiTt3Tspk9Mdo25A=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlIX_YNVPFca3RbZLm0CTuP-05P_kJCbiR7S6ltml2Bq5rBFoYoNOLauMPXuoQUWEQPiIKmv5aDqAKA4F9cf0QNjvc2uygtmACBA-ICmuGvM3nOE_qPgnjCx1e9fKBJ-AX0YOsG=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnQ2snJFm4a-uCsbiob3Dh5gesDkQkwNJ276fhJ0UsBYltCwY-ZPto93GS2T1tFt3KXo7JQtXaHowJp4Pn6yhbO6HbgiGf7Pa4tERneJ-flUBxHVmcNFkFUbKof_zDlbaJDAIhX=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnlgwMJDTWuBe95EWpjcOmKioUCGoPB1V0owJWGkOMdK6PVmpjkJzDHiGOg6RqHY_sYjKjgKxDN2rxxVZGPCDTn-L6TmEi48waz9DPr7DFPgt_cY-M4xRhhtcwe4gO1sie-zKibQj-L8n_i=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmlVyljb8VO7y7sNiE8N7AfxyyVoSIjd-eiACeLu3qpLkcAjhrzWBPl62fdZ38ANEsz8NathihEObJXZY6vLMDyoT_BNh_QQ1w1Dd9_pfeK5yZiGnD8D8tXc38ssUQWa3_hMN1pmg=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWm0UC40JJPga3bpJFEGcgTpZiTBEKhqmwzM_DfxSxdS5GfqUgOnZpZLeLq-CySrpysDs7mp9xPEZDcEicM8znlfLsQBtiFU6VD7ZlmkHKhoKLD36NhapyOFaL2kKdAxbKgj_L22y8_3DLsv=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWloqFOD3kexog7Ul6EIm9KscZIDqbVkfNdrK6LqBRNxIUk78C8we54-8f6QjG72jEE4Rk1D7DKPtmHGeBcOCKk9B2tVESJ087jQXg4OHX7YOUOeKOEJtX5nPUVc_mQMfF6x_LczRQN9b0wr=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWliJpT-kEXfVLuAAIJ_UP4PZCs_fqCNqQpcqSxiqOW6epsZcF-zmLhjHTijK_KDc2wAvSUXo95IcPZydxzdGFnii08Xh7a7ySAV_sHUhdWMU2Xz6VZEkYYN7kxUK0olAeZP2C0kp3Zfx5eA=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWm3pj1q7WMvtEvWvSIUY_2kOSTKP7A5Xf7b7wd0GDdAIEYLv0D8OnZ8SxAV9ExVIpY3Cd2ClJvotOTDeIvYEfx3ekS3mtGdVTIjmNRd63kWxVIEWV94e52OXEGBbz9JjWwDS3Sp4w=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnTjf4aA3T6TxW75tzEQtGX4DlqDiFOX8LNxeD3Bi9kQvlV6aQnpdKLh85LiiG9Y67jkRFrUBKND_2icFd_E9qVZGjzKn1NIPMiuLSpecDcee1xrErTckr7ckGecvrNRKIMFOBM=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnngJZBDrSOZIct3_7yj6U21ogI5btrom2URMqABw8dNWWmZA6LGeFsLGbrzUfBoqJcM0-3I0ZYDeHy_5X21t5b0QeQmNAlmkTiSri--dhet5EK4uPQok4p-juHRRP2Mb7JQ1AeXAX7kAg0=w1920-h1080-k-no",
+      "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWls2c66hvl2-O8aeFjZhGcc2-YY1zppsv9zj1I_fwN9I9zr5nNL2usdRkn7ljWGGquExMf9CLO8Wgs0iNfpa1nxvME5Viw6hDf9oV-SmraSvoQu8fVsQ-j8kW-QMsXvoAC7rDGW7Q=w1920-h1080-k-no"
+    ],
+    "imageCategories": [
+      "All",
+      "Latest",
+      "Inside",
+      "Dress",
+      "By owner",
+      "Street View & 360°"
+    ],
+    "peopleAlsoSearch": [
+      {
+        "category": "People also search for",
+        "title": "Rugmys Boutique",
+        "reviewsCount": 45,
+        "totalScore": 4.6
+      },
+      {
+        "category": "People also search for",
+        "title": "Divas Boutique (Indian Ethnic & Fusion wear)",
+        "reviewsCount": 35,
+        "totalScore": 4.5
+      },
+      {
+        "category": "People also search for",
+        "title": "Eka Boutique",
+        "reviewsCount": 59,
+        "totalScore": 4.7
+      },
+      {
+        "category": "People also search for",
+        "title": "Silky Calicut",
+        "reviewsCount": 18,
+        "totalScore": 4.8
+      },
+      {
+        "category": "People also search for",
+        "title": "PRIYA FASHIONS BOUTIQUE BEST GOWNS LADIES BOUTIQUE TAILORING DUBAI",
+        "reviewsCount": 187,
+        "totalScore": 4.7
+      }
+    ],
+    "reviews": [
+      {
+        "name": "R B",
+        "stars": 5,
+        "publishedAtDate": "2026-08-12T04:23:07.994Z",
+        "text": "I got two custom-made, beautiful outfits from Riti Boutique, and they were absolutely stunning. I really want to thank Aparna for being so attentive and thorough; I truly appreciate her efforts. I had a lot of concerns, and Aparna handled them so professionally. All my concerns and questions were updated with so much dedication and love. Thank you so much, Aparna!\nAlso, I want to thank Aiswarya for her help. Thanks!",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2tOVmVuZzBaR2xrWTFkME1YQm5jVkpZYmw5TlNGRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOkNVeng0ZGlkY1d0MXBncVJYbl9NSFE%7C%7C?hl=en"
+      },
+      {
+        "name": "Meera C",
+        "stars": 5,
+        "publishedAtDate": "2026-08-05T03:06:01.708Z",
+        "text": "I had an upgrade of my wardrobe.  The dresses are so beautiful , flawless, and head turners.  Makes you feel\nLike a celebrity.  The staff is so courteous, responsive and guides you so perfectly. Thanks aishwarya.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25nd1NVVlJTM1JaWmxWUmNrRXdkWFJoVVRFNGJGRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOngwSUVRS3RZZlVRckEwdXRhUTE4bFE%7C%7C?hl=en"
+      },
+      {
+        "name": "Abhay 333",
+        "stars": 5,
+        "publishedAtDate": "2026-06-28T15:11:23.044Z",
+        "text": "Amazing experience at Riti Boutique! Beautiful designs, perfect fitting, and excellent customer service. Will definitely be coming back for more shopping!",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xvemJYRm9WRzl4UW5WUVNqUnNjWFp5VVc5a2NGRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOlozbXFoVG9xQnVQSjRscXZyUW9kcFE%7C%7C?hl=en"
+      },
+      {
+        "name": "Aleena Binu",
+        "stars": 5,
+        "publishedAtDate": "2026-06-28T14:19:27.011Z",
+        "text": "Good works especially stitching and hand works are too good.Customer friendly and on time.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25WbVpsZG9YemhpWTNOck9YUlNWRkF0YlVFellWRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOnVmZldoXzhiY3NrOXRSVFAtbUEzYVE%7C%7C?hl=en"
+      },
+      {
+        "name": "Santhwana V",
+        "stars": 5,
+        "publishedAtDate": "2026-06-28T14:16:43.467Z",
+        "text": "Excellent service! The staff were very friendly, professional, and attentive.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2taYU9IVXpjMmxaTjNjd00xOTRaRVpUYlRWR2IwRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOkZaOHUzc2lZN3cwM194ZEZTbTVGb0E%7C%7C?hl=en"
+      },
+      {
+        "name": "sanika dais thomas",
+        "stars": 1,
+        "publishedAtDate": "2026-06-11T16:02:21.501Z",
+        "text": "I had a very disappointing experience with the staff. It is unfortunate to see such unprofessional behavior in a reputed establishment.\n\nI approached the firm regarding a dress for my wedding photoshoot and inquired about the stitching charges. When I mentioned that my budget was around AED 400, the receptionist literally laughed in my face. I completely understand if my budget did not align with the services offered, but laughing at a customer is disrespectful and unacceptable.\n\nA simple and polite explanation would have been appreciated. Professionalism and basic courtesy should be extended to every customer, regardless of their budget. This experience left me feeling embarrassed and unwelcome.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xSZk5EZzFUMTkxVlRrNVRUWnZSSGwxY2sxWWVYYxAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOlRfNDg1T191VTk5TTZvRHl1ck1YeXc%7C%7C?hl=en"
+      },
+      {
+        "name": "Revathy Vijay",
+        "stars": 5,
+        "publishedAtDate": "2026-04-26T06:59:55.556Z",
+        "text": "So happy with the stitching perfection. The quality of the products is excellent, everything feels carefully chosen and well-made.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25WSE1tbHRaa1pmUWxwbmJsRnlRVU5MVVVOSFVYYxAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOnVHMmltZkZfQlpnblFyQUNLUUNHUXc%7C%7C?hl=en"
+      },
+      {
+        "name": "Aswathy Achuz",
+        "stars": 5,
+        "publishedAtDate": "2026-01-07T17:02:35.865Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21GU1VYVjRTSE13ZHpRelltOUlZamswYkV0TFVVRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOmFSUXV4SHMwdzQzYm9IYjk0bEtLUUE%7C%7C?hl=en"
+      },
+      {
+        "name": "Idhal",
+        "stars": 5,
+        "publishedAtDate": "2025-12-30T14:02:36.496Z",
+        "text": "Perfect blouse stitching and excellent customer service! They handled everything so well and made the whole experience pleasant. Highly satisfied and strongly recommended.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2tkelpVWlFVMjU2VWw5cFZIWmZNRnBSY0RGVWVuYxAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOkdzZUZQU256Ul9pVHZfMFpRcDFUenc%7C%7C?hl=en"
+      },
+      {
+        "name": "Afrah Aboobacker",
+        "stars": 5,
+        "publishedAtDate": "2025-12-23T08:00:27.724Z",
+        "text": "I’m so glad I chose Riti  for my big day 🤍✨ Even though it was a last-minute decision, Aparna turned out to be an absolute gem of a designer🫂. She understood my vision perfectly and was incredibly kind, patient, and supportive throughout\n\nDespite not having a trial, the outfit fit me flawlessly, it was lightweight, extremely comfortable, and beautifully crafted♥️ I received so many compliments, and everyone absolutely loved it. Truly a wonderful experience overall 💖✨",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21Ob1RqTldiMHhmY0ZKRmN6ZHJNM0JuT1ZwdGFFRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOmNoTjNWb0xfcFJFczdrM3BnOVptaEE%7C%7C?hl=en"
+      },
+      {
+        "name": "sandhya abhilash",
+        "stars": 5,
+        "publishedAtDate": "2025-12-05T17:48:35.220Z",
+        "text": "For so many years, I have been purchasing from Riti Boutique, and they have never failed to impress me. Whether it’s a major function or a small event, I can blindly trust Appu, because whatever I imagine, they create even better. Living in Abu Dhabi, it’s difficult to find a place that understands both traditional and modern styles so perfectly—but Riti Boutique always delivers the best.\nAfter seeing one of my outfits, even my cousin from Australia got her churidar stitched from them! I am truly happy with their work and the trust I have in them is beyond words. Highly recommended!",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2sxak1HNVBhMFU1TkhBeldteHVRVTQ0ZFhCaFkzYxAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOk1jMG5Pa0U5NHAzWmxuQU44dXBhY3c%7C%7C?hl=en"
+      },
+      {
+        "name": "Preethy Nair",
+        "stars": 5,
+        "publishedAtDate": "2025-10-14T17:18:24.242Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2tsc0xVZENNMHhOZEhRd04xbFRka2hSVFZKSGNYYxAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOklsLUdCM0xNdHQwN1lTdkhRTVJHcXc%7C%7C?hl=en"
+      },
+      {
+        "name": "Megha Suesh",
+        "stars": 5,
+        "publishedAtDate": "2025-09-01T06:47:46.888Z",
+        "text": "I had recently stitched two blouses with them and I should say they are amazing. The Stiching was perfect, amazing work. Have stitched from other places but this was really good. I would recommend then to all my friends and family for sure.",
+        "isLocalGuide": true,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xKdWFIcGlSbk5ZT1ZwVmQwTkZOelJaTVVoaFUxRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOlJuaHpiRnNYOVpVd0NFNzRZMUhhU1E%7C%7C?hl=en"
+      },
+      {
+        "name": "Sheetal Abraham",
+        "stars": 5,
+        "publishedAtDate": "2025-08-25T22:55:23.774Z",
+        "text": "My absolute favourite boutique 💕 I’ve been a customer of Riti since 2019 in Dubai and even after moving to Australia it’s still my go-to for the most gorgeous outfits! Aparna always understands my style and every piece is stitched to perfection. Most of my ethnic and modern dresses are from Riti and I love their uniqueness and quality.\n\nRecently wore their beautiful dawani for Onam here in Australia and it was such a hit ✨💛 Can’t wait for my next outfit from Riti Boutique!",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xCRFpWOWxRamt6TFVGRlVHWktTbXhYY1dsUldXYxAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOlBDZV9lQjkzLUFFUGZKSmxXcWlRWWc%7C%7C?hl=en"
+      },
+      {
+        "name": "Sonia Pranav",
+        "stars": 5,
+        "publishedAtDate": "2025-08-18T22:05:49.740Z",
+        "text": "I ordered three dresses from Riti Boutique UAE, and I am extremely pleased with the entire experience. Each dress was perfectly stitched with elegant designs and excellent finishing. This was my first time giving online measurements, and I was amazed at how perfectly they fit. I was also a bit worried about timely delivery to the UK, but everything arrived right on time. Aparna coordinated everything very smoothly and ensured timely updates, which made the whole process completely hassle-free. Truly impressed with the quality and service—I’m glad to be a customer and would highly recommend Riti Boutique.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25aR2QzRjBPV1F6T1dsblUySTBMVkl3YTFaeU5uYxAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOnZGd3F0OWQzOWlnU2I0LVIwa1ZyNnc%7C%7C?hl=en"
+      },
+      {
+        "name": "Aleena Jolly",
+        "stars": 5,
+        "publishedAtDate": "2025-08-15T22:21:09.442Z",
+        "text": "\"All-time favorite boutique! I love their customized designs, high-quality stitching, and excellent service. Highly recommended!\"",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT213M2F6UmpNbU5tY0dONlpERnpXbEZ6VWpWWlVGRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CAIQACodChtycF9oOmw3azRjMmNmcGN6ZDFzWlFzUjVZUFE%7C%7C?hl=en"
+      },
+      {
+        "name": "Israr Israr",
+        "stars": 5,
+        "publishedAtDate": "2025-05-30T05:29:15.950Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VQdjhsdFd4eHVyLURnEAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEPv8ltWxxur-Dg%7C%7C?hl=en"
+      },
+      {
+        "name": "Rafnas Rafeeque",
+        "stars": 5,
+        "publishedAtDate": "2025-04-26T20:44:46.802Z",
+        "text": "Happy with your product brother i was totally satisfied.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTURvaGRPbmxnRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDohdOnlgE%7C%7C?hl=en"
+      },
+      {
+        "name": "John Philip",
+        "stars": 5,
+        "publishedAtDate": "2025-03-28T14:53:04.172Z",
+        "text": "I recommend this Boutique for their service and professionalism.\nTheir quality of products and designs are lot more than good.\nHappy that they started their second branch in Dubai Karama .\nCongratulations and thank you for your service",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTUR3LThHLXdRRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDw-8G-wQE%7C%7C?hl=en"
+      },
+      {
+        "name": "Pradeepksuresh Pradi",
+        "stars": 5,
+        "publishedAtDate": "2025-03-28T14:37:37.029Z",
+        "text": "Best boutique in Dubai karama.\nTheir collections are realy superb ❤️\n100 % professionals",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTUR3LTZLU21nRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDw-6KSmgE%7C%7C?hl=en"
+      },
+      {
+        "name": "ArUn singh.K",
+        "stars": 5,
+        "publishedAtDate": "2025-03-18T16:23:55.990Z",
+        "text": "👍👍👍👍👍👍",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTUN3bG9UY1N3EAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMCwloTcSw%7C%7C?hl=en"
+      },
+      {
+        "name": "neethu mm",
+        "stars": 5,
+        "publishedAtDate": "2025-03-18T13:59:20.885Z",
+        "text": "Fantastic selection, superb quality, and exceptional coustomer service. Riti Boutique in dubai is a one stop shop for all your needs",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTUN3eG8zZkNREAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMCwxo3fCQ%7C%7C?hl=en"
+      },
+      {
+        "name": "Dheeraj C N",
+        "stars": 5,
+        "publishedAtDate": "2025-03-18T05:43:34.394Z",
+        "text": "The best designer boutique in Dubai",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTUN3NnJ2UmlRRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMCw6rvRiQE%7C%7C?hl=en"
+      },
+      {
+        "name": "Priyanka P B",
+        "stars": 5,
+        "publishedAtDate": "2025-03-18T05:41:44.804Z",
+        "text": "I highly recommented Riti Clothing store to  all Fasion-conscious women out there",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTUN3NnV1OUVREAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMCw6uu9EQ%7C%7C?hl=en"
+      },
+      {
+        "name": "Alma Tom",
+        "stars": 5,
+        "publishedAtDate": "2025-03-15T12:19:49.003Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTURRcl8zR2pnRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDQr_3GjgE%7C%7C?hl=en"
+      },
+      {
+        "name": "Sreejith Nair",
+        "stars": 5,
+        "publishedAtDate": "2025-03-15T07:54:15.405Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTURROV9TV05REAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDQ9_SWNQ%7C%7C?hl=en"
+      },
+      {
+        "name": "Prasanth G",
+        "stars": 5,
+        "publishedAtDate": "2025-03-15T05:42:27.548Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTURRMS1PTGtnRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDQ1-OLkgE%7C%7C?hl=en"
+      },
+      {
+        "name": "swathi soman",
+        "stars": 5,
+        "publishedAtDate": "2025-03-11T16:50:46.629Z",
+        "text": "\"I had a wonderful experience with this boutique. Despite the limited time, they delivered perfect work that was both elegant and exactly how I wanted it. Their attention to detail and commitment to meeting my expectations truly impressed me. Highly recommend!\"",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTURRa1lYdHhnRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDQkYXtxgE%7C%7C?hl=en"
+      },
+      {
+        "name": "AMAL KUMAR",
+        "stars": 5,
+        "publishedAtDate": "2025-02-11T15:54:03.578Z",
+        "text": "I plan to give my give my wife nice designed dress and Nice I go in  Botique, and good designs my wife is happy ❣️❣️❣️\nThank you",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTURBazhQVHN3RRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDAk8PTswE%7C%7C?hl=en"
+      },
+      {
+        "name": "Dharmendra Shah",
+        "stars": 5,
+        "publishedAtDate": "2025-02-11T08:52:17.255Z",
+        "text": "Riti boutique doing their best to fulfill the customers liking\nPersonally I'm  very happy with their work\nWe recently customized a birthday dress for my daughter who were in Nepal and I don't have her measurements. I only just showed her one photo to the team and they made her dress perfectly. I have no words to explain how much happy I'm on her birthday\nMy daughter looks like a princess ❤️\nThank you so much team riti you guys made her day even more beautiful ❤️\nThank you☺️",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTURBM2RPa1F3EAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDA3dOkQw%7C%7C?hl=en"
+      },
+      {
+        "name": "Babar Gill",
+        "stars": 5,
+        "publishedAtDate": "2025-02-10T17:30:04.297Z",
+        "text": "I am very much happy with riti boutique\nI'm actually from pakistan recently my sister got engaged and she wore riti's bridal attire for her day, she is a little dark and also fat as well but the designers help us to choose the perfect color and also the designs\nWe are so happy with team riti\nTheir designs are awesome\nMy little sister looked awesome in their dress\nThank you riti boutique ❤️",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTURBbFlyTlB3EAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgMDAlYrNPw%7C%7C?hl=en"
+      },
+      {
+        "name": "Surya Charles",
+        "stars": 5,
+        "publishedAtDate": "2025-01-17T14:26:42.354Z",
+        "text": "I couldn't be more pleased with my first time stitching service experience. Aparna did help me choose the red colour for lehenga and I can't thank her and her team for the creation, so perfect. It turned out so extraordinary. Her team are really good. It was a great experience. I am sure I will continue having service from this awesome team again. :)",
+        "isLocalGuide": false,
+        "responseFromOwnerText": "Thank you so much ❤️🫂",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUNfLVpMbnVnRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIC_-ZLnugE%7C%7C?hl=en"
+      },
+      {
+        "name": "yasir nld",
+        "stars": 5,
+        "publishedAtDate": "2025-01-05T09:30:10.730Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": "❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURmc3JfenJRRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDfsr_zrQE%7C%7C?hl=en"
+      },
+      {
+        "name": "Safvan Safu",
+        "stars": 5,
+        "publishedAtDate": "2025-01-05T09:29:52.247Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": "❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURmc3ItbWhnRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDfsr-mhgE%7C%7C?hl=en"
+      },
+      {
+        "name": "Sreekumar Sreekumar S",
+        "stars": 5,
+        "publishedAtDate": "2025-01-05T09:26:05.382Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": "❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURmc3MtMjRBRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDfss-24AE%7C%7C?hl=en"
+      },
+      {
+        "name": "Sruthi Sinoj",
+        "stars": 5,
+        "publishedAtDate": "2025-01-04T10:39:56.949Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": "❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURmek9DSEx3EAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDfzOCHLw%7C%7C?hl=en"
+      },
+      {
+        "name": "Amal Oggy",
+        "stars": 5,
+        "publishedAtDate": "2025-01-04T10:15:49.678Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": "❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURmak9QNjBnRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDfjOP60gE%7C%7C?hl=en"
+      },
+      {
+        "name": "sreejith a.r",
+        "stars": 5,
+        "publishedAtDate": "2025-01-03T18:03:45.394Z",
+        "text": null,
+        "isLocalGuide": false,
+        "responseFromOwnerText": "❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURmNk42REFREAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDf6N6DAQ%7C%7C?hl=en"
+      },
+      {
+        "name": "Mariah Lerma",
+        "stars": 5,
+        "publishedAtDate": "2024-10-29T09:02:52.125Z",
+        "text": "Nice Botique , perfect stitching, and good designs ❣️❣️❣️",
+        "isLocalGuide": false,
+        "responseFromOwnerText": "❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURYbWNpaTVnRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDXmcii5gE%7C%7C?hl=en"
+      },
+      {
+        "name": "anjana sudhakaran",
+        "stars": 5,
+        "publishedAtDate": "2024-10-29T08:38:38.767Z",
+        "text": "One of the best boutique 💕🫶",
+        "isLocalGuide": false,
+        "responseFromOwnerText": "Thank you 🫂❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURydTZmNThRRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDru6f58QE%7C%7C?hl=en"
+      },
+      {
+        "name": "Nimitha Sonu",
+        "stars": 5,
+        "publishedAtDate": "2024-10-01T09:02:54.823Z",
+        "text": "I can’t thank Aparna enough for creating the perfect dress for my unforgettable day.The attention to detail and craftsmanship were extraordinary. My dress not only fit like a dream but also made me feel truly beautiful on such a meaningful occasion. If you’re looking for a boutique that brings your dream dress to life, this is the place. I’ll cherish this experience forever!",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUNuejg3cG5RRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgICnz87pnQE%7C%7C?hl=en"
+      },
+      {
+        "name": "Sangeetha Gopal",
+        "stars": 5,
+        "publishedAtDate": "2024-08-25T08:29:22.964Z",
+        "text": "Beautiful Collections and friendly staff. Will definitely recommend to all.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": "Thank you ❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUQ3MGFMQXRBRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgID70aLAtAE%7C%7C?hl=en"
+      },
+      {
+        "name": "Aathira Narayan",
+        "stars": 5,
+        "publishedAtDate": "2024-08-25T07:22:48.871Z",
+        "text": "I visited riti boutique to design my wedding dress...and from the started i hv been extremly comfortable with aparna (owner) she was clearly able to put my imagination of my wedding dress into reality...i am very happy with the end product that she created...and her attention to details and our requirements shows her passion towards her profession...kudos to you and your team...will surely be coming back to design more...",
+        "isLocalGuide": true,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUQ3a1pEdnhBRRAB!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgID7kZDvxAE%7C%7C?hl=en"
+      },
+      {
+        "name": "Mrudula Sajith",
+        "stars": 5,
+        "publishedAtDate": "2024-08-08T17:51:01.691Z",
+        "text": "The most incredible boutique in the northern emirates for the best custom-made dresses. The stitching is impeccable and the customer service is out of this world.\n\nI've had them create dresses for all my special occasions, and they've turned each one into an unforgettable memory.\n\nIf you're looking for a truly special dress for your big days, you have to check out this boutique. Trust me, you won't be disappointed!",
+        "isLocalGuide": true,
+        "responseFromOwnerText": "Thank you ❤️🫂",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURiZy1iU1VREAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDbg-bSUQ%7C%7C?hl=en"
+      },
+      {
+        "name": "Sneha Shyju",
+        "stars": 5,
+        "publishedAtDate": "2024-08-08T17:13:52.996Z",
+        "text": "This dress stole my heart 💙💙💙 I was so excited when I received this beautiful dress 👗 💙 It was an awesome surprise gift from my husband ❤️ though I hadn’t given them my measurements personally,  they made it so well as if they took my measurements personally🫰🏻💙🫂 it was perfect 💙💙💙love love love❤️ I really recommend Riti Boutique for their amazing collections and dedication towards their clients are  impeccable💙💙 you made my day more special with this beautiful dress💙",
+        "isLocalGuide": true,
+        "responseFromOwnerText": "Thank you 🫂❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURiZy1pYmNREAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDbg-ibcQ%7C%7C?hl=en"
+      },
+      {
+        "name": "Syamli Pillai",
+        "stars": 5,
+        "publishedAtDate": "2024-07-22T12:27:37.973Z",
+        "text": "Great and beautiful work. I has amazing experience with Riti boutique and the staffs are really good.",
+        "isLocalGuide": false,
+        "responseFromOwnerText": "Thank you 🫂❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUNiNEtYcVJnEAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgICb4KXqRg%7C%7C?hl=en"
+      },
+      {
+        "name": "Malavika Ms",
+        "stars": 5,
+        "publishedAtDate": "2024-07-16T06:00:47.764Z",
+        "text": "High quality clothing and unique fashion ✨️",
+        "isLocalGuide": false,
+        "responseFromOwnerText": "Thank you 🫂❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURyd29qbVh3EAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDrwojmXw%7C%7C?hl=en"
+      },
+      {
+        "name": "Malavika Ms",
+        "stars": 5,
+        "publishedAtDate": "2024-07-16T05:59:51.603Z",
+        "text": "Lovely boutique with lovely collections 💗",
+        "isLocalGuide": false,
+        "responseFromOwnerText": "Thank you 🫂❤️",
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURyd3ZEZ01REAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDrwvDgMQ%7C%7C?hl=en"
+      },
+      {
+        "name": "Rapg",
+        "stars": 5,
+        "publishedAtDate": "2024-07-16T05:58:38.523Z",
+        "text": "Lovely boutique with a fantastic selection of stylish clothing and unique accessories, creating a personalized shopping experience. Highly recommend for anyone looking for distinctive fashion pieces. Will definitely return!",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURyd3RDMk5nEAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDrwtC2Ng%7C%7C?hl=en"
+      },
+      {
+        "name": "Navami Krishna Kumar",
+        "stars": 5,
+        "publishedAtDate": "2024-07-05T00:43:08.903Z",
+        "text": "The fabrics and clothing from riti boutique are fabulous and unique, and I am completely satisfied!",
+        "isLocalGuide": false,
+        "responseFromOwnerText": null,
+        "reviewUrl": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURMck9hTmJ3EAE!2m1!1s0x0:0x8a9e617d11f140d5!3m1!1s2@1:CIHM0ogKEICAgIDLrOaNbw%7C%7C?hl=en"
+      }
+    ]
+  },
+  "instagram": {
+    "posts": [
+      {
+        "shortCode": "DbuxFD0o_ke",
+        "type": "Image",
+        "url": "https://www.instagram.com/p/DbuxFD0o_ke/",
+        "displayUrl": "https://scontent-bos5-1.cdninstagram.com/v/t51.82787-15/763925681_18109145357090121_2176191801984353400_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-bos5-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gHh7S9b48WQlz04wZOXSLgBfBcIq7jH_zV_diOXnA1_5FhlbjNz2hk--skKBhW14KjlnwY2qhvmi496Ptxwsd5X&_nc_ohc=tahQpHne_YcQ7kNvwGK2lJk&_nc_gid=aWpjJLN2Y4K-Piw3YKj-YA&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQGXNzNeX6ix_ZX49UDcIFJVWyHVfM37iGxCTaYQAHHkug&oe=6A821993&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-07T07:37:43.000Z"
+      },
+      {
+        "shortCode": "DbuxRdToZtD",
+        "type": "Image",
+        "url": "https://www.instagram.com/p/DbuxRdToZtD/",
+        "displayUrl": "https://scontent-lga3-1.cdninstagram.com/v/t51.82787-15/767222067_18109145408090121_1593747326012502134_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-lga3-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gF6vjGkQ0ggjdpdT7XZ1lfJOCP8R0dAITZVKJXmRQQ4kv72p1E1fNsAF1UZcnPlVz0&_nc_ohc=eJNdO9_DZ9EQ7kNvwHHcz0_&_nc_gid=VidhT0_kSC7-9hxqDwNivw&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQHOFm0AP1KnS2yH0ThrFf7suOMY-_Bd5luZ6sHVrPedfg&oe=6A822BA1&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-07T07:40:28.000Z"
+      },
+      {
+        "shortCode": "DbuxleiocTU",
+        "type": "Image",
+        "url": "https://www.instagram.com/p/DbuxleiocTU/",
+        "displayUrl": "https://scontent-ber1-1.cdninstagram.com/v/t51.82787-15/765929228_18109145642090121_3502303904912037664_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-ber1-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gEWhRwMEaoMhdhkR7KCUhX150LRKXVhBtkWenC-QwanmtTsGEiO9UAxkESwrtZCUt0&_nc_ohc=FNpnrQNZbe4Q7kNvwHZN7fl&_nc_gid=zxaHJW0lwmFUzp6aV65_ow&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQE6fCIS-KeBFYb_IoMdua9tgsSh2F7Tc61rrUJaH1oy0w&oe=6A82223E&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-07T07:41:11.000Z"
+      },
+      {
+        "shortCode": "Db3RlcDCHeX",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/Db3RlcDCHeX/",
+        "displayUrl": "https://scontent-mia3-3.cdninstagram.com/v/t51.82787-15/770474159_18109501565090121_7076744224073860345_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-mia3-3.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gHZMm8Y3SVa-geA8xdfPQ8FzAjFUIrnyZTv2x7I4LWioKB7S8aI9mwhHEc30KMkZLrRhsUePE6jExgy0HRhbKMX&_nc_ohc=ienge0AR0s8Q7kNvwETiodx&_nc_gid=FZqtAUJhWTcj6UqGciexhA&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQG3esTsx0TzurrpvOcDR9VizjjGSxxcn5qjj6ph8F5lVg&oe=6A8228A3&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-10T14:54:14.000Z"
+      },
+      {
+        "shortCode": "C5_SWEKI38S",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/C5_SWEKI38S/",
+        "displayUrl": "https://scontent-atl3-3.cdninstagram.com/v/t39.30808-6/470190395_18049223009090121_4825441243513631418_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-atl3-3.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gFSxOEy4OJv-mf4xkfZTuOWSVywAB1jgOl2CmHLi2mnmaF4u6WIZ0XXmgeM6G4-F1rToDJn0IRSAz71BrKWZjM6&_nc_ohc=fKZvJv2JolQQ7kNvwGDR6-B&_nc_gid=yDRKmUNNMNj-GSUI78QtJQ&edm=ADp7STQAAAAA&ccb=7-5&oh=00_AQE6iJYHV-N61l1XyGBDKWYb6K2k2wslYppboDOG3EDIhQ&oe=6A82312D&_nc_sid=c6f216",
+        "caption": "With love ❤️ \nAPARNA & GITHIN \n#ritiboutique_uae",
+        "commentsCount": 3,
+        "timestamp": "2024-04-20T15:47:23.000Z"
+      },
+      {
+        "shortCode": "Db3RTrAiCnf",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/Db3RTrAiCnf/",
+        "displayUrl": "https://scontent-ham3-1.cdninstagram.com/v/t51.82787-15/768615357_18109501196090121_1576274589774039142_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-ham3-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gEc0dVlmlf6QpSLmXIqLqIl7f75sIvH9DGKYTNdx-vBvEWWLSB-3uHkpRwS8fY_deY&_nc_ohc=PtiaZnUd1qYQ7kNvwFcF2or&_nc_gid=_XWDPQlTsQB9ueH-y7yIHQ&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQHNb4_GfKUn5xAEf5hgZChTJ2Bd7M7nb0NT3s6-v5M1mw&oe=6A823250&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-10T14:51:48.000Z"
+      },
+      {
+        "shortCode": "C5_Vt9UoDkF",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/C5_Vt9UoDkF/",
+        "displayUrl": "https://scontent-fra5-2.cdninstagram.com/v/t39.30808-6/438160215_18024845375090121_751141334373967295_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-fra5-2.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gH41KSAdSRmPAriJQakqPB2zKu6Gp6NAuP9pUEFjB-kPwJPAsZoa_hO-EdrV5o7N_k&_nc_ohc=peLQQwy138UQ7kNvwF-r0Oc&_nc_gid=cChixGoWBR4ELXDo7tP0Qg&edm=ADp7STQAAAAA&ccb=7-5&oh=00_AQHK9oy-l-5eNfPDhEyYOfi1O9X48AT4yR3pxLxk6xc2pA&oe=6A820927&_nc_sid=c6f216",
+        "caption": "Thank you for being a part of our family. \nyour trust in my brand it means the world to me.\n👗 \nThank you for your continued support\nMy heartfelt thanks to all of you on behalf of my team \nWith love ❤️ \nAPARNA & GITHIN \n#ritiboutique_uae",
+        "commentsCount": 4,
+        "timestamp": "2024-04-20T16:16:52.000Z"
+      },
+      {
+        "shortCode": "Db4xlF1iLLi",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/Db4xlF1iLLi/",
+        "displayUrl": "https://instagram.fktw4-1.fna.fbcdn.net/v/t51.82787-15/770728726_18109555718090121_2514158185545571531_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=instagram.fktw4-1.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2gESBkyAxIrOJkGRKswnfxPKA7sLU9e3M2w3b-2Y6q9W9GJIxpDNKB6nu__ysh2DI6A&_nc_ohc=kfBUr-LsaJgQ7kNvwH6UMRe&_nc_gid=AhtWPyTc_TM_QPNsTyYawA&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQHlNUQSMc7XUckztjc6NY7asUism6qJJMWBFp9ThLrQZA&oe=6A822E3F&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-11T04:53:02.000Z"
+      },
+      {
+        "shortCode": "Dbn1w34iMGI",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/Dbn1w34iMGI/",
+        "displayUrl": "https://instagram.fyyc2-1.fna.fbcdn.net/v/t51.82787-15/762623784_18108882737090121_8367696884124458081_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=instagram.fyyc2-1.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2gHZLQY6jaGqnYd26GtM35RUxdCFDjrqPbqpR7annRZ4Fp2hX4GmcZnrYt75DL6N6N0&_nc_ohc=EHaMOZeifGIQ7kNvwFjNj3C&_nc_gid=qa0pdrxGUpd_r9jWa4m3Uw&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQFQ2Pn1d15bnQM6dNug7eieugc_Fr-yoleCuuUVbpllaQ&oe=6A821EE9&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-04T15:02:31.000Z"
+      },
+      {
+        "shortCode": "DbSQB3PTsiv",
+        "type": "Video",
+        "url": "https://www.instagram.com/p/DbSQB3PTsiv/",
+        "displayUrl": "https://scontent-yyz1-1.cdninstagram.com/v/t51.82787-15/756671172_18108039788090121_4643799478330584796_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gE9COCSqyHoiaawdVIHqDHQcjktZGksls824QBqg1gn7Yh54dEc8uOvGrQdXijXY_I&_nc_ohc=dSa1ddqkEsoQ7kNvwHdX34A&_nc_gid=DqeNE38oPbqFk55SpVLXOQ&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQGAV4thQ3-d8ULMf1gZWfBAh9TFKziiY1EyJFFnMvmXXg&oe=6A820366&_nc_sid=c6f216",
+        "caption": "@rjnimmy ✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 7,
+        "timestamp": "2026-07-27T05:50:24.000Z"
+      },
+      {
+        "shortCode": "DbpcpKqCCsC",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbpcpKqCCsC/",
+        "displayUrl": "https://scontent-ams2-1.cdninstagram.com/v/t51.82787-15/762650633_18108943196090121_5452689697486065241_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-ams2-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gEymQJGKYxjmFFVf-q9PezFb7W-HgVnGHdO172cx53IEL-eq0qZQ6MXKWSO17cJ_CQ&_nc_ohc=SmUBpwJ_pBUQ7kNvwFKBrkv&_nc_gid=2xWzuQ718xHO6pqhRkLDvw&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQFVK1gYDBHxp8fpIPn4StohEKmAZV9GuRGZvwPoZmlUyg&oe=6A820695&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 1,
+        "timestamp": "2026-08-05T06:01:29.000Z"
+      },
+      {
+        "shortCode": "Dbmy6YcCK_u",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/Dbmy6YcCK_u/",
+        "displayUrl": "https://instagram.fgdl2-3.fna.fbcdn.net/v/t51.82787-15/766194417_18108840350090121_1108215350221263272_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=instagram.fgdl2-3.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2gGv1VIuf361yiKx5swsvXfEeh8_nCwTZ9wt0iKA_e6OtpWhkeAKMgUHJGe4j00B0Tw&_nc_ohc=72_sjsZkengQ7kNvwHGly-1&_nc_gid=x4_YkpuOvugHwFEIh4UKXA&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQGaVa04u9rO0UcGJWCCKckm8hv-B8IhV97_vYkNX-PQxg&oe=6A821548&_nc_sid=c6f216",
+        "caption": "✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-04T05:18:21.000Z"
+      },
+      {
+        "shortCode": "Dbpcv74o6yq",
+        "type": "Image",
+        "url": "https://www.instagram.com/p/Dbpcv74o6yq/",
+        "displayUrl": "https://scontent-waw2-1.cdninstagram.com/v/t51.82787-15/765477509_18108943589090121_8670065731093241180_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-waw2-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gF4BfUydd929wZpwhh6MNOVOEv-LEMjw1qMFwj1kMlLpui_cCF-ZQYSEvEHsHnucqo&_nc_ohc=xQwXTbVEk1AQ7kNvwEv0D0P&_nc_gid=fk1OkqiSlSKoEpLzsIIg0g&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQEn5btQ0_qjEnf0fYizzqwqUiAV5-SUF8338ud1p-hmDQ&oe=6A8204ED&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-05T06:02:47.000Z"
+      },
+      {
+        "shortCode": "Db3Rq2WiHSm",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/Db3Rq2WiHSm/",
+        "displayUrl": "https://instagram.fman1-1.fna.fbcdn.net/v/t51.82787-15/767585907_18109501751090121_4228242598513523466_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=instagram.fman1-1.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2gHI8K0-SIsLJmbaC_UrAitSIf38EsAaPZRJ34AOiusEDgx6Vc12lb-D7X0oJfxAYug&_nc_ohc=WSpVZBnffEAQ7kNvwEL5PZS&_nc_gid=hhDYWQc0dCQo6WRW6vgJVw&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQGiZOtyCOH0xcGc9xhFrWnI8G_rRRiMdJNsa1Ia_Ud1Jw&oe=6A8224C4&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-10T14:54:58.000Z"
+      },
+      {
+        "shortCode": "Dbmy-YEIrUX",
+        "type": "Image",
+        "url": "https://www.instagram.com/p/Dbmy-YEIrUX/",
+        "displayUrl": "https://scontent-ams2-1.cdninstagram.com/v/t51.82787-15/762688881_18108840602090121_1986659350672574678_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-ams2-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gFpddSuhVPJ5du9MvNPIWzuzuLuv9s6D4olH689IffsO0aIAOb_MwSUixUl2B-oIRutI7OQ-crlfFeKAmegON5v&_nc_ohc=JYgh8ZXhoB0Q7kNvwFDqZNE&_nc_gid=4Rmqc4uj-ktfBrfcsGuPgw&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQEyBX35siz716ZVe_Su80GCB0kU7c5kRzIwdK-3UYMX6A&oe=6A821D0A&_nc_sid=c6f216",
+        "caption": "✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-04T05:19:19.000Z"
+      },
+      {
+        "shortCode": "DbfGsdQCAKK",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbfGsdQCAKK/",
+        "displayUrl": "https://instagram.fpll3-2.fna.fbcdn.net/v/t51.82787-15/761149168_18108518372090121_5792215546556747778_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=instagram.fpll3-2.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2gEr-BiI1NuEmtaM4uHNFzNmMWmy_T5e5izMZsGSUl0Gol87h-pBkx96GSUz5OUD6QU&_nc_ohc=tMDUU3-FnI4Q7kNvwENvVDB&_nc_gid=q438bjCqDOL2wG6rbILIlg&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQHho6sAXnlKpx6HRn-DiJjWH8c8d8rjqa2_PdZLnGcPdA&oe=6A820694&_nc_sid=c6f216",
+        "caption": "✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-01T05:37:18.000Z"
+      },
+      {
+        "shortCode": "Db4xTrCiJwo",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/Db4xTrCiJwo/",
+        "displayUrl": "https://instagram.fwaw9-1.fna.fbcdn.net/v/t51.82787-15/769910197_18109555403090121_7906525416208519308_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=instagram.fwaw9-1.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2gEBD4JLV8jssR8rnjNK-NCjLGrishDNQDhjMZZjxm9pflN59UxRKAvG7xxWxQuLpZ4&_nc_ohc=vq3kvSkYTEcQ7kNvwGFvJBu&_nc_gid=j7xuz8vZ9sK_0E7eqyNMhA&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQFNUWx7Qqyx_FqVIIcQq5zPR5QFNitE0l-apZfEAEg9Iw&oe=6A820AF1&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-11T04:50:40.000Z"
+      },
+      {
+        "shortCode": "DbfG5t1CCdz",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbfG5t1CCdz/",
+        "displayUrl": "https://scontent-lhr6-2.cdninstagram.com/v/t51.82787-15/762157492_18108518648090121_2350803292614248005_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gGVyfd-Fik67wEkwKJjYDLfBUGy9RBa7XdapyrX9EsuU-iX9hOllmzMxktwbqeb8chK5pdEI5oHovt_9OhDNB1C&_nc_ohc=CeSVgo7mSIwQ7kNvwFMUGvQ&_nc_gid=JWsslUAtJErVKDOjSgSr8g&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQFEVFPKtUNRI6QRONJvxWFuhCytdZU-try0E8B2B2ylpA&oe=6A822638&_nc_sid=c6f216",
+        "caption": "✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-01T05:39:06.000Z"
+      },
+      {
+        "shortCode": "DbKkgnQITZw",
+        "type": "Image",
+        "url": "https://www.instagram.com/p/DbKkgnQITZw/",
+        "displayUrl": "https://scontent-ams2-1.cdninstagram.com/v/t51.82787-15/753546376_18107731949090121_6371398900065920658_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-ams2-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gE0XrxvtCecOvbYNcR0B-odNI2JasJpiQWUZsdftVjL3U0NhVStwWq2vCsX_uGGK9A&_nc_ohc=JWSCU5XNNGgQ7kNvwGxGEng&_nc_gid=J7oQ5q0TxtmhBF6R0-tDWg&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQFfuqIgBsZ5AGDH_njeLaOMcV4MYLzQS9IJwbYMoc_kjA&oe=6A8213B6&_nc_sid=c6f216",
+        "caption": "Pure✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-07-24T06:14:01.000Z"
+      },
+      {
+        "shortCode": "DbfG0JaCIsO",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbfG0JaCIsO/",
+        "displayUrl": "https://scontent-gmp1-1.cdninstagram.com/v/t51.82787-15/758395853_18108518486090121_5401957569867088241_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-gmp1-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gFqlmZgK72U_C1ftqdPXiVTuyGOWAz9MFkLATAiatdENzvXWNQfmDFYn9m2uodFVx4&_nc_ohc=Ik3V_Jwh16cQ7kNvwFNRYQQ&_nc_gid=_XfZiPGcAhEvMVGmTbe7Ig&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQEK-nedh4zhwEoXWO8_SwxmWfzFzmsdPSNb7wr4nzgmtQ&oe=6A820A85&_nc_sid=c6f216",
+        "caption": "✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 1,
+        "timestamp": "2026-08-01T05:38:20.000Z"
+      },
+      {
+        "shortCode": "DbakkmziAiI",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbakkmziAiI/",
+        "displayUrl": "https://instagram.fntr8-1.fna.fbcdn.net/v/t51.82787-15/757754253_18108346490090121_616708414733288875_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=instagram.fntr8-1.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2gHMenBW7Cdh_yQU1Mm-eRcsMSgRZQa98mOez951YkBpfmZH-WrghQTs8aKRlNt9dDOVgO-SzdzMoqIKQ2W1GiLJ&_nc_ohc=1HIykfbMnZgQ7kNvwHopVYM&_nc_gid=oXNDsUaBlJ93ARMo3F9C4w&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQF8aoibi1TitGIuIn_pda18OhwncFLC_39dQw192pBR2w&oe=6A820035&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 4,
+        "timestamp": "2026-07-30T11:22:10.000Z"
+      },
+      {
+        "shortCode": "C5_Rk7sIGPZ",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/C5_Rk7sIGPZ/",
+        "displayUrl": "https://scontent-yyz1-1.cdninstagram.com/v/t39.30808-6/437374869_18024842834090121_4414554037860072739_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gEunSd5i06tLE0vm0MXX_4UGlhbxq9ik-qsAV9EYbarR5XZ2cCpFdzQN_M2BQ1YOHs&_nc_ohc=4hKoEdfSErAQ7kNvwH-GUUU&_nc_gid=SATH-UKmFUs3Z-YnWPc5zg&edm=ADp7STQAAAAA&ccb=7-5&oh=00_AQEyCr5h3M9IUugZnxBx8S_-No6OGoxnRBRTQOPUMJgR5w&oe=6A822FC4&_nc_sid=c6f216",
+        "caption": "Thank you for being a part of our family. \nyour trust in my brand it means the world to me.\n👗 \nThank you for your continued support\nMy heartfelt thanks to all of you on behalf of my team \nWith love ❤️ \nAPARNA & GITHIN \n#ritiboutique_uae",
+        "commentsCount": 5,
+        "timestamp": "2024-04-20T15:40:41.000Z"
+      },
+      {
+        "shortCode": "DbSQs-4E9ks",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbSQs-4E9ks/",
+        "displayUrl": "https://scontent-yyz1-1.cdninstagram.com/v/t51.82787-15/755331821_18108039500090121_7583194601677767056_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gGgLsMul0ZpzXkyLUNWvVZYHMGh-HhHTtG-Cn1yFWbOuSA0D196L1LMfNF9B2AtSbo&_nc_ohc=x0VIxUJ5eVEQ7kNvwHmttxE&_nc_gid=YZthR76tmSgYQQaYWXyvXg&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQEFhWbK7n9TMsDncUzg7A-DhSh5CM9_oQ0HQum-q6nsIA&oe=6A821E61&_nc_sid=c6f216",
+        "caption": "Pure✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 1,
+        "timestamp": "2026-07-27T05:54:37.000Z"
+      },
+      {
+        "shortCode": "DbZ4JgcCOMi",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbZ4JgcCOMi/",
+        "displayUrl": "https://scontent-syd2-1.cdninstagram.com/v/t51.82787-15/758671267_18108321536090121_2559685278864615147_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-syd2-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gERylb2FcblB-QocdM7LxcQJWUITG6HoNMr1RBLlolKLbAQXrHQ0haLmUvHo2velu4&_nc_ohc=nmO3adktOoQQ7kNvwEXi30n&_nc_gid=2SiOqrCKJviRHfAsj9lj_Q&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQFwKbRK93P8R4mTeLkN2EQSwxM0ZBKOiJdAJpqUGWv8pQ&oe=6A8216CD&_nc_sid=c6f216",
+        "caption": "Pure✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-07-30T04:53:59.000Z"
+      },
+      {
+        "shortCode": "Dbn16FHiLYQ",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/Dbn16FHiLYQ/",
+        "displayUrl": "https://scontent-mad2-1.cdninstagram.com/v/t51.82787-15/764676575_18108883142090121_4541812380259407846_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-mad2-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gEaLgmXoy8k9kjA6fKHTXRiZXpvSKc0j6PS3r2OO0FAS3ertjhXHHfsf_HUWzyTTm4&_nc_ohc=72iwqFkX268Q7kNvwGmu2Ob&_nc_gid=-wOOvpDWVt080aKVi8FzzQ&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQELXvp6-2akqS6sSnW-rk4-Bv0YOMTiXWrTIJ1SB8quOw&oe=6A8201E4&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-04T15:03:46.000Z"
+      },
+      {
+        "shortCode": "DbaklK8IJ9J",
+        "type": "Image",
+        "url": "https://www.instagram.com/p/DbaklK8IJ9J/",
+        "displayUrl": "https://scontent-waw2-1.cdninstagram.com/v/t51.82787-15/761168352_18108346526090121_7475159037031385443_n.jpg?stp=dst-jpg_e35_s1080x1080_sh2.08_tt6&_nc_ht=scontent-waw2-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gHKdL8vvDWmIYNQgyQWMfNnS8n8vz5ap97HkZ4l6GZG0bbTmqh3Nw-ZVTJI9fa8PlM&_nc_ohc=1mHjOgxvXz0Q7kNvwEgAmZ2&_nc_gid=ZClErAY0Rnh-kZJdl0gVxg&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQHqCfltmbx8h0Pqtyc78_NOFh1_D1uCe6Squ0K6FahvBw&oe=6A822772&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-07-30T11:22:31.000Z"
+      },
+      {
+        "shortCode": "DbZ3_U_IW4t",
+        "type": "Image",
+        "url": "https://www.instagram.com/p/DbZ3_U_IW4t/",
+        "displayUrl": "https://instagram.fmad8-1.fna.fbcdn.net/v/t51.82787-15/760536682_18108321377090121_3208819163407333906_n.jpg?stp=dst-jpg_e35_s1080x1080_sh2.08_tt6&_nc_ht=instagram.fmad8-1.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2gHh1iBBlKD3CdYzKZDKubTowea_zZ9fzxAetx5QMLrL68UiU8OVV9Gb_k-lO_JFbj0&_nc_ohc=pQ2O2AYWp0EQ7kNvwHzJeTC&_nc_gid=0L52BJz-yCpEtgKKQ8VT4A&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQFl-fkfnLl-bi6d6CG6x_BoXTWE4fJuiw92Bedp5ZUloA&oe=6A820BD2&_nc_sid=c6f216",
+        "caption": "Pure✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-07-30T04:52:55.000Z"
+      },
+      {
+        "shortCode": "Dbn1-e-CPdj",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/Dbn1-e-CPdj/",
+        "displayUrl": "https://scontent-yyz1-1.cdninstagram.com/v/t51.82787-15/765035335_18108883304090121_2475266862206269523_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gGaOXN9q9uB41ROfAtRlnqDpCEDmTFQVEifciq-WJm5QAYYVusWaQkJmjYz9LL4CtE&_nc_ohc=m2ghLp4QXp4Q7kNvwFr95u9&_nc_gid=ghxw_ypGSFODslGlRJwrSA&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQGNBD06zy75w0jpmSPQ8CEWLDfNbMWVhKGW5Cf-l0NniQ&oe=6A820E2D&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-04T15:04:22.000Z"
+      },
+      {
+        "shortCode": "DbKkbKKCAS5",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbKkbKKCAS5/",
+        "displayUrl": "https://instagram.fwaw9-1.fna.fbcdn.net/v/t51.82787-15/756525147_18107731889090121_472059532089743247_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=instagram.fwaw9-1.fna.fbcdn.net&_nc_cat=109&_nc_oc=Q6cZ2gFj-y-oWzNFEyUQDKGdl72vP89fREypkk4vD2NB0-i0QjiWzi7Rk9jn-d_qrtyYQKw&_nc_ohc=3Fc40m_8_N8Q7kNvwHhTSu8&_nc_gid=w6Q9zUEspkKeoph8GsLzPw&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQF7N76pIzMSp2l_Q7mjCeKuGlSPOCo_LAa4eua-JTG72A&oe=6A822EDD&_nc_sid=c6f216",
+        "caption": "Pure✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 2,
+        "timestamp": "2026-07-24T06:13:01.000Z"
+      },
+      {
+        "shortCode": "DbZ30KACHy7",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbZ30KACHy7/",
+        "displayUrl": "https://scontent-ber1-1.cdninstagram.com/v/t51.82787-15/757545393_18108320606090121_1879150102989710588_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-ber1-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gEe355CV2r-BvaptOpHwuIB9UJ1EBBbDVowkIrA5dwVqCNcKBJ6vAGoW-O7E40kf1OEyd7crvG5qnZXqqoVEbMI&_nc_ohc=CWgXXVYRVDAQ7kNvwFACiwo&_nc_gid=itJ0d8ofRSmHfKu-Dl9yIQ&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQGDE6GiRQ9yI81pCI7g3GOgWxkx-RIIMKEQyVdlcZAbNg&oe=6A81FB7F&_nc_sid=c6f216",
+        "caption": "Pure✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-07-30T04:51:04.000Z"
+      },
+      {
+        "shortCode": "Db4xU3voxgM",
+        "type": "Image",
+        "url": "https://www.instagram.com/p/Db4xU3voxgM/",
+        "displayUrl": "https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/771814373_18109555442090121_3747735437968216712_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gHUM6wvIFx6NX5uuGtHODE7IZZx6YClMwMQluFmDCRVoKqLVlQIXBsTadfyB9pICg4&_nc_ohc=RUhMdusGVO0Q7kNvwHR-qrN&_nc_gid=piPP5k0lNkQLChJQ9JG9cQ&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQGR1LQzUhrNP10oJwOmYL4mFJFmziZ2GtQWHcqD60fM_Q&oe=6A81FE40&_nc_sid=c6f216",
+        "caption": "Onam collections✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-08-11T04:51:12.000Z"
+      },
+      {
+        "shortCode": "DbSPyd6iBTA",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbSPyd6iBTA/",
+        "displayUrl": "https://scontent-nrt1-1.cdninstagram.com/v/t51.82787-15/756873120_18108038741090121_902976236482375271_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-nrt1-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gEnVg0QvMp4Eua9zD0SjqHWr2-Ie_p7ddKZe4GJPQ2mJiK2yYfxL-44RDcunhKHyv8&_nc_ohc=0N389wdQd3EQ7kNvwGSS0Yv&_nc_gid=2rmHo6xADycn7LYDO7j9oQ&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQEnI9HZOrMUd_iUHI0aI0TdcproF_3jQuJVHo1yRNtSMg&oe=6A8210B3&_nc_sid=c6f216",
+        "caption": "Pure✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 0,
+        "timestamp": "2026-07-27T05:46:38.000Z"
+      },
+      {
+        "shortCode": "DbKkq0YCASO",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbKkq0YCASO/",
+        "displayUrl": "https://scontent-dus1-1.cdninstagram.com/v/t51.82787-15/753546380_18107732090090121_7159262814796906227_n.jpg?stp=dst-jpg_e15_tt6&_nc_ht=scontent-dus1-1.cdninstagram.com&_nc_cat=109&_nc_oc=Q6cZ2gH3U-I3Vy3LXIKZrBmEKvkHjQupr3IdhOODldOclhL1T36RFhzJ7DyYVRy2IFQUS1Da6ewzh7Bh23S8pFsZlqTv&_nc_ohc=D9E-Esxz6xkQ7kNvwFjAxS8&_nc_gid=w3iyDUr31rOvwlJPCj71VQ&edm=ADp7STQBAAAA&ccb=7-5&oh=00_AQEPWcYBa7agnNs-rJfl5_UEpuUPKmKoibB0echls7yCsw&oe=6A81FFE6&_nc_sid=c6f216",
+        "caption": "Pure✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 1,
+        "timestamp": "2026-07-24T06:15:10.000Z"
+      },
+      {
+        "shortCode": "DbmzLv3iPWC",
+        "type": "Sidecar",
+        "url": "https://www.instagram.com/p/DbmzLv3iPWC/",
+        "displayUrl": "https://scontent-mel1-1.cdninstagram.com/v/t51.82787-15/763103156_18108840731090121_6705313449881881876_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=101&ig_cache_key=Mzk1NjA3MzkzODYzNjg0NDUzNA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuODgyLnNkci5yZWd1bGFyX3Bob3RvLkMzIn0%3D&_nc_ohc=JAvZK8vqmzkQ7kNvwHEXGKa&_nc_oc=Adrh6_fIHclrJnXjnHt0mdKxnYFfQ9RPATeGeW64bagpjtSKTWvhPd3VjDnKNNf67KI&_nc_zt=23&_nc_ht=scontent-mel1-1.cdninstagram.com&_nc_gid=PZoLLW47SvIGrjdQU0mKEg&_nc_ss=72689&oh=00_AQHQ4u-ie9wty5-kScI1l307ycL99vbdj01_4bILGCfdgw&oe=6A81FC02",
+        "caption": "✨\n𝐑𝐈𝐓𝐈 𝐁𝐎𝐔𝐓𝐈𝐐𝐔𝐄\noffering inclusive customization options to suit individual preferences and requirements.\n@riti_heritage @riti_boutique \nCustomized your favorite 👗.\nExplore now an exquisite collection of traditional wear. \nadding \n𝐄𝐌𝐁𝐑𝐎𝐈𝐃𝐄𝐑𝐘, 𝐇𝐀𝐍𝐃 𝐖𝐎𝐑𝐊, 𝐇𝐀𝐍𝐃 𝐏𝐀𝐈𝐍𝐓𝐈𝐍𝐆, 𝐃𝐈𝐆𝐈𝐓𝐀𝐋 𝐏𝐑𝐈𝐍𝐓𝐒 𝐞𝐭𝐜… etc…\n \nThank you ❤️\n𝗧𝗲𝗮𝗺 𝖗𝖎𝖙𝖎\n\n📸\n\nFor guidance and information please contact our Team or visit our outlet located in Karama  uae 🇦🇪.\n\n#ritiboutique_uae #indianboutique #ethnicwear #boutiqueinkarama #karama handwork blousestitching indianethnic muslin indianboutique bestboutique boutiqueinuae dubaiboutique boutiqueshopping bestindianboutique dubaikarama boutiqueinkarama aparnagithin onamlotus karama fashiondesigner blousedesigns bridalblouse lotuspainting traditionalmakeup handworkblouse indiandesigners indiandesigner fashionblogger boutique",
+        "commentsCount": 1,
+        "timestamp": "2026-08-04T05:20:43.000Z"
+      }
+    ]
+  }
+}
