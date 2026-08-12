@@ -101,8 +101,14 @@ def rating_bars(dist_counts, total):
 
 
 reviews = pick_reviews()
-hero_img = GM["imageUrls"][0]
-about_img = GM["imageUrls"][3] if len(GM["imageUrls"]) > 3 else hero_img
+imgs = GM["imageUrls"]
+hero_img = imgs[0]
+about_img = imgs[10] if len(imgs) > 10 else hero_img
+# Four cinematic "chapter" images for the scroll showcase — distinct from
+# the hero and from each other so the story doesn't repeat a frame.
+chapter_imgs = [imgs[i] for i in (3, 6, 13, 17) if i < len(imgs)]
+while len(chapter_imgs) < 4:
+    chapter_imgs.append(hero_img)
 
 # Rating distribution comes from the Google Maps listing itself.
 DIST = {5: 121, 4: 2, 3: 1, 2: 2, 1: 1}
@@ -112,7 +118,11 @@ template = (ROOT / "template.html").read_text()
 out = (
     template.replace("{{HERO_IMG}}", esc(hero_img))
     .replace("{{ABOUT_IMG}}", esc(about_img))
-    .replace("{{GALLERY}}", gallery_tiles(GM["imageUrls"]))
+    .replace("{{CH1_IMG}}", esc(chapter_imgs[0]))
+    .replace("{{CH2_IMG}}", esc(chapter_imgs[1]))
+    .replace("{{CH3_IMG}}", esc(chapter_imgs[2]))
+    .replace("{{CH4_IMG}}", esc(chapter_imgs[3]))
+    .replace("{{GALLERY}}", gallery_tiles(imgs))
     .replace("{{REVIEWS}}", review_cards(reviews))
     .replace("{{RATING_BARS}}", rating_bars(DIST, TOTAL_REVIEWS))
 )
