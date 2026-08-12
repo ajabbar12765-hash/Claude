@@ -46,16 +46,14 @@ jq -r '.instagram.posts[].displayUrl' data/scraped-raw.json \
 (This has to run somewhere with unrestricted outbound access — a sandboxed environment with a
 filtering proxy will get 403s on the CDN hosts.)
 
-## Deploying
+## Deployed
 
-Static — any host works. Drag the folder into Netlify, or:
+**Live at https://riti-boutique.vercel.app** (production, on `riti-boutique.vercel.app`).
+Static — any host works if you need to move it. Redeploy after editing `index.html`:
 
 ```bash
 npx vercel deploy --prod
 ```
-
-**Deploy before you send the script.** The entire pitch depends on dropping a live link in
-message 3.
 
 ## Data sources
 

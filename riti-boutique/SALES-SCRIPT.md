@@ -34,7 +34,7 @@
 
 ## 2. Before you send anything
 
-- **Deploy the demo first.** The script is built around dropping a live link. Push `riti-boutique/` to Vercel, Netlify or GitHub Pages and paste the real URL where the script says `[DEMO LINK]`.
+- **Demo is live:** https://riti-boutique.vercel.app — already deployed, already linked into every message below. Open it once yourself before sending anything.
 - **Message from a real, warmed-up number**, not a fresh SIM. UAE telecom rules and WhatsApp's own Business Policy both treat unsolicited bulk messaging as spam — a cold number that blasts templates gets reported and banned fast. One personal, clearly-relevant message to one business is a different thing, and reads like one.
 - **Send Tue–Sun, 10:30–12:30 or 18:00–20:30 Gulf time.** Inside their opening hours, away from the rush. **Never Monday** — they are closed.
 - **Ask for Aparna by name.** She is the person customers thank in review after review. If she is the owner, you are talking to the decision-maker; if not, "Aparna" still proves you did homework.
@@ -70,7 +70,7 @@
 
 > **Message 3 — the demo drop** *(send immediately after, don't wait)*
 >
-> I built you a website. It's live right now: [DEMO LINK]
+> I built you a website. It's live right now: https://riti-boutique.vercel.app
 >
 > Your real photos, your real reviews, your Karama address and hours, and a WhatsApp button on every screen that opens a chat straight to this number with the message pre-written.
 >
@@ -165,7 +165,7 @@ Your call. Both messages are written above, ready to send.
 Do not send more than one message per touch. Silence is not a no in the middle of Onam season.
 
 **Day 3 — value, no ask**
-> Hi Aparna — no chase, just one thing I noticed. Priya Fashions in Karama has 187 Google reviews to your 127, and your rating is higher than theirs. You're the better-reviewed boutique that's harder to find. That gap is the entire reason I built the demo. Still up here if you want it: [DEMO LINK]
+> Hi Aparna — no chase, just one thing I noticed. Priya Fashions in Karama has 187 Google reviews to your 127, and your rating is higher than theirs. You're the better-reviewed boutique that's harder to find. That gap is the entire reason I built the demo. Still up here if you want it: https://riti-boutique.vercel.app
 
 **Day 7 — urgency, tied to their calendar**
 > Onam's nearly here and then wedding season starts. If the site's live before that run, it works during your busiest months instead of after them. 5 days from a yes. Want me to start?
@@ -173,7 +173,7 @@ Do not send more than one message per touch. Silence is not a no in the middle o
 **Day 14 — the close-out**
 > Aparna, I'll stop messaging after this one — I don't want to be a nuisance to someone running a shop.
 >
-> The demo stays live for another two weeks in case you want to show it to your partner: [DEMO LINK]
+> The demo stays live for another two weeks in case you want to show it to your partner: https://riti-boutique.vercel.app
 >
 > Either way, genuinely — the work in those reviews is something else. Good luck with Onam. 🙏
 
