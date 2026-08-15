@@ -1,0 +1,548 @@
+/* RALLY — design tokens, then layout, then the scroll choreography.
+   Dark cinematic showcase: one full-viewport beat per idea, a different accent
+   glow behind each one, everything revealed on scroll. */
+
+:root{
+  /* Base — near-black rather than #000, which smears on OLED */
+  --ink:            #0A0A09;
+  --ink-soft:       #131210;
+  --cream:          #F7F3EA;
+  --cream-dim:      rgba(247, 243, 234, 0.64);
+  --cream-faint:    rgba(247, 243, 234, 0.40);
+  --line:           rgba(247, 243, 234, 0.14);
+
+  /* Per-section accent is set inline on each <section>; this is the fallback */
+  --accent:         #E8B04B;
+
+  /* Spacious scale — marketing page, not a dashboard */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 40px;
+  --space-5: 64px;
+  --space-6: 96px;
+
+  --ease:           cubic-bezier(0.16, 1, 0.3, 1);
+  --dur:            240ms;
+  --dur-reveal:     820ms;
+
+  --measure:        62ch;
+  --shell:          1180px;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+
+html{
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;   /* proximity, not mandatory — mandatory fights momentum scrolling on iOS */
+  -webkit-text-size-adjust: 100%;
+}
+
+body{
+  margin: 0;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.sprite{ position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* Layout rules below set display on elements that also get toggled with the
+   hidden attribute — this keeps hidden winning. */
+[hidden]{ display: none !important; }
+
+a{ color: inherit; }
+
+:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------- chrome */
+
+.progress{
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 60;
+  background: rgba(247, 243, 234, 0.08);
+}
+.progress span{
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: background var(--dur) var(--ease);
+}
+
+.topbar{
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 14px clamp(16px, 4vw, 40px);
+  background: rgba(10, 10, 9, 0.62);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.wordmark{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.24em;
+  color: var(--cream);
+}
+.wordmark__badge{ width: 26px; height: 26px; color: var(--accent); transition: color var(--dur) var(--ease); }
+.wordmark--sm{ font-size: 13px; }
+
+.pill{
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.pill:hover{ border-color: var(--accent); color: var(--accent); }
+
+/* ----------------------------------------------------------------- beats */
+
+.beat{
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(96px, 14vh, 140px) clamp(20px, 5vw, 48px) clamp(72px, 10vh, 110px);
+  scroll-snap-align: start;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* The spotlight: a soft radial wash of the section's accent, plus a tighter
+   core behind the product so the art reads as lit rather than pasted on. */
+.beat::before,
+.beat::after{
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+}
+.beat::before{
+  width: min(150vw, 1500px);
+  aspect-ratio: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -46%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 34%, transparent) 0%, transparent 62%);
+  opacity: 0.55;
+}
+.beat::after{
+  width: min(78vw, 620px);
+  aspect-ratio: 1;
+  top: 54%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 52%, transparent) 0%, transparent 66%);
+  opacity: 0.4;
+  filter: blur(18px);
+}
+.beat--end::after{ opacity: 0.26; }
+
+.stage{
+  position: relative;
+  width: 100%;
+  max-width: var(--shell);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+}
+
+/* --------------------------------------------------------------- type */
+
+.eyebrow{
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.display{
+  margin: 0;
+  font-weight: 600;
+  font-size: clamp(2.75rem, 9.5vw, 6.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.display--sm{ font-size: clamp(2.25rem, 6.4vw, 4.25rem); }
+.display--muted{ color: var(--cream-faint); }
+
+.lede{
+  margin: 0;
+  max-width: 46ch;
+  font-size: clamp(1rem, 2.4vw, 1.3rem);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--cream-dim);
+  text-wrap: pretty;
+}
+.lede--tight{ max-width: 40ch; }
+
+.ingredient{
+  margin: var(--space-1) 0 0;
+  font-size: clamp(1.5rem, 5vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+
+/* -------------------------------------------------------------- actions */
+
+.actions{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 26px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.btn--primary{ background: var(--accent); color: #14100A; }
+.btn--primary:hover{ transform: translateY(-2px); }
+.btn--ghost{ border-color: var(--line); color: var(--cream); }
+.btn--ghost:hover{ border-color: var(--accent); color: var(--accent); }
+.btn:active{ transform: scale(0.97); }
+
+.scroll-cue{
+  position: absolute;
+  bottom: clamp(20px, 4vh, 36px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  display: grid;
+  place-items: start center;
+  padding-top: 8px;
+}
+.scroll-cue span{
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: cue 1.9s var(--ease) infinite;
+}
+@keyframes cue{
+  0%   { transform: translateY(0);    opacity: 1; }
+  70%  { transform: translateY(14px); opacity: 0; }
+  100% { transform: translateY(0);    opacity: 0; }
+}
+
+/* ------------------------------------------------------------------ art */
+
+.art{
+  margin: 0;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+/* Sized by height, not width: the beats are viewport-height boxes, so the art
+   has to shrink with the viewport or it pushes the CTA below the fold. */
+.can{
+  width: auto;
+  height: clamp(190px, 34vh, 380px);
+  max-width: 62vw;
+  filter: drop-shadow(0 34px 46px rgba(0, 0, 0, 0.6));
+}
+.fruit{
+  width: auto;
+  height: clamp(150px, 24vh, 280px);
+  max-width: 62vw;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.55));
+}
+/* The hero carries the most stacked content — headline, lede, art, two buttons —
+   so its can runs smaller than the rest to keep the CTAs above the fold on
+   short laptop screens. */
+.art--hero .can{ height: clamp(170px, 26vh, 330px); }
+
+.float{ animation: float 7s ease-in-out infinite; }
+@keyframes float{
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+
+/* Electrolyte chips orbiting the can. The figure is deliberately wider than the
+   can so the chips sit clear of the label rather than over it. */
+.art--orbit{
+  position: relative;
+  width: min(440px, 88vw);
+}
+.chip{
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(19, 18, 16, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+.chip--1{ top: 8%;    left: 2%;   animation: float 6s ease-in-out infinite; }
+.chip--2{ top: 42%;   right: 2%;  animation: float 7.4s ease-in-out infinite 0.4s; }
+.chip--3{ bottom: 8%; left: 10%;  animation: float 6.8s ease-in-out infinite 0.8s; }
+
+/* Coconut Triangle map */
+.stage--split{
+  display: grid;
+  gap: var(--space-4);
+  text-align: center;
+  justify-items: center;
+}
+.split__copy{ display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+.triangle{ width: clamp(220px, 62vw, 340px); height: auto; color: var(--accent); }
+.triangle__dots circle{ fill: var(--accent); }
+.triangle__line{ stroke-dasharray: 620; stroke-dashoffset: 620; }
+.in .triangle__line{ animation: draw 1.6s var(--ease) 0.25s forwards; }
+@keyframes draw{ to{ stroke-dashoffset: 0; } }
+.triangle__label{
+  fill: var(--cream-dim);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+}
+
+/* LA skyline */
+.art--city{ width: 100%; }
+.city{ width: min(100%, 760px); height: auto; }
+.city__sun{ fill: var(--accent); opacity: 0.34; }
+.city__skyline{ fill: #070707; }
+.city__palms path{ fill: none; stroke: #070707; stroke-width: 5; stroke-linecap: round; }
+
+/* ---------------------------------------------------------------- stats */
+
+.stats{
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-5);
+}
+.stats li{ display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.stats strong{
+  font-size: clamp(2.25rem, 7vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--accent);
+}
+.stats span{
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cream-faint);
+}
+
+/* ---------------------------------------------------------------- form */
+
+.signup{
+  width: 100%;
+  max-width: 540px;
+  margin-top: var(--space-2);
+  text-align: left;
+}
+.signup__row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: stretch;
+}
+.signup__label{
+  flex: 1 0 100%;
+  margin-bottom: 6px;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cream-faint);
+}
+.signup__input{
+  flex: 1 1 240px;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(19, 18, 16, 0.7);
+  color: var(--cream);
+  font-family: inherit;
+  font-size: 16px;               /* 16px keeps iOS from zooming on focus */
+  transition: border-color var(--dur) var(--ease);
+}
+.signup__input::placeholder{ color: var(--cream-faint); }
+.signup__input:focus{ border-color: var(--accent); }
+.signup__input[aria-invalid="true"]{ border-color: #E4674F; }
+
+.signup__error{
+  margin: 10px 2px 0;
+  font-size: 13.5px;
+  color: #F0917C;
+}
+.signup__note{
+  margin: 12px 2px 0;
+  font-size: 13px;
+  color: var(--cream-faint);
+}
+.signup__done{
+  margin: var(--space-3) 0 0;
+  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------- footer */
+
+.footer{
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: var(--space-3) var(--space-3) var(--space-4);
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.footer__line{ margin: 0; font-size: 12.5px; color: var(--cream-faint); }
+.footer__nav{ display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); }
+.footer__nav a{
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13px;
+  color: var(--cream-dim);
+  text-decoration: none;
+  transition: color var(--dur) var(--ease);
+}
+.footer__nav a:hover{ color: var(--accent); }
+
+/* --------------------------------------------------------- scroll reveal */
+
+.reveal{
+  opacity: 0;
+  transform: translateY(28px) scale(0.985);
+  transition: opacity var(--dur-reveal) var(--ease),
+              transform var(--dur-reveal) var(--ease);
+  transition-delay: 0ms;
+  will-change: opacity, transform;
+}
+.reveal[data-delay="1"]{ transition-delay:  90ms; }
+.reveal[data-delay="2"]{ transition-delay: 180ms; }
+.reveal[data-delay="3"]{ transition-delay: 270ms; }
+.reveal[data-delay="4"]{ transition-delay: 360ms; }
+
+.in .reveal{
+  opacity: 1;
+  transform: none;
+}
+
+/* Exiting beats dim and drop back rather than cutting away */
+.beat{ transition: opacity 600ms var(--ease); }
+.beat.out .stage{
+  opacity: 0.24;
+  transform: scale(0.97);
+  transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+}
+.stage{ transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
+
+/* ----------------------------------------------------------- responsive */
+
+/* Tall screens have the headroom for a bigger hero can; short laptops don't. */
+@media (min-height: 860px){
+  .art--hero .can{ height: min(32vh, 340px); }
+}
+
+@media (min-width: 900px){
+  .stage--split{
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    text-align: left;
+    gap: var(--space-6);
+  }
+  .stage--split .split__copy{ align-items: flex-start; }
+  .stage--split .lede{ max-width: 38ch; }
+  .footer{ flex-direction: row; justify-content: space-between; }
+  .footer__line{ order: 2; }
+}
+
+@media (max-width: 480px){
+  .stats{ gap: var(--space-2) var(--space-3); }
+  .chip{ width: 46px; height: 46px; font-size: 13px; }
+  /* The input already takes the full row here — let the button match it
+     rather than sitting stranded at 30% width. */
+  .signup__row .btn{ flex: 1 1 100%; }
+}
+
+/* Short landscape phones: the fixed-height beats stop making sense */
+@media (max-height: 520px){
+  .beat{ min-height: auto; padding-block: 120px 72px; }
+  .scroll-cue{ display: none; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; scroll-snap-type: none; }
+  .float,
+  .scroll-cue span,
+  .chip{ animation: none !important; }
+  .reveal{ opacity: 1; transform: none; transition: none; }
+  .beat.out .stage{ opacity: 1; transform: none; }
+  .triangle__line{ stroke-dashoffset: 0; }
+  .btn, .pill{ transition: none; }
+}
