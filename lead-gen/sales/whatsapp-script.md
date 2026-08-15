@@ -3,7 +3,7 @@
 **Target:** Food by Punjabi Restaurant, Meena Bazaar, Bur Dubai
 **Decision maker:** Harpreet Singh (owner — named by four separate reviewers as "Harpreet", "Harpeet ji", "Sardar ji")
 **WhatsApp:** +971 56 403 7062 → https://wa.me/971564037062
-**Live demo:** https://food-by-punjabi-ajabbar12765-hashs-projects.vercel.app
+**Live demo:** https://food-by-punjabi.vercel.app
 **Quoted price:** AED 1,500 one-time + AED 350/year hosting & domain
 *(Swap these numbers for whatever you actually charge — everything below reads fine with any figure.)*
 
@@ -38,7 +38,7 @@
 > But when someone searches "best Punjabi food Bur Dubai", there's no website for you to land on. They see the Google pin and that's it.
 >
 > So I already built you one. Nothing owed, just have a look:
-> 👉 https://food-by-punjabi-ajabbar12765-hashs-projects.vercel.app
+> 👉 https://food-by-punjabi.vercel.app
 >
 > Takes 30 seconds. If you don't like it, tell me and I'll leave you alone.
 
@@ -107,7 +107,7 @@
 
 | When | Message |
 |---|---|
-| **Day 2** | Assalam alaikum Harpreet ji — did the link open properly on your phone? Sometimes WhatsApp blocks it. Here it is again: https://food-by-punjabi-ajabbar12765-hashs-projects.vercel.app |
+| **Day 2** | Assalam alaikum Harpreet ji — did the link open properly on your phone? Sometimes WhatsApp blocks it. Here it is again: https://food-by-punjabi.vercel.app |
 | **Day 4** | One thing I noticed: you have 1,073 reviews and haven't replied to any of them. Replying to reviews pushes you higher in Google Maps. I'll set that up free with the website — just so you know it's on the table. |
 | **Day 7** | No problem if the timing isn't right 🙏 I'll keep the site online for two more weeks in case you change your mind. Either way — the saag is genuinely the best thing I've read about in Bur Dubai, I'm coming to eat one of these days. |
 | **Day 14** | *(Stop. Do not message again. Move to lead #2.)* |
@@ -141,8 +141,8 @@ Swap the bracketed parts from `leads/dubai-restaurants-no-website.csv`:
 
 ## Before you send anything
 
-- **The site is already live** at https://food-by-punjabi-ajabbar12765-hashs-projects.vercel.app (Vercel project `food-by-punjabi`, production, deployment protection off so anyone can open it). Source of truth is `demo-sites/food-by-punjabi/index.html` — redeploy from there after any edit.
-- **The `.vercel.app` URL carries a `noindex` header.** Fine for a demo, but it means Google won't list it — which is exactly the thing his AED 1,500 buys: a real domain that Google can index.
+- **The site is already live** at https://food-by-punjabi.vercel.app (Vercel project `food-by-punjabi`, production, deployment protection off so anyone can open it). Source of truth is `demo-sites/food-by-punjabi/index.html` — redeploy from there after any edit.
+- **Send the short URL only.** `https://food-by-punjabi.vercel.app` is the clean production alias — no account name in it, and it serves without a `noindex` header. The long deployment URL (`…-ln6czeo18-…`) does carry `noindex` and exposes the account slug, so never paste that one to a prospect.
 - **The food images are illustrations, not photos.** That is deliberate — it's a lever ("send me your photos and it becomes yours"). Don't claim they're his food.
 - **The review quotes are real,** pulled from his Google listing, shown with first name + last initial.
 - **Keep outreach manual and one-to-one.** Bulk or automated unsolicited WhatsApp marketing breaches WhatsApp's Business terms and UAE TDRA rules on unsolicited commercial messages — accounts get banned for it. Hand-sent messages to a handful of businesses a day, stopping when someone doesn't reply, keeps you on the right side of both.

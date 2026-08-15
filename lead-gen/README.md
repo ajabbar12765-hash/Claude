@@ -19,7 +19,7 @@ lead-gen/
 
 ## The demo is live
 
-**https://food-by-punjabi-ajabbar12765-hashs-projects.vercel.app**
+**https://food-by-punjabi.vercel.app**
 
 Vercel project `food-by-punjabi`, production target, deployment protection disabled so anyone can open it without a Vercel login. Verified 200 with the full page served.
 
