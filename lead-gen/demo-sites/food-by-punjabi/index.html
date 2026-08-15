@@ -11,12 +11,14 @@
 <meta property="og:type" content="restaurant.restaurant">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Karla:wght@300;400;500;600;700&family=Playfair+Display+SC:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   FOOD BY PUNJABI — scroll-driven showcase
-   Design system: Modern Dark (cinematic) / Playfair Display SC + Karla
-   Palette: near-black ground, warm gold, per-section accent glow
+   FOOD BY PUNJABI — scroll-driven photo showcase
+   Pattern:  3d-website (full-viewport chapters, per-section glow)
+   System:   ui-ux-pro-max — Modern Dark / Playfair Display SC + Karla
+             Landing: Hero → proof → rating breakdown → reviews → CTA
    ============================================================ */
 
 *,*::before,*::after{box-sizing:border-box}
@@ -33,7 +35,6 @@ body{margin:0}
   --gold-deep:#B98B32;
   --line:rgba(246,241,231,.14);
 
-  /* per-section accents */
   --a-amber:#E8B75A;
   --a-crimson:#E2603F;
   --a-saag:#87BC72;
@@ -59,11 +60,18 @@ body{
   overflow-x:hidden;
 }
 
-/* Focus visibility — never remove the ring */
 a:focus-visible,button:focus-visible{
   outline:2px solid var(--gold);
   outline-offset:3px;
   border-radius:4px;
+}
+
+/* Every photo: fills its frame, never overflows, dark placeholder so a
+   failed load reads as part of the design instead of a white hole. */
+img{
+  display:block; width:100%; height:100%;
+  max-width:100%; object-fit:cover;
+  background:#14141A; color:transparent;
 }
 
 /* ---------- Fixed chrome ---------- */
@@ -76,71 +84,52 @@ a:focus-visible,button:focus-visible{
   background:linear-gradient(to bottom,rgba(7,7,10,.92),rgba(7,7,10,0));
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
 }
-.wordmark{
-  display:flex; flex-direction:column; line-height:1;
-  text-decoration:none; color:var(--cream);
-}
-.wordmark b{
-  font-family:var(--font-display); font-weight:700;
-  font-size:clamp(15px,2.4vw,19px); letter-spacing:.06em;
-}
-.wordmark span{
-  font-size:10px; letter-spacing:.28em; text-transform:uppercase;
-  color:var(--gold); margin-top:5px; font-weight:600;
-}
+.wordmark{display:flex;flex-direction:column;line-height:1;text-decoration:none;color:var(--cream)}
+.wordmark b{font-family:var(--font-display);font-weight:700;font-size:clamp(15px,2.4vw,19px);letter-spacing:.06em}
+.wordmark span{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-top:5px;font-weight:600}
 .pill{
   display:inline-flex; align-items:center; gap:9px;
   min-height:44px; padding:0 20px;
   border-radius:999px; text-decoration:none;
   font-size:14px; font-weight:600; letter-spacing:.02em;
   background:var(--gold); color:#231704;
-  border:1px solid transparent;
-  cursor:pointer;
+  border:1px solid transparent; cursor:pointer;
   transition:transform .22s var(--ease),box-shadow .22s var(--ease),background .22s var(--ease);
   box-shadow:0 6px 24px -8px rgba(232,183,90,.6);
   white-space:nowrap;
 }
 .pill:hover{transform:translateY(-2px);box-shadow:0 12px 34px -10px rgba(232,183,90,.75);background:#F2C671}
 .pill:active{transform:translateY(0) scale(.98)}
-.pill.ghost{
-  background:transparent; color:var(--cream);
-  border-color:var(--line); box-shadow:none;
-}
+.pill.ghost{background:transparent;color:var(--cream);border-color:var(--line);box-shadow:none}
 .pill.ghost:hover{background:rgba(246,241,231,.08);border-color:var(--gold);color:var(--gold)}
+.pill svg{flex:none}
 
-/* Scroll progress */
 .progress{
   position:fixed; top:0; left:0; height:2px; z-index:60;
   width:0%; background:linear-gradient(90deg,var(--gold-deep),var(--gold));
   transition:width .1s linear;
 }
 
-/* ---------- Section shell ---------- */
-.scroller{
-  scroll-snap-type:y proximity;
-  scroll-behavior:smooth;
-}
+/* ---------- Chapter shell ---------- */
+.scroller{scroll-snap-type:y proximity;scroll-behavior:smooth}
 .chapter{
   position:relative;
   min-height:100vh; min-height:100svh;
   display:grid; place-items:center;
   padding:clamp(96px,14vh,140px) clamp(20px,5vw,64px) clamp(56px,10vh,96px);
   scroll-snap-align:start;
-  overflow:hidden;
-  isolation:isolate;
+  overflow:hidden; isolation:isolate;
 }
-/* the spotlight behind the dish */
 .chapter::before{
   content:""; position:absolute; z-index:-2;
   left:50%; top:46%; transform:translate(-50%,-50%);
   width:min(150vw,1500px); aspect-ratio:1;
   background:radial-gradient(circle at center,
-    color-mix(in srgb,var(--accent) 42%,transparent) 0%,
-    color-mix(in srgb,var(--accent) 12%,transparent) 32%,
+    color-mix(in srgb,var(--accent) 40%,transparent) 0%,
+    color-mix(in srgb,var(--accent) 11%,transparent) 32%,
     transparent 63%);
   pointer-events:none;
 }
-/* film grain / vignette */
 .chapter::after{
   content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
   background:radial-gradient(ellipse at center,transparent 42%,rgba(7,7,10,.82) 100%);
@@ -153,11 +142,11 @@ a:focus-visible,button:focus-visible{
 
 .stage{
   width:100%; max-width:1120px;
-  display:grid; gap:clamp(24px,4vh,44px);
+  display:grid; gap:clamp(22px,3.6vh,40px);
   justify-items:center; text-align:center;
 }
 
-/* ---------- Motion: enter / exit ---------- */
+/* ---------- Motion ---------- */
 .reveal{
   opacity:0; transform:translateY(38px) scale(.96);
   transition:opacity .9s var(--ease),transform .9s var(--ease);
@@ -169,61 +158,61 @@ a:focus-visible,button:focus-visible{
 .in .reveal:nth-child(4){transition-delay:.27s}
 .in .reveal:nth-child(5){transition-delay:.36s}
 
-/* ---------- Typography ---------- */
-.eyebrow{
-  font-size:11px; font-weight:700; letter-spacing:.34em;
-  text-transform:uppercase; color:var(--accent,var(--gold));
-  margin:0;
+/* ---------- Type ---------- */
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--accent,var(--gold));margin:0}
+h1,h2{font-family:var(--font-display);font-weight:700;margin:0;line-height:1.02;letter-spacing:-.015em;text-wrap:balance}
+h1{font-size:clamp(44px,9.4vw,104px)}
+h2{font-size:clamp(32px,6.4vw,74px)}
+.lede{margin:0;max-width:46ch;font-size:clamp(16px,2.1vw,20px);font-weight:300;color:var(--cream-dim);line-height:1.62}
+.tiny{font-size:13px;letter-spacing:.06em;color:var(--cream-faint);margin:0;max-width:52ch}
+
+/* ---------- HERO: full-bleed photo ---------- */
+.hero{padding-top:clamp(88px,12vh,120px)}
+.hero .bg{
+  position:absolute; inset:0; z-index:-3;
+  animation:kenburns 26s ease-in-out infinite alternate;
 }
-h1,h2{
-  font-family:var(--font-display); font-weight:700;
-  margin:0; line-height:1.02; letter-spacing:-.015em;
-  text-wrap:balance;
+.hero .bg img{filter:saturate(1.06) contrast(1.04)}
+.hero .bg::after{
+  content:""; position:absolute; inset:0;
+  background:
+    linear-gradient(to bottom,rgba(7,7,10,.86) 0%,rgba(7,7,10,.52) 38%,rgba(7,7,10,.9) 100%),
+    radial-gradient(ellipse at 50% 42%,rgba(232,183,90,.22),transparent 62%);
 }
-h1{font-size:clamp(40px,8.6vw,92px)}
-/* Hero packs five blocks into one screen — tighten it so nothing clips */
-.hero .stage{gap:clamp(16px,2.4vh,26px)}
-.hero .dish{width:clamp(150px,22vw,236px)}
-.hero .lede{max-width:40ch}
-h2{font-size:clamp(34px,7vw,80px)}
-.lede{
-  margin:0; max-width:46ch;
-  font-size:clamp(16px,2.1vw,20px); font-weight:300;
-  color:var(--cream-dim); line-height:1.62;
+@keyframes kenburns{
+  from{transform:scale(1.03) translateY(0)}
+  to{transform:scale(1.13) translateY(-1.5%)}
 }
-.tiny{
-  font-size:13px; letter-spacing:.06em; color:var(--cream-faint);
-  margin:0;
+.hero .stage{gap:clamp(18px,2.6vh,30px)}
+
+/* ---------- Chapter photo card ---------- */
+.shot{
+  position:relative; width:min(100%,660px);
+  aspect-ratio:4/3; border-radius:20px; overflow:hidden;
+  border:1px solid var(--line);
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.9),
+             0 0 0 1px rgba(255,255,255,.04) inset;
+  animation:float 9s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.shot::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(to top,rgba(7,7,10,.5),transparent 55%);
+}
+.shot-glow{position:relative}
+.shot-glow::before{
+  content:""; position:absolute; z-index:-1;
+  left:50%; bottom:-30px; transform:translateX(-50%);
+  width:76%; height:44px; border-radius:50%;
+  background:radial-gradient(ellipse at center,color-mix(in srgb,var(--accent) 42%,transparent),transparent 72%);
+  filter:blur(16px);
 }
 
-/* ---------- Dish stage ---------- */
-.dish{
-  position:relative;
-  width:clamp(190px,34vw,330px);
-  filter:drop-shadow(0 40px 60px rgba(0,0,0,.72));
-  animation:float 7s ease-in-out infinite;
-}
-.dish svg{display:block;width:100%;height:auto}
-@keyframes float{
-  0%,100%{transform:translateY(0) rotate(0deg)}
-  50%{transform:translateY(-14px) rotate(.6deg)}
-}
-/* reflection puddle under the dish */
-.dish::after{
-  content:""; position:absolute; left:50%; bottom:-26px;
-  transform:translateX(-50%);
-  width:74%; height:26px; border-radius:50%;
-  background:radial-gradient(ellipse at center,
-    color-mix(in srgb,var(--accent) 34%,transparent),transparent 72%);
-  filter:blur(9px);
-}
-
-/* ---------- Rating badge ---------- */
+/* ---------- Rating ---------- */
 .rating{
   display:inline-flex; align-items:center; gap:12px;
   padding:10px 20px; border-radius:999px;
-  border:1px solid var(--line);
-  background:rgba(246,241,231,.05);
+  border:1px solid var(--line); background:rgba(246,241,231,.06);
   backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
   font-size:14px; letter-spacing:.02em;
 }
@@ -231,57 +220,86 @@ h2{font-size:clamp(34px,7vw,80px)}
 .stars{display:inline-flex;gap:2px;color:var(--gold)}
 .stars svg{width:15px;height:15px}
 
-/* ---------- Chips ---------- */
-.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;max-width:640px}
-.chip{
-  padding:8px 15px; border-radius:999px;
-  border:1px solid var(--line); font-size:13px;
-  color:var(--cream-dim); background:rgba(246,241,231,.035);
+/* ---------- Rating breakdown ---------- */
+.score-wrap{
+  display:grid; gap:clamp(24px,4vw,52px); width:100%;
+  grid-template-columns:1fr; align-items:center; max-width:820px;
 }
+@media (min-width:760px){.score-wrap{grid-template-columns:auto 1fr}}
+.score-big{display:grid;justify-items:center;gap:6px}
+.score-big strong{font-family:var(--font-display);font-size:clamp(64px,12vw,104px);line-height:1;color:var(--gold)}
+.score-big .stars svg{width:19px;height:19px}
+.score-big span{font-size:13px;color:var(--cream-faint);letter-spacing:.04em}
+.bars{display:grid;gap:10px;width:100%}
+.bar-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;font-size:13px;color:var(--cream-dim)}
+.bar-row i{font-style:normal;color:var(--cream-faint);width:2.2ch;text-align:right}
+.track{display:block;height:8px;border-radius:999px;background:rgba(246,241,231,.10);overflow:hidden}
+.fill{
+  display:block; height:100%; width:0;
+  border-radius:999px; background:linear-gradient(90deg,var(--gold-deep),var(--gold));
+  transition:width 1.25s var(--ease);
+}
+.in .fill{width:var(--pct)}
+.bar-row em{font-style:normal;color:var(--cream-faint);width:5.5ch;text-align:right;font-variant-numeric:tabular-nums}
 
-/* ---------- CTA row ---------- */
+/* ---------- Chips ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;max-width:660px}
+.chip{padding:8px 15px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--cream-dim);background:rgba(246,241,231,.035)}
+
 .cta-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 
-/* ---------- Review cards ---------- */
-.quotes{
-  display:grid; gap:16px; width:100%;
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  text-align:left;
-}
-@media (min-width:900px){.quotes{grid-template-columns:repeat(2,1fr);max-width:860px;margin-inline:auto}}
+/* ---------- Reviews ---------- */
+.quotes{display:grid;gap:16px;width:100%;grid-template-columns:1fr;text-align:left}
+@media (min-width:700px){.quotes{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1060px){.quotes{grid-template-columns:repeat(3,1fr)}}
 .quote{
-  padding:22px; border-radius:16px;
-  border:1px solid var(--line);
+  display:flex; flex-direction:column; gap:14px;
+  padding:22px; border-radius:16px; border:1px solid var(--line);
   background:linear-gradient(160deg,rgba(246,241,231,.075),rgba(246,241,231,.02));
   backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
 }
-.quote p{margin:0 0 14px;font-size:15px;line-height:1.62;color:var(--cream-dim)}
-.quote footer{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--cream-faint)}
+.quote p{margin:0;font-size:15px;line-height:1.62;color:var(--cream-dim)}
+.quote footer{display:flex;align-items:center;gap:11px;margin-top:auto}
+.avatar{
+  flex:none; width:36px; height:36px; border-radius:50%;
+  display:grid; place-items:center;
+  background:linear-gradient(150deg,var(--gold),var(--gold-deep));
+  color:#231704; font-weight:700; font-size:14px; letter-spacing:.02em;
+}
+.who{display:flex;flex-direction:column;line-height:1.3}
+.who b{font-size:14px;font-weight:600;color:var(--cream)}
+.who span{font-size:12px;color:var(--cream-faint)}
 .quote .stars svg{width:12px;height:12px}
 
-/* ---------- Hours / info table ---------- */
-.info{
-  display:grid; gap:14px; width:100%; max-width:520px;
-  text-align:left;
+/* ---------- Photo mosaic ---------- */
+/* 4×2 on desktop, 2×4 on phones — fixed so the chapter never outgrows
+   the viewport the way an auto-flowing masonry does. */
+.mosaic{
+  display:grid; width:100%; max-width:980px; gap:10px;
+  grid-template-columns:repeat(2,1fr);
 }
-.info-row{
-  display:flex; align-items:baseline; justify-content:space-between;
-  gap:16px; padding-bottom:13px;
-  border-bottom:1px solid var(--line);
+@media (min-width:700px){.mosaic{grid-template-columns:repeat(4,1fr);gap:12px}}
+.tile{
+  position:relative; overflow:hidden; border-radius:12px;
+  border:1px solid var(--line); aspect-ratio:4/3;
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease);
 }
+.tile img{transition:transform .5s var(--ease)}
+.tile:hover{transform:translateY(-4px);box-shadow:0 20px 40px -18px rgba(0,0,0,.9)}
+.tile:hover img{transform:scale(1.07)}
+
+/* ---------- Info ---------- */
+.info{display:grid;gap:14px;width:100%;max-width:520px;text-align:left}
+.info-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:13px;border-bottom:1px solid var(--line)}
 .info-row:last-child{border-bottom:0;padding-bottom:0}
-.info-row dt{
-  font-size:11px; letter-spacing:.24em; text-transform:uppercase;
-  color:var(--gold); font-weight:700; margin:0;
-}
+.info-row dt{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:0}
 .info-row dd{margin:0;font-size:16px;color:var(--cream-dim);text-align:right}
 
 /* ---------- Footer ---------- */
 .foot{
   padding:var(--space-5) clamp(20px,5vw,64px);
   padding-bottom:calc(var(--space-5) + env(safe-area-inset-bottom));
-  border-top:1px solid var(--line);
-  text-align:center; background:var(--ink-2);
+  border-top:1px solid var(--line); text-align:center; background:var(--ink-2);
 }
 .foot p{margin:0 0 var(--space-1);font-size:13px;color:var(--cream-faint)}
 .foot a{color:var(--gold);text-decoration:none}
@@ -291,23 +309,19 @@ h2{font-size:clamp(34px,7vw,80px)}
 .hint{
   position:absolute; bottom:26px; left:50%; transform:translateX(-50%);
   display:flex; flex-direction:column; align-items:center; gap:7px;
-  font-size:10px; letter-spacing:.3em; text-transform:uppercase;
-  color:var(--cream-faint);
+  font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--cream-faint);
 }
-.hint i{
-  display:block; width:1px; height:34px;
-  background:linear-gradient(to bottom,var(--gold),transparent);
-  animation:drop 2.1s ease-in-out infinite;
-}
+.hint i{display:block;width:1px;height:34px;background:linear-gradient(to bottom,var(--gold),transparent);animation:drop 2.1s ease-in-out infinite}
 @keyframes drop{0%,100%{opacity:.25;transform:scaleY(.5)}50%{opacity:1;transform:scaleY(1)}}
 
 /* ---------- Responsive ---------- */
 @media (max-width:640px){
   body{font-size:16px}
-  .topbar .pill{padding:0 15px;font-size:13px}
-  .wordmark span{letter-spacing:.2em}
+  .topbar .pill{padding:0 14px;font-size:13px}
+  .wordmark span{letter-spacing:.18em}
   .info-row{flex-direction:column;gap:4px}
   .info-row dd{text-align:left}
+  .shot{aspect-ratio:5/4;border-radius:16px}
 }
 
 /* ---------- Reduced motion ---------- */
@@ -320,10 +334,13 @@ h2{font-size:clamp(34px,7vw,80px)}
   }
   .reveal{opacity:1;transform:none}
   .scroller{scroll-snap-type:none}
+  .fill{width:var(--pct)}
 }
 </style>
 </head>
 <body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="star" viewBox="0 0 24 24"><path fill="currentColor" d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></symbol></svg>
 
 <div class="progress" id="progress" role="presentation"></div>
 
@@ -342,238 +359,72 @@ h2{font-size:clamp(34px,7vw,80px)}
 
   <!-- 1 — HERO -->
   <section class="chapter amber hero" aria-labelledby="h-hero">
+    <div class="bg" aria-hidden="true">
+      <img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn_u8uRz98P3Q5dwJVYw9kXldsD0LCR_mh9D4l6KcMh5tORZvAb62W7kpcBUphIqSyqP7K0QOyYwaHC_ZfVOdvpfLctUcaT5d85_O1eKhls1zzyXLpBdDWYFezI8YJBbHiiADC9-Ufm1KR-=w1600-h1200-k-no"
+           srcset="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn_u8uRz98P3Q5dwJVYw9kXldsD0LCR_mh9D4l6KcMh5tORZvAb62W7kpcBUphIqSyqP7K0QOyYwaHC_ZfVOdvpfLctUcaT5d85_O1eKhls1zzyXLpBdDWYFezI8YJBbHiiADC9-Ufm1KR-=w800-h1000-k-no 800w,
+                   https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn_u8uRz98P3Q5dwJVYw9kXldsD0LCR_mh9D4l6KcMh5tORZvAb62W7kpcBUphIqSyqP7K0QOyYwaHC_ZfVOdvpfLctUcaT5d85_O1eKhls1zzyXLpBdDWYFezI8YJBbHiiADC9-Ufm1KR-=w1600-h1200-k-no 1600w"
+           sizes="100vw" alt="" fetchpriority="high" decoding="async">
+    </div>
     <div class="stage">
       <p class="eyebrow reveal">Meena Bazaar · Bur Dubai</p>
       <h1 id="h-hero" class="reveal">Punjab,<br>Plated.</h1>
-      <div class="dish reveal" role="img" aria-label="A brass thali of Punjabi dishes">
-        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="brass" cx="38%" cy="30%">
-              <stop offset="0%" stop-color="#FBE3A8"/><stop offset="45%" stop-color="#D9A94E"/>
-              <stop offset="100%" stop-color="#7E5A1C"/>
-            </radialGradient>
-            <radialGradient id="brassIn" cx="40%" cy="32%">
-              <stop offset="0%" stop-color="#EFCB80"/><stop offset="100%" stop-color="#A87C28"/>
-            </radialGradient>
-            <linearGradient id="curry" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#F0834B"/><stop offset="100%" stop-color="#B23F1C"/>
-            </linearGradient>
-            <linearGradient id="dal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#8A5A38"/><stop offset="100%" stop-color="#4B2C18"/>
-            </linearGradient>
-            <linearGradient id="greeny" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#7FA84E"/><stop offset="100%" stop-color="#3D5A22"/>
-            </linearGradient>
-            <linearGradient id="bread" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#F6DFAE"/><stop offset="100%" stop-color="#C99A56"/>
-            </linearGradient>
-          </defs>
-          <ellipse cx="200" cy="200" rx="182" ry="182" fill="url(#brass)"/>
-          <ellipse cx="200" cy="200" rx="162" ry="162" fill="#3A2A12" opacity=".55"/>
-          <ellipse cx="200" cy="200" rx="156" ry="156" fill="url(#brassIn)"/>
-          <!-- rice mound -->
-          <ellipse cx="200" cy="238" rx="62" ry="46" fill="#FBF3E2"/>
-          <ellipse cx="200" cy="230" rx="54" ry="36" fill="#FFFBF2"/>
-          <!-- katoris -->
-          <g>
-            <circle cx="132" cy="140" r="40" fill="#8E6620"/><circle cx="132" cy="138" r="34" fill="url(#curry)"/>
-            <circle cx="268" cy="140" r="40" fill="#8E6620"/><circle cx="268" cy="138" r="34" fill="url(#dal)"/>
-            <circle cx="104" cy="240" r="32" fill="#8E6620"/><circle cx="104" cy="238" r="27" fill="url(#greeny)"/>
-            <circle cx="296" cy="240" r="32" fill="#8E6620"/><circle cx="296" cy="238" r="27" fill="#F3E2C0"/>
-          </g>
-          <!-- roti -->
-          <ellipse cx="200" cy="106" rx="58" ry="26" fill="url(#bread)"/>
-          <ellipse cx="200" cy="102" rx="58" ry="26" fill="url(#bread)"/>
-          <circle cx="184" cy="98" r="4" fill="#A8752F" opacity=".55"/>
-          <circle cx="214" cy="106" r="3" fill="#A8752F" opacity=".5"/>
-          <circle cx="202" cy="92" r="2.5" fill="#A8752F" opacity=".45"/>
-          <!-- garnish -->
-          <circle cx="132" cy="132" r="4" fill="#C9E08E" opacity=".9"/>
-          <circle cx="140" cy="146" r="3" fill="#C9E08E" opacity=".75"/>
-          <circle cx="104" cy="232" r="3" fill="#E9F2C8" opacity=".8"/>
-          <!-- rim shine -->
-          <path d="M46 168a156 156 0 0 1 92-116" stroke="#FFF3D0" stroke-width="7" fill="none" opacity=".5" stroke-linecap="round"/>
-        </svg>
-      </div>
       <p class="lede reveal">Sarson da saag in a Dubai souk. Dal makhani that tastes like someone’s mother made it. Open till 2 AM, every single night.</p>
       <div class="rating reveal">
         <span class="stars" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg>
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg>
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg>
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg>
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg>
+          <svg><use href="#star"/></svg>
+          <svg><use href="#star"/></svg>
+          <svg><use href="#star"/></svg>
+          <svg><use href="#star"/></svg>
+          <svg><use href="#star"/></svg>
         </span>
         <b>4.8</b><span>· 1,073 Google reviews</span>
+      </div>
+      <div class="cta-row reveal">
+        <a class="pill" href="https://wa.me/971564037062?text=Hi%2C%20I%27d%20like%20to%20place%20an%20order" target="_blank" rel="noopener">Order on WhatsApp</a>
+        <a class="pill ghost" href="#visit">Opening hours</a>
       </div>
     </div>
     <div class="hint" aria-hidden="true"><i></i>Scroll</div>
   </section>
 
-  <!-- 2 — BUTTER CHICKEN -->
-  <section class="chapter crimson" aria-labelledby="h-bc">
+  <!-- 2 — THE FOOD -->
+  <section class="chapter crimson" aria-labelledby="h-food">
     <div class="stage">
-      <p class="eyebrow reveal">The house signature</p>
-      <h2 id="h-bc" class="reveal">Butter Chicken.<br>Old Delhi style.</h2>
-      <div class="dish reveal" role="img" aria-label="A karahi of butter chicken with cream swirl">
-        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="karahi" cx="36%" cy="28%">
-              <stop offset="0%" stop-color="#6E7176"/><stop offset="60%" stop-color="#3A3D42"/>
-              <stop offset="100%" stop-color="#15171A"/>
-            </radialGradient>
-            <radialGradient id="makhani" cx="40%" cy="32%">
-              <stop offset="0%" stop-color="#FF9E63"/><stop offset="55%" stop-color="#E2603F"/>
-              <stop offset="100%" stop-color="#8E2C15"/>
-            </radialGradient>
-          </defs>
-          <ellipse cx="200" cy="206" rx="176" ry="176" fill="url(#karahi)"/>
-          <ellipse cx="200" cy="200" rx="150" ry="150" fill="#22252A"/>
-          <ellipse cx="200" cy="200" rx="140" ry="140" fill="url(#makhani)"/>
-          <!-- chicken pieces -->
-          <g fill="#C24A22" opacity=".92">
-            <ellipse cx="160" cy="164" rx="30" ry="24" transform="rotate(-18 160 164)"/>
-            <ellipse cx="240" cy="182" rx="28" ry="22" transform="rotate(14 240 182)"/>
-            <ellipse cx="188" cy="238" rx="31" ry="23" transform="rotate(-6 188 238)"/>
-            <ellipse cx="252" cy="252" rx="24" ry="19" transform="rotate(22 252 252)"/>
-            <ellipse cx="130" cy="228" rx="22" ry="18" transform="rotate(-30 130 228)"/>
-          </g>
-          <g fill="#E8703F" opacity=".55">
-            <ellipse cx="156" cy="158" rx="18" ry="12" transform="rotate(-18 156 158)"/>
-            <ellipse cx="236" cy="176" rx="16" ry="11" transform="rotate(14 236 176)"/>
-          </g>
-          <!-- cream swirl -->
-          <path d="M120 246c34-40 74-16 108-46s52-12 62 8" stroke="#FFF6E8" stroke-width="9"
-                fill="none" stroke-linecap="round" opacity=".92"/>
-          <!-- kasuri methi -->
-          <g fill="#4F6B2A" opacity=".85">
-            <circle cx="150" cy="200" r="3"/><circle cx="216" cy="150" r="2.6"/>
-            <circle cx="262" cy="216" r="3"/><circle cx="176" cy="276" r="2.4"/>
-            <circle cx="234" cy="120" r="2.2"/>
-          </g>
-          <!-- rim shine -->
-          <path d="M62 176a140 140 0 0 1 78-100" stroke="#FFD9C0" stroke-width="6" fill="none" opacity=".35" stroke-linecap="round"/>
-        </svg>
+      <p class="eyebrow reveal">Cooked the long way</p>
+      <h2 id="h-food" class="reveal">Tastes like<br>home, not<br>like a restaurant.</h2>
+      <div class="shot-glow reveal">
+        <div class="shot">
+          <img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkLBgieUfnVya44XlWFtrj_tfGlr6PwFJNYP1GI23kyKzfY9VChCEd0_Awpplyxuw4okwhuP7BbMUXa64WJvglqtd22trSF6K3iFpVQsPIeBZuuY8bCs9YviqwmDGOBPxkMuCdB=w1200-h900-k-no"
+               alt="A dish served at Food by Punjabi Restaurant, Meena Bazaar" loading="lazy" decoding="async" width="1200" height="900">
+        </div>
       </div>
-      <p class="lede reveal">Slow-simmered tomato and butter, finished with cream and hand-crushed kasuri methi. Guests keep saying the same thing: it tastes like home, not like a restaurant.</p>
+      <p class="lede reveal">Slow-simmered gravies, tandoori breads off the tawa, thalis that arrive heavier than you expect. Guests keep writing the same sentence — it tastes like home.</p>
       <div class="chips reveal">
         <span class="chip">Dal Makhani</span>
+        <span class="chip">Butter Chicken</span>
+        <span class="chip">Sarson da Saag</span>
+        <span class="chip">Makki di Roti</span>
         <span class="chip">Paneer Patiala</span>
         <span class="chip">Amritsari Fish</span>
         <span class="chip">Malai Chicken Tikka</span>
-        <span class="chip">Methi Chicken</span>
+        <span class="chip">Non-Veg Thali</span>
+        <span class="chip">Aloo Paratha</span>
       </div>
     </div>
   </section>
 
-  <!-- 3 — SAAG -->
-  <section class="chapter saag" aria-labelledby="h-saag">
-    <div class="stage">
-      <p class="eyebrow reveal">Winter in Punjab, all year in Dubai</p>
-      <h2 id="h-saag" class="reveal">Sarson da Saag<br>&amp; Makki di Roti</h2>
-      <div class="dish reveal" role="img" aria-label="A bowl of sarson da saag topped with butter, beside makki di roti">
-        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="saagG" cx="38%" cy="30%">
-              <stop offset="0%" stop-color="#7FB069"/><stop offset="55%" stop-color="#41712E"/>
-              <stop offset="100%" stop-color="#1D3A13"/>
-            </radialGradient>
-            <linearGradient id="makki" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#FBD87E"/><stop offset="100%" stop-color="#C98F2C"/>
-            </linearGradient>
-            <linearGradient id="butter" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#FFF3B8"/><stop offset="100%" stop-color="#F1CE55"/>
-            </linearGradient>
-          </defs>
-          <!-- roti behind -->
-          <g transform="translate(268 262) rotate(-14)">
-            <ellipse cx="0" cy="0" rx="92" ry="88" fill="#A87428"/>
-            <ellipse cx="0" cy="-5" rx="90" ry="86" fill="url(#makki)"/>
-            <g fill="#B07E30" opacity=".55">
-              <circle cx="-30" cy="-24" r="7"/><circle cx="22" cy="-40" r="5"/>
-              <circle cx="34" cy="16" r="8"/><circle cx="-16" cy="30" r="6"/>
-              <circle cx="-52" cy="8" r="4.5"/>
-            </g>
-          </g>
-          <!-- bowl -->
-          <ellipse cx="164" cy="192" rx="150" ry="150" fill="#2A2F26"/>
-          <ellipse cx="164" cy="188" rx="136" ry="136" fill="#3B4434"/>
-          <ellipse cx="164" cy="188" rx="124" ry="124" fill="url(#saagG)"/>
-          <!-- saag texture -->
-          <g stroke="#5F9448" stroke-width="6" stroke-linecap="round" opacity=".7" fill="none">
-            <path d="M104 156c22 14 40-6 62 8"/>
-            <path d="M112 214c26-12 44 12 70-2"/>
-            <path d="M132 248c22 8 40-8 58 2"/>
-            <path d="M124 126c18 10 34-4 52 6"/>
-          </g>
-          <!-- butter cube melting -->
-          <g transform="translate(164 168)">
-            <rect x="-24" y="-20" width="48" height="40" rx="7" fill="url(#butter)"/>
-            <rect x="-24" y="-20" width="48" height="13" rx="6" fill="#FFF9D6" opacity=".85"/>
-            <path d="M-26 20c14 16 40 16 54 2" stroke="#F1CE55" stroke-width="9" fill="none" stroke-linecap="round" opacity=".9"/>
-          </g>
-          <path d="M46 166a124 124 0 0 1 66-88" stroke="#CFEBB6" stroke-width="6" fill="none" opacity=".3" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <p class="lede reveal">Mustard greens cooked down slow, a cube of white butter on top, corn roti straight off the tawa. Six separate reviewers called it the most authentic saag in the UAE.</p>
-    </div>
-  </section>
-
-  <!-- 4 — MOMOS / LATE NIGHT -->
-  <section class="chapter momo" aria-labelledby="h-momo">
+  <!-- 3 — LATE NIGHT -->
+  <section class="chapter momo" aria-labelledby="h-late">
     <div class="stage">
       <p class="eyebrow reveal">Kitchen open till 2 AM</p>
-      <h2 id="h-momo" class="reveal">The 1 AM<br>order.</h2>
-      <div class="dish reveal" role="img" aria-label="A platter of tandoori momos with dipping sauces">
-        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="slate" cx="36%" cy="28%">
-              <stop offset="0%" stop-color="#3E3446"/><stop offset="100%" stop-color="#171320"/>
-            </radialGradient>
-            <linearGradient id="momoSkin" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#F6C08A"/><stop offset="100%" stop-color="#C4682F"/>
-            </linearGradient>
-            <linearGradient id="chutney" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#E44F5C"/><stop offset="100%" stop-color="#8E1E2C"/>
-            </linearGradient>
-          </defs>
-          <ellipse cx="200" cy="204" rx="176" ry="176" fill="url(#slate)"/>
-          <ellipse cx="200" cy="200" rx="158" ry="158" fill="#241E30"/>
-          <!-- momos -->
-          <g>
-            <g transform="translate(148 150)">
-              <ellipse cx="0" cy="6" rx="44" ry="38" fill="#8A4A20"/>
-              <ellipse cx="0" cy="0" rx="44" ry="38" fill="url(#momoSkin)"/>
-              <path d="M-30-10c10 14 22 14 30 2s20-12 30 4" stroke="#A85A28" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
-              <circle cx="-8" cy="12" r="3" fill="#7C3E18" opacity=".6"/>
-            </g>
-            <g transform="translate(252 168)">
-              <ellipse cx="0" cy="6" rx="42" ry="36" fill="#8A4A20"/>
-              <ellipse cx="0" cy="0" rx="42" ry="36" fill="url(#momoSkin)"/>
-              <path d="M-28-8c9 13 21 13 28 2s19-11 28 4" stroke="#A85A28" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
-            </g>
-            <g transform="translate(196 244)">
-              <ellipse cx="0" cy="6" rx="46" ry="39" fill="#8A4A20"/>
-              <ellipse cx="0" cy="0" rx="46" ry="39" fill="url(#momoSkin)"/>
-              <path d="M-31-9c10 14 23 14 31 2s21-12 31 4" stroke="#A85A28" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
-              <circle cx="12" cy="14" r="3.4" fill="#7C3E18" opacity=".55"/>
-            </g>
-          </g>
-          <!-- char marks -->
-          <g stroke="#5E2C10" stroke-width="4" stroke-linecap="round" opacity=".55">
-            <path d="M132 138h34"/><path d="M240 158h30"/><path d="M182 236h36"/>
-          </g>
-          <!-- chutney bowls -->
-          <circle cx="106" cy="264" r="30" fill="#3A3048"/><circle cx="106" cy="262" r="25" fill="url(#chutney)"/>
-          <circle cx="292" cy="264" r="30" fill="#3A3048"/><circle cx="292" cy="262" r="25" fill="#5C7E33"/>
-          <!-- coriander -->
-          <g fill="#93C25E" opacity=".85">
-            <circle cx="200" cy="168" r="3.4"/><circle cx="164" cy="206" r="3"/><circle cx="244" cy="214" r="2.8"/>
-          </g>
-          <path d="M52 170a158 158 0 0 1 88-112" stroke="#F0C7E0" stroke-width="6" fill="none" opacity=".26" stroke-linecap="round"/>
-        </svg>
+      <h2 id="h-late" class="reveal">The 1 AM<br>order.</h2>
+      <div class="shot-glow reveal">
+        <div class="shot">
+          <img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl6TV-1NkFRQHp_z-jV9p934W8ivP9_P4wMm7pnnzOPhgLrMB9XFZ_q1de_aHGhAWsGAk46BRKWFoohD78YEHtISWw0CP3-uYtAYIUkWShzH_pVP4XYKs0W6aIfbNw9NeiW_NwsXA=w1200-h900-k-no"
+               alt="Food served late at night at Food by Punjabi Restaurant" loading="lazy" decoding="async" width="1200" height="900">
+        </div>
       </div>
-      <p class="lede reveal">Tandoori momos, chilli paneer, chicken dhaba style — the whole menu runs until 2 AM. Meena Bazaar doesn’t sleep early, and neither does the kitchen.</p>
+      <p class="lede reveal">Tandoori momos, chilli paneer, chicken dhaba style — the whole menu runs until 2 AM, seven nights a week. Meena Bazaar doesn’t sleep early, and neither does the kitchen.</p>
       <div class="cta-row reveal">
         <a class="pill" href="https://wa.me/971564037062?text=Hi%2C%20I%27d%20like%20to%20place%20an%20order" target="_blank" rel="noopener">Order on WhatsApp</a>
         <a class="pill ghost" href="tel:+971564037062">Call +971 56 403 7062</a>
@@ -581,35 +432,104 @@ h2{font-size:clamp(34px,7vw,80px)}
     </div>
   </section>
 
-  <!-- 5 — PROOF -->
-  <section class="chapter indigo" aria-labelledby="h-proof">
+  <!-- 4 — RATING BREAKDOWN -->
+  <section class="chapter indigo" aria-labelledby="h-score">
     <div class="stage">
-      <p class="eyebrow reveal">946 five-star reviews</p>
-      <h2 id="h-proof" class="reveal">In their words.</h2>
-      <div class="quotes reveal">
-        <blockquote class="quote">
-          <p>“Outstanding food. Very different to what we’ve had at other restaurants. You could taste the freshness. Malai chicken tikka, Amritsari fish, paneer patiala — and the lightest, thinnest garlic naan.”</p>
-          <footer><span class="stars" aria-label="5 out of 5"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg></span> Nin M. · Local Guide</footer>
-        </blockquote>
-        <blockquote class="quote">
-          <p>“If you are looking for the most authentic Sarson da Saag in the UAE, this is the place. The flavours took me straight back to Punjab.”</p>
-          <footer><span class="stars" aria-label="5 out of 5"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg></span> Vijay K.</footer>
-        </blockquote>
-        <blockquote class="quote">
-          <p>“I was surprised that a small restaurant can cook up a 5-star meal. I entered with little to no expectations and was really surprised with the service and the quality.”</p>
-          <footer><span class="stars" aria-label="5 out of 5"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg></span> Ravi M.</footer>
-        </blockquote>
-        <blockquote class="quote">
-          <p>“Found this hidden gem in the midst of bustling Meena Bazaar. Each dish I ordered has taste of perfection. The ambience took me back to India.”</p>
-          <footer><span class="stars" aria-label="5 out of 5"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/></svg></span> Faizan K.</footer>
-        </blockquote>
+      <p class="eyebrow reveal">What 1,073 people said</p>
+      <h2 id="h-score" class="reveal">The scorecard.</h2>
+      <div class="score-wrap reveal">
+        <div class="score-big">
+          <strong>4.8</strong>
+          <span class="stars" aria-hidden="true">
+            <svg><use href="#star"/></svg>
+            <svg><use href="#star"/></svg>
+            <svg><use href="#star"/></svg>
+            <svg><use href="#star"/></svg>
+            <svg><use href="#star"/></svg>
+          </span>
+          <span>1,073 Google reviews</span>
+        </div>
+        <div class="bars">
+          <div class="bar-row"><i>5★</i><span class="track"><span class="fill" style="--pct:88.2%"></span></span><em>946</em></div>
+          <div class="bar-row"><i>4★</i><span class="track"><span class="fill" style="--pct:6.5%"></span></span><em>70</em></div>
+          <div class="bar-row"><i>3★</i><span class="track"><span class="fill" style="--pct:2.9%"></span></span><em>31</em></div>
+          <div class="bar-row"><i>2★</i><span class="track"><span class="fill" style="--pct:0.5%"></span></span><em>5</em></div>
+          <div class="bar-row"><i>1★</i><span class="track"><span class="fill" style="--pct:2%"></span></span><em>21</em></div>
+        </div>
       </div>
-      <p class="tiny reveal">Reviews published on Google Maps. Shown here as posted.</p>
+      <p class="tiny reveal">88% of everyone who reviewed this restaurant gave it five stars.</p>
     </div>
   </section>
 
-  <!-- 6 — VISIT -->
-  <section class="chapter amber" aria-labelledby="h-visit">
+  <!-- 5 — REVIEWS -->
+  <section class="chapter crimson" aria-labelledby="h-proof">
+    <div class="stage">
+      <p class="eyebrow reveal">In their words</p>
+      <h2 id="h-proof" class="reveal">Straight from Google.</h2>
+      <div class="quotes reveal">
+
+        <blockquote class="quote">
+          <span class="stars" aria-label="5 out of 5"><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></span>
+          <p>“Outstanding food. Very different to what we’ve had at other restaurants. You could taste the freshness. Malai chicken tikka, Amritsari fish, paneer patiala — and the lightest, thinnest garlic naan.”</p>
+          <footer><span class="avatar" aria-hidden="true">N</span><span class="who"><b>Nin M.</b><span>Local Guide</span></span></footer>
+        </blockquote>
+
+        <blockquote class="quote">
+          <span class="stars" aria-label="5 out of 5"><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></span>
+          <p>“If you are looking for the most authentic Sarson da Saag in the UAE, this is the place. The flavours took me straight back to Punjab — perfectly seasoned and served with genuine warmth.”</p>
+          <footer><span class="avatar" aria-hidden="true">V</span><span class="who"><b>Vijay K.</b><span>Google review</span></span></footer>
+        </blockquote>
+
+        <blockquote class="quote">
+          <span class="stars" aria-label="5 out of 5"><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></span>
+          <p>“They serve delicious North Indian food that truly tastes homemade. If you’re in Meena Bazaar, this is one of the best places to visit. Their Dal Makhni is to die for.”</p>
+          <footer><span class="avatar" aria-hidden="true">N</span><span class="who"><b>Nimmi</b><span>Local Guide</span></span></footer>
+        </blockquote>
+
+        <blockquote class="quote">
+          <span class="stars" aria-label="5 out of 5"><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></span>
+          <p>“Found this hidden gem in the midst of bustling Meena Bazaar. Each dish I ordered has taste of perfection. Super delicious and generous quantity. The decor took me back to India.”</p>
+          <footer><span class="avatar" aria-hidden="true">F</span><span class="who"><b>Faizan K.</b><span>Google review</span></span></footer>
+        </blockquote>
+
+        <blockquote class="quote">
+          <span class="stars" aria-label="5 out of 5"><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></span>
+          <p>“I stopped by on a busy Saturday night around 1:00am, and despite the rush, the service truly stood out. I left my bag behind and the owner kept it safe and returned it, everything intact. Exceptional food paired with equally exceptional honesty.”</p>
+          <footer><span class="avatar" aria-hidden="true">P</span><span class="who"><b>Pooja D.</b><span>Google review</span></span></footer>
+        </blockquote>
+
+        <blockquote class="quote">
+          <span class="stars" aria-label="5 out of 5"><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></span>
+          <p>“I was surprised that a small restaurant can cook up a 5 star meal. I entered with little to no expectations and was really surprised with the service and the quality of the meal.”</p>
+          <footer><span class="avatar" aria-hidden="true">R</span><span class="who"><b>Ravi M.</b><span>Google review</span></span></footer>
+        </blockquote>
+
+      </div>
+      <p class="tiny reveal">Reviews published on Google Maps, shown as posted.</p>
+    </div>
+  </section>
+
+  <!-- 6 — PHOTO MOSAIC -->
+  <section class="chapter saag" aria-labelledby="h-gallery">
+    <div class="stage">
+      <p class="eyebrow reveal">538 photos on Google</p>
+      <h2 id="h-gallery" class="reveal">Taken by<br>the people eating.</h2>
+      <div class="mosaic reveal">
+        <div class="tile"><img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWka1rHzKGCI84NrekqiiGxBN0_JbrLVRBdf-4PrVIJDOY5pgYzKjIKq54omKW8rEaffKpoEq4S_mQmc0GOyhKOTA3tZq_ynZGu0gv_EsLmBZARk0uU7eBauNcSLj1L02TN2uNCxidtjJN2z=w900-h500-k-no" alt="Photo from Food by Punjabi Restaurant" loading="lazy" decoding="async"></div>
+        <div class="tile"><img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlNcsRvnks-36SbzOlvdWvsn9fz_yfduRtAH6HZ3ZQVq7Uq6BOQlZpbPponMSEKeSQniIWwp61cavIKhJ05gioZ3vBUhJgrmlRQQUY5CjVgx_lZhMXWwoAOSEYKlEVX_DHff6UvQY-m2I0F=w500-h500-k-no" alt="Photo from Food by Punjabi Restaurant" loading="lazy" decoding="async"></div>
+        <div class="tile"><img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk4VqVbW7F9kSlSwGYUFJY1ja7HQjVzlvleVf3Vu18wD-zMk3PMkJAO3FKY6wMQm-DovFukaWlO_4jt5dQY8tRvhy9O8qEggbxu8sGZPD1rRitXZuslyxJvSfPXudeFhab8KAB8pWd5AZku=w500-h500-k-no" alt="Photo from Food by Punjabi Restaurant" loading="lazy" decoding="async"></div>
+        <div class="tile"><img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlyoFBZMJQumc9AEfb9j3LD4EQL-0_IdU6PIYu3QLzSKO724kGN1k7HgzahZUFls5-JIz8B2Vwa2t1bEndIS8Qyjhbpeg6gBn5inQKkmAMdtyqQKTd5ehI3ZyVVbi1D_ivfg22IIg=w500-h500-k-no" alt="Photo from Food by Punjabi Restaurant" loading="lazy" decoding="async"></div>
+        <div class="tile"><img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnQDpmlGjgwEgYJMSraDlXRKkeERBsU-gOkAYXro49sNxC2Z9VUDb6CxKbc0lat1_feCF99NAJd2AMK7KXyXJT9zBuDPgu6Vc-jeGIbQm0cwREzLQ_muUqcQ3Pr6I7EofsNuGlouJzMkdE=w500-h500-k-no" alt="Photo from Food by Punjabi Restaurant" loading="lazy" decoding="async"></div>
+        <div class="tile"><img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlvoItpEcGtconJywUbquWrPTaaxbbMoW9wMMrUuJ1ad9jBrf_SzgzXs4cvPRgQAF5SEB-IU7aepsYRf5nok1VbpZszsx-Kpu6UPYuh2dgf7B9SZ33RqDcdek0RkXE-e9RAVgM=w500-h500-k-no" alt="Photo from Food by Punjabi Restaurant" loading="lazy" decoding="async"></div>
+        <div class="tile"><img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWko4QcUUIkmuZN0nQttco3u89z1Z0P60HH_cwZ2TOUnC-IlrEBpbpbLEN8pHntdOMMU0swQefivFB5XhByJCZHoqMAMhlFQIWK0X-gTbqANKY7K2ddLcobZPgGvUFHhh9dbGx_Ebg=w900-h500-k-no" alt="Photo from Food by Punjabi Restaurant" loading="lazy" decoding="async"></div>
+        <div class="tile"><img referrerpolicy="no-referrer" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkcAJOwzNWOus-nh3SDzYz_lcPKiqSkHNuMs2UpWq9_EJeV0wWuEM1alsNLSOnampdnCS_IH-XaLSAfn89P0Qv9kmShhricEy_loBbDph7pq6qk5mZ93k6Acp5ARlxgTFV0i10=w500-h500-k-no" alt="Photo from Food by Punjabi Restaurant" loading="lazy" decoding="async"></div>
+      </div>
+      <p class="tiny reveal">Every photo above was uploaded to Google by a customer, not by us.</p>
+    </div>
+  </section>
+
+  <!-- 7 — VISIT -->
+  <section class="chapter amber" id="visit" aria-labelledby="h-visit">
     <div class="stage">
       <p class="eyebrow reveal">Find us</p>
       <h2 id="h-visit" class="reveal">Meena Bazaar.<br>Till 2 AM.</h2>
@@ -649,11 +569,10 @@ h2{font-size:clamp(34px,7vw,80px)}
       entries.forEach(function(e){
         if (e.isIntersecting) e.target.classList.add('in');
       });
-    }, { threshold: 0.22 });
+    }, { threshold: 0.18 });
     chapters.forEach(function(c){ io.observe(c); });
   }
 
-  // Scroll progress bar
   var bar = document.getElementById('progress');
   var ticking = false;
   function update(){
