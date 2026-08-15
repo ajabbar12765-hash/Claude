@@ -4,8 +4,10 @@
 **Decision maker:** Harpreet Singh (owner — named by four separate reviewers as "Harpreet", "Harpeet ji", "Sardar ji")
 **WhatsApp:** +971 56 403 7062 → https://wa.me/971564037062
 **Live demo:** https://food-by-punjabi.vercel.app
-**Quoted price:** AED 1,500 one-time + AED 350/year hosting & domain
-*(Swap these numbers for whatever you actually charge — everything below reads fine with any figure.)*
+**Quoted price:** AED 1,500 one time. Nothing recurring, no domain purchase.
+*(Swap that number for whatever you actually charge — everything below reads fine with any figure.)*
+
+**No domain is being bought.** The site stays on the free hosted link he can see right now. That keeps the offer to a single payment with nothing to renew, which is an easier yes. If he later wants his own `.com`, quote that separately — don't fold it in.
 
 ---
 
@@ -21,28 +23,26 @@
 | Hours | 9:30 AM – 2 AM daily | He works hard. Respect it — message mid-afternoon, not at dinner rush. |
 | Owner replies to reviews | **Zero** | He is not managing his online presence at all. Nobody else has sold him this. |
 | Weekday lunch traffic | 8–17% occupancy Mon–Thu mornings | The real business case: he's near-empty before 2 PM and at 100% by 9 PM. A site + online ordering fills the dead hours. |
-| Average spend | AED 1–50 | Keep the price modest. AED 1,500 is roughly 30–40 covers. Say that out loud. |
+| Average spend | AED 1–50 | Keep the price modest. AED 1,500 is roughly 35 covers. Say that out loud. |
 
 **Best time to message:** 2:30–4:30 PM Dubai time, any day. Post-lunch, pre-dinner — the only quiet window he has.
 
 ---
 
-## Message 1 — the opener
+## Message 1 — the opener (price is in it)
 
 > Assalam alaikum / Sat Sri Akal Harpreet ji 🙏
 >
 > I'm [YOUR NAME], I build websites for restaurants here in Dubai.
 >
-> I was looking at Food by Punjabi on Google — 4.8 stars from 1,073 people. That's better than almost every restaurant in Meena Bazaar.
+> I was looking at Food by Punjabi on Google — 4.8 stars from 1,073 people. That's better than almost every restaurant in Meena Bazaar. But your Google listing has no website link on it, so people read the reviews and then have nowhere to go.
 >
-> But when someone searches "best Punjabi food Bur Dubai", there's no website for you to land on. They see the Google pin and that's it.
->
-> So I already built you one. Nothing owed, just have a look:
+> So I already built you one. **AED 1,500, one payment, nothing after that.** Have a look first, decide later:
 > 👉 https://food-by-punjabi.vercel.app
 >
 > Takes 30 seconds. If you don't like it, tell me and I'll leave you alone.
 
-**Why it works:** compliment is specific and verifiable, the problem is stated in one line, the risk is zero, and the site already exists. No question mark to dodge.
+**Why the price goes here:** it filters instantly. Anyone who replies after seeing AED 1,500 is a real buyer, not a browser — you skip the whole "so how much is it" dance. It also kills the "he's going to hit me with a big number later" suspicion that makes people ignore cold messages. The site link still does the selling; the number just stops the wrong people from wasting your afternoon.
 
 ---
 
@@ -52,14 +52,14 @@
 >
 > Right now it uses my own artwork for the dishes. Send me 8–10 photos of your actual food — the saag, the butter chicken, the thali — and I'll swap them in. It'll look like your restaurant, not a template.
 >
-> Full price is **AED 1,500 one time**. That includes:
-> • The whole site, built and live
-> • yourname.com domain + hosting for the first year
+> The AED 1,500 covers everything:
+> • The whole site, built and live on its own link
 > • WhatsApp order button on every screen
-> • Your menu, hours and location, so Google shows you properly
+> • Your menu, hours and location on it
+> • The link added to your Google listing, so customers can actually reach it
 > • Free changes for 30 days
 >
-> After year one it's AED 350/year to keep it online. Nothing else.
+> No monthly fee, no yearly fee. One payment and it's done.
 >
 > That's about 35 thalis. You do that before 8 PM on a Tuesday.
 
@@ -70,7 +70,7 @@
 > If you want it, I need three things:
 > 1. 8–10 food photos
 > 2. Your menu (photo of the printed one is fine)
-> 3. The name you want on the domain
+> 3. Your logo, if you have one
 >
 > Send those today and it's live by Sunday.
 >
@@ -97,8 +97,11 @@
 **"Send me the price list / let me think about it."**
 > Of course. The link stays up for you. One thing though — I only build one restaurant per area at a time, and I've got two other places in Meena Bazaar on my list this week. If you want it, tell me before Thursday.
 
+**"Do I get my own .com?"**
+> Not in this price — this stays on the link you're looking at now, which is why it's one payment with nothing to renew. If you want foodbypunjabi.com later I can sort that separately, but you don't need it to start taking orders.
+
 **"Who are you? How do I know you're real?"**
-> Fair question. Come see me — I'll come to the restaurant, we'll do it face to face, and you pay nothing until the site is live on your own domain.
+> Fair question. Come see me — I'll come to the restaurant, we'll do it face to face, and you pay nothing until the site is live.
 *(For a first sale, offering to show up in person is your single strongest trust move in Bur Dubai. Use it.)*
 
 ---
@@ -122,14 +125,12 @@ Swap the bracketed parts from `leads/dubai-restaurants-no-website.csv`:
 >
 > I'm [YOUR NAME], I build websites for restaurants in Dubai.
 >
-> I saw [BUSINESS] on Google — [RATING] stars from [REVIEWS] people. That's one of the strongest ratings in [AREA].
+> I saw [BUSINESS] on Google — [RATING] stars from [REVIEWS] people. That's one of the strongest ratings in [AREA]. But your listing has no website link, so people read the reviews and then have nowhere to go.
 >
-> But there's no website. So when someone searches for [CUISINE] near [AREA], you're not there.
->
-> I built you one already, free to look at:
+> I built you one already. **AED 1,500, one payment, nothing after.** Have a look:
 > 👉 [LINK]
 >
-> If you like it, it's AED 1,500 to make it yours with your own domain. If not, no problem at all.
+> If you don't like it, no problem at all.
 
 **Rules:**
 - One message per business per day. Never bulk-send.
@@ -143,7 +144,8 @@ Swap the bracketed parts from `leads/dubai-restaurants-no-website.csv`:
 
 - **The site is already live** at https://food-by-punjabi.vercel.app (Vercel project `food-by-punjabi`, production, deployment protection off so anyone can open it). Source of truth is `demo-sites/food-by-punjabi/index.html` — redeploy from there after any edit.
 - **Send the short URL only.** `https://food-by-punjabi.vercel.app` is the clean production alias — no account name in it, and it serves without a `noindex` header. The long deployment URL (`…-ln6czeo18-…`) does carry `noindex` and exposes the account slug, so never paste that one to a prospect.
+- **No domain is included, so don't promise search rankings.** What the link genuinely does: it goes in the website field of his Google Business Profile, his Instagram bio, and his WhatsApp status. That is real and deliverable. "You'll come up first on Google" is neither — never say it.
 - **The food images are illustrations, not photos.** That is deliberate — it's a lever ("send me your photos and it becomes yours"). Don't claim they're his food.
 - **The review quotes are real,** pulled from his Google listing, shown with first name + last initial.
 - **Keep outreach manual and one-to-one.** Bulk or automated unsolicited WhatsApp marketing breaches WhatsApp's Business terms and UAE TDRA rules on unsolicited commercial messages — accounts get banned for it. Hand-sent messages to a handful of businesses a day, stopping when someone doesn't reply, keeps you on the right side of both.
-- **Never promise ranking positions or revenue numbers.** Promise the site, the domain, the WhatsApp button, and the 30 days of changes — all things you fully control.
+- **Never promise ranking positions or revenue numbers.** Promise the site, the WhatsApp button, the link on his Google listing, and the 30 days of changes — all things you fully control.
