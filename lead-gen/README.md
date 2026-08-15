@@ -17,19 +17,19 @@ lead-gen/
 
 **Food by Punjabi Restaurant** — Meena Bazaar, Bur Dubai. 4.8 ★, 1,073 reviews, 538 customer photos, five languages in the review feed, and **no website at all**. Owner is Harpreet Singh. WhatsApp: [+971 56 403 7062](https://wa.me/971564037062).
 
-## Deploy the demo before you message anyone
+## The demo is live
 
-The site is one file with no build step and no dependencies.
+**https://food-by-punjabi-ajabbar12765-hashs-projects.vercel.app**
+
+Vercel project `food-by-punjabi`, production target, deployment protection disabled so anyone can open it without a Vercel login. Verified 200 with the full page served.
+
+To redeploy after editing `demo-sites/food-by-punjabi/index.html`:
 
 ```bash
-# Netlify Drop — drag the folder onto https://app.netlify.com/drop
-# or:
 npx vercel deploy lead-gen/demo-sites/food-by-punjabi --prod
-# or serve it locally to check:
+# or check it locally first:
 python3 -m http.server 8000 --directory lead-gen/demo-sites/food-by-punjabi
 ```
-
-The link *is* the pitch. Don't send message 1 until you have a real URL.
 
 ## Site notes
 
