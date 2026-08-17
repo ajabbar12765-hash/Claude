@@ -95,9 +95,15 @@ meta from both pages and flip `robots.txt` back to `Allow: /`, which are in plac
 only so the pitch build cannot be mistaken for the brand's own site. Regenerate
 `assets/og.jpg` if the hero copy changes.
 
-**Live:** <https://rally-king-coconut.vercel.app> (cinematic) ·
-<https://rally-king-coconut.vercel.app/light> (editorial). Deployed from this
-repo, so pushes to the branch redeploy automatically.
+**Live:** deployed from this repo, so every push to the branch redeploys.
+
+- Latest build, always current — <https://rally-king-coconut-git-claud-ae0f34-ajabbar12765-hashs-projects.vercel.app>
+  (add `/light` for the editorial version). This is the branch alias.
+- Short URL — <https://rally-king-coconut.vercel.app> — is Vercel's *production*
+  alias, and this project's production branch is `main`, which does not carry
+  `rally/`. It is pinned to the first build until either `rally/` lands on `main`
+  or the production branch is changed in the Vercel project settings. Both URLs
+  render the same page; only the metadata differs by one commit.
 
 ---
 
