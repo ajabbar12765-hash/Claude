@@ -1,0 +1,7 @@
+# Spec/demo deployment — this pitch build is kept out of search indexes so it
+# cannot be mistaken for RALLY's official site. Swap Disallow for Allow (and
+# remove the noindex meta in index.html) when the client takes it live.
+User-agent: *
+Disallow: /
+
+Sitemap: https://rally-king-coconut.vercel.app/sitemap.xml

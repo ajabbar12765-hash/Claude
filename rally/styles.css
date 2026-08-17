@@ -1,0 +1,537 @@
+/* RALLY — dark cinematic scroll showcase.
+
+   One full-viewport beat per idea, each with its own accent spotlight, a lit
+   product centred in the glow with a reflection under it, and enter/exit
+   transitions rather than cuts. The brand's cobalt / warm yellow / coral drive
+   the lighting, rotating so no two neighbouring beats share a colour. */
+
+:root{
+  /* Stage — near-black, never pure #000 (it smears on OLED) */
+  --void:      #06070B;
+  --void-2:    #0A0C13;
+  --white:     #F4F6FB;
+  --dim:       rgba(244, 246, 251, 0.68);
+  --faint:     rgba(244, 246, 251, 0.42);
+  --line:      rgba(244, 246, 251, 0.14);
+
+  /* Brand, brightened for a dark stage */
+  --cobalt:    #3D63FF;
+  --yellow:    #F6C453;
+  --coral:     #FF6A4D;
+
+  --accent:    var(--cobalt);   /* set per <section> */
+
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 40px;
+  --space-5: 64px;
+  --space-6: 96px;
+
+  --ease:       cubic-bezier(0.16, 1, 0.3, 1);
+  --dur:        240ms;
+  --dur-reveal: 860ms;
+
+  --shell: 1180px;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+
+/* Layout rules below set display on elements that also get toggled with the
+   hidden attribute — this keeps hidden winning. */
+[hidden]{ display: none !important; }
+
+html{
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;   /* proximity, not mandatory — mandatory fights momentum scrolling on iOS */
+  -webkit-text-size-adjust: 100%;
+}
+
+body{
+  margin: 0;
+  background: var(--void);
+  color: var(--white);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.sprite{ position: absolute; width: 0; height: 0; overflow: hidden; }
+a{ color: inherit; }
+
+:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------- chrome */
+
+.progress{
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 60;
+  background: rgba(244, 246, 251, 0.08);
+}
+.progress span{
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: background var(--dur) var(--ease);
+}
+
+.topbar{
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 12px clamp(16px, 4vw, 40px);
+  background: rgba(6, 7, 11, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.wordmark{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.26em;
+}
+.wordmark__badge{ width: 26px; height: 26px; color: var(--accent); transition: color var(--dur) var(--ease); }
+.wordmark--sm{ font-size: 13px; }
+
+.topnav{ display: flex; align-items: center; gap: var(--space-2); }
+
+/* Keynote-style chapter counter */
+.counter{
+  display: none;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur) var(--ease);
+}
+.counter i{ font-style: normal; color: var(--faint); }
+
+.pill{
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.pill:hover{ border-color: var(--accent); color: var(--accent); }
+
+/* ----------------------------------------------------------------- beats */
+
+.beat{
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(92px, 13vh, 132px) clamp(20px, 5vw, 48px) clamp(72px, 10vh, 108px);
+  scroll-snap-align: start;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--void);
+}
+
+/* The spotlight: a wide ambient wash plus a tighter core behind the product, so
+   the visual reads as lit on a stage rather than placed on a flat colour. */
+.beat::before,
+.beat::after{
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+}
+.beat::before{
+  width: min(150vw, 1500px);
+  aspect-ratio: 1;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -46%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 30%, transparent) 0%, transparent 62%);
+  opacity: 0.5;
+}
+.beat::after{
+  width: min(76vw, 600px);
+  aspect-ratio: 1;
+  top: 58%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 52%, transparent) 0%, transparent 66%);
+  opacity: 0.36;
+  filter: blur(20px);
+}
+.beat--end::after{ opacity: 0.22; }
+
+.stage{
+  position: relative;
+  width: 100%;
+  max-width: var(--shell);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  transition: opacity 640ms var(--ease), transform 640ms var(--ease);
+}
+
+/* --------------------------------------------------------------- type */
+
+.eyebrow{
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Big, tight, minimal — the headline is the whole slide */
+.display{
+  margin: 0;
+  font-weight: 600;
+  font-size: clamp(2.75rem, 9vw, 6.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.042em;
+  text-wrap: balance;
+}
+.display--muted{ color: var(--faint); }
+
+.lede{
+  margin: 0;
+  max-width: 38ch;
+  font-size: clamp(1.02rem, 2.3vw, 1.3rem);
+  font-weight: 300;
+  color: var(--dim);
+  text-wrap: pretty;
+}
+
+/* -------------------------------------------------------------- actions */
+
+.actions{ display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); }
+
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 28px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+/* Accent fills carry dark text — cobalt is the one accent that needs white */
+.btn--primary{ background: var(--accent); color: #0A0A0C; }
+.beat[style*="#3D63FF"] .btn--primary{ color: #FFFFFF; }
+.btn--primary:hover{ transform: translateY(-2px); }
+.btn--ghost{ border-color: var(--line); color: var(--white); }
+.btn--ghost:hover{ border-color: var(--accent); color: var(--accent); }
+.btn:active{ transform: scale(0.97); }
+
+.scroll-cue{
+  position: absolute;
+  bottom: clamp(18px, 4vh, 34px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  display: grid;
+  place-items: start center;
+  padding-top: 8px;
+}
+.scroll-cue span{
+  width: 3px; height: 8px;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: cue 1.9s var(--ease) infinite;
+}
+@keyframes cue{
+  0%   { transform: translateY(0);    opacity: 1; }
+  70%  { transform: translateY(14px); opacity: 0; }
+  100% { transform: translateY(0);    opacity: 0; }
+}
+
+/* ------------------------------------------------------------------ art */
+
+.art{
+  margin: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sized by height, not width: the beats are viewport-height boxes, so the art
+   has to shrink with the viewport or it pushes the CTA below the fold. */
+.bottle{
+  width: auto;
+  height: clamp(180px, 30vh, 380px);
+  max-width: 60vw;
+  filter: drop-shadow(0 30px 44px rgba(0, 0, 0, 0.7));
+}
+.art--sm .bottle{ height: clamp(130px, 20vh, 240px); }
+.fruit{
+  width: auto;
+  height: clamp(110px, 17vh, 190px);
+  max-width: 50vw;
+  filter: drop-shadow(0 26px 34px rgba(0, 0, 0, 0.65));
+}
+
+/* The product sits in a pool of its own light: an accent-tinted ellipse under
+   the bottle, standing in for a reflection. A flipped copy of the artwork was
+   the other option, but it doubles the figure's height and pushes the CTA off
+   the fold on short screens. */
+.art::after{
+  content: '';
+  position: absolute;
+  bottom: 12px;              /* the symbols carry a little empty space below the
+                                artwork — this sits the pool at the actual base */
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(210px, 42vw);
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 46%, transparent) 0%, transparent 70%);
+  filter: blur(7px);
+  pointer-events: none;
+}
+
+.float{ animation: float 7s ease-in-out infinite; }
+@keyframes float{
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+.triangle{ width: clamp(210px, 50vh, 330px); height: auto; color: var(--accent); }
+.triangle__dots circle{ fill: var(--accent); }
+.triangle__line{ stroke-dasharray: 620; stroke-dashoffset: 620; }
+.in .triangle__line{ animation: draw 1.6s var(--ease) 0.25s forwards; }
+@keyframes draw{ to{ stroke-dashoffset: 0; } }
+.triangle__label{
+  fill: var(--dim);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+
+/* ---------------------------------------------------------------- lists */
+
+.stats{
+  list-style: none;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-5);
+}
+.stats li{ display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.stats strong{
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+}
+.stats span{
+  font-size: 11.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.certs{
+  list-style: none;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3) var(--space-5);
+}
+.certs li{ display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.certs svg{
+  width: 44px; height: 44px;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.certs strong{
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.stockists{
+  list-style: none;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+  width: min(100%, 600px);
+  text-align: left;
+}
+.stockists li{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.stockists strong{ font-weight: 500; }
+.stockists span{ color: var(--faint); font-size: 14px; }
+
+/* ---------------------------------------------------------------- form */
+
+.signup{ width: 100%; max-width: 540px; margin-top: var(--space-1); text-align: left; }
+.signup__label{
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.signup__row{ display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.signup__input{
+  flex: 1 1 240px;
+  min-height: 50px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(244, 246, 251, 0.06);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 16px;               /* 16px keeps iOS from zooming on focus */
+  transition: border-color var(--dur) var(--ease);
+}
+.signup__input::placeholder{ color: var(--faint); }
+.signup__input:focus{ border-color: var(--accent); }
+.signup__input[aria-invalid="true"]{ border-color: #FF8A70; }
+
+.signup__error{ margin: 10px 2px 0; font-size: 13.5px; color: #FF9E86; }
+.signup__note{ margin: 12px 2px 0; font-size: 13px; color: var(--faint); }
+.signup__done{
+  margin: var(--space-3) 0 0;
+  max-width: 44ch;
+  font-size: clamp(1.05rem, 2.6vw, 1.35rem);
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------- footer */
+
+.footer{
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: var(--space-3) var(--space-3) var(--space-4);
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.footer__line{ margin: 0; font-size: 12.5px; color: var(--faint); }
+.footer__nav{ display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-3); }
+.footer__nav a{
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13px;
+  color: var(--dim);
+  text-decoration: none;
+  transition: color var(--dur) var(--ease);
+}
+.footer__nav a:hover{ color: var(--accent); }
+
+/* --------------------------------------------------------- scroll reveal */
+
+.reveal{
+  opacity: 0;
+  transform: translateY(30px) scale(0.985);
+  transition: opacity var(--dur-reveal) var(--ease), transform var(--dur-reveal) var(--ease);
+  will-change: opacity, transform;
+}
+.reveal[data-delay="1"]{ transition-delay:  90ms; }
+.reveal[data-delay="2"]{ transition-delay: 180ms; }
+.reveal[data-delay="3"]{ transition-delay: 270ms; }
+.reveal[data-delay="4"]{ transition-delay: 360ms; }
+.in .reveal{ opacity: 1; transform: none; }
+
+/* Outgoing beat recedes instead of cutting away */
+.beat.out .stage{ opacity: 0.2; transform: scale(0.965) translateY(-10px); }
+
+/* ----------------------------------------------------------- responsive */
+
+@media (min-height: 860px){
+  .bottle{ height: min(34vh, 420px); }
+  .art--sm .bottle{ height: min(22vh, 260px); }
+}
+
+@media (min-width: 760px){
+  .counter{ display: inline-flex; }
+}
+
+@media (min-width: 900px){
+  .footer{ flex-direction: row; justify-content: space-between; }
+  .footer__line{ order: 2; }
+}
+
+@media (max-width: 480px){
+  .stats{ gap: var(--space-2) var(--space-3); }
+  .certs{ gap: var(--space-3); }
+  /* The input already takes the full row here — let the button match it
+     rather than sitting stranded at 30% width. */
+  .signup__row .btn{ flex: 1 1 100%; }
+}
+
+/* Short landscape phones: fixed-height beats stop making sense */
+@media (max-height: 520px){
+  .beat{ min-height: auto; padding-block: 110px 64px; }
+  .scroll-cue{ display: none; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; scroll-snap-type: none; }
+  .float, .scroll-cue span{ animation: none !important; }
+  .reveal{ opacity: 1; transform: none; transition: none; }
+  .beat.out .stage{ opacity: 1; transform: none; }
+  .triangle__line{ stroke-dashoffset: 0; }
+  .btn, .pill{ transition: none; }
+}
