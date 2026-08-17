@@ -88,9 +88,16 @@ Every field degrades cleanly when left empty:
 `--yellow`, `--coral`, `--paper`). Per-beat accents are set inline on each
 `<section>` as `--accent` / `--accent-2`.
 
-**Before launch:** replace `https://rally.example.com/` in `index.html` (canonical
-+ JSON-LD), `robots.txt` and `sitemap.xml` with the real domain, and regenerate
-`assets/og.png` if the hero copy changes.
+**Before launch:** replace `https://rally-king-coconut.vercel.app` — currently the
+live demo host — in both `index.html` files (canonical, `og:image`, JSON-LD),
+`robots.txt` and `sitemap.xml` with the real domain. Then remove the `noindex`
+meta from both pages and flip `robots.txt` back to `Allow: /`, which are in place
+only so the pitch build cannot be mistaken for the brand's own site. Regenerate
+`assets/og.jpg` if the hero copy changes.
+
+**Live:** <https://rally-king-coconut.vercel.app> (cinematic) ·
+<https://rally-king-coconut.vercel.app/light> (editorial). Deployed from this
+repo, so pushes to the branch redeploy automatically.
 
 ---
 

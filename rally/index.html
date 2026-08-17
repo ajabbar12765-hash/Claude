@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RALLY — King Coconut Water in Glass | Los Angeles</title>
 <meta name="description" content="RALLY is single-ingredient king coconut water from Sri Lanka's Coconut Triangle, bottled in glass to avoid microplastics. No added sugar, no preservatives. Launching in Los Angeles.">
-<link rel="canonical" href="https://rally.example.com/">
+<!-- Absolute URLs: Open Graph crawlers do not resolve relative image paths, and
+     a canonical must be absolute. Swap the host for the real domain at launch. -->
+<link rel="canonical" href="https://rally-king-coconut.vercel.app/">
 <!-- Spec/demo deployment: kept out of search indexes so this pitch build cannot
      be mistaken for RALLY's official site. Delete this line (and flip robots.txt
      back to Allow) when the client takes it live. -->
@@ -15,7 +17,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="RALLY — King Coconut Water in Glass">
 <meta property="og:description" content="One ingredient, bottled in glass. King coconut water from Sri Lanka's Coconut Triangle, launching in Los Angeles.">
-<meta property="og:image" content="assets/og.jpg">
+<meta property="og:image" content="https://rally-king-coconut.vercel.app/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -32,7 +34,7 @@
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://rally.example.com/#org",
+      "@id": "https://rally-king-coconut.vercel.app/#org",
       "name": "RALLY",
       "description": "Single-ingredient king coconut water, sourced from Sri Lanka's Coconut Triangle and bottled in glass.",
       "areaServed": "Los Angeles, CA"
@@ -40,7 +42,7 @@
     {
       "@type": "Product",
       "name": "RALLY King Coconut Water",
-      "brand": { "@id": "https://rally.example.com/#org" },
+      "brand": { "@id": "https://rally-king-coconut.vercel.app/#org" },
       "description": "King coconut water from Sri Lanka's Coconut Triangle. One ingredient, bottled in glass. No added sugar, no preservatives. Certified organic, kosher and halal.",
       "material": "Glass",
       "countryOfOrigin": "LK"

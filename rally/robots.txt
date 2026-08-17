@@ -4,4 +4,4 @@
 User-agent: *
 Disallow: /
 
-Sitemap: https://rally.example.com/sitemap.xml
+Sitemap: https://rally-king-coconut.vercel.app/sitemap.xml
