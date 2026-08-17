@@ -8,6 +8,21 @@ Built against the Upwork brief "AI Website builder"
 (`https://www.upwork.com/freelance-jobs/apply/Website-builder_~022088013002359563584/`,
 posted 13 Aug 2026, $500 fixed).
 
+## Two treatments, same content
+
+Both are complete, tested and deployable. Same seven beats, same brand palette,
+same conversion and analytics wiring — they differ only in how the stage is lit.
+
+| | Path | Look |
+|---|---|---|
+| **Cinematic** | `/` (`index.html`) | Dark keynote showcase. Near-black stage, one accent spotlight per beat (cobalt → yellow → coral, rotating), product lit in a pool of its own light, chapter counter in the bar. Inter throughout, tight and large. |
+| **Editorial** | `/light/` | Warm white base as the brief words it, cobalt/yellow/coral washes, Fraunces serif headlines, two deep-cobalt beats for contrast. |
+
+The brief asks for a "white base", which the editorial version takes literally;
+the cinematic version reads that palette as stage lighting on a dark room
+instead. Pick one to lead with — both use the same `CONFIG` block, so whichever
+goes live is configured the same way.
+
 ---
 
 ## 1. The brief, and where each line landed
@@ -101,9 +116,10 @@ from the brief's own claims — 1 ingredient, 0 added sugar, 0 preservatives.
 ## 4. Structure
 
 ```
-index.html      page content, SEO metadata, JSON-LD, and the SVG symbols
-styles.css      design tokens, layout, scroll choreography
-main.js         CONFIG block, then reveals / progress / analytics / form
+index.html      cinematic build — content, SEO metadata, JSON-LD, SVG symbols
+styles.css      cinematic — tokens, layout, scroll choreography
+main.js         cinematic — CONFIG block, reveals / progress / analytics / form
+light/          editorial build — same three files, shares the assets below
 fonts.css       @font-face rules for self-hosted type
 assets/
   fonts/        Fraunces (variable, 400–600) + Inter 300–600, latin subset
@@ -115,17 +131,18 @@ vercel.json     static deploy + cache headers
 ```
 
 Beats in order: hero → the label → the source → glass → certifications → where to
-buy → signup.
+buy → signup. Editing copy means editing the `index.html` of whichever build you
+ship; the two are independent files, so a change in one does not touch the other.
 
 ---
 
 ## 5. Checked in a real browser
 
-Chromium at 390 / 1280 / 1440 px:
+Both builds, Chromium at 390 / 1280 / 1440 px:
 
 - No horizontal overflow, no section spilling past the fold, no console errors.
-- Body text contrast 7.4:1 on the light beats, 14.8:1 on the deep beats (WCAG AA
-  needs 4.5:1).
+- Body text contrast 18.6:1 on the cinematic build; 7.4:1 light / 14.8:1 deep on
+  the editorial build. Primary button 4.7:1 (WCAG AA needs 4.5:1).
 - With `CONFIG` empty, zero third-party requests leave the page.
 - Form validates a malformed address inline, confirms a good one, and moves focus
   to the confirmation.

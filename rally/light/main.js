@@ -35,7 +35,7 @@ const CONFIG = {
 /* ------------------------------------------------------------ reveals */
 
 const beats = document.querySelectorAll('.beat');
-const counter = document.getElementById('counter');
+const topbar = document.querySelector('.topbar');
 const root = document.documentElement;
 
 // A beat is "in" once a third of it is on screen and "out" once it has mostly
@@ -46,13 +46,12 @@ const observer = new IntersectionObserver((entries) => {
     entry.target.classList.toggle('in', visible > 0.28);
     entry.target.classList.toggle('out', visible > 0 && visible < 0.28);
 
-    // Carry the active beat's accent up to the fixed chrome, and advance the
-    // chapter counter with it.
+    // Carry the active beat's accent and tone up to the fixed chrome, so the
+    // bar stays readable over both the light and the deep-cobalt sections.
     if (visible > 0.5) {
       const accent = entry.target.style.getPropertyValue('--accent').trim();
       if (accent) root.style.setProperty('--accent', accent);
-      const index = [...beats].indexOf(entry.target) + 1;
-      counter.firstChild.textContent = String(index).padStart(2, '0');
+      topbar.classList.toggle('on-deep', entry.target.dataset.tone === 'deep');
     }
   });
 }, { threshold: [0, 0.28, 0.5, 0.75] });
