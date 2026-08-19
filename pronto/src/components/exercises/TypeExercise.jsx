@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import ExerciseShell from '../ExerciseShell.jsx'
 import { isAcceptableAnswer } from '../../lib/matching.js'
 
@@ -25,7 +26,7 @@ export default function TypeExercise({ exercise, onAnswered, onContinue }) {
       correctAnswerLabel={it}
       note={status === 'correct' ? note : undefined}
     >
-      <input
+      <motion.input
         ref={inputRef}
         type="text"
         className="type-input"
@@ -36,6 +37,8 @@ export default function TypeExercise({ exercise, onAnswered, onContinue }) {
         autoComplete="off"
         autoCorrect="off"
         spellCheck="false"
+        animate={status === 'incorrect' ? { x: [0, -6, 6, -4, 4, 0] } : {}}
+        transition={{ duration: 0.35 }}
       />
       <p className="type-hint">Accents and punctuation don’t need to be perfect — we’re listening for the words.</p>
     </ExerciseShell>

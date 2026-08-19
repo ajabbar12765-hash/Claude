@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import Icon from './Icon.jsx'
+import { AnimatePresence, motion } from 'framer-motion'
+import Mascot from './Mascot.jsx'
 
 // Shared chrome for every exercise type: the prompt area up top, the
 // type-specific interactive area (passed as children), and a bottom
@@ -26,7 +27,7 @@ export default function ExerciseShell({
   }, [status, canCheck, onCheck, onContinue])
 
   return (
-    <div className="exercise">
+    <motion.div className="exercise" initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ type: 'spring', stiffness: 340, damping: 30 }}>
       <div className="exercise-body">
         {eyebrow && <p className="exercise-eyebrow">{eyebrow}</p>}
         {prompt && <h2 className="exercise-prompt">{prompt}</h2>}
@@ -34,31 +35,40 @@ export default function ExerciseShell({
       </div>
 
       <div className={`exercise-footer exercise-footer-${status}`}>
-        {status !== 'answering' && (
-          <div className={`feedback-banner feedback-${status}`}>
-            <div className="feedback-icon">
-              <Icon name={status === 'correct' ? 'check' : 'x'} size={22} strokeWidth={2.4} />
-            </div>
-            <div className="feedback-text">
-              <strong>{status === 'correct' ? 'Nice work!' : 'Not quite'}</strong>
-              {status === 'incorrect' && correctAnswerLabel && (
-                <span>
-                  Correct answer: <em>{correctAnswerLabel}</em>
-                </span>
-              )}
-              {note && <span className="feedback-note">{note}</span>}
-            </div>
-          </div>
-        )}
-        <button
+        <AnimatePresence>
+          {status !== 'answering' && (
+            <motion.div
+              key="feedback"
+              className={`feedback-banner feedback-${status}`}
+              initial={{ opacity: 0, y: 10, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+            >
+              <div className="feedback-mascot">
+                <Mascot expression={status === 'correct' ? 'happy' : 'thinking'} celebrate={status === 'correct'} size={40} />
+              </div>
+              <div className="feedback-text">
+                <strong>{status === 'correct' ? 'Nice work!' : 'Not quite'}</strong>
+                {status === 'incorrect' && correctAnswerLabel && (
+                  <span>
+                    Correct answer: <em>{correctAnswerLabel}</em>
+                  </span>
+                )}
+                {note && <span className="feedback-note">{note}</span>}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <motion.button
           type="button"
+          whileTap={{ scale: 0.97 }}
           className={`btn-check ${status !== 'answering' ? `btn-check-${status}` : ''}`}
           disabled={status === 'answering' && !canCheck}
           onClick={status === 'answering' ? onCheck : onContinue}
         >
           {status === 'answering' ? 'Check' : 'Continue'}
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   )
 }

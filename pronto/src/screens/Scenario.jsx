@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import Icon from '../components/Icon.jsx'
+import Mascot from '../components/Mascot.jsx'
 
 export default function Scenario({ scenario, progress, onExit, onFinished }) {
   const [turnIndex, setTurnIndex] = useState(0)
@@ -38,10 +40,10 @@ export default function Scenario({ scenario, progress, onExit, onFinished }) {
     const xpEarned = total * 10 + 20
     return (
       <div className="screen screen-lesson-complete">
-        <div className="complete-card">
-          <span className="complete-badge">
-            <Icon name="chat" size={36} strokeWidth={1.6} />
-          </span>
+        <motion.div className="complete-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }}>
+          <motion.span className="complete-badge" initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 14, delay: 0.1 }}>
+            <Mascot expression="happy" celebrate size={72} />
+          </motion.span>
           <h1>Conversation handled.</h1>
           <p className="complete-sub">That’s a full real-life exchange, start to finish — not a translated sentence in isolation.</p>
           <div className="complete-stats">
@@ -54,10 +56,10 @@ export default function Scenario({ scenario, progress, onExit, onFinished }) {
               <span>{progress.streak.count} day streak</span>
             </div>
           </div>
-          <button type="button" className="btn-primary" onClick={onFinished}>
+          <motion.button whileTap={{ scale: 0.97 }} type="button" className="btn-primary" onClick={onFinished}>
             Continue
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     )
   }
@@ -69,49 +71,63 @@ export default function Scenario({ scenario, progress, onExit, onFinished }) {
           <Icon name="x" size={22} strokeWidth={2.2} />
         </button>
         <div className="lesson-progress-track">
-          <div className="lesson-progress-fill" style={{ width: `${(turnIndex / total) * 100}%` }} />
+          <motion.div className="lesson-progress-fill" animate={{ width: `${(turnIndex / total) * 100}%` }} transition={{ type: 'spring', stiffness: 200, damping: 26 }} />
         </div>
       </div>
 
       {turnIndex === 0 && <p className="scenario-intro">{scenario.intro}</p>}
 
-      <div className="scenario-body">
-        <div className="scenario-speech">
-          <span className="scenario-speaker">{turn.speaker}</span>
-          <p className="scenario-line-it">{turn.it}</p>
-          <p className="scenario-line-en">{turn.en}</p>
-        </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={turnIndex}
+          className="scenario-body"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ type: 'spring', stiffness: 340, damping: 30 }}
+        >
+          <div className="scenario-speech">
+            <span className="scenario-speaker">{turn.speaker}</span>
+            <p className="scenario-line-it">{turn.it}</p>
+            <p className="scenario-line-en">{turn.en}</p>
+          </div>
 
-        <p className="scenario-prompt-label">How do you respond?</p>
-        <div className="scenario-choices">
-          {turn.choices.map((choice, i) => {
-            const isSelected = selected === i
-            const showCorrect = status === 'correct' && isSelected
-            const showWrong = status === 'incorrect' && isSelected
-            return (
-              <button
-                key={choice.it}
-                type="button"
-                className={['scenario-choice', showCorrect ? 'choice-correct' : '', showWrong ? 'choice-wrong' : ''].join(' ')}
-                onClick={() => pick(choice, i)}
-                disabled={status === 'correct'}
-              >
-                <span className="scenario-choice-it">{choice.it}</span>
-                <span className="scenario-choice-en">{choice.en}</span>
-                {(showCorrect || showWrong) && <span className="scenario-choice-feedback">{choice.feedback}</span>}
-              </button>
-            )
-          })}
-        </div>
-      </div>
+          <p className="scenario-prompt-label">How do you respond?</p>
+          <div className="scenario-choices">
+            {turn.choices.map((choice, i) => {
+              const isSelected = selected === i
+              const showCorrect = status === 'correct' && isSelected
+              const showWrong = status === 'incorrect' && isSelected
+              return (
+                <motion.button
+                  key={choice.it}
+                  type="button"
+                  whileTap={status !== 'correct' ? { scale: 0.97 } : undefined}
+                  animate={showWrong ? { x: [0, -6, 6, -4, 4, 0] } : {}}
+                  transition={{ duration: 0.35 }}
+                  className={['scenario-choice', showCorrect ? 'choice-correct' : '', showWrong ? 'choice-wrong' : ''].join(' ')}
+                  onClick={() => pick(choice, i)}
+                  disabled={status === 'correct'}
+                >
+                  <span className="scenario-choice-it">{choice.it}</span>
+                  <span className="scenario-choice-en">{choice.en}</span>
+                  {(showCorrect || showWrong) && <span className="scenario-choice-feedback">{choice.feedback}</span>}
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+      </AnimatePresence>
 
-      {status === 'correct' && (
-        <div className="scenario-footer">
-          <button type="button" className="btn-primary" onClick={handleContinue}>
-            {turnIndex + 1 >= total ? 'Finish' : 'Continue'}
-          </button>
-        </div>
-      )}
+      <AnimatePresence>
+        {status === 'correct' && (
+          <motion.div className="scenario-footer" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <motion.button whileTap={{ scale: 0.97 }} type="button" className="btn-primary" onClick={handleContinue}>
+              {turnIndex + 1 >= total ? 'Finish' : 'Continue'}
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import ExerciseShell from '../ExerciseShell.jsx'
 import Icon from '../Icon.jsx'
 import { shuffle } from '../../lib/matching.js'
@@ -37,9 +38,9 @@ export default function ListenExercise({ exercise, onAnswered, onContinue }) {
       note={status === 'correct' ? note : undefined}
     >
       <div className="listen-block">
-        <button type="button" className="listen-play" onClick={play} aria-label="Play audio">
+        <motion.button type="button" whileTap={{ scale: 0.9 }} className="listen-play" onClick={play} aria-label="Play audio">
           <Icon name="volume" size={30} strokeWidth={1.9} />
-        </button>
+        </motion.button>
         {!speechAvailable && <p className="listen-fallback">Your browser can’t play audio here, so here’s the phrase: “{it}”</p>}
         {status !== 'answering' && speechAvailable && <p className="listen-transcript">“{it}”</p>}
       </div>
@@ -49,10 +50,13 @@ export default function ListenExercise({ exercise, onAnswered, onContinue }) {
           const revealCorrect = status !== 'answering' && opt === en
           const revealWrong = status === 'incorrect' && isSelected && opt !== en
           return (
-            <button
+            <motion.button
               key={opt}
               type="button"
               disabled={status !== 'answering'}
+              whileTap={status === 'answering' ? { scale: 0.95 } : undefined}
+              animate={revealWrong ? { x: [0, -6, 6, -4, 4, 0] } : {}}
+              transition={{ duration: 0.35 }}
               className={[
                 'option-tile',
                 isSelected && status === 'answering' ? 'option-selected' : '',
@@ -62,7 +66,7 @@ export default function ListenExercise({ exercise, onAnswered, onContinue }) {
               onClick={() => setSelected(opt)}
             >
               {opt}
-            </button>
+            </motion.button>
           )
         })}
       </div>

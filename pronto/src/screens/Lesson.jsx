@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import ExerciseRunner from '../components/exercises/ExerciseRunner.jsx'
 import Icon from '../components/Icon.jsx'
+import Mascot from '../components/Mascot.jsx'
 
 let requeueCounter = 0
 
@@ -47,10 +49,20 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
     const xpEarned = total * 10 + 20
     return (
       <div className="screen screen-lesson-complete">
-        <div className="complete-card">
-          <span className="complete-badge">
-            <Icon name={perfect ? 'trophy' : 'check'} size={40} strokeWidth={1.6} />
-          </span>
+        <motion.div
+          className="complete-card"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+        >
+          <motion.span
+            className="complete-badge"
+            initial={{ scale: 0, rotate: -20 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 14, delay: 0.1 }}
+          >
+            <Mascot expression="happy" celebrate size={72} />
+          </motion.span>
           <h1>{perfect ? 'Perfetto!' : 'Lesson complete!'}</h1>
           <p className="complete-sub">
             {perfect ? 'Every phrase, first try. That’s the whole lesson locked in.' : `You’ve got it — ${missedOnce.size} phrase${missedOnce.size === 1 ? '' : 's'} took a second pass, which is exactly how this is supposed to work.`}
@@ -65,10 +77,10 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
               <span>{progress.streak.count} day streak</span>
             </div>
           </div>
-          <button type="button" className="btn-primary" onClick={onFinished}>
+          <motion.button whileTap={{ scale: 0.97 }} type="button" className="btn-primary" onClick={onFinished}>
             Continue
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     )
   }
@@ -82,7 +94,7 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
           <Icon name="x" size={22} strokeWidth={2.2} />
         </button>
         <div className="lesson-progress-track">
-          <div className="lesson-progress-fill" style={{ width: `${progressPct}%` }} />
+          <motion.div className="lesson-progress-fill" animate={{ width: `${progressPct}%` }} transition={{ type: 'spring', stiffness: 200, damping: 26 }} />
         </div>
       </div>
       {current && <ExerciseRunner key={current.key} exercise={current.exercise} onAnswered={handleAnswered} onContinue={handleContinue} />}

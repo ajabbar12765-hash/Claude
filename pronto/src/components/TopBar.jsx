@@ -1,11 +1,12 @@
 import Icon from './Icon.jsx'
+import Mascot from './Mascot.jsx'
 
 export default function TopBar({ streak, xp, onProfileClick, active }) {
   return (
     <header className="topbar">
       <div className="topbar-brand">
         <span className="brand-mark" aria-hidden="true">
-          <Icon name="compass" size={22} strokeWidth={2} />
+          <Mascot expression="idle" size={30} />
         </span>
         <span className="brand-name">Pronto</span>
       </div>

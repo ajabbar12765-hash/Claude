@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import ExerciseShell from '../ExerciseShell.jsx'
 import { shuffle } from '../../lib/matching.js'
 
@@ -34,10 +35,13 @@ export default function McqExercise({ exercise, onAnswered, onContinue }) {
           const revealCorrect = status !== 'answering' && opt === correctAnswer
           const revealWrong = status === 'incorrect' && isSelected && opt !== correctAnswer
           return (
-            <button
+            <motion.button
               key={opt}
               type="button"
               disabled={status !== 'answering'}
+              whileTap={status === 'answering' ? { scale: 0.95 } : undefined}
+              animate={revealWrong ? { x: [0, -6, 6, -4, 4, 0] } : {}}
+              transition={{ duration: 0.35 }}
               className={[
                 'option-tile',
                 isSelected && status === 'answering' ? 'option-selected' : '',
@@ -47,7 +51,7 @@ export default function McqExercise({ exercise, onAnswered, onContinue }) {
               onClick={() => setSelected(opt)}
             >
               {opt}
-            </button>
+            </motion.button>
           )
         })}
       </div>

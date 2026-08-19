@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import Icon from '../Icon.jsx'
+import { motion } from 'framer-motion'
+import Mascot from '../Mascot.jsx'
 import { shuffle } from '../../lib/matching.js'
 
 export default function MatchExercise({ exercise, onAnswered, onContinue }) {
@@ -54,10 +55,13 @@ export default function MatchExercise({ exercise, onAnswered, onContinue }) {
         <div className={`match-grid ${wrongPulse ? 'match-pulse-wrong' : ''}`}>
           <div className="match-column">
             {itColumn.map((item) => (
-              <button
+              <motion.button
                 key={item.key}
                 type="button"
                 disabled={matched.has(item.pairIndex)}
+                whileTap={!matched.has(item.pairIndex) ? { scale: 0.94 } : undefined}
+                animate={matched.has(item.pairIndex) ? { scale: [1, 1.08, 1] } : {}}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                 className={[
                   'match-tile',
                   matched.has(item.pairIndex) ? 'match-done' : '',
@@ -66,15 +70,18 @@ export default function MatchExercise({ exercise, onAnswered, onContinue }) {
                 onClick={() => trySelect('it', item)}
               >
                 {item.text}
-              </button>
+              </motion.button>
             ))}
           </div>
           <div className="match-column">
             {enColumn.map((item) => (
-              <button
+              <motion.button
                 key={item.key}
                 type="button"
                 disabled={matched.has(item.pairIndex)}
+                whileTap={!matched.has(item.pairIndex) ? { scale: 0.94 } : undefined}
+                animate={matched.has(item.pairIndex) ? { scale: [1, 1.08, 1] } : {}}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                 className={[
                   'match-tile',
                   matched.has(item.pairIndex) ? 'match-done' : '',
@@ -83,25 +90,30 @@ export default function MatchExercise({ exercise, onAnswered, onContinue }) {
                 onClick={() => trySelect('en', item)}
               >
                 {item.text}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
       </div>
       <div className="exercise-footer exercise-footer-answering">
         {isDone && (
-          <div className="feedback-banner feedback-correct">
-            <div className="feedback-icon">
-              <Icon name="check" size={22} strokeWidth={2.4} />
+          <motion.div
+            className="feedback-banner feedback-correct"
+            initial={{ opacity: 0, y: 10, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+          >
+            <div className="feedback-mascot">
+              <Mascot expression="happy" celebrate size={40} />
             </div>
             <div className="feedback-text">
               <strong>All matched!</strong>
             </div>
-          </div>
+          </motion.div>
         )}
-        <button type="button" className={`btn-check ${isDone ? 'btn-check-correct' : ''}`} disabled={!isDone} onClick={onContinue}>
+        <motion.button type="button" whileTap={{ scale: 0.97 }} className={`btn-check ${isDone ? 'btn-check-correct' : ''}`} disabled={!isDone} onClick={onContinue}>
           Continue
-        </button>
+        </motion.button>
       </div>
     </div>
   )
