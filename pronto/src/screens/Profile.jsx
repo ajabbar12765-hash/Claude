@@ -12,7 +12,7 @@ const item = {
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 380, damping: 32 } },
 }
 
-export default function Profile({ progress, theme }) {
+export default function Profile({ progress, theme, onShowLanding }) {
   const { streak, xp, completedCount, totalLessons, objectiveStatuses, readinessPercent, resetProgress } = progress
 
   function handleReset() {
@@ -99,9 +99,16 @@ export default function Profile({ progress, theme }) {
         </motion.section>
       )}
 
-      <motion.button variants={item} type="button" className="btn-reset" onClick={handleReset}>
-        Reset progress
-      </motion.button>
+      <div className="profile-footer-links">
+        {onShowLanding && (
+          <motion.button variants={item} type="button" className="btn-reset" onClick={onShowLanding}>
+            About Pronto
+          </motion.button>
+        )}
+        <motion.button variants={item} type="button" className="btn-reset" onClick={handleReset}>
+          Reset progress
+        </motion.button>
+      </div>
     </motion.div>
   )
 }

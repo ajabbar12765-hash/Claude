@@ -6,7 +6,14 @@
 // "scenario" lesson — a short roleplay dialogue that chains the
 // unit's phrases together the way you'd actually use them.
 //
+// On top of that, short "explain" cards teach the grammar pattern
+// behind the phrases you just used — the way a good language course
+// pairs practice with just enough theory to make the pattern stick —
+// and two cumulative "checkpoint" lessons space out review the way a
+// real syllabus would.
+//
 // Exercise shapes:
+//   explain - a short grammar note (title + body + examples), no scoring
 //   mcq    - multiple choice (dir: 'it-en' recognize, or 'en-it' produce)
 //   build  - drag/tap word tiles into the correct Italian sentence
 //   type   - type the Italian translation from a free text box
@@ -24,8 +31,16 @@ function lesson(id, title, subtitle, icon, exercises) {
   }
 }
 
+function checkpointLesson(id, title, subtitle, icon, exercises) {
+  return { ...lesson(id, title, subtitle, icon, exercises), checkpoint: true }
+}
+
 function scenario(id, title, subtitle, icon, intro, turns, objectiveIds) {
   return { id, type: 'scenario', title, subtitle, icon, intro, turns, objectiveIds }
+}
+
+function explain(title, body, examples = []) {
+  return { type: 'explain', title, body, examples }
 }
 
 function mcq(dir, it, en, options, extra = {}) {
@@ -56,6 +71,12 @@ export const UNITS = [
     subtitle: 'First Contact',
     icon: 'wave',
     color: '#C1502E',
+    learn: [
+      'Greet someone appropriately for the time of day',
+      'Introduce yourself and ask for a name',
+      'Say you don’t understand and ask someone to slow down',
+      'Know when to use tu vs. Lei',
+    ],
     lessons: [
       lesson('u1l1', 'Hello & Goodbye', 'Greetings that actually match the time of day', 'sun', [
         mcq('it-en', 'Buongiorno', 'Good morning / Good day', ['Good evening', 'Good morning / Good day', 'Good night', 'See you soon']),
@@ -96,6 +117,14 @@ export const UNITS = [
       ]),
 
       lesson('u1l3', 'When You Get Stuck', 'What to say the moment you stop understanding', 'question', [
+        explain(
+          'Formal vs. Informal "You"',
+          'Italian has two ways to say "you": tu (informal — friends, family, peers, kids) and Lei (formal, capital L — strangers, elders, anyone in a professional setting). The verb changes shape with each. When you’ve just met someone, default to Lei.',
+          [
+            { it: 'Come stai? (tu)', en: 'How are you? — casual' },
+            { it: 'Come sta? (Lei)', en: 'How are you? — polite' },
+          ],
+        ),
         mcq('it-en', 'Mi chiamo Marco', 'My name is Marco', ['His name is Marco', 'My name is Marco', 'Call me Marco', 'I am calling Marco']),
         typeEx('What’s your name? (informal)', 'Come ti chiami?', ['come ti chiami']),
         mcq('it-en', 'Piacere', 'Nice to meet you', ['Please', 'Nice to meet you', 'Welcome', 'Good luck']),
@@ -170,8 +199,23 @@ export const UNITS = [
     subtitle: 'At the Café',
     icon: 'cup',
     color: '#1F6F6B',
+    learn: [
+      'Order a drink and specify still or sparkling water',
+      'State a dietary restriction or allergy',
+      'Use un / una correctly with everyday nouns',
+      'Ask for and pay the bill',
+    ],
     lessons: [
       lesson('u2l1', 'Ordering a Drink', 'Yes, including the water Duolingo forgot', 'droplet', [
+        explain(
+          'Gender & the Indefinite Article',
+          'Every Italian noun is masculine or feminine, and the word for "a/an" changes to match it: un before most masculine nouns, una before feminine nouns, and un’ before feminine nouns that start with a vowel.',
+          [
+            { it: 'un caffè', en: 'a coffee (masculine)' },
+            { it: 'un’acqua', en: 'a water (feminine, starts with a vowel)' },
+            { it: 'una birra', en: 'a beer (feminine)' },
+          ],
+        ),
         mcq('it-en', 'Vorrei un caffè, per favore', 'I would like a coffee, please', ['I have a coffee', 'I would like a coffee, please', 'Do you have coffee?', 'The coffee is good']),
         typeEx('I would like some water, please', 'Vorrei dell’acqua, per favore', ['vorrei dell\'acqua per favore', 'vorrei dellacqua per favore'], {
           note: '"Vorrei" (I would like) is the single most useful verb in this whole app. It’s softer than "voglio" (I want) and works for ordering absolutely anything.',
@@ -196,6 +240,15 @@ export const UNITS = [
       ]),
 
       lesson('u2l2', 'Food & Allergies', 'So you don’t discover the hard way what’s in it', 'croissant', [
+        explain(
+          'Present Tense: -are Verbs',
+          'Regular verbs ending in -are, like mangiare (to eat), follow a predictable pattern in the present tense: drop the -are and add the ending for who’s doing it.',
+          [
+            { it: 'io mangio', en: 'I eat' },
+            { it: 'tu mangi', en: 'you eat' },
+            { it: 'lui / lei mangia', en: 'he / she eats' },
+          ],
+        ),
         mcq('it-en', 'Un cornetto', 'A croissant (Italian-style)', ['A cracker', 'A croissant (Italian-style)', 'A sandwich', 'A muffin']),
         typeEx('What do you recommend? (formal)', 'Che cosa consiglia?', ['che cosa consiglia', 'cosa consiglia']),
         build('I’m vegetarian', 'Sono vegetariano/a', ['non', 'mangio', 'carne'], {
@@ -283,8 +336,23 @@ export const UNITS = [
     subtitle: 'At the Restaurant',
     icon: 'fork',
     color: '#B8863B',
+    learn: [
+      'Reserve or ask for a table',
+      'Order a full meal and describe a dietary need',
+      'Conjugate avere in the present tense',
+      'Ask for extras and close out a meal',
+    ],
     lessons: [
       lesson('u3l1', 'Getting a Table', 'Reservations, walk-ins, and getting seated', 'chair', [
+        explain(
+          'The Verb Avere (To Have)',
+          'Avere is one of Italian’s two essential verbs, and it’s irregular — worth memorizing outright. It also shows up in idioms where English uses "to be": ho fame literally means "I have hunger" (I’m hungry).',
+          [
+            { it: 'io ho', en: 'I have' },
+            { it: 'tu hai', en: 'you have' },
+            { it: 'lui / lei ha', en: 'he / she has' },
+          ],
+        ),
         mcq('it-en', 'Ho una prenotazione', 'I have a reservation', ['I need a reservation', 'I have a reservation', 'I cancelled my reservation', 'Do you take reservations?']),
         typeEx('A table for two, please', 'Un tavolo per due, per favore', ['un tavolo per due per favore']),
         build('Do you have a free table?', 'Avete un tavolo libero?', ['occupato', 'prenotato'], {}),
@@ -385,13 +453,55 @@ export const UNITS = [
 
   // ────────────────────────────────────────────────────────────
   {
+    id: 'c1',
+    title: 'Checkpoint',
+    subtitle: 'Review: Units 1–3',
+    icon: 'trophy',
+    color: '#D9A441',
+    checkpointUnit: true,
+    learn: ['A cumulative review of everything from greetings through paying the bill — no new material.'],
+    lessons: [
+      checkpointLesson('c1l1', 'Halfway Check-In', 'Everything from greetings to the restaurant', 'trophy', [
+        mcq('it-en', 'Buonasera', 'Good evening', ['Good morning', 'Good evening', 'Goodbye', 'Hello']),
+        typeEx('I don’t understand', 'Non capisco', ['non capisco']),
+        mcq('en-it', 'Vorrei un caffè, per favore', 'I would like a coffee, please', ['Vorrei un caffè, per favore', 'Ho un caffè', 'Un caffè, grazie mille', 'Il caffè è buono']),
+        build('A still water, please', 'Un’acqua naturale, per favore', ['frizzante', 'un bicchiere']),
+        mcq('it-en', 'Sono vegetariano/a', 'I’m vegetarian', ['I like vegetables', 'I’m vegetarian', 'I don’t eat vegetables', 'Are you vegetarian?']),
+        typeEx('The check, please', 'Il conto, per favore', ['il conto per favore']),
+        listen('Ho una prenotazione', 'I have a reservation', ['I have a reservation', 'I need a reservation', 'I cancelled my reservation', 'Do you have a table?']),
+        match([
+          { it: 'Piacere', en: 'Nice to meet you' },
+          { it: 'Vorrei...', en: 'I would like...' },
+          { it: 'Sono allergico/a a...', en: 'I’m allergic to...' },
+          { it: 'Un tavolo per due', en: 'A table for two' },
+        ]),
+      ]),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
     id: 'u4',
     title: 'In Giro',
     subtitle: 'Getting Around',
     icon: 'compass',
     color: '#3B6FA0',
+    learn: [
+      'Ask for and follow directions',
+      'Buy a train or bus ticket',
+      'Form questions with dove, quando, quanto',
+      'Understand basic spoken directions',
+    ],
     lessons: [
       lesson('u4l1', 'Where Is It?', 'The question you’ll ask more than any other', 'pin', [
+        explain(
+          'Asking Questions: Dove, Quando, Quanto',
+          'Italian question words sit at the start of the sentence, same as English. The three you’ll lean on constantly while traveling: dove (where), quando (when), and quanto (how much / how far).',
+          [
+            { it: 'Dov’è...?', en: 'Where is...?' },
+            { it: 'Quanto costa?', en: 'How much does it cost?' },
+          ],
+        ),
         mcq('it-en', 'Dov’è il bagno?', 'Where’s the bathroom?', ['Where’s the exit?', 'Where’s the bathroom?', 'Is there a bathroom?', 'The bathroom is closed']),
         typeEx('Where’s the station?', 'Dov’è la stazione?', ['dove e la stazione', 'dov\'è la stazione']),
         build('Excuse me, where is...? (formal)', 'Scusi, dov’è...?', ['dove sono', 'per favore'], {}),
@@ -479,8 +589,22 @@ export const UNITS = [
     subtitle: 'Help & Emergencies',
     icon: 'cross',
     color: '#A33B4E',
+    learn: [
+      'Ask for help in an emergency',
+      'Describe a symptom at a pharmacy',
+      'Use potere to ask what you’re able to do',
+      'Report a lost item',
+    ],
     lessons: [
       lesson('u5l1', 'Asking for Help', 'The phrases for when something is actually wrong', 'alert', [
+        explain(
+          'The Verb Potere (Can / To Be Able To)',
+          'Potere ("can") is a modal verb — it pairs with a second verb in its plain, unconjugated form, exactly like English "can help." Posso...? ("Can I...?") is one of the most useful phrases you’ll say in Italian, full stop.',
+          [
+            { it: 'Posso avere...?', en: 'Can I have...?' },
+            { it: 'Può ripetere?', en: 'Can you repeat? (formal)' },
+          ],
+        ),
         mcq('it-en', 'Mi può aiutare?', 'Can you help me?', ['Can I help you?', 'Can you help me?', 'I helped you', 'Who can help?']),
         typeEx('I need help', 'Ho bisogno di aiuto', ['ho bisogno di aiuto'], { objectiveIds: ['get-help'] }),
         build('There’s a problem', 'C’è un problema', ['nessun', 'niente'], { objectiveIds: ['get-help'] }),
@@ -566,8 +690,23 @@ export const UNITS = [
     subtitle: 'Friends & the Market',
     icon: 'basket',
     color: '#7A5C9E',
+    learn: [
+      'Negotiate a price politely',
+      'Make small talk about where you’re from',
+      'Count from 1–20 and beyond',
+      'Try on and buy something at a market',
+    ],
     lessons: [
       lesson('u6l1', 'Numbers & Prices', 'So you know exactly what you’re paying', 'euro', [
+        explain(
+          'Numbers 1–20',
+          'You’ll need numbers constantly for prices, times, and quantities. Here are the first ten — the rest mostly follow the same rhythm (undici, dodici, tredici...).',
+          [
+            { it: 'uno, due, tre', en: 'one, two, three' },
+            { it: 'quattro, cinque, sei', en: 'four, five, six' },
+            { it: 'sette, otto, nove, dieci', en: 'seven, eight, nine, ten' },
+          ],
+        ),
         mcq('it-en', 'Quanto costa questo?', 'How much does this cost?', ['Is this for sale?', 'How much does this cost?', 'Where did you buy this?', 'Is this fresh?']),
         typeEx('It’s too expensive', 'È troppo caro', ['e troppo caro', 'è troppo caro'], { objectiveIds: ['negotiate-price'] }),
         build('Do you have a discount?', 'Avete uno sconto?', ['prezzo pieno', 'gratuito'], { objectiveIds: ['negotiate-price'] }),
@@ -643,6 +782,35 @@ export const UNITS = [
         ],
         ['negotiate-price', 'small-talk'],
       ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'c2',
+    title: 'Final Checkpoint',
+    subtitle: 'Review: Units 4–6',
+    icon: 'trophy',
+    color: '#D9A441',
+    checkpointUnit: true,
+    learn: ['A cumulative review across the entire course — the closest thing this app has to a final exam.'],
+    lessons: [
+      checkpointLesson('c2l1', 'Ready for Italy', 'Directions, emergencies, and the market — all together', 'trophy', [
+        mcq('it-en', 'Dov’è il bagno?', 'Where’s the bathroom?', ['Where’s the exit?', 'Where’s the bathroom?', 'Is there a bathroom?', 'The bathroom is closed']),
+        typeEx('What time does the train leave?', 'A che ora parte il treno?', ['a che ora parte il treno']),
+        mcq('en-it', 'Ho bisogno di aiuto', 'I need help', ['Ho bisogno di aiuto', 'Ho paura', 'Aiuto, per favore', 'Non ho bisogno']),
+        build('My head hurts', 'Mi fa male la testa', ['la gola', 'lo stomaco']),
+        mcq('it-en', 'Ho perso il passaporto', 'I lost my passport', ['I found my passport', 'I lost my passport', 'I need a passport', 'My passport is here']),
+        typeEx('How much does it cost?', 'Quanto costa?', ['quanto costa']),
+        listen('Di dove sei?', 'Where are you from?', ['Where are you from?', 'Where are you going?', 'How long are you staying?', 'What’s your name?']),
+        mcq('en-it', 'Lo prendo', 'I’ll take it', ['Lo prendo', 'Lo lascio', 'Non lo voglio', 'Lo provo']),
+        match([
+          { it: 'Sempre dritto', en: 'Straight ahead' },
+          { it: 'Chiami un medico', en: 'Call a doctor' },
+          { it: 'È troppo caro', en: 'It’s too expensive' },
+          { it: 'Mi piace molto', en: 'I like it a lot' },
+        ]),
+      ]),
     ],
   },
 ]

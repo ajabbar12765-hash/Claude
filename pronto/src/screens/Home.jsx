@@ -13,8 +13,47 @@ const item = {
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 380, damping: 32 } },
 }
 
-function LessonNode({ unit, lesson, status, onOpen }) {
+function scrollToUnit(unitId) {
+  document.getElementById(`unit-${unitId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function CourseMap({ currentUnitIndex, isUnitUnlocked, isUnitComplete }) {
+  return (
+    <motion.section variants={item} className="course-map" aria-label="Course map">
+      <p className="course-map-label">Your syllabus</p>
+      <div className="course-map-track">
+        {UNITS.map((unit, ui) => {
+          const unlocked = isUnitUnlocked(ui)
+          const done = isUnitComplete(ui)
+          const current = ui === currentUnitIndex
+          return (
+            <button
+              key={unit.id}
+              type="button"
+              className={[
+                'course-map-node',
+                unit.checkpointUnit ? 'course-map-node-checkpoint' : '',
+                !unlocked ? 'course-map-node-locked' : '',
+                done ? 'course-map-node-done' : '',
+                current ? 'course-map-node-current' : '',
+              ].join(' ')}
+              style={{ '--unit-color': unit.color }}
+              onClick={() => scrollToUnit(unit.id)}
+              disabled={!unlocked}
+              title={unit.title}
+            >
+              <Icon name={!unlocked ? 'lock' : done ? 'check' : unit.icon} size={15} strokeWidth={2.1} />
+            </button>
+          )
+        })}
+      </div>
+    </motion.section>
+  )
+}
+
+function LessonNode({ unit, lesson, index, total, status, onOpen }) {
   const isScenario = lesson.type === 'scenario'
+  const isCheckpoint = !!lesson.checkpoint
   const locked = status === 'locked'
   const done = status === 'done'
 
@@ -26,6 +65,7 @@ function LessonNode({ unit, lesson, status, onOpen }) {
       className={[
         'lesson-node',
         isScenario ? 'lesson-node-scenario' : '',
+        isCheckpoint ? 'lesson-node-checkpoint' : '',
         locked ? 'lesson-node-locked' : '',
         done ? 'lesson-node-done' : '',
       ].join(' ')}
@@ -40,8 +80,10 @@ function LessonNode({ unit, lesson, status, onOpen }) {
         <span className="lesson-node-title">
           {lesson.title}
           {isScenario && <span className="scenario-tag">Scenario</span>}
+          {isCheckpoint && <span className="checkpoint-tag">Checkpoint</span>}
         </span>
         <span className="lesson-node-subtitle">{lesson.subtitle}</span>
+        {!isCheckpoint && <span className="lesson-node-index">Lesson {index + 1} of {total}</span>}
       </span>
       {!locked && <Icon className="lesson-node-chevron" name="chevronRight" size={18} strokeWidth={2} />}
     </motion.button>
@@ -52,15 +94,22 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall
   const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet } = progress
 
   let nextLesson = null
+  let currentUnitIndex = 0
   outer: for (let ui = 0; ui < UNITS.length; ui++) {
     const unit = UNITS[ui]
     for (let li = 0; li < unit.lessons.length; li++) {
       const lesson = unit.lessons[li]
       if (isLessonUnlocked(ui, li) && !isLessonComplete(lesson.id)) {
         nextLesson = { unit, lesson }
+        currentUnitIndex = ui
         break outer
       }
     }
+  }
+  if (!nextLesson) currentUnitIndex = UNITS.length - 1
+
+  function isUnitComplete(ui) {
+    return UNITS[ui].lessons.every((l) => isLessonComplete(l.id))
   }
 
   const circumference = 264
@@ -98,6 +147,8 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall
           <Mascot expression={dailyGoalMet ? 'happy' : 'idle'} celebrate={dailyGoalMet} size={72} />
         </div>
       </motion.section>
+
+      <CourseMap currentUnitIndex={currentUnitIndex} isUnitUnlocked={isUnitUnlocked} isUnitComplete={isUnitComplete} />
 
       <motion.section variants={item} className="goal-strip">
         <div className="goal-row">
@@ -141,7 +192,17 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall
         {UNITS.map((unit, ui) => {
           const unlocked = isUnitUnlocked(ui)
           return (
-            <motion.section variants={item} key={unit.id} className={`unit-block ${unlocked ? '' : 'unit-block-locked'}`} style={{ '--unit-color': unit.color }}>
+            <motion.section
+              variants={item}
+              key={unit.id}
+              id={`unit-${unit.id}`}
+              className={[
+                'unit-block',
+                unlocked ? '' : 'unit-block-locked',
+                unit.checkpointUnit ? 'unit-block-checkpoint' : '',
+              ].join(' ')}
+              style={{ '--unit-color': unit.color }}
+            >
               <div className="unit-header">
                 <span className="unit-icon">
                   <Icon name={unit.icon} size={22} strokeWidth={1.9} />
@@ -151,10 +212,27 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall
                   <p className="unit-subtitle">{unit.subtitle}</p>
                 </div>
               </div>
+              {unit.learn?.length > 0 && (
+                <ul className="unit-learn-list">
+                  {unit.learn.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              )}
               <motion.div className="lesson-path" variants={container} initial="hidden" animate="show">
                 {unit.lessons.map((lesson, li) => {
                   const status = !unlocked || !isLessonUnlocked(ui, li) ? 'locked' : isLessonComplete(lesson.id) ? 'done' : 'open'
-                  return <LessonNode key={lesson.id} unit={unit} lesson={lesson} status={status} onOpen={onOpenLesson} />
+                  return (
+                    <LessonNode
+                      key={lesson.id}
+                      unit={unit}
+                      lesson={lesson}
+                      index={li}
+                      total={unit.lessons.length}
+                      status={status}
+                      onOpen={onOpenLesson}
+                    />
+                  )
                 })}
               </motion.div>
             </motion.section>

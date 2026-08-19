@@ -4,11 +4,14 @@ import { useProgress } from './hooks/useProgress.js'
 import { useTheme } from './hooks/useTheme.js'
 import TopBar from './components/TopBar.jsx'
 import Mascot from './components/Mascot.jsx'
+import Landing from './screens/Landing.jsx'
 import Home from './screens/Home.jsx'
 import Lesson from './screens/Lesson.jsx'
 import Scenario from './screens/Scenario.jsx'
 import Profile from './screens/Profile.jsx'
 import VoiceCall from './screens/VoiceCall.jsx'
+
+const SEEN_LANDING_KEY = 'pronto:seenLanding:v1'
 
 function Splash() {
   return (
@@ -32,10 +35,19 @@ function Splash() {
   )
 }
 
+function hasSeenLanding() {
+  if (typeof window === 'undefined') return true
+  try {
+    return window.localStorage.getItem(SEEN_LANDING_KEY) === '1'
+  } catch {
+    return true
+  }
+}
+
 export default function App() {
   const progress = useProgress()
   const theme = useTheme()
-  const [screen, setScreen] = useState('home') // 'home' | 'profile' | 'lesson' | 'call'
+  const [screen, setScreen] = useState(() => (hasSeenLanding() ? 'home' : 'landing')) // 'landing' | 'home' | 'profile' | 'lesson' | 'call'
   const [activeLesson, setActiveLesson] = useState(null)
   const [booting, setBooting] = useState(true)
 
@@ -54,6 +66,19 @@ export default function App() {
     setScreen('home')
   }
 
+  function startFromLanding() {
+    try {
+      window.localStorage.setItem(SEEN_LANDING_KEY, '1')
+    } catch {
+      // localStorage unavailable — landing will just show again next visit
+    }
+    setScreen('home')
+  }
+
+  if (screen === 'landing') {
+    return <Landing onStart={startFromLanding} />
+  }
+
   const showChrome = screen === 'home' || screen === 'profile'
 
   return (
@@ -70,7 +95,7 @@ export default function App() {
       )}
       <main className="app-main">
         {screen === 'home' && <Home progress={progress} onOpenLesson={openLesson} onOpenProfile={() => setScreen('profile')} onOpenCall={() => setScreen('call')} />}
-        {screen === 'profile' && <Profile progress={progress} theme={theme} />}
+        {screen === 'profile' && <Profile progress={progress} theme={theme} onShowLanding={() => setScreen('landing')} />}
         {screen === 'call' && <VoiceCall onExit={returnHome} />}
         {screen === 'lesson' && activeLesson?.type === 'lesson' && (
           <Lesson lesson={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />
