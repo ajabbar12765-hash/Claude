@@ -12,7 +12,7 @@ const item = {
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 380, damping: 32 } },
 }
 
-export default function Profile({ progress, theme, onShowLanding }) {
+export default function Profile({ progress, theme, notifications, onShowLanding }) {
   const { streak, xp, completedCount, totalLessons, objectiveStatuses, readinessPercent, resetProgress } = progress
 
   function handleReset() {
@@ -95,6 +95,33 @@ export default function Profile({ progress, theme, onShowLanding }) {
                 {theme.accentId === accent.id && <Icon name="check" size={16} strokeWidth={2.6} />}
               </button>
             ))}
+          </div>
+        </motion.section>
+      )}
+
+      {notifications?.supported && (
+        <motion.section variants={item} className="notif-section">
+          <div className="notif-heading">
+            <Icon name="alert" size={22} strokeWidth={1.9} />
+            <div>
+              <h2>Streak reminders</h2>
+              <p className="notif-explainer">
+                {notifications.permission === 'denied'
+                  ? 'Notifications are blocked for this site in your browser settings.'
+                  : 'Get a nudge when your streak is on the line or your daily goal is hit.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              className={`notif-toggle ${notifications.enabled ? 'notif-toggle-on' : ''}`}
+              disabled={notifications.permission === 'denied'}
+              onClick={() => (notifications.enabled ? notifications.disable() : notifications.requestPermission())}
+              role="switch"
+              aria-checked={notifications.enabled}
+              aria-label="Toggle streak reminders"
+            >
+              <span className="notif-toggle-knob" />
+            </button>
           </div>
         </motion.section>
       )}

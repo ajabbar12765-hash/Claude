@@ -91,22 +91,8 @@ function LessonNode({ unit, lesson, index, total, status, onOpen }) {
 }
 
 export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall }) {
-  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet } = progress
-
-  let nextLesson = null
-  let currentUnitIndex = 0
-  outer: for (let ui = 0; ui < UNITS.length; ui++) {
-    const unit = UNITS[ui]
-    for (let li = 0; li < unit.lessons.length; li++) {
-      const lesson = unit.lessons[li]
-      if (isLessonUnlocked(ui, li) && !isLessonComplete(lesson.id)) {
-        nextLesson = { unit, lesson }
-        currentUnitIndex = ui
-        break outer
-      }
-    }
-  }
-  if (!nextLesson) currentUnitIndex = UNITS.length - 1
+  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson } = progress
+  const currentUnitIndex = nextLesson ? nextLesson.unitIndex : UNITS.length - 1
 
   function isUnitComplete(ui) {
     return UNITS[ui].lessons.every((l) => isLessonComplete(l.id))

@@ -1218,6 +1218,66 @@ ul {
   box-shadow: 0 0 0 2px var(--color-card), 0 0 0 4px var(--swatch-color);
 }
 
+.notif-section {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+
+.notif-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notif-heading .icon {
+  color: var(--color-terracotta);
+  flex-shrink: 0;
+}
+
+.notif-heading h2 {
+  font-size: 1rem;
+}
+
+.notif-explainer {
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.notif-toggle {
+  flex-shrink: 0;
+  width: 46px;
+  height: 27px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-border);
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  transition: background 0.2s ease;
+}
+
+.notif-toggle:disabled {
+  opacity: 0.5;
+}
+
+.notif-toggle-on {
+  background: var(--color-terracotta);
+  justify-content: flex-end;
+}
+
+.notif-toggle-knob {
+  width: 21px;
+  height: 21px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
 .btn-reset {
   align-self: center;
   background: none;
@@ -1845,4 +1905,24 @@ ul {
 
 .landing-section-final .landing-cta {
   margin-top: 4px;
+}
+
+/* ── Confetti celebration ────────────────────────────────────── */
+.confetti-burst {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
 }

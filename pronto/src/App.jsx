@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useProgress } from './hooks/useProgress.js'
 import { useTheme } from './hooks/useTheme.js'
+import { useNotifications } from './hooks/useNotifications.js'
 import TopBar from './components/TopBar.jsx'
 import Mascot from './components/Mascot.jsx'
+import Confetti from './components/Confetti.jsx'
 import Landing from './screens/Landing.jsx'
 import Home from './screens/Home.jsx'
 import Lesson from './screens/Lesson.jsx'
@@ -12,6 +14,16 @@ import Profile from './screens/Profile.jsx'
 import VoiceCall from './screens/VoiceCall.jsx'
 
 const SEEN_LANDING_KEY = 'pronto:seenLanding:v1'
+
+function readLaunchAction() {
+  if (typeof window === 'undefined') return null
+  const action = new URLSearchParams(window.location.search).get('action')
+  if (action === 'continue' || action === 'call') {
+    window.history.replaceState({}, '', window.location.pathname)
+    return action
+  }
+  return null
+}
 
 function Splash() {
   return (
@@ -47,14 +59,65 @@ function hasSeenLanding() {
 export default function App() {
   const progress = useProgress()
   const theme = useTheme()
-  const [screen, setScreen] = useState(() => (hasSeenLanding() ? 'home' : 'landing')) // 'landing' | 'home' | 'profile' | 'lesson' | 'call'
+  const notifications = useNotifications()
+  const launchAction = useRef(readLaunchAction())
+  const [screen, setScreen] = useState(() => {
+    if (launchAction.current) return launchAction.current === 'call' ? 'call' : 'home'
+    return hasSeenLanding() ? 'home' : 'landing'
+  })
   const [activeLesson, setActiveLesson] = useState(null)
   const [booting, setBooting] = useState(true)
+  const [celebrate, setCelebrate] = useState(false)
+  const prevCompletedCount = useRef(progress.completedCount)
+  const prevStreak = useRef(progress.streak.count)
+  const prevGoalMet = useRef(progress.dailyGoalMet)
 
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 1100)
     return () => clearTimeout(t)
   }, [])
+
+  // A shortcut launch ("Continue Lesson" from the home-screen icon) always
+  // skips the landing page and jumps straight to whatever's next.
+  useEffect(() => {
+    if (launchAction.current === 'continue' && progress.nextLesson) {
+      setActiveLesson(progress.nextLesson.lesson)
+      setScreen('lesson')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Keeps the installed app icon's badge in sync with the streak, and fires
+  // a real OS notification for streak/goal milestones when the app is
+  // backgrounded (foreground completions already show their own screen).
+  useEffect(() => {
+    if (navigator.setAppBadge) {
+      if (progress.streak.count > 0) navigator.setAppBadge(progress.streak.count).catch(() => {})
+      else navigator.clearAppBadge?.().catch(() => {})
+    }
+
+    const backgrounded = document.hidden
+    if (progress.streak.count > prevStreak.current && backgrounded) {
+      notifications.notify('🔥 Streak alive!', { body: `${progress.streak.count} day${progress.streak.count === 1 ? '' : 's'} in a row. Keep it going.` })
+    }
+    if (progress.dailyGoalMet && !prevGoalMet.current && backgrounded) {
+      notifications.notify('Daily goal complete! 🎉', { body: 'Anything more today is a bonus.' })
+    }
+    prevStreak.current = progress.streak.count
+    prevGoalMet.current = progress.dailyGoalMet
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress.streak.count, progress.dailyGoalMet])
+
+  // Fires the confetti burst whenever a lesson/scenario/checkpoint completes.
+  useEffect(() => {
+    if (progress.completedCount > prevCompletedCount.current) {
+      setCelebrate(true)
+      const t = setTimeout(() => setCelebrate(false), 1000)
+      prevCompletedCount.current = progress.completedCount
+      return () => clearTimeout(t)
+    }
+    prevCompletedCount.current = progress.completedCount
+  }, [progress.completedCount])
 
   function openLesson(lesson) {
     setActiveLesson(lesson)
@@ -84,6 +147,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <AnimatePresence>{booting && <Splash key="splash" />}</AnimatePresence>
+      <Confetti active={celebrate} />
 
       {showChrome && (
         <TopBar
@@ -95,7 +159,7 @@ export default function App() {
       )}
       <main className="app-main">
         {screen === 'home' && <Home progress={progress} onOpenLesson={openLesson} onOpenProfile={() => setScreen('profile')} onOpenCall={() => setScreen('call')} />}
-        {screen === 'profile' && <Profile progress={progress} theme={theme} onShowLanding={() => setScreen('landing')} />}
+        {screen === 'profile' && <Profile progress={progress} theme={theme} notifications={notifications} onShowLanding={() => setScreen('landing')} />}
         {screen === 'call' && <VoiceCall onExit={returnHome} />}
         {screen === 'lesson' && activeLesson?.type === 'lesson' && (
           <Lesson lesson={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />

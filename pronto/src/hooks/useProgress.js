@@ -126,6 +126,19 @@ export function useProgress() {
 
   const dailyGoalMet = state.xpToday.date === todayStr() && state.xpToday.amount >= state.goalXpPerDay
 
+  const nextLesson = useMemo(() => {
+    for (let ui = 0; ui < UNITS.length; ui++) {
+      const unit = UNITS[ui]
+      for (let li = 0; li < unit.lessons.length; li++) {
+        const lesson = unit.lessons[li]
+        if (isLessonUnlocked(ui, li) && !isLessonComplete(lesson.id)) {
+          return { unit, lesson, unitIndex: ui }
+        }
+      }
+    }
+    return null
+  }, [isLessonUnlocked, isLessonComplete])
+
   return {
     xp: state.xp,
     streak: state.streak,
@@ -136,6 +149,7 @@ export function useProgress() {
     completedCount,
     objectiveStatuses,
     readinessPercent,
+    nextLesson,
     recordCorrect,
     completeLesson,
     isLessonComplete,
