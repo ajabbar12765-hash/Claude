@@ -1,7 +1,6 @@
 // Vercel serverless function powering the "Call Volpe" voice-practice feature.
 // The browser does speech-to-text and text-to-speech itself (Web Speech API);
-// this endpoint only handles the actual conversation turn.
-import Anthropic from '@anthropic-ai/sdk'
+// this endpoint only handles the actual conversation turn, via the Gemini API.
 
 const SYSTEM_PROMPT = `You are Volpe, a friendly, patient Italian conversation partner inside a language-learning app called Pronto. You're on a phone call with a beginner-to-early-intermediate English-speaking learner practicing spoken Italian.
 
@@ -13,16 +12,18 @@ Rules:
 - If the learner writes in English, respond warmly in Italian anyway, and gently nudge them (in Italian, with a gloss) to try it in Italian.
 - Never break character to talk about being an AI or a language model.`
 
+const MODEL = 'gemini-2.5-flash'
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'method_not_allowed', message: 'Use POST.' })
     return
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     res.status(503).json({
       error: 'missing_api_key',
-      message: 'Volpe needs an Anthropic API key to talk. Add ANTHROPIC_API_KEY in this project’s Vercel Environment Variables, then redeploy.',
+      message: 'Volpe needs a Gemini API key to talk. Add GEMINI_API_KEY in this project’s Vercel Environment Variables, then redeploy.',
     })
     return
   }
@@ -33,28 +34,43 @@ export default async function handler(req, res) {
     return
   }
 
-  const client = new Anthropic()
+  const contents = messages.map((m) => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }))
 
   try {
-    const completion = await client.messages.create({
-      model: 'claude-opus-5',
-      max_tokens: 600,
-      output_config: { effort: 'low' },
-      system: SYSTEM_PROMPT,
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
-    })
+    const apiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents,
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          generationConfig: { maxOutputTokens: 300 },
+        }),
+      },
+    )
 
-    const textBlock = completion.content.find((block) => block.type === 'text')
-    res.status(200).json({ reply: textBlock?.text ?? '' })
-  } catch (err) {
-    if (err instanceof Anthropic.AuthenticationError) {
-      res.status(401).json({ error: 'invalid_api_key', message: 'That Anthropic API key looks invalid. Double-check ANTHROPIC_API_KEY in your Vercel project settings.' })
-    } else if (err instanceof Anthropic.RateLimitError) {
-      res.status(429).json({ error: 'rate_limited', message: 'Volpe is a little overwhelmed — wait a moment and try again.' })
-    } else if (err instanceof Anthropic.APIError) {
-      res.status(err.status || 500).json({ error: 'api_error', message: err.message })
-    } else {
-      res.status(500).json({ error: 'server_error', message: 'Something went wrong reaching Volpe.' })
+    const data = await apiRes.json()
+
+    if (!apiRes.ok) {
+      const message = data?.error?.message || 'Something went wrong reaching Volpe.'
+      if (apiRes.status === 400 && /api key/i.test(message)) {
+        res.status(401).json({ error: 'invalid_api_key', message: 'That Gemini API key looks invalid. Double-check GEMINI_API_KEY in your Vercel project settings.' })
+      } else if (apiRes.status === 429) {
+        res.status(429).json({ error: 'rate_limited', message: 'Volpe is a little overwhelmed — wait a moment and try again.' })
+      } else {
+        res.status(apiRes.status).json({ error: 'api_error', message })
+      }
+      return
     }
+
+    const parts = data?.candidates?.[0]?.content?.parts ?? []
+    const reply = parts.map((p) => p.text ?? '').join('')
+    res.status(200).json({ reply })
+  } catch (err) {
+    res.status(500).json({ error: 'server_error', message: 'Something went wrong reaching Volpe.' })
   }
 }
