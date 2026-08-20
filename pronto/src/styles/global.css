@@ -197,18 +197,18 @@ ul {
   border-color: color-mix(in srgb, var(--color-gold) 26%, transparent);
 }
 
-.stat-profile {
+.stat-icon-btn {
   color: var(--color-ink-soft);
   padding: 7px;
   border: 1px solid var(--color-border);
   transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
 
-.stat-profile:active {
+.stat-icon-btn:active {
   transform: scale(0.94);
 }
 
-.stat-profile-active {
+.stat-icon-btn-active {
   background: var(--color-ink);
   color: var(--color-cream);
   border-color: var(--color-ink);
@@ -2227,4 +2227,196 @@ ul {
   width: 8px;
   height: 8px;
   border-radius: 2px;
+}
+
+
+/* ── Dictionary (quick word lookup) ─────────────────────────── */
+.dict-card-cta-icon {
+  background: color-mix(in srgb, var(--color-teal) 14%, white);
+  color: var(--color-teal-dark);
+}
+
+.dict-intro {
+  font-size: 0.86rem;
+  color: var(--color-ink-soft);
+  line-height: 1.5;
+}
+
+.dict-search-row {
+  display: flex;
+  gap: 10px;
+}
+
+.dict-search-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-ink-faint);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dict-search-field:focus-within {
+  border-color: var(--color-terracotta);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-terracotta) 14%, transparent);
+}
+
+.dict-search-input {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 14px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.dict-search-input:focus {
+  outline: none;
+}
+
+.dict-search-submit {
+  width: auto;
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+
+.dict-error {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+  border: none;
+}
+
+.dict-card {
+  background: linear-gradient(150deg, var(--color-card) 0%, var(--color-cream-2) 260%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dict-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dict-card-italian {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.2;
+}
+
+.dict-card-pron {
+  font-size: 0.84rem;
+  color: var(--color-ink-soft);
+  margin-top: 2px;
+}
+
+.dict-listen {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: none;
+  background: var(--color-teal);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(18, 181, 172, 0.3);
+  transition: transform 0.1s ease;
+}
+
+.dict-listen:active {
+  transform: scale(0.9);
+}
+
+.dict-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dict-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-soft);
+  background: var(--color-cream-2);
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+
+.dict-card-english {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.dict-card-example {
+  background: var(--color-cream-2);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dict-card-example-it {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--color-ink);
+}
+
+.dict-card-example-en {
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+}
+
+.dict-history {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dict-history-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-soft);
+}
+
+.dict-history-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dict-history-chip {
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  box-shadow: var(--shadow-xs);
+  transition: transform 0.1s ease;
+}
+
+.dict-history-chip:active {
+  transform: scale(0.95);
 }

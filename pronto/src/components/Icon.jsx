@@ -42,6 +42,8 @@ const PATHS = {
   refresh: 'M4 4v5h5M20 20v-5h-5M4.6 15A8 8 0 0019 9M19.4 9A8 8 0 005 15',
   map: 'M9 3L4 5v16l5-2 6 2 5-2V3l-5 2-6-2zM9 3v16M15 5v16',
   bulb: 'M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5.9 1 .9 1.6v.5h5.2v-.5c0-.6.4-1.1.9-1.6A6 6 0 0012 3z',
+  search: 'M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3',
+  book: 'M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zM19 19H6a2 2 0 000 4h13',
 }
 
 export default function Icon({ name, size = 24, strokeWidth = 1.8, className = '', ...rest }) {

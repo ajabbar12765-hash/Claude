@@ -13,6 +13,7 @@ import Lesson from './screens/Lesson.jsx'
 import Scenario from './screens/Scenario.jsx'
 import Profile from './screens/Profile.jsx'
 import VoiceCall from './screens/VoiceCall.jsx'
+import Dictionary from './screens/Dictionary.jsx'
 
 const SEEN_LANDING_KEY = 'pronto:seenLanding:v1'
 const ONBOARDED_KEY = 'pronto:onboarded:v1'
@@ -182,12 +183,22 @@ export default function App() {
           xp={progress.xp}
           active={screen}
           onProfileClick={() => setScreen(screen === 'profile' ? 'home' : 'profile')}
+          onDictionaryClick={() => setScreen('dictionary')}
         />
       )}
       <main className="app-main">
-        {screen === 'home' && <Home progress={progress} onOpenLesson={openLesson} onOpenProfile={() => setScreen('profile')} onOpenCall={() => setScreen('call')} />}
+        {screen === 'home' && (
+          <Home
+            progress={progress}
+            onOpenLesson={openLesson}
+            onOpenProfile={() => setScreen('profile')}
+            onOpenCall={() => setScreen('call')}
+            onOpenDictionary={() => setScreen('dictionary')}
+          />
+        )}
         {screen === 'profile' && <Profile progress={progress} theme={theme} notifications={notifications} onShowLanding={() => setScreen('landing')} />}
         {screen === 'call' && <VoiceCall onExit={returnHome} />}
+        {screen === 'dictionary' && <Dictionary onExit={returnHome} />}
         {screen === 'lesson' && activeLesson?.type === 'lesson' && (
           <Lesson lesson={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />
         )}
