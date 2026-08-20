@@ -94,9 +94,17 @@ function LessonNode({ unit, lesson, index, total, status, side, onOpen }) {
   )
 }
 
+const MOTIVATION_EYEBROW = {
+  trip: 'Trip readiness',
+  family: 'Ready for family',
+  living: 'Ready to live it',
+  fun: 'Real-life readiness',
+}
+
 export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall }) {
-  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson } = progress
+  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation } = progress
   const currentUnitIndex = nextLesson ? nextLesson.unitIndex : UNITS.length - 1
+  const heroEyebrow = MOTIVATION_EYEBROW[motivation] || 'Real-life readiness'
 
   function isUnitComplete(ui) {
     return UNITS[ui].lessons.every((l) => isLessonComplete(l.id))
@@ -109,7 +117,7 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall
     <motion.div className="screen screen-home" variants={container} initial="hidden" animate="show">
       <motion.section variants={item} className="hero-card">
         <div className="hero-copy">
-          <p className="hero-eyebrow">Real-life readiness</p>
+          <p className="hero-eyebrow">{heroEyebrow}</p>
           <h1 className="hero-title">{readinessPercent}% ready for Italy</h1>
           <p className="hero-sub">
             Not "lessons completed" — situations you can actually handle. See what you can already say on your{' '}

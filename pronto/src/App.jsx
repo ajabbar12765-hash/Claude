@@ -7,6 +7,7 @@ import TopBar from './components/TopBar.jsx'
 import Mascot from './components/Mascot.jsx'
 import Confetti from './components/Confetti.jsx'
 import Landing from './screens/Landing.jsx'
+import Onboarding from './screens/Onboarding.jsx'
 import Home from './screens/Home.jsx'
 import Lesson from './screens/Lesson.jsx'
 import Scenario from './screens/Scenario.jsx'
@@ -14,6 +15,7 @@ import Profile from './screens/Profile.jsx'
 import VoiceCall from './screens/VoiceCall.jsx'
 
 const SEEN_LANDING_KEY = 'pronto:seenLanding:v1'
+const ONBOARDED_KEY = 'pronto:onboarded:v1'
 
 function readLaunchAction() {
   if (typeof window === 'undefined') return null
@@ -56,6 +58,15 @@ function hasSeenLanding() {
   }
 }
 
+function hasOnboarded() {
+  if (typeof window === 'undefined') return true
+  try {
+    return window.localStorage.getItem(ONBOARDED_KEY) === '1'
+  } catch {
+    return true
+  }
+}
+
 export default function App() {
   const progress = useProgress()
   const theme = useTheme()
@@ -63,7 +74,9 @@ export default function App() {
   const launchAction = useRef(readLaunchAction())
   const [screen, setScreen] = useState(() => {
     if (launchAction.current) return launchAction.current === 'call' ? 'call' : 'home'
-    return hasSeenLanding() ? 'home' : 'landing'
+    if (!hasSeenLanding()) return 'landing'
+    if (!hasOnboarded()) return 'onboarding'
+    return 'home'
   })
   const [activeLesson, setActiveLesson] = useState(null)
   const [booting, setBooting] = useState(true)
@@ -135,11 +148,25 @@ export default function App() {
     } catch {
       // localStorage unavailable — landing will just show again next visit
     }
+    setScreen(hasOnboarded() ? 'home' : 'onboarding')
+  }
+
+  function finishOnboarding(answers) {
+    progress.setOnboardingAnswers(answers)
+    try {
+      window.localStorage.setItem(ONBOARDED_KEY, '1')
+    } catch {
+      // localStorage unavailable — onboarding will just show again next visit
+    }
     setScreen('home')
   }
 
   if (screen === 'landing') {
     return <Landing onStart={startFromLanding} />
+  }
+
+  if (screen === 'onboarding') {
+    return <Onboarding onDone={finishOnboarding} />
   }
 
   const showChrome = screen === 'home' || screen === 'profile'

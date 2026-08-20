@@ -97,6 +97,14 @@ export const UNITS = [
       ]),
 
       lesson('u1l2', 'Please & Thank You', 'The words that make everything else land softer', 'heart', [
+        explain(
+          'Making a Sentence Negative',
+          'To make any Italian sentence negative, put non directly before the verb — no extra helper word needed, unlike English’s "do/does not."',
+          [
+            { it: 'Non parlo italiano', en: 'I don’t speak Italian' },
+            { it: 'Non capisco', en: 'I don’t understand' },
+          ],
+        ),
         mcq('it-en', 'Per favore', 'Please', ['Thank you', 'Please', 'Sorry', 'You’re welcome']),
         mcq('it-en', 'Grazie mille', 'Thanks a lot', ['No thanks', 'Thanks a lot', 'Excuse me', 'I’m sorry']),
         mcq('en-it', 'Prego', 'You’re welcome', ['Grazie', 'Prego', 'Scusi', 'Piacere']),
@@ -367,6 +375,14 @@ export const UNITS = [
       ]),
 
       lesson('u3l2', 'Ordering & Diets', 'Getting the meal you actually want', 'plate', [
+        explain(
+          'Adjectives Agree With You',
+          'Descriptive adjectives change their ending to match the gender of who or what they describe: -o for masculine, -a for feminine. You’ll see this constantly with words like celiaco/celiaca, vegetariano/vegetariana, and allergico/allergica.',
+          [
+            { it: 'Sono celiaco (m.)', en: 'I have celiac disease' },
+            { it: 'Sono celiaca (f.)', en: 'I have celiac disease' },
+          ],
+        ),
         mcq('it-en', 'Vorrei ordinare', 'I’d like to order', ['I already ordered', 'I’d like to order', 'I want to cancel', 'Is it ready?']),
         typeEx('I have celiac disease (need gluten-free)', 'Sono celiaco/a', ['sono celiaco', 'sono celiaca'], {
           note: 'Italy takes "senza glutine" (gluten-free) seriously — most menus mark it clearly once you say this.',

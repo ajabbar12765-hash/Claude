@@ -20,6 +20,7 @@ function defaultState() {
     completedLessons: {},
     correct: {},
     goalXpPerDay: 30,
+    motivation: null,
     xpToday: { date: todayStr(), amount: 0 },
     startedAt: new Date().toISOString(),
   }
@@ -86,6 +87,14 @@ export function useProgress() {
     setState(defaultState())
   }, [])
 
+  const setOnboardingAnswers = useCallback(({ motivation, goalXpPerDay }) => {
+    setState((prev) => ({
+      ...prev,
+      motivation: motivation ?? prev.motivation,
+      goalXpPerDay: goalXpPerDay ?? prev.goalXpPerDay,
+    }))
+  }, [])
+
   const isLessonComplete = useCallback((lessonId) => !!state.completedLessons[lessonId], [state.completedLessons])
 
   const isUnitUnlocked = useCallback(
@@ -145,6 +154,7 @@ export function useProgress() {
     dailyGoalMet,
     xpToday: state.xpToday.date === todayStr() ? state.xpToday.amount : 0,
     goalXpPerDay: state.goalXpPerDay,
+    motivation: state.motivation,
     totalLessons,
     completedCount,
     objectiveStatuses,
@@ -156,5 +166,6 @@ export function useProgress() {
     isUnitUnlocked,
     isLessonUnlocked,
     resetProgress,
+    setOnboardingAnswers,
   }
 }
