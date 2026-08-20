@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useProgress } from './hooks/useProgress.js'
+import { UNITS } from './data/curriculum.js'
 import { useTheme } from './hooks/useTheme.js'
 import { useNotifications } from './hooks/useNotifications.js'
 import TopBar from './components/TopBar.jsx'
@@ -169,6 +170,9 @@ export default function App() {
 
   function finishOnboarding(answers) {
     progress.setOnboardingAnswers(answers)
+    if (answers.skipAhead) {
+      progress.markLessonsComplete(UNITS[0].lessons.map((l) => l.id))
+    }
     try {
       window.localStorage.setItem(ONBOARDED_KEY, '1')
     } catch {

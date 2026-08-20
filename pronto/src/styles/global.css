@@ -2408,6 +2408,21 @@ ul {
   color: var(--color-ink-soft);
 }
 
+.onboarding-quiz-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.onboarding-quiz-word {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
 /* ── Confetti celebration ────────────────────────────────────── */
 .confetti-burst {
   position: fixed;

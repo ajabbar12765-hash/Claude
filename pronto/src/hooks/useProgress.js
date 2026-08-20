@@ -98,6 +98,19 @@ export function useProgress() {
     setState((prev) => ({ ...prev, dictionaryLookups: prev.dictionaryLookups + 1 }))
   }, [])
 
+  // Marks lessons as complete for unlock purposes only — no XP, no streak,
+  // no perfect-lesson credit. Used by the onboarding placement quiz to skip
+  // someone past content they've already demonstrated they know; their
+  // readiness checklist still only fills in from phrases they actually
+  // produce themselves going forward, which stays true to the app's own
+  // "proven, not just recognized" standard.
+  const markLessonsComplete = useCallback((lessonIds) => {
+    setState((prev) => ({
+      ...prev,
+      completedLessons: { ...prev.completedLessons, ...Object.fromEntries(lessonIds.map((id) => [id, true])) },
+    }))
+  }, [])
+
   const resetProgress = useCallback(() => {
     setState(defaultState())
   }, [])
@@ -200,6 +213,7 @@ export function useProgress() {
     completeLesson,
     recordVoiceCall,
     recordDictionaryLookup,
+    markLessonsComplete,
     isLessonComplete,
     isUnitUnlocked,
     isLessonUnlocked,

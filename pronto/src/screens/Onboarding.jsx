@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Mascot from '../components/Mascot.jsx'
 import Icon from '../components/Icon.jsx'
+import { shuffle } from '../lib/matching.js'
 
 const MOTIVATIONS = [
   { id: 'trip', label: 'An upcoming trip', icon: 'compass' },
@@ -17,6 +18,19 @@ const PACES = [
   { id: 'intense', label: 'Intense', minutes: '20 min/day', goalXp: 60 },
 ]
 
+// A quick, honest gauge of what someone already knows — not a real
+// placement test, just enough to decide whether the absolute-beginner
+// unit ("hello," "please/thank you") is worth their time or not.
+const QUIZ_ITEMS = [
+  { it: 'Ciao', correct: 'Hi / Bye', options: ['Hi / Bye', 'Please', 'Sorry', 'Yes'] },
+  { it: 'Grazie', correct: 'Thank you', options: ['Goodbye', 'Thank you', 'Excuse me', 'Good morning'] },
+  { it: 'Acqua', correct: 'Water', options: ['Bread', 'Coffee', 'Water', 'Wine'] },
+  { it: 'Buongiorno', correct: 'Good morning', options: ['Good night', 'Good evening', 'Good morning', 'Hello there'] },
+  { it: 'Il conto', correct: 'The bill', options: ['The menu', 'The bill', 'The table', 'The waiter'] },
+  { it: 'Scusi', correct: 'Excuse me', options: ['Please', 'Thanks', 'Excuse me', 'Welcome'] },
+]
+const QUIZ_PASS_SCORE = 5 // out of QUIZ_ITEMS.length — high enough to genuinely skip Unit 1
+
 const slide = {
   hidden: { opacity: 0, x: 24 },
   show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 340, damping: 30 } },
@@ -26,6 +40,12 @@ const slide = {
 export default function Onboarding({ onDone }) {
   const [step, setStep] = useState(0)
   const [motivation, setMotivation] = useState(null)
+  const [goalXpPerDay, setGoalXpPerDay] = useState(null)
+  const [quizIndex, setQuizIndex] = useState(0)
+  const [quizScore, setQuizScore] = useState(0)
+  const [quizSelected, setQuizSelected] = useState(null)
+  const [quizFinished, setQuizFinished] = useState(false)
+  const quizItems = useMemo(() => QUIZ_ITEMS.map((q) => ({ ...q, shuffled: shuffle(q.options) })), [])
 
   function pickMotivation(id) {
     setMotivation(id)
@@ -33,14 +53,37 @@ export default function Onboarding({ onDone }) {
   }
 
   function pickPace(pace) {
-    onDone({ motivation, goalXpPerDay: pace.goalXp })
+    setGoalXpPerDay(pace.goalXp)
+    setStep(2)
   }
+
+  function pickQuizAnswer(opt) {
+    if (quizSelected) return
+    setQuizSelected(opt)
+    const correct = opt === quizItems[quizIndex].correct
+    if (correct) setQuizScore((s) => s + 1)
+    setTimeout(() => {
+      if (quizIndex + 1 < quizItems.length) {
+        setQuizIndex((i) => i + 1)
+        setQuizSelected(null)
+      } else {
+        setQuizFinished(true)
+      }
+    }, 550)
+  }
+
+  function finishQuiz() {
+    onDone({ motivation, goalXpPerDay, quizScore, quizTotal: quizItems.length, skipAhead: quizScore >= QUIZ_PASS_SCORE })
+  }
+
+  const currentQuiz = quizItems[quizIndex]
 
   return (
     <div className="screen screen-onboarding">
       <div className="onboarding-dots">
         <span className={`onboarding-dot ${step >= 0 ? 'onboarding-dot-active' : ''}`} />
         <span className={`onboarding-dot ${step >= 1 ? 'onboarding-dot-active' : ''}`} />
+        <span className={`onboarding-dot ${step >= 2 ? 'onboarding-dot-active' : ''}`} />
       </div>
       <button type="button" className="onboarding-skip" onClick={() => onDone({})}>
         Skip
@@ -80,6 +123,72 @@ export default function Onboarding({ onDone }) {
                   <span className="onboarding-option-sub">{p.minutes}</span>
                 </motion.button>
               ))}
+            </div>
+          </motion.div>
+        )}
+
+        {step === 2 && !quizFinished && (
+          <motion.div key="step2" className="onboarding-step" variants={slide} initial="hidden" animate="show" exit="exit">
+            <Mascot expression="thinking" size={72} />
+            <h1 className="onboarding-question">Quick check — any Italian already?</h1>
+            <p className="onboarding-subtext">
+              {quizIndex + 1} of {quizItems.length} — no pressure, guessing is fine
+            </p>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={quizIndex}
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -16 }}
+                transition={{ duration: 0.2 }}
+                className="onboarding-quiz-card"
+              >
+                <p className="onboarding-quiz-word">{currentQuiz.it}</p>
+                <div className="option-grid">
+                  {currentQuiz.shuffled.map((opt) => {
+                    const isSelected = quizSelected === opt
+                    const revealCorrect = quizSelected && opt === currentQuiz.correct
+                    const revealWrong = quizSelected && isSelected && opt !== currentQuiz.correct
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        disabled={!!quizSelected}
+                        className={[
+                          'option-tile',
+                          revealCorrect ? 'option-correct' : '',
+                          revealWrong ? 'option-wrong' : '',
+                        ].join(' ')}
+                        onClick={() => pickQuizAnswer(opt)}
+                      >
+                        {opt}
+                      </button>
+                    )
+                  })}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+        )}
+
+        {step === 2 && quizFinished && (
+          <motion.div key="step2-result" className="onboarding-step" variants={slide} initial="hidden" animate="show" exit="exit">
+            <Mascot expression={quizScore >= QUIZ_PASS_SCORE ? 'happy' : 'idle'} celebrate={quizScore >= QUIZ_PASS_SCORE} size={72} />
+            <h1 className="onboarding-question">
+              {quizScore} of {quizItems.length}
+            </h1>
+            <p className="onboarding-subtext">
+              {quizScore >= QUIZ_PASS_SCORE
+                ? 'You already know some Italian — we’ll skip straight past the absolute basics.'
+                : quizScore >= 3
+                  ? 'A solid start — we’ll still build the fundamentals properly before speeding up.'
+                  : 'Totally normal to start from zero — that’s exactly what the first unit is for.'}
+            </p>
+            <div className="onboarding-options">
+              <motion.button type="button" whileTap={{ scale: 0.96 }} className="onboarding-option" onClick={finishQuiz}>
+                <Icon name="chevronRight" size={22} strokeWidth={1.9} />
+                Let’s go
+              </motion.button>
             </div>
           </motion.div>
         )}
