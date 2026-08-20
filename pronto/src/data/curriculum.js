@@ -67,8 +67,8 @@ export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
     id: 'u1',
-    title: 'Primo Contatto',
-    subtitle: 'First Contact',
+    title: 'First Contact',
+    subtitle: 'Primo Contatto',
     icon: 'wave',
     color: '#C1502E',
     learn: [
@@ -203,8 +203,8 @@ export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
     id: 'u2',
-    title: 'Al Bar',
-    subtitle: 'At the Café',
+    title: 'At the Café',
+    subtitle: 'Al Bar',
     icon: 'cup',
     color: '#1F6F6B',
     learn: [
@@ -340,8 +340,8 @@ export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
     id: 'u3',
-    title: 'Al Ristorante',
-    subtitle: 'At the Restaurant',
+    title: 'At the Restaurant',
+    subtitle: 'Al Ristorante',
     icon: 'fork',
     color: '#B8863B',
     learn: [
@@ -498,8 +498,8 @@ export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
     id: 'u4',
-    title: 'In Giro',
-    subtitle: 'Getting Around',
+    title: 'Getting Around',
+    subtitle: 'In Giro',
     icon: 'compass',
     color: '#3B6FA0',
     learn: [
@@ -601,8 +601,8 @@ export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
     id: 'u5',
-    title: 'Aiuto ed Emergenze',
-    subtitle: 'Help & Emergencies',
+    title: 'Help & Emergencies',
+    subtitle: 'Aiuto ed Emergenze',
     icon: 'cross',
     color: '#A33B4E',
     learn: [
@@ -702,8 +702,8 @@ export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
     id: 'u6',
-    title: 'Amici e Mercato',
-    subtitle: 'Friends & the Market',
+    title: 'Friends & the Market',
+    subtitle: 'Amici e Mercato',
     icon: 'basket',
     color: '#7A5C9E',
     learn: [

@@ -417,6 +417,21 @@ ul {
 .unit-title {
   font-size: 1.1rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.recommended-tag {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 800;
+  color: #fff;
+  background: var(--unit-color);
+  padding: 3px 8px;
+  border-radius: 999px;
 }
 
 .unit-subtitle {

@@ -9,7 +9,13 @@ function pickItalianVoice() {
   if (typeof window === 'undefined' || !window.speechSynthesis) return undefined
   const voices = window.speechSynthesis.getVoices()
   if (voices.length) voicesLoaded = true
-  return voices.find((v) => v.lang?.toLowerCase().startsWith('it')) || voices[0]
+  const italian = voices.filter((v) => v.lang?.toLowerCase().startsWith('it'))
+  if (!italian.length) return undefined // no Italian voice at all — better to let the engine pick its own default than force the wrong language
+  // Cloud/network voices are consistently far clearer than the low-quality
+  // local ones some platforms ship by default; prefer them, and prefer an
+  // exact it-IT locale over regional variants like it-CH.
+  const score = (v) => (v.localService ? 0 : 2) + (v.lang?.toLowerCase() === 'it-it' ? 1 : 0)
+  return [...italian].sort((a, b) => score(b) - score(a))[0]
 }
 
 if (typeof window !== 'undefined' && window.speechSynthesis) {
@@ -22,13 +28,14 @@ export function canSpeak() {
   return typeof window !== 'undefined' && !!window.speechSynthesis
 }
 
-export function speakItalian(text, { rate = 0.92, onStart, onEnd } = {}) {
+export function speakItalian(text, { rate = 0.88, onStart, onEnd } = {}) {
   if (!canSpeak()) return false
   const synth = window.speechSynthesis
   synth.cancel() // stop anything already playing
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'it-IT'
   utterance.rate = rate
+  utterance.pitch = 1
   if (!voicesLoaded) cachedItalianVoice = pickItalianVoice()
   if (cachedItalianVoice) utterance.voice = cachedItalianVoice
   if (onStart) utterance.onstart = onStart

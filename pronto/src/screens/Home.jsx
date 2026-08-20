@@ -101,10 +101,21 @@ const MOTIVATION_EYEBROW = {
   fun: 'Real-life readiness',
 }
 
+// Which units get a "Recommended for you" nudge, based on the onboarding
+// answer — the syllabus is still linear (survival-first ordering matters
+// pedagogically), but this flags what to look forward to.
+const RECOMMENDED_UNITS = {
+  trip: ['u2', 'u3', 'u4'],
+  family: ['u1', 'u6'],
+  living: ['u4', 'u5', 'u6'],
+  fun: [],
+}
+
 export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall }) {
   const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation } = progress
   const currentUnitIndex = nextLesson ? nextLesson.unitIndex : UNITS.length - 1
   const heroEyebrow = MOTIVATION_EYEBROW[motivation] || 'Real-life readiness'
+  const recommendedUnitIds = RECOMMENDED_UNITS[motivation] || []
 
   function isUnitComplete(ui) {
     return UNITS[ui].lessons.every((l) => isLessonComplete(l.id))
@@ -206,7 +217,10 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall
                   <Icon name={unit.icon} size={22} strokeWidth={1.9} />
                 </span>
                 <div>
-                  <h2 className="unit-title">{unit.title}</h2>
+                  <h2 className="unit-title">
+                    {unit.title}
+                    {recommendedUnitIds.includes(unit.id) && <span className="recommended-tag">Recommended for you</span>}
+                  </h2>
                   <p className="unit-subtitle">{unit.subtitle}</p>
                 </div>
               </div>
