@@ -34,6 +34,30 @@
   --mascot-cream: #fff3e8;
   --mascot-scarf: var(--color-teal);
   --mascot-blush: #ff8b6b;
+
+  /* Shared by .app-main and .topbar so they can never drift apart at a
+     breakpoint — widen this one variable, not two separate literals. */
+  --content-max-width: 560px;
+
+  /* Type + spacing scale for new/touched rules going forward. The rest of
+     this file predates the scale and stays on its existing ad hoc values —
+     not retrofitting ~2700 lines in one pass — but anything new should
+     pull from here. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 48px;
+  --text-xs: 0.72rem;
+  --text-sm: 0.82rem;
+  --text-base: 0.92rem;
+  --text-md: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.4rem;
+  --text-2xl: 1.7rem;
 }
 
 * {
@@ -103,12 +127,13 @@ ul {
 
 .app-main {
   width: 100%;
-  max-width: 560px;
+  max-width: var(--content-max-width);
   min-height: 100vh;
   background: var(--color-cream);
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
+  transition: max-width 0.15s ease;
 }
 
 @media (min-width: 640px) {
@@ -119,6 +144,40 @@ ul {
     min-height: calc(100vh - 64px);
     border-radius: var(--radius-xl);
     overflow: hidden;
+  }
+}
+
+/* ── Tablet (iPad portrait and up) ──────────────────────────── */
+@media (min-width: 768px) {
+  :root {
+    --content-max-width: 720px;
+  }
+  .screen {
+    padding: 28px 32px 56px;
+    gap: 26px;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .exercise-prompt {
+    font-size: 1.7rem;
+  }
+}
+
+/* ── iPad landscape and larger ──────────────────────────────── */
+@media (min-width: 1024px) {
+  :root {
+    --content-max-width: 880px;
+  }
+  /* The winding lesson path's zigzag geometry is tuned for a narrow
+     column — let it stay that width and centered rather than stretching
+     into sparse, oddly-wide swings inside the bigger shell. */
+  .lesson-path,
+  .unit-learn-list,
+  .unit-header {
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -133,7 +192,7 @@ ul {
 /* ── Top bar ─────────────────────────────────────────────────── */
 .topbar {
   width: 100%;
-  max-width: 560px;
+  max-width: var(--content-max-width);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -142,6 +201,7 @@ ul {
   backdrop-filter: blur(14px) saturate(1.4);
   -webkit-backdrop-filter: blur(14px) saturate(1.4);
   border-bottom: 1px solid var(--color-border-soft);
+  transition: max-width 0.15s ease;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -319,6 +379,21 @@ ul {
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18));
 }
 
+/* ── Home: quick-action row (Call Volpe / Dictionary) ───────── */
+.home-quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+@media (min-width: 768px) {
+  .home-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+  }
+}
+
 /* ── Home: call card ─────────────────────────────────────────── */
 .call-card {
   display: flex;
@@ -432,6 +507,24 @@ ul {
   text-align: left;
   box-shadow: 0 4px 10px rgba(12, 142, 135, 0.16), 0 14px 28px rgba(12, 142, 135, 0.22);
   transition: transform 0.1s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.continue-card::before {
+  content: '';
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  right: -50px;
+  top: -70px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.continue-card > * {
+  position: relative;
 }
 
 .continue-card:active {
@@ -470,6 +563,16 @@ ul {
 
 .unit-block-locked {
   opacity: 0.55;
+}
+
+.unit-locked-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 4px;
+  color: var(--color-ink-faint);
+  font-size: 0.84rem;
+  font-weight: 600;
 }
 
 .unit-header {
@@ -1923,6 +2026,27 @@ ul {
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.72);
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.call-rec-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-error);
+  animation: call-rec-blink 1s ease-in-out infinite;
+}
+
+@keyframes call-rec-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
 }
 
 .call-transcript {
@@ -2282,216 +2406,6 @@ ul {
   font-weight: 500;
   font-size: 0.82rem;
   color: var(--color-ink-soft);
-}
-
-/* ── Landing (cinematic scroll showcase) ────────────────────── */
-.landing {
-  background: #0b0b0f;
-  color: #fff;
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .landing {
-    scroll-snap-type: none;
-  }
-}
-
-.landing-topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 22px;
-  background: linear-gradient(180deg, rgba(11, 11, 15, 0.85) 0%, rgba(11, 11, 15, 0) 100%);
-}
-
-.landing-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.05rem;
-  color: #fff;
-}
-
-.landing-pill {
-  padding: 9px 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.82rem;
-  backdrop-filter: blur(8px);
-}
-
-.landing-section {
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  scroll-snap-align: start;
-  overflow: hidden;
-  padding: 32px;
-}
-
-.landing-glow {
-  position: absolute;
-  inset: -20%;
-  z-index: 0;
-  background: radial-gradient(circle at 50% 42%, var(--glow-color, #ff5a36) 0%, rgba(11, 11, 15, 0) 62%);
-  opacity: 0.55;
-}
-
-.landing-glow-terracotta {
-  --glow-color: #ff5a36;
-}
-
-.landing-glow-teal {
-  --glow-color: #12b5ac;
-}
-
-.landing-glow-gold {
-  --glow-color: #ffb627;
-}
-
-.landing-glow-grape {
-  --glow-color: #8b5cf6;
-}
-
-.landing-hero-content,
-.landing-content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 14px;
-  max-width: 420px;
-}
-
-.landing-wordmark {
-  font-family: var(--font-display);
-  font-size: 3.2rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #fff;
-  margin-top: 6px;
-}
-
-.landing-tagline {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.landing-cta {
-  margin-top: 10px;
-  padding: 15px 30px;
-  border-radius: 999px;
-  border: none;
-  background: #fff;
-  color: #221813;
-  font-weight: 800;
-  font-size: 0.98rem;
-}
-
-.landing-scroll-cue {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%) rotate(90deg);
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.landing-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--glow-color, rgba(255, 255, 255, 0.7));
-}
-
-.landing-headline {
-  font-family: var(--font-display);
-  font-size: 1.9rem;
-  font-weight: 600;
-  line-height: 1.25;
-  color: #fff;
-}
-
-.landing-body {
-  font-size: 1rem;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.68);
-}
-
-.landing-visual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 4px;
-}
-
-.landing-visual-icon {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.landing-path {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.landing-path-node {
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.landing-path-node-checkpoint {
-  background: transparent;
-  border: 2px dashed rgba(255, 255, 255, 0.6);
-}
-
-.landing-call-ring {
-  width: 140px;
-  height: 140px;
-  border-radius: 999px;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.landing-swatches {
-  display: flex;
-  gap: 10px;
-}
-
-.landing-swatch {
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.landing-section-final .landing-cta {
-  margin-top: 4px;
 }
 
 /* ── Confetti celebration ────────────────────────────────────── */

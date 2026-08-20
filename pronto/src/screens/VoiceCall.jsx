@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Mascot from '../components/Mascot.jsx'
 import Icon from '../components/Icon.jsx'
-import { canSpeak, canListen, canRecordAudio, speakItalian, listenOnce, startAudioRecording, blobToBase64 } from '../lib/speech.js'
+import { canSpeak, canListen, canRecordAudio, isAppleWebKit, speakItalian, listenOnce, startAudioRecording, blobToBase64 } from '../lib/speech.js'
 
 const GREETING = { role: 'assistant', italian: 'Pronto! Sono Volpe. Come va oggi?', gloss: 'Hello! It’s Volpe. How’s it going today?' }
 
@@ -10,14 +10,19 @@ const RECOGNITION_ERROR_MESSAGES = {
   'not-allowed': 'Microphone access was denied. Check your browser’s site permissions and try again.',
   'service-not-allowed': 'Microphone access was denied. Check your browser’s site permissions and try again.',
   'no-speech': 'Didn’t catch that — try again, a little closer to the mic.',
+  'no-match': 'Didn’t catch that — try again, a little closer to the mic.',
   'audio-capture': 'No microphone found on this device.',
   network: 'A network hiccup interrupted listening. Try again.',
 }
 
-// Native SpeechRecognition (Android Chrome etc.) if the browser has it;
-// otherwise raw audio recording sent to the server (works on Safari/iOS,
-// which never shipped SpeechRecognition); otherwise typing.
+const MIN_RECORDING_MS = 500
+
+// Native SpeechRecognition where it's actually reliable; raw audio
+// recording sent to the server everywhere else — including WebKit/Safari
+// (desktop and everything on iOS/iPadOS), where the native API technically
+// exists but is known to fail silently in practice. See isAppleWebKit().
 function micMode() {
+  if (canRecordAudio() && isAppleWebKit()) return 'record'
   if (canListen()) return 'native'
   if (canRecordAudio()) return 'record'
   return 'type'
@@ -31,8 +36,10 @@ export default function VoiceCall({ onExit, progress }) {
   const mode = useRef(micMode())
   const recognitionRef = useRef(null)
   const recorderRef = useRef(null)
+  const recordStartRef = useRef(0)
   const scrollRef = useRef(null)
   const speechSupported = canSpeak()
+  const [recordingSeconds, setRecordingSeconds] = useState(0)
 
   useEffect(() => {
     progress?.recordVoiceCall()
@@ -51,6 +58,17 @@ export default function VoiceCall({ onExit, progress }) {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, callState])
+
+  // Live recording timer — concrete, visible proof the mic is actually
+  // capturing, instead of a spinner-of-faith while the user talks.
+  useEffect(() => {
+    if (callState !== 'recording') {
+      setRecordingSeconds(0)
+      return
+    }
+    const t = setInterval(() => setRecordingSeconds((s) => s + 1), 1000)
+    return () => clearInterval(t)
+  }, [callState])
 
   function historyForApi() {
     return messages.map((m) =>
@@ -87,6 +105,16 @@ export default function VoiceCall({ onExit, progress }) {
           setCallState('error')
           setErrorMessage(data.message || 'Something went wrong. Try again.')
         }
+        return
+      }
+
+      // A recorded clip that comes back with an empty/near-empty transcript
+      // almost always means the mic didn't actually catch anything usable —
+      // surfacing that plainly beats silently pushing a blank message and
+      // leaving Volpe to reply to nothing.
+      if (audioBlob && (data.heard || '').trim().length < 2) {
+        setCallState('error')
+        setErrorMessage('Didn’t catch what you said — try again, and start speaking right after you tap the mic.')
         return
       }
 
@@ -129,6 +157,7 @@ export default function VoiceCall({ onExit, progress }) {
     setErrorMessage('')
     try {
       recorderRef.current = await startAudioRecording()
+      recordStartRef.current = Date.now()
       setCallState('recording')
     } catch (err) {
       setCallState('error')
@@ -142,8 +171,14 @@ export default function VoiceCall({ onExit, progress }) {
 
   async function stopRecording() {
     if (!recorderRef.current) return
+    const elapsed = Date.now() - recordStartRef.current
     const blob = await recorderRef.current.stop()
     recorderRef.current = null
+    if (elapsed < MIN_RECORDING_MS) {
+      setCallState('error')
+      setErrorMessage('That was too quick for me to catch — hold the mic a beat longer and try again.')
+      return
+    }
     sendTurn({ audioBlob: blob })
   }
 
@@ -182,7 +217,11 @@ export default function VoiceCall({ onExit, progress }) {
         </motion.div>
         <p className="call-status-label">
           {callState === 'listening' && 'Listening…'}
-          {callState === 'recording' && 'Recording — tap again when you’re done'}
+          {callState === 'recording' && (
+            <>
+              <span className="call-rec-dot" aria-hidden="true" /> Recording {String(Math.floor(recordingSeconds / 60)).padStart(1, '0')}:{String(recordingSeconds % 60).padStart(2, '0')} — tap again when you’re done
+            </>
+          )}
           {callState === 'thinking' && 'Volpe is thinking…'}
           {callState === 'speaking' && 'Volpe is talking…'}
           {callState === 'idle' && (mode.current === 'type' ? 'Type your reply below' : 'Tap the mic and speak')}

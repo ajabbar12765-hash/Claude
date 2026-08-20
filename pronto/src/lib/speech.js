@@ -48,8 +48,31 @@ export function canListen() {
   return typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition)
 }
 
+// Safari/WebKit (desktop Safari, and *everything* on iOS/iPadOS, since Apple
+// forces every browser there onto WebKit) technically exposes
+// webkitSpeechRecognition, but the implementation is well known to be
+// unreliable in practice — it can silently end with no result and no error
+// after a permission prompt or a moment of ambient noise, which reads to a
+// user as "the mic just isn't picking me up." Our own MediaRecorder-based
+// fallback (record raw audio, transcribe server-side with Gemini) is more
+// predictable and gives us actual error visibility, so we prefer it on
+// WebKit even when the native API is technically present. iPadOS Safari
+// spoofs a desktop Mac user-agent by default, so UA sniffing alone isn't
+// enough — the maxTouchPoints check catches that case too.
+export function isAppleWebKit() {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  const isIOSDevice = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  const isDesktopSafari = /^((?!chrome|android|crios|fxios).)*safari/i.test(ua)
+  return isIOSDevice || isDesktopSafari
+}
+
 // Starts one round of speech-to-text and returns the recognizer so the
-// caller can cancel it early. Fires exactly one of onResult/onError, then onEnd.
+// caller can cancel it early. Fires exactly one of onResult/onError, then
+// onEnd. If recognition ends without ever firing a result or an error
+// (a real, silent failure mode on some browsers when it just doesn't catch
+// anything), this synthesizes an onError('no-match') so the caller always
+// gets a chance to tell the user something rather than going quiet.
 export function listenOnce({ lang = 'it-IT', onResult, onError, onEnd } = {}) {
   if (!canListen()) return null
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -57,12 +80,20 @@ export function listenOnce({ lang = 'it-IT', onResult, onError, onEnd } = {}) {
   recognition.lang = lang
   recognition.interimResults = false
   recognition.maxAlternatives = 1
+  let settled = false
   recognition.onresult = (event) => {
+    settled = true
     const transcript = event.results[0][0].transcript
     onResult?.(transcript)
   }
-  recognition.onerror = (event) => onError?.(event.error)
-  recognition.onend = () => onEnd?.()
+  recognition.onerror = (event) => {
+    settled = true
+    onError?.(event.error)
+  }
+  recognition.onend = () => {
+    if (!settled) onError?.('no-match')
+    onEnd?.()
+  }
   recognition.start()
   return recognition
 }
@@ -74,6 +105,13 @@ export function canRecordAudio() {
   return typeof window !== 'undefined' && !!navigator.mediaDevices?.getUserMedia && typeof window.MediaRecorder !== 'undefined'
 }
 
+// Browsers can only encode to the container formats they actually
+// implement (Safari: mp4/AAC, Chrome/Firefox: webm/opus) — there's no way
+// to produce Gemini's most-documented formats (wav/mp3/aac/flac as bare
+// files) from MediaRecorder without a client-side transcoder, so this list
+// is "best available per browser," not "Gemini's preferred list." The
+// server side treats a suspiciously short transcript as a possible format
+// hiccup rather than trusting it blindly — see api/converse.js.
 const AUDIO_MIME_CANDIDATES = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg']
 
 export async function startAudioRecording() {

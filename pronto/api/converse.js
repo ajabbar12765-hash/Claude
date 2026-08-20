@@ -105,6 +105,12 @@ export default async function handler(req, res) {
       return
     }
 
+    if (audioBase64 && !(parsed.heard || '').trim()) {
+      // Helps distinguish "the mic genuinely caught silence" from "Gemini
+      // choked on the audio container" when checking Vercel function logs.
+      console.warn(`converse: empty transcript for audio turn (mimeType=${audioMimeType || 'unset'})`)
+    }
+
     res.status(200).json({
       heard: parsed.heard ?? text ?? '',
       italian: parsed.italian ?? '',

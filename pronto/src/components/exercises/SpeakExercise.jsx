@@ -10,6 +10,7 @@ const ERROR_MESSAGES = {
   'not-allowed': 'Microphone access was denied — check your browser’s site permissions.',
   'service-not-allowed': 'Microphone access was denied — check your browser’s site permissions.',
   'no-speech': 'Didn’t catch that. Tap the mic and try again.',
+  'no-match': 'Didn’t catch that. Tap the mic and try again.',
   'audio-capture': 'No microphone found on this device.',
   network: 'A network hiccup interrupted listening. Try again.',
 }

@@ -16,7 +16,9 @@ export default defineConfig({
         theme_color: '#ff5a36',
         background_color: '#fff8f1',
         display: 'standalone',
-        orientation: 'portrait',
+        // No orientation lock — iPad users rotate to landscape constantly,
+        // and a portrait lock actively fights that.
+        orientation: 'any',
         start_url: '/',
         scope: '/',
         icons: [

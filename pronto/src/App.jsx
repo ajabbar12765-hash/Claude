@@ -8,7 +8,6 @@ import Mascot from './components/Mascot.jsx'
 import Icon from './components/Icon.jsx'
 import Confetti from './components/Confetti.jsx'
 import { playLevelUp, playAchievement } from './lib/sound.js'
-import Landing from './screens/Landing.jsx'
 import Onboarding from './screens/Onboarding.jsx'
 import Home from './screens/Home.jsx'
 import Lesson from './screens/Lesson.jsx'
@@ -17,7 +16,6 @@ import Profile from './screens/Profile.jsx'
 import VoiceCall from './screens/VoiceCall.jsx'
 import Dictionary from './screens/Dictionary.jsx'
 
-const SEEN_LANDING_KEY = 'pronto:seenLanding:v1'
 const ONBOARDED_KEY = 'pronto:onboarded:v1'
 
 function readLaunchAction() {
@@ -52,15 +50,6 @@ function Splash() {
   )
 }
 
-function hasSeenLanding() {
-  if (typeof window === 'undefined') return true
-  try {
-    return window.localStorage.getItem(SEEN_LANDING_KEY) === '1'
-  } catch {
-    return true
-  }
-}
-
 function hasOnboarded() {
   if (typeof window === 'undefined') return true
   try {
@@ -77,7 +66,6 @@ export default function App() {
   const launchAction = useRef(readLaunchAction())
   const [screen, setScreen] = useState(() => {
     if (launchAction.current) return launchAction.current === 'call' ? 'call' : 'home'
-    if (!hasSeenLanding()) return 'landing'
     if (!hasOnboarded()) return 'onboarding'
     return 'home'
   })
@@ -97,8 +85,8 @@ export default function App() {
     return () => clearTimeout(t)
   }, [])
 
-  // A shortcut launch ("Continue Lesson" from the home-screen icon) always
-  // skips the landing page and jumps straight to whatever's next.
+  // A shortcut launch ("Continue Lesson" from the home-screen icon) jumps
+  // straight to whatever's next.
   useEffect(() => {
     if (launchAction.current === 'continue' && progress.nextLesson) {
       setActiveLesson(progress.nextLesson.lesson)
@@ -179,15 +167,6 @@ export default function App() {
     setScreen('home')
   }
 
-  function startFromLanding() {
-    try {
-      window.localStorage.setItem(SEEN_LANDING_KEY, '1')
-    } catch {
-      // localStorage unavailable — landing will just show again next visit
-    }
-    setScreen(hasOnboarded() ? 'home' : 'onboarding')
-  }
-
   function finishOnboarding(answers) {
     progress.setOnboardingAnswers(answers)
     try {
@@ -196,10 +175,6 @@ export default function App() {
       // localStorage unavailable — onboarding will just show again next visit
     }
     setScreen('home')
-  }
-
-  if (screen === 'landing') {
-    return <Landing onStart={startFromLanding} />
   }
 
   if (screen === 'onboarding') {
@@ -267,7 +242,7 @@ export default function App() {
             onOpenDictionary={() => setScreen('dictionary')}
           />
         )}
-        {screen === 'profile' && <Profile progress={progress} theme={theme} notifications={notifications} onShowLanding={() => setScreen('landing')} />}
+        {screen === 'profile' && <Profile progress={progress} theme={theme} notifications={notifications} />}
         {screen === 'call' && <VoiceCall onExit={returnHome} progress={progress} />}
         {screen === 'dictionary' && <Dictionary onExit={returnHome} progress={progress} />}
         {screen === 'lesson' && activeLesson?.type === 'lesson' && (

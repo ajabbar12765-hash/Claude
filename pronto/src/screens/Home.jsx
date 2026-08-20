@@ -186,27 +186,29 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall
         </motion.button>
       )}
 
-      <motion.button variants={item} whileTap={{ scale: 0.98 }} type="button" className="call-card" onClick={onOpenCall}>
-        <span className="call-card-mascot">
-          <Mascot expression="talking" size={44} />
-        </span>
-        <span className="call-card-text">
-          <span className="call-card-title">Call Volpe</span>
-          <span className="call-card-sub">Practice a real spoken conversation in Italian</span>
-        </span>
-        <Icon name="chevronRight" size={18} strokeWidth={2.2} />
-      </motion.button>
+      <div className="home-quick-actions">
+        <motion.button variants={item} whileTap={{ scale: 0.98 }} type="button" className="call-card" onClick={onOpenCall}>
+          <span className="call-card-mascot">
+            <Mascot expression="talking" size={44} />
+          </span>
+          <span className="call-card-text">
+            <span className="call-card-title">Call Volpe</span>
+            <span className="call-card-sub">Practice a real spoken conversation in Italian</span>
+          </span>
+          <Icon name="chevronRight" size={18} strokeWidth={2.2} />
+        </motion.button>
 
-      <motion.button variants={item} whileTap={{ scale: 0.98 }} type="button" className="call-card dict-card-cta" onClick={onOpenDictionary}>
-        <span className="call-card-mascot dict-card-cta-icon">
-          <Icon name="book" size={22} strokeWidth={2} />
-        </span>
-        <span className="call-card-text">
-          <span className="call-card-title">Dictionary</span>
-          <span className="call-card-sub">Look up any word — English or Italian, nouns included</span>
-        </span>
-        <Icon name="chevronRight" size={18} strokeWidth={2.2} />
-      </motion.button>
+        <motion.button variants={item} whileTap={{ scale: 0.98 }} type="button" className="call-card dict-card-cta" onClick={onOpenDictionary}>
+          <span className="call-card-mascot dict-card-cta-icon">
+            <Icon name="book" size={22} strokeWidth={2} />
+          </span>
+          <span className="call-card-text">
+            <span className="call-card-title">Dictionary</span>
+            <span className="call-card-sub">Look up any word — English or Italian, nouns included</span>
+          </span>
+          <Icon name="chevronRight" size={18} strokeWidth={2.2} />
+        </motion.button>
+      </div>
 
       <div className="unit-list">
         {UNITS.map((unit, ui) => {
@@ -242,28 +244,40 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall
                   ))}
                 </ul>
               )}
-              <motion.div className="lesson-path" variants={container} initial="hidden" animate="show">
-                {(() => {
-                  let zigzag = 0
-                  return unit.lessons.map((lesson, li) => {
-                    const status = !unlocked || !isLessonUnlocked(ui, li) ? 'locked' : isLessonComplete(lesson.id) ? 'done' : 'open'
-                    const isMilestone = lesson.type === 'scenario' || lesson.checkpoint
-                    const side = isMilestone ? 'path-row-center' : PATH_SIDES[zigzag++ % 2 === 0 ? 0 : 2]
-                    return (
-                      <LessonNode
-                        key={lesson.id}
-                        unit={unit}
-                        lesson={lesson}
-                        index={li}
-                        total={unit.lessons.length}
-                        status={status}
-                        side={side}
-                        onOpen={onOpenLesson}
-                      />
-                    )
-                  })
-                })()}
-              </motion.div>
+              {unlocked ? (
+                <motion.div className="lesson-path" variants={container} initial="hidden" animate="show">
+                  {(() => {
+                    let zigzag = 0
+                    return unit.lessons.map((lesson, li) => {
+                      const status = !isLessonUnlocked(ui, li) ? 'locked' : isLessonComplete(lesson.id) ? 'done' : 'open'
+                      const isMilestone = lesson.type === 'scenario' || lesson.checkpoint
+                      const side = isMilestone ? 'path-row-center' : PATH_SIDES[zigzag++ % 2 === 0 ? 0 : 2]
+                      return (
+                        <LessonNode
+                          key={lesson.id}
+                          unit={unit}
+                          lesson={lesson}
+                          index={li}
+                          total={unit.lessons.length}
+                          status={status}
+                          side={side}
+                          onOpen={onOpenLesson}
+                        />
+                      )
+                    })
+                  })()}
+                </motion.div>
+              ) : (
+                // Locked units have nothing interactive to show yet — a
+                // full zigzag path of grey lock icons was just visual
+                // noise. One compact line instead.
+                <div className="unit-locked-summary">
+                  <Icon name="lock" size={15} strokeWidth={2.1} />
+                  <span>
+                    Finish the unit above to unlock {unit.lessons.length} lesson{unit.lessons.length === 1 ? '' : 's'}
+                  </span>
+                </div>
+              )}
             </motion.section>
           )
         })}
