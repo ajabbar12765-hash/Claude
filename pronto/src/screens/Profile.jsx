@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { UNITS } from '../data/curriculum.js'
 import Icon from '../components/Icon.jsx'
 import Mascot from '../components/Mascot.jsx'
+import { isSoundEnabled, setSoundEnabled } from '../lib/sound.js'
 
 const container = {
   hidden: {},
@@ -13,7 +15,8 @@ const item = {
 }
 
 export default function Profile({ progress, theme, notifications, onShowLanding }) {
-  const { streak, xp, completedCount, totalLessons, objectiveStatuses, readinessPercent, resetProgress } = progress
+  const { streak, xp, completedCount, totalLessons, objectiveStatuses, readinessPercent, resetProgress, level, xpIntoLevel, xpPerLevel, achievementStatuses } = progress
+  const [soundOn, setSoundOn] = useState(() => isSoundEnabled())
 
   function handleReset() {
     if (window.confirm('Reset all progress? This clears your streak, XP, and readiness checklist on this device.')) {
@@ -21,8 +24,36 @@ export default function Profile({ progress, theme, notifications, onShowLanding 
     }
   }
 
+  function toggleSound() {
+    const next = !soundOn
+    setSoundOn(next)
+    setSoundEnabled(next)
+  }
+
+  const unlockedCount = achievementStatuses.filter((a) => a.unlocked).length
+
   return (
     <motion.div className="screen screen-profile" variants={container} initial="hidden" animate="show">
+      <motion.section variants={item} className="level-card">
+        <div className="level-card-badge">
+          <Icon name="trophy" size={26} strokeWidth={1.9} />
+        </div>
+        <div className="level-card-body">
+          <div className="level-card-heading">
+            <span className="level-card-title">Level {level}</span>
+            <span className="level-card-sub">{xpIntoLevel}/{xpPerLevel} XP to level {level + 1}</span>
+          </div>
+          <div className="goal-bar-track">
+            <motion.div
+              className="goal-bar-fill"
+              initial={{ width: 0 }}
+              animate={{ width: `${(xpIntoLevel / xpPerLevel) * 100}%` }}
+              transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+            />
+          </div>
+        </div>
+      </motion.section>
+
       <motion.section variants={item} className="profile-stats">
         <div className="profile-stat-card">
           <Icon name="flame" size={22} strokeWidth={1.9} />
@@ -38,6 +69,23 @@ export default function Profile({ progress, theme, notifications, onShowLanding 
           <Icon name="map" size={22} strokeWidth={1.9} />
           <span className="profile-stat-value">{completedCount}/{totalLessons}</span>
           <span className="profile-stat-label">Stops completed</span>
+        </div>
+      </motion.section>
+
+      <motion.section variants={item} className="achievements-section">
+        <div className="achievements-heading">
+          <h2>Achievements</h2>
+          <span className="achievements-count">{unlockedCount}/{achievementStatuses.length}</span>
+        </div>
+        <div className="achievements-grid">
+          {achievementStatuses.map((a) => (
+            <div key={a.id} className={`achievement-badge ${a.unlocked ? 'achievement-badge-unlocked' : ''}`} title={a.desc}>
+              <span className="achievement-badge-icon">
+                <Icon name={a.unlocked ? a.icon : 'lock'} size={20} strokeWidth={1.9} />
+              </span>
+              <span className="achievement-badge-label">{a.label}</span>
+            </div>
+          ))}
         </div>
       </motion.section>
 
@@ -98,6 +146,26 @@ export default function Profile({ progress, theme, notifications, onShowLanding 
           </div>
         </motion.section>
       )}
+
+      <motion.section variants={item} className="notif-section">
+        <div className="notif-heading">
+          <Icon name="volume" size={22} strokeWidth={1.9} />
+          <div>
+            <h2>Sound effects</h2>
+            <p className="notif-explainer">Chimes for correct/incorrect answers, combos, and celebrations.</p>
+          </div>
+          <button
+            type="button"
+            className={`notif-toggle ${soundOn ? 'notif-toggle-on' : ''}`}
+            onClick={toggleSound}
+            role="switch"
+            aria-checked={soundOn}
+            aria-label="Toggle sound effects"
+          >
+            <span className="notif-toggle-knob" />
+          </button>
+        </div>
+      </motion.section>
 
       {notifications?.supported && (
         <motion.section variants={item} className="notif-section">

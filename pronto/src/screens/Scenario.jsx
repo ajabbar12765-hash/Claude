@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Icon from '../components/Icon.jsx'
 import Mascot from '../components/Mascot.jsx'
+import { playCorrect, playIncorrect, playComplete } from '../lib/sound.js'
 
 export default function Scenario({ scenario, progress, onExit, onFinished }) {
   const [turnIndex, setTurnIndex] = useState(0)
@@ -16,6 +17,7 @@ export default function Scenario({ scenario, progress, onExit, onFinished }) {
     if (finished) {
       progress.recordCorrect(`${scenario.id}-done`)
       progress.completeLesson(scenario.id, total)
+      playComplete()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finished])
@@ -24,6 +26,8 @@ export default function Scenario({ scenario, progress, onExit, onFinished }) {
     if (status === 'correct') return
     setSelected(index)
     setStatus(choice.correct ? 'correct' : 'incorrect')
+    if (choice.correct) playCorrect()
+    else playIncorrect()
   }
 
   function handleContinue() {

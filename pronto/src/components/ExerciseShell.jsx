@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Mascot from './Mascot.jsx'
+import { playCorrect, playIncorrect } from '../lib/sound.js'
 
 // Shared chrome for every exercise type: the prompt area up top, the
 // type-specific interactive area (passed as children), and a bottom
@@ -25,6 +26,11 @@ export default function ExerciseShell({
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [status, canCheck, onCheck, onContinue])
+
+  useEffect(() => {
+    if (status === 'correct') playCorrect()
+    else if (status === 'incorrect') playIncorrect()
+  }, [status])
 
   return (
     <motion.div className="exercise" initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ type: 'spring', stiffness: 340, damping: 30 }}>

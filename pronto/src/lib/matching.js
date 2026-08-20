@@ -22,6 +22,26 @@ export function isAcceptableAnswer(userInput, italianAnswer, acceptVariants = []
   return candidates.includes(normalizedInput)
 }
 
+// How much of the target phrase shows up in a speech-recognition transcript,
+// as a 0-1 ratio of target words matched (order-independent, since STT can
+// reorder or mishear small function words). Lenient by design — this is
+// pronunciation practice, not a spelling test.
+export function speechMatchRatio(transcript, target) {
+  const heard = normalize(transcript).split(' ').filter(Boolean)
+  const wanted = normalize(target).split(' ').filter(Boolean)
+  if (!wanted.length) return 0
+  const remaining = [...wanted]
+  let matches = 0
+  for (const word of heard) {
+    const idx = remaining.indexOf(word)
+    if (idx !== -1) {
+      matches += 1
+      remaining.splice(idx, 1)
+    }
+  }
+  return matches / wanted.length
+}
+
 export function shuffle(array) {
   const copy = [...array]
   for (let i = copy.length - 1; i > 0; i--) {

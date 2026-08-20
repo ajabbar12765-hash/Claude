@@ -23,7 +23,7 @@ function micMode() {
   return 'type'
 }
 
-export default function VoiceCall({ onExit }) {
+export default function VoiceCall({ onExit, progress }) {
   const [messages, setMessages] = useState([GREETING])
   const [callState, setCallState] = useState('speaking') // idle | listening | recording | thinking | speaking | error-no-key | error
   const [typedValue, setTypedValue] = useState('')
@@ -35,6 +35,7 @@ export default function VoiceCall({ onExit }) {
   const speechSupported = canSpeak()
 
   useEffect(() => {
+    progress?.recordVoiceCall()
     if (speechSupported) {
       speakItalian(GREETING.italian, { onStart: () => setCallState('speaking'), onEnd: () => setCallState('idle') })
     } else {

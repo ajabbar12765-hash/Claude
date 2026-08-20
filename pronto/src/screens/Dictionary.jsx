@@ -26,7 +26,7 @@ function saveHistory(list) {
 
 const GENDER_LABEL = { masculine: 'masc.', feminine: 'fem.' }
 
-export default function Dictionary({ onExit }) {
+export default function Dictionary({ onExit, progress }) {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('idle') // idle | loading | error | error-no-key
   const [errorMessage, setErrorMessage] = useState('')
@@ -66,6 +66,7 @@ export default function Dictionary({ onExit }) {
 
       setResult(data)
       rememberResult(data)
+      progress?.recordDictionaryLookup()
       setStatus('idle')
     } catch {
       setStatus('error')

@@ -19,6 +19,7 @@
 //   type   - type the Italian translation from a free text box
 //   listen - hear the Italian spoken aloud, choose what it means
 //   match  - match a small set of Italian/English pairs
+//   speak  - say the Italian phrase out loud, scored against speech recognition
 
 function lesson(id, title, subtitle, icon, exercises) {
   return {
@@ -63,6 +64,10 @@ function match(pairs, extra = {}) {
   return { type: 'match', pairs, ...extra }
 }
 
+function speak(it, en, extra = {}) {
+  return { type: 'speak', it, en, ...extra }
+}
+
 export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
@@ -94,6 +99,7 @@ export const UNITS = [
           { it: 'Buonasera', en: 'Good evening' },
           { it: 'A domani', en: 'See you tomorrow' },
         ]),
+        speak('Ciao, come stai?', 'Say it out loud: Hi, how are you?'),
       ]),
 
       lesson('u1l2', 'Please & Thank You', 'The words that make everything else land softer', 'heart', [
@@ -122,6 +128,7 @@ export const UNITS = [
           { it: 'Scusi', en: 'Excuse me / Sorry (formal)' },
           { it: 'Sì / No', en: 'Yes / No' },
         ]),
+        speak('Grazie mille', 'Say it out loud: Thanks a lot'),
       ]),
 
       lesson('u1l3', 'When You Get Stuck', 'What to say the moment you stop understanding', 'question', [
@@ -153,6 +160,7 @@ export const UNITS = [
           { it: 'Più lentamente', en: 'More slowly' },
           { it: 'Come si dice...?', en: 'How do you say...?' },
         ]),
+        speak('Non capisco', 'Say it out loud: I don’t understand'),
       ]),
 
       scenario(
@@ -245,6 +253,7 @@ export const UNITS = [
           { it: 'Acqua frizzante', en: 'Sparkling water' },
           { it: 'Un bicchiere d’acqua', en: 'A glass of water' },
         ]),
+        speak('Vorrei dell’acqua, per favore', 'Say it out loud: I would like some water, please', { objectiveIds: ['order-drink'] }),
       ]),
 
       lesson('u2l2', 'Food & Allergies', 'So you don’t discover the hard way what’s in it', 'croissant', [
@@ -372,6 +381,7 @@ export const UNITS = [
           { it: 'Tavolo libero', en: 'Free table' },
           { it: 'Quante persone?', en: 'How many people?' },
         ]),
+        speak('Un tavolo per due, per favore', 'Say it out loud: A table for two, please'),
       ]),
 
       lesson('u3l2', 'Ordering & Diets', 'Getting the meal you actually want', 'plate', [
@@ -530,6 +540,7 @@ export const UNITS = [
           { it: 'Sempre dritto', en: 'Straight ahead' },
           { it: 'Vicino / lontano', en: 'Near / far' },
         ]),
+        speak('Dov’è il bagno?', 'Say it out loud: Where’s the bathroom?'),
       ]),
 
       lesson('u4l2', 'Tickets & Transport', 'Trains, buses, and not missing either', 'train', [
@@ -632,6 +643,7 @@ export const UNITS = [
           { it: 'C’è un problema', en: 'There’s a problem' },
           { it: 'Chiami la polizia', en: 'Call the police' },
         ]),
+        speak('Ho bisogno di aiuto', 'Say it out loud: I need help', { objectiveIds: ['get-help'] }),
       ]),
 
       lesson('u5l2', 'At the Pharmacy', 'Describing what hurts, precisely enough to get the right box', 'pill', [
@@ -734,6 +746,7 @@ export const UNITS = [
           { it: 'Uno sconto', en: 'A discount' },
           { it: 'Facciamo...?', en: 'Shall we say...? (negotiating)' },
         ]),
+        speak('Quanto costa questo?', 'Say it out loud: How much does this cost?'),
       ]),
 
       lesson('u6l2', 'Small Talk', 'The questions that turn a transaction into a conversation', 'chat', [

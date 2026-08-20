@@ -5,7 +5,9 @@ import { useTheme } from './hooks/useTheme.js'
 import { useNotifications } from './hooks/useNotifications.js'
 import TopBar from './components/TopBar.jsx'
 import Mascot from './components/Mascot.jsx'
+import Icon from './components/Icon.jsx'
 import Confetti from './components/Confetti.jsx'
+import { playLevelUp, playAchievement } from './lib/sound.js'
 import Landing from './screens/Landing.jsx'
 import Onboarding from './screens/Onboarding.jsx'
 import Home from './screens/Home.jsx'
@@ -85,6 +87,10 @@ export default function App() {
   const prevCompletedCount = useRef(progress.completedCount)
   const prevStreak = useRef(progress.streak.count)
   const prevGoalMet = useRef(progress.dailyGoalMet)
+  const prevLevel = useRef(progress.level)
+  const prevUnlockedIds = useRef(new Set(progress.achievementStatuses.filter((a) => a.unlocked).map((a) => a.id)))
+  const [levelUpToast, setLevelUpToast] = useState(null)
+  const [achievementToast, setAchievementToast] = useState(null)
 
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), 1100)
@@ -133,6 +139,36 @@ export default function App() {
     prevCompletedCount.current = progress.completedCount
   }, [progress.completedCount])
 
+  // Level-up toast + sound whenever total XP crosses a level boundary.
+  useEffect(() => {
+    if (progress.level > prevLevel.current) {
+      setLevelUpToast({ level: progress.level })
+      setCelebrate(true)
+      playLevelUp()
+      const t1 = setTimeout(() => setCelebrate(false), 1000)
+      const t2 = setTimeout(() => setLevelUpToast(null), 2600)
+      prevLevel.current = progress.level
+      return () => {
+        clearTimeout(t1)
+        clearTimeout(t2)
+      }
+    }
+    prevLevel.current = progress.level
+  }, [progress.level])
+
+  // Achievement-unlock toast + sound the moment a badge newly qualifies.
+  useEffect(() => {
+    const unlockedNow = progress.achievementStatuses.filter((a) => a.unlocked)
+    const newlyUnlocked = unlockedNow.filter((a) => !prevUnlockedIds.current.has(a.id))
+    prevUnlockedIds.current = new Set(unlockedNow.map((a) => a.id))
+    if (newlyUnlocked.length > 0) {
+      setAchievementToast(newlyUnlocked[0])
+      playAchievement()
+      const t = setTimeout(() => setAchievementToast(null), 2800)
+      return () => clearTimeout(t)
+    }
+  }, [progress.achievementStatuses])
+
   function openLesson(lesson) {
     setActiveLesson(lesson)
     setScreen('lesson')
@@ -177,6 +213,41 @@ export default function App() {
       <AnimatePresence>{booting && <Splash key="splash" />}</AnimatePresence>
       <Confetti active={celebrate} />
 
+      <div className="global-toast-zone">
+        <AnimatePresence>
+          {levelUpToast && (
+            <motion.div
+              key="level-up"
+              className="global-toast level-up-toast"
+              initial={{ opacity: 0, y: -16, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -16, scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+            >
+              <Icon name="trophy" size={18} strokeWidth={2.2} />
+              Level {levelUpToast.level}!
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {achievementToast && (
+            <motion.div
+              key={achievementToast.id}
+              className="global-toast achievement-toast"
+              initial={{ opacity: 0, y: -16, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -16, scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+            >
+              <Icon name={achievementToast.icon} size={18} strokeWidth={2.2} />
+              <span>
+                Achievement unlocked <strong>{achievementToast.label}</strong>
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
       {showChrome && (
         <TopBar
           streak={progress.streak.count}
@@ -197,8 +268,8 @@ export default function App() {
           />
         )}
         {screen === 'profile' && <Profile progress={progress} theme={theme} notifications={notifications} onShowLanding={() => setScreen('landing')} />}
-        {screen === 'call' && <VoiceCall onExit={returnHome} />}
-        {screen === 'dictionary' && <Dictionary onExit={returnHome} />}
+        {screen === 'call' && <VoiceCall onExit={returnHome} progress={progress} />}
+        {screen === 'dictionary' && <Dictionary onExit={returnHome} progress={progress} />}
         {screen === 'lesson' && activeLesson?.type === 'lesson' && (
           <Lesson lesson={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />
         )}

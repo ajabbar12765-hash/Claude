@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { UNITS, OBJECTIVES, OBJECTIVE_REQUIREMENTS } from '../data/curriculum.js'
+import { ACHIEVEMENTS } from '../data/achievements.js'
+
+const XP_PER_LEVEL = 100
 
 const STORAGE_KEY = 'pronto:progress:v1'
 
@@ -23,6 +26,9 @@ function defaultState() {
     motivation: null,
     xpToday: { date: todayStr(), amount: 0 },
     startedAt: new Date().toISOString(),
+    perfectLessons: 0,
+    voiceCallCount: 0,
+    dictionaryLookups: 0,
   }
 }
 
@@ -56,7 +62,7 @@ export function useProgress() {
     }))
   }, [])
 
-  const completeLesson = useCallback((lessonId, exerciseCount) => {
+  const completeLesson = useCallback((lessonId, exerciseCount, perfect = false) => {
     setState((prev) => {
       const alreadyDone = !!prev.completedLessons[lessonId]
       const xpGain = alreadyDone ? 5 : exerciseCount * 10 + 20
@@ -79,8 +85,17 @@ export function useProgress() {
         streak: { count, lastActiveDate: today },
         xpToday,
         completedLessons: { ...prev.completedLessons, [lessonId]: true },
+        perfectLessons: perfect && !alreadyDone ? prev.perfectLessons + 1 : prev.perfectLessons,
       }
     })
+  }, [])
+
+  const recordVoiceCall = useCallback(() => {
+    setState((prev) => ({ ...prev, voiceCallCount: prev.voiceCallCount + 1 }))
+  }, [])
+
+  const recordDictionaryLookup = useCallback(() => {
+    setState((prev) => ({ ...prev, dictionaryLookups: prev.dictionaryLookups + 1 }))
   }, [])
 
   const resetProgress = useCallback(() => {
@@ -135,6 +150,22 @@ export function useProgress() {
 
   const dailyGoalMet = state.xpToday.date === todayStr() && state.xpToday.amount >= state.goalXpPerDay
 
+  const level = Math.floor(state.xp / XP_PER_LEVEL) + 1
+  const xpIntoLevel = state.xp % XP_PER_LEVEL
+
+  const achievementStatuses = useMemo(() => {
+    const snapshot = {
+      completedCount,
+      perfectLessons: state.perfectLessons,
+      streak: state.streak.count,
+      voiceCallCount: state.voiceCallCount,
+      dictionaryLookups: state.dictionaryLookups,
+      level,
+      readinessPercent,
+    }
+    return ACHIEVEMENTS.map((a) => ({ ...a, unlocked: a.check(snapshot) }))
+  }, [completedCount, state.perfectLessons, state.streak.count, state.voiceCallCount, state.dictionaryLookups, level, readinessPercent])
+
   const nextLesson = useMemo(() => {
     for (let ui = 0; ui < UNITS.length; ui++) {
       const unit = UNITS[ui]
@@ -160,8 +191,15 @@ export function useProgress() {
     objectiveStatuses,
     readinessPercent,
     nextLesson,
+    level,
+    xpIntoLevel,
+    xpPerLevel: XP_PER_LEVEL,
+    perfectLessons: state.perfectLessons,
+    achievementStatuses,
     recordCorrect,
     completeLesson,
+    recordVoiceCall,
+    recordDictionaryLookup,
     isLessonComplete,
     isUnitUnlocked,
     isLessonUnlocked,

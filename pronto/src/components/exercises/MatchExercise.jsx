@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import Mascot from '../Mascot.jsx'
 import { shuffle } from '../../lib/matching.js'
+import { playCorrect, playIncorrect } from '../../lib/sound.js'
 
 export default function MatchExercise({ exercise, onAnswered, onContinue }) {
   const { pairs } = exercise
@@ -33,10 +34,12 @@ export default function MatchExercise({ exercise, onAnswered, onContinue }) {
       const a = side === 'it' ? item : otherSelected
       const b = side === 'it' ? otherSelected : item
       if (a.pairIndex === b.pairIndex) {
+        playCorrect()
         setMatched((prev) => new Set(prev).add(a.pairIndex))
         setSelectedIt(null)
         setSelectedEn(null)
       } else {
+        playIncorrect()
         setWrongPulse(true)
         setTimeout(() => {
           setWrongPulse(false)

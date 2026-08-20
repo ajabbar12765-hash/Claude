@@ -4,6 +4,7 @@ import TypeExercise from './TypeExercise.jsx'
 import ListenExercise from './ListenExercise.jsx'
 import MatchExercise from './MatchExercise.jsx'
 import ExplainExercise from './ExplainExercise.jsx'
+import SpeakExercise from './SpeakExercise.jsx'
 
 const RENDERERS = {
   mcq: McqExercise,
@@ -12,6 +13,7 @@ const RENDERERS = {
   listen: ListenExercise,
   match: MatchExercise,
   explain: ExplainExercise,
+  speak: SpeakExercise,
 }
 
 export default function ExerciseRunner({ exercise, onAnswered, onContinue }) {
