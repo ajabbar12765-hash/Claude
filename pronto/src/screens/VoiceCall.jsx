@@ -2,31 +2,48 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Mascot from '../components/Mascot.jsx'
 import Icon from '../components/Icon.jsx'
-import { canSpeak, canListen, speakItalian, listenOnce } from '../lib/speech.js'
+import { canSpeak, canListen, canRecordAudio, speakItalian, listenOnce, startAudioRecording, blobToBase64 } from '../lib/speech.js'
 
-const GREETING = { role: 'assistant', content: 'Pronto! Sono Volpe. Come va oggi? (Hello! It’s Volpe. How’s it going today?)' }
+const GREETING = { role: 'assistant', italian: 'Pronto! Sono Volpe. Come va oggi?', gloss: 'Hello! It’s Volpe. How’s it going today?' }
 
-function stripGloss(text) {
-  return text.replace(/\s*\([^)]*\)\s*$/, '').trim()
+const RECOGNITION_ERROR_MESSAGES = {
+  'not-allowed': 'Microphone access was denied. Check your browser’s site permissions and try again.',
+  'service-not-allowed': 'Microphone access was denied. Check your browser’s site permissions and try again.',
+  'no-speech': 'Didn’t catch that — try again, a little closer to the mic.',
+  'audio-capture': 'No microphone found on this device.',
+  network: 'A network hiccup interrupted listening. Try again.',
+}
+
+// Native SpeechRecognition (Android Chrome etc.) if the browser has it;
+// otherwise raw audio recording sent to the server (works on Safari/iOS,
+// which never shipped SpeechRecognition); otherwise typing.
+function micMode() {
+  if (canListen()) return 'native'
+  if (canRecordAudio()) return 'record'
+  return 'type'
 }
 
 export default function VoiceCall({ onExit }) {
   const [messages, setMessages] = useState([GREETING])
-  const [callState, setCallState] = useState('speaking') // idle | listening | thinking | speaking | error-no-key | error
+  const [callState, setCallState] = useState('speaking') // idle | listening | recording | thinking | speaking | error-no-key | error
   const [typedValue, setTypedValue] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const mode = useRef(micMode())
   const recognitionRef = useRef(null)
+  const recorderRef = useRef(null)
   const scrollRef = useRef(null)
   const speechSupported = canSpeak()
-  const listenSupported = canListen()
 
   useEffect(() => {
     if (speechSupported) {
-      speakItalian(stripGloss(GREETING.content), { onStart: () => setCallState('speaking'), onEnd: () => setCallState('idle') })
+      speakItalian(GREETING.italian, { onStart: () => setCallState('speaking'), onEnd: () => setCallState('idle') })
     } else {
       setCallState('idle')
     }
-    return () => recognitionRef.current?.abort?.()
+    return () => {
+      recognitionRef.current?.abort?.()
+      recorderRef.current?.cancel?.()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -34,19 +51,30 @@ export default function VoiceCall({ onExit }) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, callState])
 
-  async function sendTurn(userText) {
-    const trimmed = userText.trim()
-    if (!trimmed) return
-    const nextMessages = [...messages, { role: 'user', content: trimmed }]
-    setMessages(nextMessages)
+  function historyForApi() {
+    return messages.map((m) =>
+      m.role === 'assistant' ? { role: 'assistant', text: `${m.italian} (${m.gloss})` } : { role: 'user', text: m.text },
+    )
+  }
+
+  async function sendTurn({ text, audioBlob }) {
+    const history = historyForApi()
     setCallState('thinking')
     setErrorMessage('')
 
     try {
+      const body = audioBlob
+        ? { history, audioBase64: await blobToBase64(audioBlob), audioMimeType: audioBlob.type }
+        : { history, text: text.trim() }
+      if (!audioBlob && !body.text) {
+        setCallState('idle')
+        return
+      }
+
       const res = await fetch('/api/converse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: nextMessages }),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
 
@@ -61,10 +89,13 @@ export default function VoiceCall({ onExit }) {
         return
       }
 
-      const reply = data.reply || '...'
-      setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
-      if (speechSupported) {
-        speakItalian(stripGloss(reply), { onStart: () => setCallState('speaking'), onEnd: () => setCallState('idle') })
+      setMessages((prev) => [
+        ...prev,
+        { role: 'user', text: data.heard || text || '(voice message)' },
+        { role: 'assistant', italian: data.italian || '...', gloss: data.gloss || '' },
+      ])
+      if (speechSupported && data.italian) {
+        speakItalian(data.italian, { onStart: () => setCallState('speaking'), onEnd: () => setCallState('idle') })
       } else {
         setCallState('idle')
       }
@@ -75,12 +106,15 @@ export default function VoiceCall({ onExit }) {
   }
 
   function startListening() {
-    if (callState !== 'idle' || !listenSupported) return
+    if (callState !== 'idle') return
     setCallState('listening')
     recognitionRef.current = listenOnce({
       lang: 'it-IT',
-      onResult: (transcript) => sendTurn(transcript),
-      onError: () => setCallState('idle'),
+      onResult: (transcript) => sendTurn({ text: transcript }),
+      onError: (code) => {
+        setCallState('error')
+        setErrorMessage(RECOGNITION_ERROR_MESSAGES[code] || 'Something went wrong while listening. Try again.')
+      },
       onEnd: () => setCallState((s) => (s === 'listening' ? 'idle' : s)),
     })
   }
@@ -89,14 +123,48 @@ export default function VoiceCall({ onExit }) {
     recognitionRef.current?.stop?.()
   }
 
+  async function startRecording() {
+    if (callState !== 'idle' && callState !== 'error') return
+    setErrorMessage('')
+    try {
+      recorderRef.current = await startAudioRecording()
+      setCallState('recording')
+    } catch (err) {
+      setCallState('error')
+      setErrorMessage(
+        err?.name === 'NotAllowedError'
+          ? 'Microphone access was denied. Check your browser’s site permissions and try again.'
+          : 'Couldn’t access the microphone on this device.',
+      )
+    }
+  }
+
+  async function stopRecording() {
+    if (!recorderRef.current) return
+    const blob = await recorderRef.current.stop()
+    recorderRef.current = null
+    sendTurn({ audioBlob: blob })
+  }
+
+  function handleMicTap() {
+    if (mode.current === 'native') {
+      callState === 'listening' ? stopListening() : startListening()
+    } else if (mode.current === 'record') {
+      callState === 'recording' ? stopRecording() : startRecording()
+    }
+  }
+
   function handleTypedSubmit(e) {
     e.preventDefault()
     if (callState !== 'idle' && callState !== 'error' && callState !== 'error-no-key') return
-    sendTurn(typedValue)
+    if (!typedValue.trim()) return
+    sendTurn({ text: typedValue })
     setTypedValue('')
   }
 
   const mascotExpression = callState === 'speaking' ? 'talking' : callState === 'thinking' ? 'thinking' : 'idle'
+  const micActive = callState === 'listening' || callState === 'recording'
+  const micBusy = callState === 'thinking' || callState === 'speaking'
 
   return (
     <div className="screen screen-call">
@@ -108,16 +176,15 @@ export default function VoiceCall({ onExit }) {
       </div>
 
       <div className="call-avatar-zone">
-        <motion.div
-          className={`call-avatar-ring ${callState === 'listening' ? 'call-avatar-ring-listening' : ''} ${callState === 'speaking' ? 'call-avatar-ring-speaking' : ''}`}
-        >
+        <motion.div className={`call-avatar-ring ${micActive ? 'call-avatar-ring-listening' : ''} ${callState === 'speaking' ? 'call-avatar-ring-speaking' : ''}`}>
           <Mascot expression={mascotExpression} size={104} />
         </motion.div>
         <p className="call-status-label">
           {callState === 'listening' && 'Listening…'}
+          {callState === 'recording' && 'Recording — tap again when you’re done'}
           {callState === 'thinking' && 'Volpe is thinking…'}
           {callState === 'speaking' && 'Volpe is talking…'}
-          {callState === 'idle' && (listenSupported ? 'Tap the mic and speak' : 'Type your reply below')}
+          {callState === 'idle' && (mode.current === 'type' ? 'Type your reply below' : 'Tap the mic and speak')}
           {(callState === 'error' || callState === 'error-no-key') && 'Something needs your attention'}
         </p>
       </div>
@@ -132,7 +199,14 @@ export default function VoiceCall({ onExit }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 340, damping: 30 }}
             >
-              {m.content}
+              {m.role === 'assistant' ? (
+                <>
+                  {m.italian}
+                  {m.gloss && <span className="call-bubble-gloss">{m.gloss}</span>}
+                </>
+              ) : (
+                m.text
+              )}
             </motion.div>
           ))}
         </AnimatePresence>
@@ -143,16 +217,16 @@ export default function VoiceCall({ onExit }) {
       </div>
 
       <div className="call-controls">
-        {listenSupported ? (
+        {mode.current !== 'type' ? (
           <motion.button
             type="button"
             whileTap={{ scale: 0.94 }}
-            className={`call-mic ${callState === 'listening' ? 'call-mic-active' : ''}`}
-            disabled={callState === 'thinking' || callState === 'speaking'}
-            onClick={callState === 'listening' ? stopListening : startListening}
-            aria-label={callState === 'listening' ? 'Stop listening' : 'Start speaking'}
+            className={`call-mic ${micActive ? 'call-mic-active' : ''}`}
+            disabled={micBusy}
+            onClick={handleMicTap}
+            aria-label={micActive ? 'Stop and send' : 'Start speaking'}
           >
-            <Icon name={callState === 'listening' ? 'x' : 'volume'} size={26} strokeWidth={2} />
+            <Icon name={micActive ? 'x' : 'volume'} size={26} strokeWidth={2} />
           </motion.button>
         ) : (
           <form className="call-type-form" onSubmit={handleTypedSubmit}>
@@ -162,9 +236,9 @@ export default function VoiceCall({ onExit }) {
               placeholder="Scrivi la tua risposta..."
               value={typedValue}
               onChange={(e) => setTypedValue(e.target.value)}
-              disabled={callState === 'thinking' || callState === 'speaking'}
+              disabled={micBusy}
             />
-            <motion.button whileTap={{ scale: 0.95 }} type="submit" className="btn-primary call-type-send" disabled={callState === 'thinking' || callState === 'speaking'}>
+            <motion.button whileTap={{ scale: 0.95 }} type="submit" className="btn-primary call-type-send" disabled={micBusy}>
               Send
             </motion.button>
           </form>

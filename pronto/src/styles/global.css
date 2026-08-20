@@ -426,60 +426,126 @@ ul {
 }
 
 .lesson-path {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   position: relative;
-  padding-left: 6px;
-  border-left: 2px dashed var(--color-border);
-  margin-left: 20px;
+  padding: 4px 0;
 }
 
-.lesson-node {
+.lesson-path::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(to bottom, var(--color-border) 0 8px, transparent 8px 16px);
+  z-index: 0;
+}
+
+.path-row {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
-  margin-left: -22px;
-  text-align: left;
+  margin-bottom: 22px;
 }
 
-.lesson-node-marker {
-  width: 34px;
-  height: 34px;
+.path-row-left {
+  justify-content: flex-start;
+  padding-right: 46%;
+}
+
+.path-row-right {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+  padding-left: 46%;
+}
+
+.path-row-center {
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin-top: 6px;
+  margin-bottom: 30px;
+}
+
+.path-node {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
   border-radius: 999px;
+  border: 3px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--unit-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-cream-2);
-  color: var(--unit-color);
-  flex-shrink: 0;
-  border: 2px solid var(--color-card);
-  box-shadow: 0 0 0 2px var(--color-border);
+  box-shadow: 0 3px 0 var(--color-border);
 }
 
-.lesson-node-done .lesson-node-marker {
+.path-node:not(:disabled):not(.path-node-done) {
+  animation: path-node-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes path-node-pulse {
+  0%, 100% {
+    box-shadow: 0 3px 0 var(--color-border), 0 0 0 0 color-mix(in srgb, var(--unit-color) 35%, transparent);
+  }
+  50% {
+    box-shadow: 0 3px 0 var(--color-border), 0 0 0 8px color-mix(in srgb, var(--unit-color) 0%, transparent);
+  }
+}
+
+.path-node-milestone {
+  width: 76px;
+  height: 76px;
+  border-style: dashed;
+}
+
+.path-node-done {
   background: var(--unit-color);
-  color: white;
-  box-shadow: none;
+  border-color: color-mix(in srgb, var(--unit-color) 70%, black);
+  border-style: solid;
+  color: #fff;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--unit-color) 70%, black);
 }
 
-.lesson-node-text {
+.path-node-locked {
+  color: var(--color-ink-faint);
+  background: var(--color-cream-2);
+  box-shadow: 0 3px 0 var(--color-border);
+  animation: none;
+}
+
+.path-node-label {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-width: 0;
+  max-width: 130px;
 }
 
-.lesson-node-title {
-  font-weight: 700;
-  font-size: 0.95rem;
-  display: flex;
+.path-row-right .path-node-label {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.path-row-center .path-node-label {
   align-items: center;
-  gap: 8px;
+  text-align: center;
+  max-width: 200px;
+  margin-top: 4px;
+}
+
+.path-node-title {
+  font-weight: 700;
+  font-size: 0.86rem;
+  line-height: 1.25;
+}
+
+.path-node-index {
+  font-size: 0.68rem;
+  color: var(--color-ink-faint);
+  margin-top: 1px;
 }
 
 .scenario-tag {
@@ -491,30 +557,14 @@ ul {
   background: color-mix(in srgb, var(--unit-color) 14%, white);
   padding: 2px 7px;
   border-radius: 999px;
+  margin-top: 3px;
+  display: inline-block;
+  width: fit-content;
 }
 
-.lesson-node-subtitle {
-  font-size: 0.78rem;
-  color: var(--color-ink-soft);
-  margin-top: 1px;
-}
-
-.lesson-node-chevron {
-  color: var(--color-ink-faint);
-  flex-shrink: 0;
-}
-
-.lesson-node-locked {
-  color: var(--color-ink-faint);
-}
-
-.lesson-node-locked .lesson-node-title,
-.lesson-node-locked .lesson-node-subtitle {
-  color: var(--color-ink-faint);
-}
-
-.lesson-node-scenario {
-  border-style: dashed;
+.path-row-right .scenario-tag,
+.path-row-right .checkpoint-tag {
+  align-self: flex-end;
 }
 
 /* ── Lesson / scenario chrome ───────────────────────────────── */
@@ -1485,6 +1535,13 @@ ul {
   border-bottom-right-radius: 4px;
 }
 
+.call-bubble-gloss {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
 .call-error {
   align-self: center;
   background: rgba(240, 53, 90, 0.16);
@@ -1642,18 +1699,6 @@ ul {
   background: color-mix(in srgb, var(--unit-color) 20%, white);
   padding: 2px 7px;
   border-radius: 999px;
-}
-
-.lesson-node-checkpoint {
-  border-color: var(--unit-color);
-  background: color-mix(in srgb, var(--unit-color) 6%, white);
-}
-
-.lesson-node-index {
-  display: block;
-  font-size: 0.7rem;
-  color: var(--color-ink-faint);
-  margin-top: 2px;
 }
 
 /* ── Explain (grammar note) exercise ────────────────────────── */

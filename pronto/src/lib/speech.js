@@ -59,3 +59,53 @@ export function listenOnce({ lang = 'it-IT', onResult, onError, onEnd } = {}) {
   recognition.start()
   return recognition
 }
+
+// Fallback for platforms with no SpeechRecognition (Safari/iOS never
+// shipped it): record raw audio instead and let the server-side model
+// transcribe it directly.
+export function canRecordAudio() {
+  return typeof window !== 'undefined' && !!navigator.mediaDevices?.getUserMedia && typeof window.MediaRecorder !== 'undefined'
+}
+
+const AUDIO_MIME_CANDIDATES = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg']
+
+export async function startAudioRecording() {
+  if (!canRecordAudio()) throw new Error('audio-recording-unsupported')
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+  const mimeType = AUDIO_MIME_CANDIDATES.find((t) => window.MediaRecorder.isTypeSupported?.(t)) || ''
+  const recorder = new window.MediaRecorder(stream, mimeType ? { mimeType } : undefined)
+  const chunks = []
+  recorder.ondataavailable = (e) => {
+    if (e.data && e.data.size > 0) chunks.push(e.data)
+  }
+  recorder.start()
+
+  function cleanup() {
+    stream.getTracks().forEach((t) => t.stop())
+  }
+
+  return {
+    mimeType: recorder.mimeType || mimeType || 'audio/webm',
+    stop: () =>
+      new Promise((resolve) => {
+        recorder.onstop = () => {
+          cleanup()
+          resolve(new Blob(chunks, { type: recorder.mimeType || mimeType || 'audio/webm' }))
+        }
+        recorder.stop()
+      }),
+    cancel: () => {
+      recorder.onstop = cleanup
+      recorder.stop()
+    },
+  }
+}
+
+export function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(String(reader.result).split(',')[1] || '')
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(blob)
+  })
+}
