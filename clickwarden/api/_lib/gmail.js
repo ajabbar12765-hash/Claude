@@ -39,20 +39,18 @@ async function getAccessToken() {
   return data.access_token
 }
 
-// Registers (or renews) the Gmail -> Pub/Sub push subscription. Google
-// expires this every 7 days, hence the daily renew-watch cron.
-export async function startWatch() {
+// Pub/Sub push notifications would need a Google Cloud billing account (a
+// credit card) even to stay within the free tier -- not acceptable for a
+// zero-cost personal tool. Polling instead: this just reads the mailbox's
+// current historyId as the baseline for the next incremental sync, no
+// billing-gated APIs involved.
+export async function getProfileHistoryId() {
   const token = await getAccessToken()
-  const topicName = process.env.GMAIL_PUBSUB_TOPIC // projects/<project>/topics/<topic>
-  const res = await fetch(`${GMAIL_API}/watch`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-    body: JSON.stringify({ topicName, labelIds: ['INBOX'], labelFilterAction: 'include' }),
-  })
-  if (!res.ok) throw new Error(`Gmail watch() failed: ${res.status} ${await res.text()}`)
-  const data = await res.json() // { historyId, expiration }
-  await saveAccount({ lastHistoryId: data.historyId, watchExpiration: data.expiration })
-  return data
+  const res = await fetch(`${GMAIL_API}/profile`, { headers: { authorization: `Bearer ${token}` } })
+  if (!res.ok) throw new Error(`Gmail profile fetch failed: ${res.status}`)
+  const data = await res.json() // { emailAddress, historyId, ... }
+  await saveAccount({ lastHistoryId: data.historyId })
+  return data.historyId
 }
 
 // Pub/Sub only tells us "something changed as of historyId X" -- this turns

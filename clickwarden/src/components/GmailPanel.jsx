@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getGmailStatus, disconnectGmail } from '../lib/api.js'
+import { getGmailStatus, disconnectGmail, pollGmailNow } from '../lib/api.js'
 
 const DOT = {
   malicious: '#dc2626',
@@ -11,6 +11,7 @@ const DOT = {
 export default function GmailPanel() {
   const [status, setStatus] = useState(null)
   const [error, setError] = useState('')
+  const [checking, setChecking] = useState(false)
 
   async function load() {
     try {
@@ -22,9 +23,9 @@ export default function GmailPanel() {
 
   useEffect(() => {
     load()
-    // The dashboard is a viewer, not the scan trigger -- actual scanning
-    // happens server-side the instant Gmail pushes a new-message event. This
-    // just refreshes what's already been recorded while you have it open.
+    // The dashboard just displays what's already been recorded. Actual
+    // scanning is triggered by the browser extension's ~1-minute alarm, a
+    // once-daily server-side cron, or the "Check now" button below.
     const id = setInterval(load, 15000)
     return () => clearInterval(id)
   }, [])
@@ -33,6 +34,19 @@ export default function GmailPanel() {
     if (!confirm('Disconnect Gmail? Auto-scanning will stop until you reconnect.')) return
     await disconnectGmail()
     load()
+  }
+
+  async function handleCheckNow() {
+    setChecking(true)
+    setError('')
+    try {
+      await pollGmailNow()
+      await load()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setChecking(false)
+    }
   }
 
   if (error) return <p className="scan-error">{error}</p>
@@ -53,12 +67,17 @@ export default function GmailPanel() {
     <div className="gmail-panel">
       <div className="gmail-header">
         <p>
-          Connected since {new Date(status.connectedAt).toLocaleDateString()}. Every new email is scanned
-          automatically within seconds of arriving.
+          Connected since {new Date(status.connectedAt).toLocaleDateString()}. New emails are checked roughly once
+          a minute while the browser extension is running, with a daily catch-up as a backstop.
         </p>
-        <button className="button-secondary" onClick={handleDisconnect}>
-          Disconnect
-        </button>
+        <div className="gmail-actions">
+          <button className="button-secondary" onClick={handleCheckNow} disabled={checking}>
+            {checking ? 'Checking…' : 'Check now'}
+          </button>
+          <button className="button-secondary" onClick={handleDisconnect}>
+            Disconnect
+          </button>
+        </div>
       </div>
       {status.warning && <p className="scan-error">{status.warning}</p>}
       {status.scans?.length ? (

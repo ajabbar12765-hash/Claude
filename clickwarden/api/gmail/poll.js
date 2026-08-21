@@ -1,56 +1,62 @@
+import { requireTokenOrCron } from '../_lib/auth.js'
 import { kv } from '../_lib/kv.js'
-import { fetchNewMessagesSince, getMessage, getAttachmentBytes, extractLinksAndAttachments, saveAccount } from '../_lib/gmail.js'
+import { fetchNewMessagesSince, getMessage, getAttachmentBytes, extractLinksAndAttachments, getProfileHistoryId } from '../_lib/gmail.js'
 import { vtLookupUrl, vtLookupHash } from '../_lib/virustotal.js'
 import { checkSafeBrowsing } from '../_lib/safeBrowsing.js'
 import { checkUrlhaus } from '../_lib/urlhaus.js'
 import { aggregateVerdict } from '../_lib/verdict.js'
 import crypto from 'node:crypto'
 
-// Skip hashing attachments bigger than this -- Gmail API + serverless
-// function memory/time budgets aren't built for large-file transfer.
+// Google Cloud Pub/Sub push notifications would need a billing account (a
+// credit card) even to stay free -- not acceptable here, so this polls
+// instead. Three things call this endpoint: the browser extension's
+// ~1-minute alarm (near-real-time while your browser is open), a once-daily
+// Vercel Cron as a safety net (see vercel.json), and the dashboard's
+// "Check now" button.
 const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024
-// One malicious-looking email shouldn't be able to burn VirusTotal's whole
-// daily 500-request quota by itself.
 const MAX_LINKS_PER_EMAIL = 20
-
 const VERDICT_RANK = { malicious: 3, suspicious: 2, unknown: 1, safe: 0 }
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end()
+  // Vercel Cron always invokes via GET; the extension alarm and the
+  // dashboard's "Check now" button use POST. Both are accepted here.
+  if (req.method !== 'GET' && req.method !== 'POST') return res.status(405).json({ error: 'GET or POST only' })
+  if (!requireTokenOrCron(req, res)) return
 
-  // Pub/Sub push subscriptions are created with this shared secret baked
-  // into the endpoint URL (see SETUP.md) so random internet POSTs can't
-  // trigger scans or spend your API quota.
-  if (req.query.token !== process.env.GMAIL_PUSH_SECRET) {
-    return res.status(401).end()
+  let store
+  try {
+    store = kv()
+  } catch {
+    return res.status(200).json({ scanned: 0, warning: 'Redis not configured -- see SETUP.md' })
   }
 
-  // Pub/Sub retries (and backs up) if we don't ack within ~10s, well before
-  // scanning every link/attachment in a message could finish -- so ack now
-  // and keep working. The serverless invocation stays alive until this async
-  // handler's promise settles, even though the response already went out.
-  res.status(204).end()
+  const account = await store.get('clickwarden:gmail:account')
+  if (!account) return res.status(200).json({ scanned: 0, connected: false })
 
   try {
-    const payload = JSON.parse(Buffer.from(req.body.message.data, 'base64').toString('utf-8'))
-    const { historyId } = payload
-
-    const store = kv()
-    const account = await store.get('clickwarden:gmail:account')
-    if (!account) return
-
-    const since = account.lastHistoryId
-    await saveAccount({ lastHistoryId: historyId })
-    if (!since) return
-
-    const { messageIds, gap } = await fetchNewMessagesSince(since)
-    if (gap || messageIds.length === 0) return
-
-    for (const id of messageIds) {
-      await scanMessage(id, store)
+    if (!account.lastHistoryId) {
+      // First poll since connecting -- just establish the baseline, nothing
+      // to scan yet (scanning everything already in the inbox would blow
+      // through the day's VirusTotal quota on one request).
+      await getProfileHistoryId()
+      return res.status(200).json({ scanned: 0, baselineSet: true })
     }
+
+    const { messageIds, gap } = await fetchNewMessagesSince(account.lastHistoryId)
+    const freshHistoryId = await getProfileHistoryId()
+
+    if (gap) {
+      return res.status(200).json({ scanned: 0, gap: true })
+    }
+
+    let flagged = 0
+    for (const id of messageIds) {
+      const verdict = await scanMessage(id, store)
+      if (verdict === 'malicious' || verdict === 'suspicious') flagged += 1
+    }
+    return res.status(200).json({ scanned: messageIds.length, flagged, historyId: freshHistoryId })
   } catch (e) {
-    console.error('gmail push handling failed', e)
+    return res.status(500).json({ error: String(e) })
   }
 }
 
@@ -95,4 +101,5 @@ async function scanMessage(id, store) {
     scannedAt: new Date().toISOString(),
   })
   await store.ltrim('clickwarden:gmail:scans', 0, 99)
+  return worst
 }

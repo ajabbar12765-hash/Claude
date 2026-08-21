@@ -32,6 +32,8 @@ export const getGmailStatus = () => request('/api/gmail/status')
 
 export const disconnectGmail = () => request('/api/gmail/disconnect', { method: 'POST' })
 
+export const pollGmailNow = () => request('/api/gmail/poll', { method: 'POST' })
+
 export async function sha256File(file) {
   const buffer = await file.arrayBuffer()
   const digest = await crypto.subtle.digest('SHA-256', buffer)

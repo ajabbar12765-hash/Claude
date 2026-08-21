@@ -1,4 +1,4 @@
-import { saveAccount, startWatch } from '../_lib/gmail.js'
+import { saveAccount, getProfileHistoryId } from '../_lib/gmail.js'
 
 export default async function handler(req, res) {
   const { code, error } = req.query
@@ -31,10 +31,11 @@ export default async function handler(req, res) {
   await saveAccount({ refreshToken: tokens.refresh_token, connectedAt: new Date().toISOString() })
 
   try {
-    await startWatch()
+    // Baseline historyId -- polling only looks at what changed after this.
+    await getProfileHistoryId()
   } catch {
-    // Account is saved even if the watch subscription fails here -- the
-    // daily renew-watch cron will retry it.
+    // Account is still saved even if this fails; the next poll (extension
+    // alarm, daily cron, or "Check now") will set the baseline instead.
   }
 
   res.writeHead(302, { Location: '/?gmail=connected' })

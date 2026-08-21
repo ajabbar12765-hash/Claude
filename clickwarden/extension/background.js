@@ -58,6 +58,36 @@ function notify(title, message) {
   })
 }
 
+// Gmail auto-scan runs by polling, not push notifications -- a real-time
+// Pub/Sub subscription needs a Google Cloud billing account (a credit card)
+// even to stay within its free tier, which this project deliberately avoids.
+// So: poll roughly once a minute while the browser is open (1 minute is
+// Chrome's alarm-period floor) as the near-real-time path, backed by a
+// once-daily server-side cron as a catch-up if the browser was closed.
+chrome.alarms.create('gmail-poll', { periodInMinutes: 1 })
+
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name !== 'gmail-poll') return
+  const { backendUrl, apiToken } = await getSettings()
+  if (!backendUrl) return
+  try {
+    const res = await fetch(`${backendUrl.replace(/\/$/, '')}/api/gmail/poll`, {
+      method: 'POST',
+      headers: { 'x-clickwarden-token': apiToken },
+    })
+    if (!res.ok) return
+    const data = await res.json()
+    if (data.flagged > 0) {
+      notify(
+        'Flagged an email',
+        `${data.flagged} of ${data.scanned} new email(s) had a suspicious/malicious link or attachment -- open the dashboard for details`
+      )
+    }
+  } catch {
+    // next alarm will retry
+  }
+})
+
 // Navigation guard. MV3 removed blocking webRequest for most extensions, so
 // this cannot stop a page from starting to load -- it races a reputation
 // check against the page load and, if the verdict comes back

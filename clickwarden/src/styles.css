@@ -134,6 +134,7 @@ section h2 { margin-top: 0; font-size: 16px; color: var(--muted); text-transform
 .history-time { color: var(--muted); font-size: 12px; white-space: nowrap; }
 
 .gmail-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.gmail-actions { display: flex; gap: 8px; flex-shrink: 0; }
 .email-subject { font-weight: 500; }
 .email-from, .email-meta { color: var(--muted); font-size: 12px; }
 

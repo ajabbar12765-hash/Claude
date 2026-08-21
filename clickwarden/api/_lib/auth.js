@@ -12,3 +12,12 @@ export function requireToken(req, res) {
   res.status(401).json({ error: 'Missing or invalid x-clickwarden-token header' })
   return false
 }
+
+// For endpoints hit both by the app (x-clickwarden-token) and by Vercel Cron
+// (which sends `Authorization: Bearer <CRON_SECRET>` automatically once
+// CRON_SECRET is set -- see vercel.json).
+export function requireTokenOrCron(req, res) {
+  const cronSecret = process.env.CRON_SECRET
+  if (cronSecret && req.headers.authorization === `Bearer ${cronSecret}`) return true
+  return requireToken(req, res)
+}

@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       connected: !!account,
       connectedAt: account?.connectedAt || null,
-      watchExpiration: account?.watchExpiration || null,
+      lastHistoryId: account?.lastHistoryId || null,
       scans,
     })
   } catch {
