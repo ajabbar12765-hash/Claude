@@ -18,7 +18,7 @@ Rules:
 - Never break character to talk about being an AI or a language model.
 - If your input is audio, transcribe exactly what the learner said (in whatever language they said it) into the "heard" field. If your input is already text, copy that same text into "heard" unchanged.`
 
-const MODEL = 'gemini-2.5-flash'
+const MODEL = 'gemini-3.6-flash'
 
 const RESPONSE_SCHEMA = {
   type: 'OBJECT',

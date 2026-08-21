@@ -15,7 +15,7 @@ Rules:
 - If the input is gibberish or not a real word in either language, still fill in your best-effort guess rather than leaving fields empty.
 - Keep every field short — this renders on a small card, not an essay.`
 
-const MODEL = 'gemini-2.5-flash'
+const MODEL = 'gemini-3.6-flash'
 
 const RESPONSE_SCHEMA = {
   type: 'OBJECT',
