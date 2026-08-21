@@ -7,14 +7,21 @@ were deliberately avoided; see the note in Part 2 and Part 7 for why. None of
 this can be done on your behalf -- each step needs you to sign in with your
 own accounts. Budget ~20-30 minutes the first time.
 
-## 1. Deploy the backend + dashboard to Vercel
+## 1. Deploy the backend + dashboard to Vercel -- done
 
-1. In Vercel, "Add New Project" from this GitHub repo. Vercel's free Hobby
-   plan needs no payment method to sign up or deploy.
-2. Set **Root Directory** to `clickwarden` (this is a subfolder of a larger repo).
-3. Framework preset: Vite (auto-detected from `vercel.json`).
-4. Deploy once with no env vars set yet -- it'll build, but scanning will
-   report "not configured" warnings until you add keys below.
+Already live at **https://clickwarden.vercel.app** (project `clickwarden` in
+your `ajabbar12765-hash's projects` Vercel team), deployed directly from this
+repo's code. Vercel Authentication was on by default for the new project,
+which would have blocked the extension, the dashboard, and Google's OAuth
+callback from ever reaching it -- that's been turned off, so it's genuinely
+public.
+
+Home page and `/api/gmail/status` were confirmed responding. Everything
+below just adds the env vars scanning and Gmail need -- until you do, scans
+will show a "not configured" warning instead of a verdict.
+
+Note: this deployment isn't Git-linked, so pushing new commits to this
+branch won't auto-redeploy. Ask for a redeploy whenever the code changes.
 
 ## 2. Add Redis storage (scan history, cache, Gmail token)
 
@@ -89,7 +96,7 @@ require billing either.
    address as a test user (you don't need to publish the app -- test mode is
    fine for personal use and avoids Google's review process).
 3. **Credentials -> Create credentials -> OAuth client ID** -> type **Web application**.
-   - Authorized redirect URI: `https://<your-app>.vercel.app/api/gmail/oauth-callback`
+   - Authorized redirect URI: `https://clickwarden.vercel.app/api/gmail/oauth-callback`
 4. Vercel env vars:
    - `GOOGLE_CLIENT_ID`
    - `GOOGLE_CLIENT_SECRET`
@@ -126,14 +133,14 @@ part is easiest to test against your live Vercel deployment.
 
 ## 10. Connect everything
 
-1. Open `https://<your-app>.vercel.app`, click **Settings**, paste your
+1. Open `https://clickwarden.vercel.app`, click **Settings**, paste your
    `CLICKWARDEN_API_TOKEN`.
 2. Click **Connect Gmail** and complete Google's consent screen.
 3. Load the browser extension:
    - Chrome/Edge -> `chrome://extensions` -> enable **Developer mode** ->
      **Load unpacked** -> select the `clickwarden/extension` folder.
    - Click the extension icon -> **Settings** -> enter your backend URL
-     (`https://<your-app>.vercel.app`) and the same API token.
+     (`https://clickwarden.vercel.app`) and the same API token.
 
 You're done, at $0 and with no card on file anywhere. New emails get checked
 roughly every minute while your browser is open (or immediately if you click
