@@ -3,6 +3,8 @@ import ScanBox from './components/ScanBox.jsx'
 import VerdictCard from './components/VerdictCard.jsx'
 import HistoryList from './components/HistoryList.jsx'
 import GmailPanel from './components/GmailPanel.jsx'
+import PasswordCheck from './components/PasswordCheck.jsx'
+import PasswordVault from './components/PasswordVault.jsx'
 import { getToken, setToken as saveToken, getHistory } from './lib/api.js'
 
 export default function App() {
@@ -74,6 +76,16 @@ export default function App() {
         <section>
           <h2>Recent scans</h2>
           <HistoryList entries={history} />
+        </section>
+
+        <section>
+          <h2>Password breach check</h2>
+          <PasswordCheck />
+        </section>
+
+        <section>
+          <h2>Password manager</h2>
+          <PasswordVault />
         </section>
       </main>
 

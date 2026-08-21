@@ -20,8 +20,13 @@
     "service_worker": "background.js",
     "type": "module"
   },
-  "permissions": ["webNavigation", "downloads", "storage", "tabs", "notifications", "alarms"],
+  "permissions": ["webNavigation", "downloads", "storage", "tabs", "notifications", "alarms", "declarativeNetRequest"],
   "host_permissions": ["<all_urls>"],
+  "declarative_net_request": {
+    "rule_resources": [
+      { "id": "tracker_blocklist", "enabled": true, "path": "tracker-rules.json" }
+    ]
+  },
   "options_page": "options.html",
   "web_accessible_resources": [
     {

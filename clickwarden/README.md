@@ -25,6 +25,15 @@ security products draw on, and surface it fast, for free.
   -- see "What it doesn't do" below.
 - **Browser extension** -- redirects you away from flagged links and cancels
   downloads that come back malicious/suspicious, with a system notification.
+- **Anti-tracker** -- the extension blocks ~3,500 known tracking/analytics/
+  fingerprinting/cryptomining domains site-wide (Disconnect's tracking
+  protection list, the same category of feed Bitdefender/Firefox/Brave use).
+- **Password breach check** -- checks a password against Have I Been Pwned's
+  free, keyless Pwned Passwords API. Only a 5-character hash prefix ever
+  leaves the browser (k-anonymity) -- the real password is never transmitted.
+- **Password manager** -- a vault encrypted client-side (PBKDF2 + AES-GCM)
+  with a master password before it ever reaches the server. ClickWarden's
+  backend only ever stores ciphertext.
 
 ## Cost: $0, no credit card, anywhere
 
@@ -59,9 +68,19 @@ service requires.
   the browser extension being loaded and running (Chrome enforces a 1-minute
   floor on alarm periods); without it, new mail only gets picked up by the
   once-daily catch-up cron or a manual "Check now" click.
-- **No ransomware rollback, no VPN, no password manager, no firewall** --
-  none of the other things a full security suite bundles. This is
-  specifically a "check before you click" tool.
+- **No ransomware rollback, no firewall, no webcam/mic blocking, no Safe
+  Banking isolated browser, no file shredder, no system cleanup, no
+  scanning installed software for CVEs.** These all need OS-level
+  privileges no browser extension or web app is granted -- not a gap in
+  effort, a wall every third-party security app hits, including
+  Bitdefender's own iOS app (it can't do on-device scanning either, for
+  the same reason). No VPN either: running one is real infrastructure, not
+  something a free serverless deployment can host -- use
+  [Cloudflare WARP](https://one.one.one.one/) alongside this instead.
+- **No dark-web email/account breach monitoring.** Have I Been Pwned's
+  password-breach check above is free; checking whether *your email* shows
+  up in a specific breach needs their paid API ($4.39/mo minimum) -- not
+  added here since it costs money.
 
 If you need real device-level antivirus, keep using one alongside this --
 ClickWarden is a complement, not a replacement.
@@ -71,6 +90,7 @@ ClickWarden is a complement, not a replacement.
 ```
 extension/         Manifest V3 browser extension
   background.js       checks links (webNavigation) + downloads before they land
+  tracker-rules.json    declarativeNetRequest anti-tracker blocklist (~3,500 domains)
   blocked.html/js      interstitial warning page
   popup / options       status, recent activity, backend URL + token config
 
@@ -78,11 +98,15 @@ src/                React dashboard (Vite)
   ScanBox               paste a URL or pick a file to check on demand
   GmailPanel             connect Gmail, view auto-scanned emails
   HistoryList             recent scans
+  PasswordCheck           client-side Pwned Passwords breach check
+  PasswordVault            encrypted password manager UI
+  lib/vaultCrypto.js       PBKDF2 + AES-GCM, entirely client-side
 
 api/                Vercel serverless functions (Node.js)
   scan-url.js            aggregates VirusTotal + Safe Browsing + URLhaus for a URL
   scan-file.js            VirusTotal hash lookup (+ opt-in upload)
   history.js               recent scans from Redis
+  vault.js                  stores/returns the encrypted vault blob (never sees plaintext)
   gmail/
     oauth-start.js          -> Google consent screen
     oauth-callback.js        stores refresh token, records the starting historyId

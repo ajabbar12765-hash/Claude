@@ -1,6 +1,13 @@
 const DEFAULTS = { enabled: true, backendUrl: '', apiToken: '' }
 const CACHE_TTL_MS = 10 * 60 * 1000
 
+// Anti-tracker: tracker-rules.json (declarativeNetRequest static ruleset,
+// registered in manifest.json) blocks known third-party tracker/analytics/
+// fingerprinting/cryptomining domains on its own -- no code needed to make
+// the blocking itself work. This just shows how many were blocked per tab,
+// via Chrome's own action-badge counter instead of hand-rolled bookkeeping.
+chrome.declarativeNetRequest.setExtensionActionOptions({ displayActionCountAsBadgeText: true }).catch(() => {})
+
 async function getSettings() {
   return chrome.storage.sync.get(DEFAULTS)
 }
