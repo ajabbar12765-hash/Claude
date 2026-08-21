@@ -17,6 +17,11 @@ const RECOGNITION_ERROR_MESSAGES = {
 
 const MIN_RECORDING_MS = 500
 
+// How many recent turns to send back to Gemini each request. The full
+// transcript isn't needed for a natural reply, and re-sending an ever-growing
+// history is the main thing that makes a long call feel slower over time.
+const MAX_HISTORY_TURNS = 8
+
 // Native SpeechRecognition where it's actually reliable; raw audio
 // recording sent to the server everywhere else — including WebKit/Safari
 // (desktop and everything on iOS/iPadOS), where the native API technically
@@ -71,9 +76,9 @@ export default function VoiceCall({ onExit, progress }) {
   }, [callState])
 
   function historyForApi() {
-    return messages.map((m) =>
-      m.role === 'assistant' ? { role: 'assistant', text: `${m.italian} (${m.gloss})` } : { role: 'user', text: m.text },
-    )
+    return messages
+      .slice(-MAX_HISTORY_TURNS)
+      .map((m) => (m.role === 'assistant' ? { role: 'assistant', text: `${m.italian} (${m.gloss})` } : { role: 'user', text: m.text }))
   }
 
   async function sendTurn({ text, audioBlob }) {
@@ -83,9 +88,10 @@ export default function VoiceCall({ onExit, progress }) {
 
     try {
       const level = progress?.italianLevel || undefined
+      const knownVocab = progress?.knownVocab
       const body = audioBlob
-        ? { history, audioBase64: await blobToBase64(audioBlob), audioMimeType: audioBlob.type, level }
-        : { history, text: text.trim(), level }
+        ? { history, audioBase64: await blobToBase64(audioBlob), audioMimeType: audioBlob.type, level, knownVocab }
+        : { history, text: text.trim(), level, knownVocab }
       if (!audioBlob && !body.text) {
         setCallState('idle')
         return

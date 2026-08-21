@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { UNITS, OBJECTIVES, OBJECTIVE_REQUIREMENTS } from '../data/curriculum.js'
+import { UNITS, OBJECTIVES, OBJECTIVE_REQUIREMENTS, vocabForLesson } from '../data/curriculum.js'
 import { ACHIEVEMENTS } from '../data/achievements.js'
 
 const XP_PER_LEVEL = 100
+
+// How many taught words/phrases to send Volpe as "known vocabulary" context.
+// Capped so a learner deep into the course doesn't balloon every voice-call
+// request — the most recent (most advanced) items in curriculum order win.
+const KNOWN_VOCAB_CAP = 80
 
 const STORAGE_KEY = 'pronto:progress:v1'
 
@@ -185,6 +190,23 @@ export function useProgress() {
     return ACHIEVEMENTS.map((a) => ({ ...a, unlocked: a.check(snapshot) }))
   }, [completedCount, state.perfectLessons, state.streak.count, state.voiceCallCount, state.dictionaryLookups, level, readinessPercent])
 
+  // Every {it, en} pair from lessons the learner has actually completed —
+  // grounds Volpe's vocabulary in what was really taught rather than a
+  // generic level bucket. Deduped by Italian phrase, capped to the most
+  // recent items in curriculum order so it stays small as the course grows.
+  const knownVocab = useMemo(() => {
+    const seen = new Map()
+    for (const unit of UNITS) {
+      for (const l of unit.lessons) {
+        if (!state.completedLessons[l.id]) continue
+        for (const pair of vocabForLesson(l)) {
+          if (pair.it && pair.en) seen.set(pair.it.toLowerCase(), pair)
+        }
+      }
+    }
+    return Array.from(seen.values()).slice(-KNOWN_VOCAB_CAP)
+  }, [state.completedLessons])
+
   const nextLesson = useMemo(() => {
     for (let ui = 0; ui < UNITS.length; ui++) {
       const unit = UNITS[ui]
@@ -216,6 +238,7 @@ export function useProgress() {
     perfectLessons: state.perfectLessons,
     achievementStatuses,
     italianLevel: state.italianLevel,
+    knownVocab,
     recordCorrect,
     completeLesson,
     recordVoiceCall,

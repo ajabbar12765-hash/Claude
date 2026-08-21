@@ -888,3 +888,34 @@ export function findLesson(lessonId) {
   }
   return null
 }
+
+function vocabFromExercise(ex) {
+  switch (ex.type) {
+    case 'mcq':
+    case 'build':
+    case 'type':
+    case 'listen':
+      return ex.it && ex.en ? [{ it: ex.it, en: ex.en }] : []
+    case 'match':
+      return ex.pairs || []
+    case 'explain':
+      return ex.examples || []
+    default:
+      return []
+  }
+}
+
+// The actual Italian words/phrases a lesson teaches, as {it, en} pairs —
+// used to ground Volpe's vocabulary in what the learner has really been
+// taught, instead of a generic level bucket. Scenario "lessons" pull each
+// turn's line plus whichever choice was marked correct (the one the
+// learner was meant to produce), skipping the wrong-answer distractors.
+export function vocabForLesson(lesson) {
+  if (lesson.type === 'scenario') {
+    return (lesson.turns || []).flatMap((t) => {
+      const correct = t.choices?.find((c) => c.correct)
+      return [{ it: t.it, en: t.en }, ...(correct ? [{ it: correct.it, en: correct.en }] : [])]
+    })
+  }
+  return (lesson.exercises || []).flatMap(vocabFromExercise)
+}

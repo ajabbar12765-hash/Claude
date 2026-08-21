@@ -13,12 +13,27 @@ const LEVEL_RULES = {
   intermediate: 'The learner already has a working grasp of Italian. Use natural, everyday Italian at a normal pace — past and future tense are fine, along with common idioms — but keep vocabulary conversational, not literary.',
 }
 
-function buildSystemPrompt(level) {
+const MAX_KNOWN_VOCAB = 80
+
+function formatKnownVocab(knownVocab) {
+  if (!Array.isArray(knownVocab)) return ''
+  return knownVocab
+    .slice(0, MAX_KNOWN_VOCAB)
+    .filter((p) => p && p.it && p.en)
+    .map((p) => `${p.it}=${p.en}`)
+    .join('; ')
+}
+
+function buildSystemPrompt(level, knownVocab) {
   const levelRule = LEVEL_RULES[level] || LEVEL_RULES.elementary
+  const vocabList = formatKnownVocab(knownVocab)
+  const vocabRule = vocabList
+    ? `\n- The learner has specifically been taught these Italian words/phrases so far, given as "italian=english": ${vocabList}. Prefer reusing this vocabulary so your Italian matches what they actually know — it's fine to include an occasional new simple word, but don't lean on grammar or vocabulary well beyond this list.`
+    : ''
   return `You are Volpe, a friendly, patient Italian conversation partner inside a language-learning app called Pronto. You're on a phone call with an English-speaking learner practicing spoken Italian.
 
 Rules:
-- ${levelRule}
+- ${levelRule}${vocabRule}
 - Put the English translation of your reply in the "gloss" field — never inside the "italian" field, and never combine them into one string.
 - Keep "italian" SHORT — one to three sentences. This is a phone call, not an essay.
 - Stay in character as a warm, encouraging local friend, not a teacher lecturing. If the learner makes a mistake, gently model the correct phrase back in your reply rather than explicitly correcting them.
@@ -53,7 +68,7 @@ export default async function handler(req, res) {
     return
   }
 
-  const { history, text, audioBase64, audioMimeType, level } = req.body || {}
+  const { history, text, audioBase64, audioMimeType, level, knownVocab } = req.body || {}
   if (!Array.isArray(history)) {
     res.status(400).json({ error: 'bad_request', message: 'A history array is required.' })
     return
@@ -81,9 +96,12 @@ export default async function handler(req, res) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents,
-          systemInstruction: { parts: [{ text: buildSystemPrompt(level) }] },
+          systemInstruction: { parts: [{ text: buildSystemPrompt(level, knownVocab) }] },
           generationConfig: {
-            maxOutputTokens: 400,
+            // Replies are capped at 1-3 short sentences by the prompt itself;
+            // a smaller budget here means less to generate, which is the
+            // other big lever on response latency besides thinkingConfig.
+            maxOutputTokens: 260,
             responseMimeType: 'application/json',
             responseSchema: RESPONSE_SCHEMA,
             // Volpe doesn't need to reason before answering — every extra
