@@ -641,18 +641,19 @@ ul {
   width: 60px;
   height: 60px;
   border-radius: 999px;
-  border: 3px solid var(--color-border);
+  border: 3px solid var(--color-ring-track);
   background: var(--color-card);
   color: var(--unit-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 3px 0 var(--color-border), var(--shadow-xs);
-  transition: transform 0.1s ease;
+  box-shadow: 0 3px 0 var(--color-ring-track), var(--shadow-card);
+  transition: transform 0.1s ease, box-shadow 0.12s ease;
 }
 
 .path-node:not(:disabled):active {
-  transform: scale(0.94);
+  transform: scale(0.94) translateY(1px);
+  box-shadow: 0 0 0 var(--color-ring-track), var(--shadow-xs);
 }
 
 .path-node:not(:disabled):not(.path-node-done) {
@@ -661,10 +662,10 @@ ul {
 
 @keyframes path-node-pulse {
   0%, 100% {
-    box-shadow: 0 3px 0 var(--color-border), 0 0 0 0 color-mix(in srgb, var(--unit-color) 35%, transparent);
+    box-shadow: 0 3px 0 var(--color-ring-track), 0 0 0 0 color-mix(in srgb, var(--unit-color) 35%, transparent);
   }
   50% {
-    box-shadow: 0 3px 0 var(--color-border), 0 0 0 8px color-mix(in srgb, var(--unit-color) 0%, transparent);
+    box-shadow: 0 3px 0 var(--color-ring-track), 0 0 0 8px color-mix(in srgb, var(--unit-color) 0%, transparent);
   }
 }
 
@@ -987,7 +988,7 @@ ul {
 }
 
 .option-tile {
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-ring-track);
   background: var(--color-card);
   border-radius: var(--radius-md);
   padding: 16px 12px;
@@ -995,29 +996,38 @@ ul {
   font-size: 0.92rem;
   text-align: center;
   color: var(--color-ink);
-  box-shadow: var(--shadow-xs);
+  box-shadow: 0 2px 0 var(--color-ring-track), var(--shadow-card);
   transition: border-color 0.12s ease, background 0.12s ease, transform 0.1s ease, box-shadow 0.12s ease;
 }
 
+.option-tile:not(:disabled):hover {
+  border-color: var(--color-terracotta);
+  box-shadow: 0 2px 0 var(--color-terracotta-dark), var(--shadow-card-hover);
+}
+
 .option-tile:not(:disabled):active {
-  transform: scale(0.97);
+  transform: scale(0.97) translateY(1px);
+  box-shadow: 0 0 0 var(--color-ring-track), var(--shadow-xs);
 }
 
 .option-selected {
   border-color: var(--color-terracotta);
   background: color-mix(in srgb, var(--color-terracotta) 8%, white);
+  box-shadow: 0 2px 0 var(--color-terracotta-dark), var(--shadow-card);
 }
 
 .option-correct {
   border-color: var(--color-success);
   background: var(--color-success-bg);
   color: var(--color-success);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--color-success) 60%, black), var(--shadow-card);
 }
 
 .option-wrong {
   border-color: var(--color-error);
   background: var(--color-error-bg);
   color: var(--color-error);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--color-error) 60%, black), var(--shadow-card);
 }
 
 /* ── Build (tile) exercise ──────────────────────────────────── */
@@ -2337,22 +2347,24 @@ ul {
   gap: 12px;
   padding: 16px 18px;
   border-radius: var(--radius-md);
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-ring-track);
   background: var(--color-card);
   color: var(--color-ink);
   font-weight: 700;
   font-size: 0.98rem;
   text-align: left;
-  box-shadow: var(--shadow-xs);
-  transition: border-color 0.12s ease, transform 0.1s ease;
+  box-shadow: 0 2px 0 var(--color-ring-track), var(--shadow-card);
+  transition: border-color 0.12s ease, transform 0.1s ease, box-shadow 0.12s ease;
 }
 
 .onboarding-option:active {
-  transform: scale(0.98);
+  transform: scale(0.98) translateY(1px);
+  box-shadow: 0 0 0 var(--color-ring-track), var(--shadow-xs);
 }
 
 .onboarding-option:hover {
   border-color: var(--color-terracotta);
+  box-shadow: 0 2px 0 var(--color-terracotta-dark), var(--shadow-card-hover);
 }
 
 .onboarding-option .icon {
@@ -2369,6 +2381,13 @@ ul {
   font-weight: 500;
   font-size: 0.82rem;
   color: var(--color-ink-soft);
+}
+
+.onboarding-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .onboarding-quiz-card {
@@ -2405,13 +2424,24 @@ ul {
 
 .quiz-dontknow-btn {
   flex-shrink: 0;
-  background: none;
-  border: 2px solid var(--color-border);
+  background: var(--color-card);
+  border: 2px solid var(--color-ring-track);
   border-radius: var(--radius-md);
   padding: 0 16px;
   font-weight: 700;
   font-size: 0.86rem;
   color: var(--color-ink-soft);
+  box-shadow: 0 2px 0 var(--color-ring-track), var(--shadow-xs);
+  transition: border-color 0.12s ease, transform 0.1s ease, box-shadow 0.12s ease;
+}
+
+.quiz-dontknow-btn:hover {
+  border-color: var(--color-ink-faint);
+}
+
+.quiz-dontknow-btn:active {
+  transform: scale(0.97) translateY(1px);
+  box-shadow: 0 0 0 var(--color-ring-track), var(--shadow-xs);
 }
 
 .quiz-feedback {

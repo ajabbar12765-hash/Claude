@@ -61,7 +61,7 @@ export default function PlacementQuiz({ onFinish, confirmLabel = 'Continue', con
             <motion.button
               type="button"
               whileTap={{ scale: 0.96 }}
-              className="onboarding-option"
+              className="btn-primary onboarding-confirm"
               onClick={() => onFinish(score, QUIZ_ITEMS.length)}
             >
               <Icon name={confirmIcon} size={22} strokeWidth={1.9} />
@@ -118,7 +118,7 @@ export default function PlacementQuiz({ onFinish, confirmLabel = 'Continue', con
                     <span className="quiz-feedback-meaning">{current.it}</span> means{' '}
                     <span className="quiz-feedback-meaning">{current.display}</span>.
                   </span>
-                  <motion.button type="button" whileTap={{ scale: 0.96 }} className="onboarding-option" onClick={continueOn}>
+                  <motion.button type="button" whileTap={{ scale: 0.96 }} className="btn-primary onboarding-confirm" onClick={continueOn}>
                     <Icon name="chevronRight" size={22} strokeWidth={1.9} />
                     Continue
                   </motion.button>
