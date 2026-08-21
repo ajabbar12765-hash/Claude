@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/gmail/push.js": { "maxDuration": 60 },
+    "api/gmail/renew-watch.js": { "maxDuration": 30 },
+    "api/scan-file.js": { "maxDuration": 30 }
+  },
+  "crons": [
+    { "path": "/api/gmail/renew-watch", "schedule": "0 5 * * *" }
+  ]
+}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ClickWarden settings</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        max-width: 480px;
+        margin: 32px auto;
+        background: #0b0f14;
+        color: #e6edf3;
+      }
+      label { display: block; margin-bottom: 16px; font-size: 14px; }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        border-radius: 8px;
+        border: 1px solid #223140;
+        background: #131a22;
+        color: #e6edf3;
+        box-sizing: border-box;
+      }
+      button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; }
+      p.hint { color: #8b98a5; font-size: 12px; }
+      #saved { color: #16a34a; display: none; }
+    </style>
+  </head>
+  <body>
+    <h1>ClickWarden settings</h1>
+    <label>
+      Backend URL (your own ClickWarden deployment)
+      <input id="backendUrl" placeholder="https://your-app.vercel.app" />
+    </label>
+    <label>
+      API token (must match CLICKWARDEN_API_TOKEN on the server)
+      <input id="apiToken" type="password" />
+    </label>
+    <p class="hint">Both values also live in SETUP.md. The token stops random sites from spending your VirusTotal quota.</p>
+    <button id="save">Save</button>
+    <p id="saved">Saved.</p>
+    <script src="options.js"></script>
+  </body>
+</html>
