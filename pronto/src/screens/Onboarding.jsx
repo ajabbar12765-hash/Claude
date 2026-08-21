@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Mascot from '../components/Mascot.jsx'
 import Icon from '../components/Icon.jsx'
 import { shuffle } from '../lib/matching.js'
+import { QUIZ_ITEMS, QUIZ_PASS_SCORE, levelFromScore } from '../data/placementQuiz.js'
 
 const MOTIVATIONS = [
   { id: 'trip', label: 'An upcoming trip', icon: 'compass' },
@@ -17,19 +18,6 @@ const PACES = [
   { id: 'serious', label: 'Serious', minutes: '15 min/day', goalXp: 45 },
   { id: 'intense', label: 'Intense', minutes: '20 min/day', goalXp: 60 },
 ]
-
-// A quick, honest gauge of what someone already knows — not a real
-// placement test, just enough to decide whether the absolute-beginner
-// unit ("hello," "please/thank you") is worth their time or not.
-const QUIZ_ITEMS = [
-  { it: 'Ciao', correct: 'Hi / Bye', options: ['Hi / Bye', 'Please', 'Sorry', 'Yes'] },
-  { it: 'Grazie', correct: 'Thank you', options: ['Goodbye', 'Thank you', 'Excuse me', 'Good morning'] },
-  { it: 'Acqua', correct: 'Water', options: ['Bread', 'Coffee', 'Water', 'Wine'] },
-  { it: 'Buongiorno', correct: 'Good morning', options: ['Good night', 'Good evening', 'Good morning', 'Hello there'] },
-  { it: 'Il conto', correct: 'The bill', options: ['The menu', 'The bill', 'The table', 'The waiter'] },
-  { it: 'Scusi', correct: 'Excuse me', options: ['Please', 'Thanks', 'Excuse me', 'Welcome'] },
-]
-const QUIZ_PASS_SCORE = 5 // out of QUIZ_ITEMS.length — high enough to genuinely skip Unit 1
 
 const slide = {
   hidden: { opacity: 0, x: 24 },
@@ -73,7 +61,14 @@ export default function Onboarding({ onDone }) {
   }
 
   function finishQuiz() {
-    onDone({ motivation, goalXpPerDay, quizScore, quizTotal: quizItems.length, skipAhead: quizScore >= QUIZ_PASS_SCORE })
+    onDone({
+      motivation,
+      goalXpPerDay,
+      quizScore,
+      quizTotal: quizItems.length,
+      skipAhead: quizScore >= QUIZ_PASS_SCORE,
+      italianLevel: levelFromScore(quizScore),
+    })
   }
 
   const currentQuiz = quizItems[quizIndex]

@@ -7,16 +7,25 @@
 // client never has to regex-guess where the Italian ends and the English
 // gloss begins before speaking it aloud.
 
-const SYSTEM_PROMPT = `You are Volpe, a friendly, patient Italian conversation partner inside a language-learning app called Pronto. You're on a phone call with a beginner-to-early-intermediate English-speaking learner practicing spoken Italian.
+const LEVEL_RULES = {
+  beginner: 'The learner is a true beginner. Use only the simplest, most common words and very short present-tense sentences (3-6 words). No idioms, no compound tenses, no subjunctive. Speak the way you would to someone who started learning last week.',
+  elementary: 'The learner knows some basic Italian. Use simple everyday vocabulary and mostly present tense, short sentences (up to ~10 words). Avoid idioms and complex grammar, but common connecting words are fine.',
+  intermediate: 'The learner already has a working grasp of Italian. Use natural, everyday Italian at a normal pace — past and future tense are fine, along with common idioms — but keep vocabulary conversational, not literary.',
+}
+
+function buildSystemPrompt(level) {
+  const levelRule = LEVEL_RULES[level] || LEVEL_RULES.elementary
+  return `You are Volpe, a friendly, patient Italian conversation partner inside a language-learning app called Pronto. You're on a phone call with an English-speaking learner practicing spoken Italian.
 
 Rules:
-- Reply in simple, natural Italian (short sentences, common everyday vocabulary) in the "italian" field.
+- ${levelRule}
 - Put the English translation of your reply in the "gloss" field — never inside the "italian" field, and never combine them into one string.
 - Keep "italian" SHORT — one to three sentences. This is a phone call, not an essay.
 - Stay in character as a warm, encouraging local friend, not a teacher lecturing. If the learner makes a mistake, gently model the correct phrase back in your reply rather than explicitly correcting them.
 - If the learner writes or says something in English, respond warmly in Italian anyway, and gently nudge them (in Italian, with the gloss) to try it in Italian.
 - Never break character to talk about being an AI or a language model.
 - If your input is audio, transcribe exactly what the learner said (in whatever language they said it) into the "heard" field. If your input is already text, copy that same text into "heard" unchanged.`
+}
 
 const MODEL = 'gemini-3.6-flash'
 
@@ -44,7 +53,7 @@ export default async function handler(req, res) {
     return
   }
 
-  const { history, text, audioBase64, audioMimeType } = req.body || {}
+  const { history, text, audioBase64, audioMimeType, level } = req.body || {}
   if (!Array.isArray(history)) {
     res.status(400).json({ error: 'bad_request', message: 'A history array is required.' })
     return
@@ -72,11 +81,15 @@ export default async function handler(req, res) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents,
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          systemInstruction: { parts: [{ text: buildSystemPrompt(level) }] },
           generationConfig: {
             maxOutputTokens: 400,
             responseMimeType: 'application/json',
             responseSchema: RESPONSE_SCHEMA,
+            // Volpe doesn't need to reason before answering — every extra
+            // "thinking" token here is pure added latency on a phone call
+            // where the learner is sitting waiting for a reply.
+            thinkingConfig: { thinkingLevel: 'minimal' },
           },
         }),
       },

@@ -2048,13 +2048,6 @@ ul {
   border-bottom-right-radius: 4px;
 }
 
-.call-bubble-gloss {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
 .call-error {
   align-self: center;
   background: rgba(240, 53, 90, 0.16);

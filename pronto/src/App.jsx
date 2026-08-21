@@ -17,6 +17,7 @@ import Scenario from './screens/Scenario.jsx'
 import Profile from './screens/Profile.jsx'
 import VoiceCall from './screens/VoiceCall.jsx'
 import Dictionary from './screens/Dictionary.jsx'
+import LevelCheck from './screens/LevelCheck.jsx'
 
 const ONBOARDED_KEY = 'pronto:onboarded:v1'
 
@@ -243,9 +244,12 @@ export default function App() {
       {showChrome && <TopBar streak={progress.streak.count} xp={progress.xp} />}
       <main className="app-main">
         {screen === 'home' && <Home progress={progress} onOpenLesson={openLesson} onOpenProfile={() => setScreen('profile')} />}
-        {screen === 'profile' && <Profile progress={progress} theme={theme} notifications={notifications} />}
+        {screen === 'profile' && (
+          <Profile progress={progress} theme={theme} notifications={notifications} onOpenLevelCheck={() => setScreen('level-check')} />
+        )}
         {screen === 'call' && <VoiceCall onExit={returnHome} progress={progress} />}
         {screen === 'dictionary' && <Dictionary onExit={returnHome} progress={progress} />}
+        {screen === 'level-check' && <LevelCheck progress={progress} onExit={() => setScreen('profile')} />}
         {screen === 'lesson' && activeLesson?.type === 'lesson' && (
           <Lesson lesson={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />
         )}

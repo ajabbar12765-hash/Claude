@@ -29,6 +29,7 @@ function defaultState() {
     perfectLessons: 0,
     voiceCallCount: 0,
     dictionaryLookups: 0,
+    italianLevel: null,
   }
 }
 
@@ -115,12 +116,17 @@ export function useProgress() {
     setState(defaultState())
   }, [])
 
-  const setOnboardingAnswers = useCallback(({ motivation, goalXpPerDay }) => {
+  const setOnboardingAnswers = useCallback(({ motivation, goalXpPerDay, italianLevel }) => {
     setState((prev) => ({
       ...prev,
       motivation: motivation ?? prev.motivation,
       goalXpPerDay: goalXpPerDay ?? prev.goalXpPerDay,
+      italianLevel: italianLevel ?? prev.italianLevel,
     }))
+  }, [])
+
+  const setItalianLevel = useCallback((italianLevel) => {
+    setState((prev) => ({ ...prev, italianLevel }))
   }, [])
 
   const isLessonComplete = useCallback((lessonId) => !!state.completedLessons[lessonId], [state.completedLessons])
@@ -209,6 +215,7 @@ export function useProgress() {
     xpPerLevel: XP_PER_LEVEL,
     perfectLessons: state.perfectLessons,
     achievementStatuses,
+    italianLevel: state.italianLevel,
     recordCorrect,
     completeLesson,
     recordVoiceCall,
@@ -219,5 +226,6 @@ export function useProgress() {
     isLessonUnlocked,
     resetProgress,
     setOnboardingAnswers,
+    setItalianLevel,
   }
 }

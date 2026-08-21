@@ -4,6 +4,7 @@ import { UNITS } from '../data/curriculum.js'
 import Icon from '../components/Icon.jsx'
 import Mascot from '../components/Mascot.jsx'
 import { isSoundEnabled, setSoundEnabled } from '../lib/sound.js'
+import { LEVEL_LABELS } from '../data/placementQuiz.js'
 
 const container = {
   hidden: {},
@@ -14,8 +15,21 @@ const item = {
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 380, damping: 32 } },
 }
 
-export default function Profile({ progress, theme, notifications }) {
-  const { streak, xp, completedCount, totalLessons, objectiveStatuses, readinessPercent, resetProgress, level, xpIntoLevel, xpPerLevel, achievementStatuses } = progress
+export default function Profile({ progress, theme, notifications, onOpenLevelCheck }) {
+  const {
+    streak,
+    xp,
+    completedCount,
+    totalLessons,
+    objectiveStatuses,
+    readinessPercent,
+    resetProgress,
+    level,
+    xpIntoLevel,
+    xpPerLevel,
+    achievementStatuses,
+    italianLevel,
+  } = progress
   const [soundOn, setSoundOn] = useState(() => isSoundEnabled())
 
   function handleReset() {
@@ -69,6 +83,23 @@ export default function Profile({ progress, theme, notifications }) {
           <Icon name="map" size={22} strokeWidth={1.9} />
           <span className="profile-stat-value">{completedCount}/{totalLessons}</span>
           <span className="profile-stat-label">Stops completed</span>
+        </div>
+      </motion.section>
+
+      <motion.section variants={item} className="notif-section">
+        <div className="notif-heading">
+          <Icon name="target" size={22} strokeWidth={1.9} />
+          <div>
+            <h2>Volpe's level</h2>
+            <p className="notif-explainer">
+              {italianLevel
+                ? `Set to ${LEVEL_LABELS[italianLevel]} — Volpe matches its Italian to this on calls.`
+                : 'Not set yet — take the quick check so Volpe talks at your level.'}
+            </p>
+          </div>
+          <button type="button" className="btn-reset" onClick={onOpenLevelCheck}>
+            {italianLevel ? 'Retake' : 'Quick check'}
+          </button>
         </div>
       </motion.section>
 

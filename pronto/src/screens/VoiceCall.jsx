@@ -82,9 +82,10 @@ export default function VoiceCall({ onExit, progress }) {
     setErrorMessage('')
 
     try {
+      const level = progress?.italianLevel || undefined
       const body = audioBlob
-        ? { history, audioBase64: await blobToBase64(audioBlob), audioMimeType: audioBlob.type }
-        : { history, text: text.trim() }
+        ? { history, audioBase64: await blobToBase64(audioBlob), audioMimeType: audioBlob.type, level }
+        : { history, text: text.trim(), level }
       if (!audioBlob && !body.text) {
         setCallState('idle')
         return
@@ -239,14 +240,7 @@ export default function VoiceCall({ onExit, progress }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 340, damping: 30 }}
             >
-              {m.role === 'assistant' ? (
-                <>
-                  {m.italian}
-                  {m.gloss && <span className="call-bubble-gloss">{m.gloss}</span>}
-                </>
-              ) : (
-                m.text
-              )}
+              {m.role === 'assistant' ? m.italian : m.text}
             </motion.div>
           ))}
         </AnimatePresence>
