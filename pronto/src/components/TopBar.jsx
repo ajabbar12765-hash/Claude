@@ -1,7 +1,7 @@
 import Icon from './Icon.jsx'
 import Mascot from './Mascot.jsx'
 
-export default function TopBar({ streak, xp, onProfileClick, onDictionaryClick, active }) {
+export default function TopBar({ streak, xp }) {
   return (
     <header className="topbar">
       <div className="topbar-brand">
@@ -19,24 +19,6 @@ export default function TopBar({ streak, xp, onProfileClick, onDictionaryClick, 
           <Icon name="spark" size={18} strokeWidth={2} />
           <span>{xp}</span>
         </div>
-        <button
-          type="button"
-          className={`stat-chip stat-icon-btn ${active === 'dictionary' ? 'stat-icon-btn-active' : ''}`}
-          onClick={onDictionaryClick}
-          title="Dictionary"
-          aria-label="Dictionary"
-        >
-          <Icon name="book" size={18} strokeWidth={2} />
-        </button>
-        <button
-          type="button"
-          className={`stat-chip stat-icon-btn ${active === 'profile' ? 'stat-icon-btn-active' : ''}`}
-          onClick={onProfileClick}
-          title="Your progress"
-          aria-label="Your progress"
-        >
-          <Icon name="user" size={18} strokeWidth={2} />
-        </button>
       </div>
     </header>
   )

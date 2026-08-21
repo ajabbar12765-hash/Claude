@@ -5,6 +5,7 @@ import { UNITS } from './data/curriculum.js'
 import { useTheme } from './hooks/useTheme.js'
 import { useNotifications } from './hooks/useNotifications.js'
 import TopBar from './components/TopBar.jsx'
+import BottomTabs from './components/BottomTabs.jsx'
 import Mascot from './components/Mascot.jsx'
 import Icon from './components/Icon.jsx'
 import Confetti from './components/Confetti.jsx'
@@ -117,6 +118,18 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress.streak.count, progress.dailyGoalMet])
 
+  // Pushes the streak to the tiny server-side store the Scriptable
+  // home-screen widget reads from — the widget runs outside the browser
+  // and has no way to see localStorage otherwise. Fire-and-forget: the
+  // widget just shows slightly stale data if this fails, nothing breaks.
+  useEffect(() => {
+    fetch('/api/streak', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ streak: progress.streak.count }),
+    }).catch(() => {})
+  }, [progress.streak.count])
+
   // Fires the confetti burst whenever a lesson/scenario/checkpoint completes.
   useEffect(() => {
     if (progress.completedCount > prevCompletedCount.current) {
@@ -185,7 +198,7 @@ export default function App() {
     return <Onboarding onDone={finishOnboarding} />
   }
 
-  const showChrome = screen === 'home' || screen === 'profile'
+  const showChrome = screen === 'home' || screen === 'profile' || screen === 'dictionary'
 
   return (
     <div className="app-shell">
@@ -227,25 +240,9 @@ export default function App() {
         </AnimatePresence>
       </div>
 
-      {showChrome && (
-        <TopBar
-          streak={progress.streak.count}
-          xp={progress.xp}
-          active={screen}
-          onProfileClick={() => setScreen(screen === 'profile' ? 'home' : 'profile')}
-          onDictionaryClick={() => setScreen('dictionary')}
-        />
-      )}
+      {showChrome && <TopBar streak={progress.streak.count} xp={progress.xp} />}
       <main className="app-main">
-        {screen === 'home' && (
-          <Home
-            progress={progress}
-            onOpenLesson={openLesson}
-            onOpenProfile={() => setScreen('profile')}
-            onOpenCall={() => setScreen('call')}
-            onOpenDictionary={() => setScreen('dictionary')}
-          />
-        )}
+        {screen === 'home' && <Home progress={progress} onOpenLesson={openLesson} onOpenProfile={() => setScreen('profile')} />}
         {screen === 'profile' && <Profile progress={progress} theme={theme} notifications={notifications} />}
         {screen === 'call' && <VoiceCall onExit={returnHome} progress={progress} />}
         {screen === 'dictionary' && <Dictionary onExit={returnHome} progress={progress} />}
@@ -256,6 +253,7 @@ export default function App() {
           <Scenario scenario={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />
         )}
       </main>
+      {showChrome && <BottomTabs active={screen} onChange={setScreen} />}
     </div>
   )
 }

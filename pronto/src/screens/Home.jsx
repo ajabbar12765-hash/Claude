@@ -111,7 +111,7 @@ const RECOMMENDED_UNITS = {
   fun: [],
 }
 
-export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall, onOpenDictionary }) {
+export default function Home({ progress, onOpenLesson, onOpenProfile }) {
   const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation } = progress
   const currentUnitIndex = nextLesson ? nextLesson.unitIndex : UNITS.length - 1
   const heroEyebrow = MOTIVATION_EYEBROW[motivation] || 'Real-life readiness'
@@ -185,30 +185,6 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenCall
           </span>
         </motion.button>
       )}
-
-      <div className="home-quick-actions">
-        <motion.button variants={item} whileTap={{ scale: 0.98 }} type="button" className="call-card" onClick={onOpenCall}>
-          <span className="call-card-mascot">
-            <Mascot expression="talking" size={44} />
-          </span>
-          <span className="call-card-text">
-            <span className="call-card-title">Call Volpe</span>
-            <span className="call-card-sub">Practice a real spoken conversation in Italian</span>
-          </span>
-          <Icon name="chevronRight" size={18} strokeWidth={2.2} />
-        </motion.button>
-
-        <motion.button variants={item} whileTap={{ scale: 0.98 }} type="button" className="call-card dict-card-cta" onClick={onOpenDictionary}>
-          <span className="call-card-mascot dict-card-cta-icon">
-            <Icon name="book" size={22} strokeWidth={2} />
-          </span>
-          <span className="call-card-text">
-            <span className="call-card-title">Dictionary</span>
-            <span className="call-card-sub">Look up any word — English or Italian, nouns included</span>
-          </span>
-          <Icon name="chevronRight" size={18} strokeWidth={2.2} />
-        </motion.button>
-      </div>
 
       <div className="unit-list">
         {UNITS.map((unit, ui) => {
