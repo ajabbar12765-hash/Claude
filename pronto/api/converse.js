@@ -11,6 +11,7 @@ const LEVEL_RULES = {
   beginner: 'The learner is a true beginner. Use only the simplest, most common words and very short present-tense sentences (3-6 words). No idioms, no compound tenses, no subjunctive. Speak the way you would to someone who started learning last week.',
   elementary: 'The learner knows some basic Italian. Use simple everyday vocabulary and mostly present tense, short sentences (up to ~10 words). Avoid idioms and complex grammar, but common connecting words are fine.',
   intermediate: 'The learner already has a working grasp of Italian. Use natural, everyday Italian at a normal pace — past and future tense are fine, along with common idioms — but keep vocabulary conversational, not literary.',
+  advanced: 'The learner is advanced or near-fluent. Speak the way you naturally would with a friend — full native pace, idioms, colloquialisms, subjunctive and any other mood/tense as it comes up. Don\'t simplify, slow down, or hold back.',
 }
 
 const MAX_KNOWN_VOCAB = 80

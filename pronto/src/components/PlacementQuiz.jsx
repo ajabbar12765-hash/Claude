@@ -52,7 +52,11 @@ export default function PlacementQuiz({ onFinish, confirmLabel = 'Continue', con
     <AnimatePresence mode="wait">
       {finished ? (
         <motion.div key="result" className="onboarding-step" variants={slide} initial="hidden" animate="show" exit="exit">
-          <Mascot expression={resultLevel === 'intermediate' ? 'happy' : 'idle'} celebrate={resultLevel === 'intermediate'} size={72} />
+          <Mascot
+            expression={resultLevel === 'intermediate' || resultLevel === 'advanced' ? 'happy' : 'idle'}
+            celebrate={resultLevel === 'intermediate' || resultLevel === 'advanced'}
+            size={72}
+          />
           <h1 className="onboarding-question">
             {score} of {QUIZ_ITEMS.length}
           </h1>
