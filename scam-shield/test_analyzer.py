@@ -373,6 +373,101 @@ class QaTests(unittest.TestCase):
         self.assertIsInstance(qa._context_from_analysis(None), str)
         self.assertIsInstance(qa._context_from_analysis({}), str)
 
+    def test_context_builder_labels_email_type(self):
+        import qa
+        from email_checker import analyze_email
+        analysis = analyze_email(
+            "From: fake@scam.example\nSubject: Test\n\nHello there.")
+        ctx = qa._context_from_analysis(analysis)
+        self.assertIn("Type: Email", ctx)
+        self.assertIn("Subject:", ctx)
+
+    def test_context_builder_labels_website_type(self):
+        import qa
+        analysis = analyze("https://amazom.top/deal", live=False)
+        ctx = qa._context_from_analysis(analysis)
+        self.assertIn("Type: Website", ctx)
+
+
+class EmailCheckerTests(unittest.TestCase):
+    def _titles(self, result):
+        return [f["title"] for f in result["findings"]]
+
+    def test_rejects_empty(self):
+        from email_checker import analyze_email
+        with self.assertRaises(ValueError):
+            analyze_email("   ")
+
+    def test_phishing_email_flagged_high_risk(self):
+        from email_checker import analyze_email
+        email = (
+            'From: "Amazon Support" <amazon-support123@gmail.com>\n'
+            'Subject: Urgent: Your account will be suspended!\n\n'
+            'Dear Customer,\n'
+            'We detected unusual activity on your account. Click here to '
+            'verify your account immediately or your account will be '
+            'suspended within 24 hours.\n'
+            'Please purchase a gift card and send us the code.\n'
+        )
+        result = analyze_email(email)
+        self.assertEqual(result["verdict"]["level"], "high-risk")
+        self.assertIn("Claims to be Amazon but sent from a free email address",
+                      self._titles(result))
+        self.assertIn("Asks for untraceable payment", self._titles(result))
+        self.assertIn("Asks you to 'verify' or 'confirm' account details",
+                      self._titles(result))
+        self.assertEqual(result["domain"], "gmail.com")
+        self.assertTrue(result["url"].startswith("Email from"))
+
+    def test_benign_email_low_risk(self):
+        from email_checker import analyze_email
+        email = (
+            "From: Sarah <sarah.jones@mycompany.com>\n"
+            "Subject: Meeting notes\n\n"
+            "Hi team, attaching notes from today's meeting.\nThanks, Sarah\n"
+        )
+        result = analyze_email(email)
+        self.assertEqual(result["verdict"]["level"], "low-risk")
+        self.assertIn("No strong phishing patterns detected",
+                      self._titles(result))
+
+    def test_real_brand_domain_gets_credit(self):
+        from email_checker import analyze_email
+        email = (
+            "From: Amazon.com <no-reply@amazon.com>\n"
+            "Subject: Your order has shipped\n\n"
+            "Hello, your recent order has shipped and will arrive soon.\n"
+        )
+        result = analyze_email(email)
+        self.assertIn("Sent from Amazon's real domain", self._titles(result))
+        self.assertEqual(result["domain"], "amazon.com")
+
+    def test_body_only_no_headers_still_works(self):
+        from email_checker import analyze_email
+        email = ("Congratulations you have been selected to claim your "
+                 "prize! Send your bank details to receive your reward.")
+        result = analyze_email(email)
+        self.assertIn("Prize / giveaway bait", self._titles(result))
+
+    def test_reply_to_mismatch_flagged(self):
+        from email_checker import analyze_email
+        email = (
+            "From: Support <support@realbank.com>\n"
+            "Reply-To: scammer@totally-different.top\n"
+            "Subject: Account notice\n\n"
+            "Please respond to confirm your details.\n"
+        )
+        result = analyze_email(email)
+        self.assertIn("Reply-To address doesn't match the sender",
+                      self._titles(result))
+
+    def test_result_shape_matches_website_analysis(self):
+        from email_checker import analyze_email
+        result = analyze_email("Just a normal note, nothing suspicious here.")
+        for key in ("url", "domain", "score", "verdict", "findings",
+                    "sources", "page_title", "page_text"):
+            self.assertIn(key, result)
+
 
 if __name__ == "__main__":
     unittest.main()

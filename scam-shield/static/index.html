@@ -120,6 +120,29 @@
   .reveal { animation: rise .55s cubic-bezier(.2,.8,.2,1) both; }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
+  /* ---- Mode tabs (Website / Email) ---- */
+  .tabs { display: flex; gap: 6px; padding: 6px; margin-bottom: 12px; }
+  .tab {
+    flex: 1; text-align: center; cursor: pointer; user-select: none;
+    padding: 11px 10px; border-radius: 14px; font-size: 14.5px; font-weight: 650;
+    color: var(--muted); transition: color .2s, background .2s;
+  }
+  .tab.active { color: #fff; background: linear-gradient(180deg, #6f97ff, #3f6ff0); box-shadow: 0 8px 18px rgba(63,111,240,0.4), var(--inset); }
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; }
+  textarea#email-input {
+    width: 100%; min-height: 150px; resize: vertical;
+    background: rgba(8,12,22,0.6);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: var(--text); border-radius: 14px; padding: 14px 16px;
+    font-size: 15px; line-height: 1.5; outline: none; font-family: inherit;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.35);
+  }
+  textarea#email-input:focus { border-color: var(--accent); box-shadow: inset 0 2px 6px rgba(0,0,0,0.35), 0 0 0 3px rgba(91,140,255,0.22); }
+  .email-panel-inner { padding: 13px; }
+  .email-hint { font-size: 12px; color: var(--muted); margin: 0 3px 10px; line-height: 1.5; }
+  .email-panel-inner .btn { margin-top: 10px; width: 100%; padding: 14px 0; }
+
   form.checkbar { display: flex; gap: 10px; padding: 13px; position: relative; }
   form.checkbar::after {
     content: ""; position: absolute; inset: -1px; border-radius: var(--radius);
@@ -305,7 +328,7 @@
       </svg>
     </div>
     <h1>Scam Shield</h1>
-    <p>Saw an ad on Facebook, Instagram or Google and not sure if the shop is real?<br>
+    <p id="mode-tagline">Saw an ad on Facebook, Instagram or Google and not sure if the shop is real?<br>
        Paste the link below and get a safety verdict before you order.</p>
     <div class="badges">
       <span class="badge">🔒 Private</span>
@@ -314,11 +337,26 @@
     </div>
   </header>
 
-  <form id="check-form" class="card checkbar reveal">
-    <input type="text" id="url-input" placeholder="Paste the shop or ad link here…"
-           autocomplete="off" spellcheck="false">
-    <button type="submit" id="check-btn" class="btn">Check</button>
-  </form>
+  <div class="tabs card reveal">
+    <div class="tab active" id="tab-website" data-mode="website">🔗 Website</div>
+    <div class="tab" id="tab-email" data-mode="email">✉️ Email</div>
+  </div>
+
+  <div id="panel-website" class="mode-panel active">
+    <form id="check-form" class="card checkbar">
+      <input type="text" id="url-input" placeholder="Paste the shop or ad link here…"
+             autocomplete="off" spellcheck="false">
+      <button type="submit" id="check-btn" class="btn">Check</button>
+    </form>
+  </div>
+
+  <div id="panel-email" class="mode-panel">
+    <form id="email-form" class="card email-panel-inner">
+      <p class="email-hint">Paste the suspicious email — the full text including "From:" and "Subject:" if you have them, or just the message body.</p>
+      <textarea id="email-input" placeholder="From: &quot;Amazon Support&quot; &lt;amazon-support123@gmail.com&gt;&#10;Subject: Your account will be suspended!&#10;&#10;Dear Customer, we detected unusual activity…"></textarea>
+      <button type="submit" id="email-btn" class="btn">Check this email</button>
+    </form>
+  </div>
 
   <div class="status" id="status"></div>
 
@@ -344,8 +382,8 @@
   </div>
 
   <div id="ask-box" class="card">
-    <h2>💬 Ask a question about this website</h2>
-    <p class="ask-hint">Check a link above first, then ask anything — e.g. “Is it safe to order?”, “Why is it risky?”, “Do they take PayPal?”, “Is this the real Nike?”</p>
+    <h2 id="ask-title">💬 Ask a question about this website</h2>
+    <p class="ask-hint" id="ask-hint">Check a link above first, then ask anything — e.g. “Is it safe to order?”, “Why is it risky?”, “Do they take PayPal?”, “Is this the real Nike?”</p>
     <form id="ask-form">
       <input type="text" id="ask-input" placeholder="Type your question…" autocomplete="off">
       <button type="submit" id="ask-btn" class="btn">Ask</button>
@@ -377,6 +415,22 @@ const input = document.getElementById('url-input');
 const btn = document.getElementById('check-btn');
 const statusEl = document.getElementById('status');
 const resultEl = document.getElementById('result');
+
+// ---- Website / Email mode tabs ----
+const TAGLINES = {
+  website: 'Saw an ad on Facebook, Instagram or Google and not sure if the shop is real?<br>Paste the link below and get a safety verdict before you order.',
+  email: 'Got a suspicious email about your account, an order, or a "prize"?<br>Paste it below and get a phishing/scam verdict before you click anything.',
+};
+document.querySelectorAll('.tab').forEach((tab) => {
+  tab.addEventListener('click', () => {
+    const mode = tab.dataset.mode;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
+    document.getElementById('panel-website').classList.toggle('active', mode === 'website');
+    document.getElementById('panel-email').classList.toggle('active', mode === 'email');
+    document.getElementById('mode-tagline').innerHTML = TAGLINES[mode];
+    statusEl.textContent = '';
+  });
+});
 
 const VERDICT_COLORS = {
   'high-risk': '#ff5d70',
@@ -418,6 +472,39 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+const emailForm = document.getElementById('email-form');
+const emailInput = document.getElementById('email-input');
+const emailBtn = document.getElementById('email-btn');
+
+emailForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = emailInput.value.trim();
+  if (!email) return;
+
+  emailBtn.disabled = true;
+  resultEl.style.display = 'none';
+  statusEl.innerHTML = '<span class="spinner"></span>Reading the email for phishing signals, sender spoofing and risky links…';
+
+  try {
+    const resp = await fetch('/api/check-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      statusEl.innerHTML = '<span class="error">' + escapeHtml(data.error || 'Something went wrong.') + '</span>';
+      return;
+    }
+    render(data);
+    statusEl.textContent = '';
+  } catch (err) {
+    statusEl.innerHTML = '<span class="error">Could not reach the checker. Please try again in a moment.</span>';
+  } finally {
+    emailBtn.disabled = false;
+  }
+});
+
 function countUp(el, target) {
   const start = performance.now();
   const dur = 900;
@@ -442,8 +529,18 @@ function render(data) {
   const v = document.getElementById('verdict');
   v.className = 'verdict ' + data.verdict.level;
   document.getElementById('verdict-title').textContent = data.verdict.title;
-  document.getElementById('verdict-domain').textContent = 'Checked: ' + data.url + '  (domain: ' + data.domain + ')';
+  const isEmail = data.kind === 'email';
+  document.getElementById('verdict-domain').textContent = isEmail
+    ? 'Checked: ' + data.url + (data.domain && data.domain !== 'unknown' ? '  (sender domain: ' + data.domain + ')' : '')
+    : 'Checked: ' + data.url + '  (domain: ' + data.domain + ')';
   document.getElementById('verdict-advice').textContent = data.verdict.advice;
+
+  document.getElementById('ask-title').textContent = isEmail
+    ? '💬 Ask a question about this email'
+    : '💬 Ask a question about this website';
+  document.getElementById('ask-hint').textContent = isEmail
+    ? 'Ask anything about the email you just checked — e.g. "Is this really from my bank?", "What should I do with it?", "Why is it risky?"'
+    : 'Check a link above first, then ask anything — e.g. "Is it safe to order?", "Why is it risky?", "Do they take PayPal?", "Is this the real Nike?"';
 
   // Circular gauge + count-up
   const prog = document.getElementById('gauge-prog');

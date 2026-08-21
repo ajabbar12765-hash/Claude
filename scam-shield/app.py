@@ -7,6 +7,7 @@ Then open: http://localhost:5000
 from flask import Flask, jsonify, request, send_from_directory
 
 from analyzer import analyze
+from email_checker import analyze_email
 from qa import answer_question
 
 app = Flask(__name__, static_folder="static", static_url_path="")
@@ -23,6 +24,17 @@ def api_check():
     raw_url = payload.get("url", "")
     try:
         result = analyze(raw_url)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result)
+
+
+@app.post("/api/check-email")
+def api_check_email():
+    payload = request.get_json(silent=True) or {}
+    raw_text = payload.get("email", "")
+    try:
+        result = analyze_email(raw_text)
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     return jsonify(result)
