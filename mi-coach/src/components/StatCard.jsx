@@ -1,13 +1,20 @@
 import Sparkline from './Sparkline.jsx'
 
-export default function StatCard({ label, value, unit, deltaPct, color, series, sub }) {
+export default function StatCard({ label, value, unit, deltaPct, color, series, sub, icon }) {
   const hasDelta = typeof deltaPct === 'number' && Number.isFinite(deltaPct)
   const deltaClass = hasDelta ? (deltaPct >= 0 ? 'up' : 'down') : ''
 
   return (
     <div className="stat-card" style={{ '--accent': color }}>
       <div className="stat-card-head">
-        <span className="stat-card-label">{label}</span>
+        <span className="stat-card-label">
+          {icon && (
+            <span className="stat-card-icon" style={{ background: `${color}1f`, color }}>
+              {icon}
+            </span>
+          )}
+          {label}
+        </span>
         {hasDelta && (
           <span className={`stat-card-delta ${deltaClass}`}>
             {deltaPct >= 0 ? '▲' : '▼'} {Math.abs(deltaPct).toFixed(0)}%
