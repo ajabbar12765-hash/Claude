@@ -1,6 +1,9 @@
 const TABS = [
-  { id: 'dashboard', label: 'Dashboard', icon: '⌂' },
-  { id: 'coach', label: 'AI Coach', icon: '✦' },
+  { id: 'home', label: 'Home', icon: '⌂' },
+  { id: 'activity', label: 'Activity', icon: '👟' },
+  { id: 'health', label: 'Health', icon: '♥' },
+  { id: 'sleep', label: 'Sleep', icon: '🌙' },
+  { id: 'coach', label: 'Coach', icon: '✦' },
   { id: 'import', label: 'Import', icon: '⇅' },
 ]
 
