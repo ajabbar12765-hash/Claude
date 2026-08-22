@@ -26,4 +26,5 @@ export const api = {
   chatHistory: () => request('/api/coach/history'),
   clearChat: () => request('/api/coach/history', { method: 'DELETE' }),
   ingest: (payload) => request('/api/ingest', { method: 'POST', body: JSON.stringify(payload) }),
+  xiaomiSync: () => request('/api/xiaomi/sync', { method: 'POST' }),
 }

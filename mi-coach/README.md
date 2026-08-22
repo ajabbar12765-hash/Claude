@@ -21,6 +21,10 @@ Set these in **Vercel → Project → Settings → Environment Variables**, then
 | `INGEST_SECRET` | yes, for automatic sync | Bearer token automation tools (Health Auto Export, Tasker, etc.) use to POST data without a browser session. Pick any long random string. |
 | `GEMINI_API_KEY` | yes, for the AI coach | Free key from [Google AI Studio](https://aistudio.google.com/apikey). Without it, everything except the Coach tab and daily insight card works fine. |
 | `GEMINI_MODEL` | no | Defaults to `gemini-2.5-flash`. Override if that model is ever retired/renamed. |
+| `XIAOMI_USER` | no, for Xiaomi account sync | Your Xiaomi/Mi account ID, email, or phone number — whichever you sign into Mi Fitness with. |
+| `XIAOMI_PASSWORD` | no, for Xiaomi account sync | Your Xiaomi account password. Accounts with only phone+SMS or Google/Apple sign-in (no traditional password) can't use this. |
+| `XIAOMI_REGION` | no | Override the auto-detected Xiaomi cloud region (`cn`, `sg`, `de`, `us`, `ru`, `i2`) if sync fails with a region-related error. |
+| `CRON_SECRET` | no | If set, the daily Xiaomi sync cron endpoint requires this as a bearer token (Vercel sends it automatically for scheduled runs). Recommended once you have this set up. |
 
 Then attach storage: **Vercel → Project → Storage → Create Database → Blob** (free tier). This injects `BLOB_READ_WRITE_TOKEN` automatically — no manual value needed.
 
@@ -34,7 +38,17 @@ Two ways, both authenticated against the same `/api/ingest` endpoint. Use either
 
 **Android:** Mi Fitness doesn't reliably sync to Google Fit / Health Connect, so there's no equivalent one-tap app. The reliable option is an automation app (HTTP Shortcuts, Tasker, MacroDroid) that POSTs the generic JSON schema below to the same URL and header. Otherwise, use manual import — it's the same effort on every platform since it's just a file picked in the browser.
 
-### 2. Manual import
+### 2. Xiaomi account sync (workouts only, experimental)
+
+If `XIAOMI_USER` and `XIAOMI_PASSWORD` are set, a Vercel Cron job runs daily (6am UTC, configurable in `vercel.json`) and pulls your **logged workouts** — runs, walks, rides: distance, calories, duration, heart rate — directly from Xiaomi's cloud. You can also trigger it immediately from the Import tab's "Sync Xiaomi workouts now" button.
+
+This uses Xiaomi's unofficial, undocumented API (reverse-engineered from an open-source reference, not published by Xiaomi), so:
+- It can break without notice if Xiaomi changes something.
+- It does **not** cover passive all-day steps, resting heart rate, or sleep — no working endpoint for that was found. Use one of the other two methods for those.
+- If your account requires a captcha, SMS code, or "approve this device" prompt at login (common for new devices or after a while), the sync will fail with a clear message rather than hanging — sign into Mi Fitness on your phone once to usually clear it, then retry.
+- Storing your Xiaomi password in Vercel env vars is a real tradeoff worth being deliberate about, even though it's encrypted and never exposed in the dashboard after saving.
+
+### 3. Manual import
 
 Open the **Import** tab in the app itself, and upload either:
 - a `.csv` file — download the template from the Import tab for the exact columns

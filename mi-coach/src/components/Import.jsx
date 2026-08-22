@@ -26,8 +26,25 @@ export default function Import() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [xiaomiResult, setXiaomiResult] = useState(null)
+  const [xiaomiError, setXiaomiError] = useState('')
+  const [xiaomiBusy, setXiaomiBusy] = useState(false)
   const fileRef = useRef(null)
   const webhookUrl = typeof window !== 'undefined' ? `${window.location.origin}/api/ingest` : '/api/ingest'
+
+  async function syncXiaomi() {
+    setXiaomiError('')
+    setXiaomiResult(null)
+    setXiaomiBusy(true)
+    try {
+      const res = await api.xiaomiSync()
+      setXiaomiResult(res)
+    } catch (err) {
+      setXiaomiError(err.message)
+    } finally {
+      setXiaomiBusy(false)
+    }
+  }
 
   async function handleFile(file) {
     setError('')
@@ -95,7 +112,30 @@ export default function Import() {
       </section>
 
       <section className="panel">
-        <h2>2. Manual import</h2>
+        <h2>2. Xiaomi account sync (workouts only)</h2>
+        <p>
+          If you've set <code>XIAOMI_USER</code> and <code>XIAOMI_PASSWORD</code> in the server's environment
+          variables, a daily automatic sync pulls your logged workouts (runs, walks, rides — distance,
+          calories, duration, heart rate) from your Xiaomi account. This uses Xiaomi's unofficial cloud API,
+          so it can break without notice, and it does not cover passive all-day steps, resting heart rate,
+          or sleep — no working endpoint for that exists yet. Use the button below to run it right now instead
+          of waiting for the next scheduled run.
+        </p>
+        <div className="import-actions">
+          <button className="btn-secondary" onClick={syncXiaomi} disabled={xiaomiBusy}>
+            {xiaomiBusy ? 'Syncing…' : 'Sync Xiaomi workouts now'}
+          </button>
+        </div>
+        {xiaomiResult && (
+          <div className="import-result">
+            ✓ Synced. {xiaomiResult.workoutsFound} workout(s) found · {xiaomiResult.daysUpdated} day(s) updated.
+          </div>
+        )}
+        {xiaomiError && <div className="import-error">{xiaomiError}</div>}
+      </section>
+
+      <section className="panel">
+        <h2>3. Manual import</h2>
         <p>Upload a CSV or JSON export any time — from Mi Fitness's own data export, Apple Health, or Health Connect.</p>
         <div className="import-actions">
           <button className="btn-primary" onClick={() => fileRef.current?.click()} disabled={busy}>
