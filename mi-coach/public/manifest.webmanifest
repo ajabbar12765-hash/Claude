@@ -1,0 +1,26 @@
+{
+  "name": "Mi Coach — AI Fitness Coach",
+  "short_name": "Mi Coach",
+  "description": "Xiaomi Smart Band 9 / Mi Fitness data in one dashboard, with an AI coach built in.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "categories": ["health", "fitness", "lifestyle"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
