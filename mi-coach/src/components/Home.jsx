@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../lib/api.js'
 import { useHealthData } from '../lib/useHealthData.js'
 import Ring from './Ring.jsx'
+import BarChart from './BarChart.jsx'
 
 const STEP_GOAL = 10000
 
@@ -88,6 +89,11 @@ export default function Home({ onGoToImport, onGoToCoach }) {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="panel">
+        <h2>This week</h2>
+        <BarChart values={summary.series.map((s) => s.steps)} dates={summary.series.map((s) => s.date)} color="#1a73e8" />
       </div>
     </div>
   )

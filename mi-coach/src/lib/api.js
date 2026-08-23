@@ -27,4 +27,13 @@ export const api = {
   clearChat: () => request('/api/coach/history', { method: 'DELETE' }),
   ingest: (payload) => request('/api/ingest', { method: 'POST', body: JSON.stringify(payload) }),
   xiaomiSync: () => request('/api/xiaomi/sync', { method: 'POST' }),
+  passkeyStatus: () => request('/api/auth/passkey/status'),
+  passkeyRegisterOptions: () => request('/api/auth/passkey/register-options', { method: 'POST' }),
+  passkeyRegisterVerify: (response, deviceName) =>
+    request('/api/auth/passkey/register-verify', { method: 'POST', body: JSON.stringify({ response, deviceName }) }),
+  passkeyLoginOptions: () => request('/api/auth/passkey/login-options', { method: 'POST' }),
+  passkeyLoginVerify: (response) =>
+    request('/api/auth/passkey/login-verify', { method: 'POST', body: JSON.stringify({ response }) }),
+  passkeyList: () => request('/api/auth/passkey/list'),
+  passkeyRemove: (id) => request('/api/auth/passkey/list', { method: 'DELETE', body: JSON.stringify({ id }) }),
 }

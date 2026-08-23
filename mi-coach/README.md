@@ -25,8 +25,27 @@ Set these in **Vercel → Project → Settings → Environment Variables**, then
 | `XIAOMI_PASSWORD` | no, for Xiaomi account sync | Your Xiaomi account password. Accounts with only phone+SMS or Google/Apple sign-in (no traditional password) can't use this. |
 | `XIAOMI_REGION` | no | Override the auto-detected Xiaomi cloud region (`cn`, `sg`, `de`, `us`, `ru`, `i2`) if sync fails with a region-related error. |
 | `CRON_SECRET` | no | If set, the daily Xiaomi sync cron endpoint requires this as a bearer token (Vercel sends it automatically for scheduled runs). Recommended once you have this set up. |
+| `PASSKEY_RESET_SECRET` | no | Emergency override. If every enrolled device passkey is lost and you're locked out (see **Locking the app to your own devices**), `POST /api/auth/passkey/reset` with `Authorization: Bearer <this value>` wipes all passkeys and re-enables the password screen. Leave unset to disable this escape hatch entirely. |
 
 Then attach storage: **Vercel → Project → Storage → Create Database → Blob** (free tier). This injects `BLOB_READ_WRITE_TOKEN` automatically — no manual value needed.
+
+## Locking the app to your own devices
+
+By default the app is gated by the shared `APP_PASSWORD` — anyone who has the password can sign in from any device. To restrict access to specific devices instead:
+
+1. Sign in normally with the password.
+2. Go to the **Import** tab → **"Trusted devices"** panel → name the device (e.g. "My iPhone") → **Add this device**. This creates a **passkey** (Face ID / Touch ID / fingerprint / Windows Hello, whichever your device offers) via the browser's built-in WebAuthn support — the private key never leaves the device's secure hardware.
+3. The moment the first device is added, password sign-in turns off automatically. From then on, only devices with a registered passkey can sign in — the password screen won't work anymore, even if someone else knows it.
+4. Repeat step 2 on each additional device (iPad, phone, laptop) while signed in — you can remove any device from the same panel later.
+
+If you ever lose every enrolled device (or a browser update breaks a passkey) and can't sign in, set `PASSKEY_RESET_SECRET` and call:
+
+```bash
+curl -X POST https://<your-deployment>/api/auth/passkey/reset \
+  -H "Authorization: Bearer <your PASSKEY_RESET_SECRET>"
+```
+
+That clears all registered devices and brings back the password screen so you can start over.
 
 ## Getting your data in
 

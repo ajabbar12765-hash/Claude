@@ -199,14 +199,23 @@ input { font-family: inherit; }
   margin-top: 18px;
 }
 .btn-primary, .btn-secondary {
-  border-radius: 999px; padding: 12px 22px; font-size: 0.92rem; font-weight: 600; border: none;
-  transition: box-shadow .15s, transform .1s;
+  border-radius: 999px; padding: 14px 26px; font-size: 0.95rem; font-weight: 700; border: none;
+  transition: box-shadow .15s, transform .1s, filter .15s;
+  letter-spacing: 0.01em;
 }
-.btn-primary { background: var(--blue); color: #fff; box-shadow: var(--shadow-1); }
-.btn-primary:hover { box-shadow: var(--shadow-2); }
-.btn-primary:active { transform: scale(0.98); }
-.btn-secondary { background: var(--surface-2); color: var(--text); }
-.btn-secondary:hover { background: #e8eaed; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue), #4a90f7);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(26, 115, 232, 0.35);
+}
+.btn-primary:hover { filter: brightness(1.06); box-shadow: 0 4px 16px rgba(26, 115, 232, 0.45); }
+.btn-primary:active { transform: scale(0.97); }
+.btn-secondary {
+  background: var(--surface-2); color: var(--text);
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.08);
+}
+.btn-secondary:hover { background: #e8eaed; box-shadow: 0 2px 8px rgba(60, 64, 67, 0.12); }
+.btn-secondary:active { transform: scale(0.97); }
 .link-btn { background: none; border: none; color: var(--blue); font-size: 0.85rem; font-weight: 500; padding: 0; }
 .page-loading, .page-error { padding: 60px 0; text-align: center; color: var(--muted); }
 .page-error { color: var(--down); }
@@ -281,7 +290,10 @@ input { font-family: inherit; }
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-1);
   padding: 20px 22px;
+  border-top: 3px solid var(--accent, var(--blue));
+  transition: box-shadow .15s, transform .15s;
 }
+.stat-card:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
 .stat-card-head { display: flex; justify-content: space-between; align-items: center; }
 .stat-card-label { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); font-weight: 600; }
 .stat-card-icon { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-size: 0.85rem; flex-shrink: 0; }
@@ -293,6 +305,16 @@ input { font-family: inherit; }
 .stat-card-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
 .stat-card-chart { margin-top: 10px; }
 .sparkline-empty { display: grid; place-items: center; color: var(--muted); font-size: 0.75rem; }
+
+/* ------------------------------------------------------------ bar chart */
+
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; }
+.bar-chart-empty { display: grid; place-items: center; color: var(--muted); font-size: 0.75rem; }
+.bar-chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; }
+.bar-chart-track { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+.bar-chart-bar { width: 100%; border-radius: 6px 6px 3px 3px; min-height: 4px; transition: height .3s ease; }
+.bar-chart-bar.today { box-shadow: 0 2px 8px rgba(26, 115, 232, 0.35); }
+.bar-chart-label { font-size: 0.68rem; color: var(--muted); font-weight: 600; }
 
 .dashboard-lower {
   display: grid;
@@ -335,6 +357,20 @@ input { font-family: inherit; }
 .import-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
 .import-result { margin-top: 12px; color: var(--up); font-size: 0.9rem; font-weight: 500; }
 .import-error { margin-top: 12px; color: var(--down); font-size: 0.9rem; font-weight: 500; }
+
+.device-name-input {
+  background: var(--surface-2); border: 2px solid transparent; border-radius: var(--radius-sm);
+  padding: 12px 14px; color: var(--text); font-size: 0.9rem; outline: none; flex: 1; min-width: 180px;
+  transition: border-color .15s, background .15s;
+}
+.device-name-input:focus { border-color: var(--blue); background: var(--surface); }
+.device-list { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.device-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface-2); border-radius: var(--radius-sm); padding: 12px 16px;
+}
+.device-item-name { font-weight: 600; font-size: 0.92rem; }
+.device-item-when { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
 
 /* --------------------------------------------------------------- coach */
 

@@ -47,3 +47,5 @@ export async function writeJSON(pathname, value) {
 export const HEALTH_KEY = 'mi-coach/health.json'
 export const CHAT_KEY = 'mi-coach/chat.json'
 export const INSIGHT_KEY = 'mi-coach/insight.json'
+export const PASSKEY_KEY = 'mi-coach/passkeys.json'
+export const WEBAUTHN_CHALLENGE_KEY = 'mi-coach/webauthn-challenge.json'

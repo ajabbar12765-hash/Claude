@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api.js'
 import { parseCSV, rowsToRecords, CSV_TEMPLATE } from '../lib/csv.js'
+import { registerThisDevice } from '../lib/webauthn.js'
 
 const JSON_EXAMPLE = `{
   "records": [
@@ -29,8 +30,41 @@ export default function Import() {
   const [xiaomiResult, setXiaomiResult] = useState(null)
   const [xiaomiError, setXiaomiError] = useState('')
   const [xiaomiBusy, setXiaomiBusy] = useState(false)
+  const [devices, setDevices] = useState(null)
+  const [deviceName, setDeviceName] = useState('')
+  const [deviceBusy, setDeviceBusy] = useState(false)
+  const [deviceError, setDeviceError] = useState('')
   const fileRef = useRef(null)
   const webhookUrl = typeof window !== 'undefined' ? `${window.location.origin}/api/ingest` : '/api/ingest'
+
+  useEffect(() => {
+    api.passkeyList().then((r) => setDevices(r.devices)).catch(() => setDevices([]))
+  }, [])
+
+  async function addDevice() {
+    setDeviceError('')
+    setDeviceBusy(true)
+    try {
+      await registerThisDevice(deviceName.trim() || 'Unnamed device')
+      setDeviceName('')
+      const r = await api.passkeyList()
+      setDevices(r.devices)
+    } catch (err) {
+      setDeviceError(err.name === 'InvalidStateError' ? 'This device is already registered.' : err.message)
+    } finally {
+      setDeviceBusy(false)
+    }
+  }
+
+  async function removeDevice(id) {
+    setDeviceError('')
+    try {
+      await api.passkeyRemove(id)
+      setDevices((d) => d.filter((x) => x.id !== id))
+    } catch (err) {
+      setDeviceError(err.message)
+    }
+  }
 
   async function syncXiaomi() {
     setXiaomiError('')
@@ -86,8 +120,8 @@ export default function Import() {
     <div className="import-page">
       <h1>Import your data</h1>
       <p className="import-intro">
-        Xiaomi doesn't offer a public Mi Fitness API, so data gets in one of two ways below.
-        Both work on iPad, iPhone, and Android — pick whichever fits your setup.
+        Xiaomi doesn't offer a public Mi Fitness API, so data gets in one of the ways below —
+        all work on iPad, iPhone, and Android. This is also where you lock the app down to your own devices.
       </p>
 
       <section className="panel">
@@ -112,7 +146,44 @@ export default function Import() {
       </section>
 
       <section className="panel">
-        <h2>2. Xiaomi account sync (workouts only)</h2>
+        <h2>2. Trusted devices (passkey lock)</h2>
+        <p>
+          Add this device below to lock the app down to devices you've explicitly approved — once you add
+          your first one, the password sign-in screen turns off for good, and only devices below (unlocked
+          with Face ID, Touch ID, fingerprint, or Windows Hello) can sign in from then on.
+        </p>
+        <div className="import-actions">
+          <input
+            type="text"
+            placeholder="Name this device (e.g. My iPhone)"
+            value={deviceName}
+            onChange={(e) => setDeviceName(e.target.value)}
+            className="device-name-input"
+          />
+          <button className="btn-primary" onClick={addDevice} disabled={deviceBusy}>
+            {deviceBusy ? 'Adding…' : '🔒 Add this device'}
+          </button>
+        </div>
+        {deviceError && <div className="import-error">{deviceError}</div>}
+        {devices === null ? null : devices.length === 0 ? (
+          <p className="dashboard-sub" style={{ marginTop: 12 }}>No devices added yet — password sign-in is still active.</p>
+        ) : (
+          <ul className="device-list">
+            {devices.map((d) => (
+              <li key={d.id} className="device-item">
+                <div>
+                  <div className="device-item-name">{d.deviceName}</div>
+                  <div className="device-item-when">Added {new Date(d.createdAt).toLocaleDateString()}</div>
+                </div>
+                <button className="link-btn" onClick={() => removeDevice(d.id)}>Remove</button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="panel">
+        <h2>3. Xiaomi account sync (workouts only)</h2>
         <p>
           If you've set <code>XIAOMI_USER</code> and <code>XIAOMI_PASSWORD</code> in the server's environment
           variables, a daily automatic sync pulls your logged workouts (runs, walks, rides — distance,
@@ -135,7 +206,7 @@ export default function Import() {
       </section>
 
       <section className="panel">
-        <h2>3. Manual import</h2>
+        <h2>4. Manual import</h2>
         <p>Upload a CSV or JSON export any time — from Mi Fitness's own data export, Apple Health, or Health Connect.</p>
         <div className="import-actions">
           <button className="btn-primary" onClick={() => fileRef.current?.click()} disabled={busy}>

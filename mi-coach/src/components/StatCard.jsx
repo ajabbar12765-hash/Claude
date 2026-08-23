@@ -1,6 +1,7 @@
 import Sparkline from './Sparkline.jsx'
+import BarChart from './BarChart.jsx'
 
-export default function StatCard({ label, value, unit, deltaPct, color, series, sub, icon }) {
+export default function StatCard({ label, value, unit, deltaPct, color, series, dates, chartType = 'line', sub, icon }) {
   const hasDelta = typeof deltaPct === 'number' && Number.isFinite(deltaPct)
   const deltaClass = hasDelta ? (deltaPct >= 0 ? 'up' : 'down') : ''
 
@@ -27,7 +28,11 @@ export default function StatCard({ label, value, unit, deltaPct, color, series, 
       {sub && <div className="stat-card-sub">{sub}</div>}
       {series && (
         <div className="stat-card-chart">
-          <Sparkline values={series} color={color} />
+          {chartType === 'bar' ? (
+            <BarChart values={series} dates={dates} color={color} height={70} />
+          ) : (
+            <Sparkline values={series} color={color} />
+          )}
         </div>
       )}
     </div>

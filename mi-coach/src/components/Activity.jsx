@@ -30,6 +30,8 @@ export default function Activity() {
           color="#1a73e8"
           deltaPct={summary.trend.steps.deltaPct}
           series={series.map((s) => s.steps)}
+          dates={series.map((s) => s.date)}
+          chartType="bar"
         />
         <StatCard
           icon="🔥"
@@ -39,6 +41,8 @@ export default function Activity() {
           color="#f9ab00"
           deltaPct={summary.trend.activeCalories.deltaPct}
           series={series.map((s) => s.activeCalories)}
+          dates={series.map((s) => s.date)}
+          chartType="bar"
         />
         <StatCard
           icon="📍"
@@ -48,6 +52,8 @@ export default function Activity() {
           color="#1e8e3e"
           deltaPct={summary.trend.distanceKm.deltaPct}
           series={series.map((s) => s.distanceKm)}
+          dates={series.map((s) => s.date)}
+          chartType="bar"
         />
       </div>
 
