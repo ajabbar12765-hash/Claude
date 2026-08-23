@@ -27,13 +27,13 @@ export const api = {
   clearChat: () => request('/api/coach/history', { method: 'DELETE' }),
   ingest: (payload) => request('/api/ingest', { method: 'POST', body: JSON.stringify(payload) }),
   xiaomiSync: () => request('/api/xiaomi/sync', { method: 'POST' }),
-  passkeyStatus: () => request('/api/auth/passkey/status'),
-  passkeyRegisterOptions: () => request('/api/auth/passkey/register-options', { method: 'POST' }),
+  passkeyStatus: () => request('/api/auth/passkey?action=status'),
+  passkeyRegisterOptions: () => request('/api/auth/passkey', { method: 'POST', body: JSON.stringify({ action: 'register-options' }) }),
   passkeyRegisterVerify: (response, deviceName) =>
-    request('/api/auth/passkey/register-verify', { method: 'POST', body: JSON.stringify({ response, deviceName }) }),
-  passkeyLoginOptions: () => request('/api/auth/passkey/login-options', { method: 'POST' }),
+    request('/api/auth/passkey', { method: 'POST', body: JSON.stringify({ action: 'register-verify', response, deviceName }) }),
+  passkeyLoginOptions: () => request('/api/auth/passkey', { method: 'POST', body: JSON.stringify({ action: 'login-options' }) }),
   passkeyLoginVerify: (response) =>
-    request('/api/auth/passkey/login-verify', { method: 'POST', body: JSON.stringify({ response }) }),
-  passkeyList: () => request('/api/auth/passkey/list'),
-  passkeyRemove: (id) => request('/api/auth/passkey/list', { method: 'DELETE', body: JSON.stringify({ id }) }),
+    request('/api/auth/passkey', { method: 'POST', body: JSON.stringify({ action: 'login-verify', response }) }),
+  passkeyList: () => request('/api/auth/passkey?action=list'),
+  passkeyRemove: (id) => request('/api/auth/passkey', { method: 'DELETE', body: JSON.stringify({ id }) }),
 }
