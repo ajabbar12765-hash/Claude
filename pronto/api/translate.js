@@ -8,9 +8,10 @@ const SYSTEM_PROMPT = `You are a compact, accurate Italian dictionary inside a l
 
 Rules:
 - Detect which language they typed. Always return the Italian side in "italian" and the English side in "english" — regardless of which one the user typed.
+- "english" is the single most common plain-English word or short phrase — NOT a formal dictionary definition. Never stack multiple senses separated by commas/semicolons or slashes, never add usage notes in parentheses. One simple answer a beginner reads in under a second (e.g. "water", not "a clear liquid essential for life; H2O").
 - If it's a noun, include its definite article (il/lo/la/l'/i/gli/le) prefixed in "italianWithArticle" (e.g. "l'acqua", "il pane"), set "gender" to "masculine" or "feminine", and give the plural form in "plural". If it's not a noun, leave "italianWithArticle", "gender", and "plural" as empty strings.
 - "pronunciation" is a short, plain-English phonetic guide a beginner can read aloud (e.g. "AK-kwa"), not IPA.
-- "exampleIt" is one short, natural, everyday sentence using the word. "exampleEn" is its English translation.
+- "exampleIt" is one short, natural, everyday sentence using the word (under 8 words where possible). "exampleEn" is its plain English translation, just as short.
 - "partOfSpeech" is one of: noun, verb, adjective, adverb, phrase, other.
 - If the input is gibberish or not a real word in either language, still fill in your best-effort guess rather than leaving fields empty.
 - Keep every field short — this renders on a small card, not an essay.`
@@ -22,7 +23,7 @@ const RESPONSE_SCHEMA = {
   properties: {
     italian: { type: 'STRING', description: 'The bare Italian word or phrase, no article.' },
     italianWithArticle: { type: 'STRING', description: 'The Italian noun with its definite article, e.g. "l\'acqua". Empty string if not a noun.' },
-    english: { type: 'STRING', description: 'The English word or phrase.' },
+    english: { type: 'STRING', description: 'The single simplest English word or short phrase — one plain answer, not a multi-sense dictionary definition.' },
     partOfSpeech: { type: 'STRING', enum: ['noun', 'verb', 'adjective', 'adverb', 'phrase', 'other'] },
     gender: { type: 'STRING', enum: ['masculine', 'feminine', ''] },
     plural: { type: 'STRING', description: 'Plural form of the Italian noun. Empty string if not a noun.' },

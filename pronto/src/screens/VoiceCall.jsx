@@ -222,18 +222,29 @@ export default function VoiceCall({ onExit, progress }) {
         <motion.div className={`call-avatar-ring ${micActive ? 'call-avatar-ring-listening' : ''} ${callState === 'speaking' ? 'call-avatar-ring-speaking' : ''}`}>
           <Mascot expression={mascotExpression} size={104} />
         </motion.div>
-        <p className="call-status-label">
-          {callState === 'listening' && 'Listening…'}
-          {callState === 'recording' && (
-            <>
-              <span className="call-rec-dot" aria-hidden="true" /> Recording {String(Math.floor(recordingSeconds / 60)).padStart(1, '0')}:{String(recordingSeconds % 60).padStart(2, '0')} — tap again when you’re done
-            </>
-          )}
-          {callState === 'thinking' && 'Volpe is thinking…'}
-          {callState === 'speaking' && 'Volpe is talking…'}
-          {callState === 'idle' && (mode.current === 'type' ? 'Type your reply below' : 'Tap the mic and speak')}
-          {(callState === 'error' || callState === 'error-no-key') && 'Something needs your attention'}
-        </p>
+        <div className="call-status-label">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={callState}
+              className="call-status-text"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}
+            >
+              {callState === 'listening' && 'Listening…'}
+              {callState === 'recording' && (
+                <>
+                  <span className="call-rec-dot" aria-hidden="true" /> Recording {String(Math.floor(recordingSeconds / 60)).padStart(1, '0')}:{String(recordingSeconds % 60).padStart(2, '0')} — tap again when you’re done
+                </>
+              )}
+              {callState === 'thinking' && 'Volpe is thinking…'}
+              {callState === 'speaking' && 'Volpe is talking…'}
+              {callState === 'idle' && (mode.current === 'type' ? 'Type your reply below' : 'Tap the mic and speak')}
+              {(callState === 'error' || callState === 'error-no-key') && 'Something needs your attention'}
+            </motion.p>
+          </AnimatePresence>
+        </div>
       </div>
 
       <div className="call-transcript" ref={scrollRef}>
@@ -266,7 +277,17 @@ export default function VoiceCall({ onExit, progress }) {
             onClick={handleMicTap}
             aria-label={micActive ? 'Stop and send' : 'Start speaking'}
           >
-            <Icon name={micActive ? 'x' : 'volume'} size={26} strokeWidth={2} />
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={micActive ? 'stop' : 'start'}
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.7 }}
+                transition={{ duration: 0.15 }}
+              >
+                <Icon name={micActive ? 'x' : 'volume'} size={26} strokeWidth={2} />
+              </motion.span>
+            </AnimatePresence>
           </motion.button>
         ) : (
           <form className="call-type-form" onSubmit={handleTypedSubmit}>
