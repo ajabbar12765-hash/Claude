@@ -4,6 +4,8 @@ import ExerciseRunner from '../components/exercises/ExerciseRunner.jsx'
 import Icon from '../components/Icon.jsx'
 import Mascot from '../components/Mascot.jsx'
 import { playComplete, playFail, playCombo } from '../lib/sound.js'
+import { canSpeak, speakItalian } from '../lib/speech.js'
+import { vocabForLesson } from '../data/curriculum.js'
 
 let requeueCounter = 0
 const MAX_HEARTS = 5
@@ -18,6 +20,21 @@ function freshState(lesson) {
   }
 }
 
+// New words this lesson actually teaches, minus anything the learner has
+// already been taught in a prior completed lesson (progress.knownVocab) —
+// the app shouldn't re-teach a word it already knows the learner knows.
+function newWordsToTeach(lesson, knownVocab) {
+  const known = new Set((knownVocab || []).map((p) => p.it.toLowerCase()))
+  const seen = new Set()
+  return vocabForLesson(lesson).filter((p) => {
+    if (!p.it || !p.en) return false
+    const key = p.it.toLowerCase()
+    if (known.has(key) || seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
 export default function Lesson({ lesson, progress, onExit, onFinished }) {
   const [run, setRun] = useState(() => freshState(lesson))
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(null)
@@ -25,6 +42,9 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
   const [failed, setFailed] = useState(false)
   const [comboToast, setComboToast] = useState(null)
   const [xpPopup, setXpPopup] = useState(null)
+  const teachWords = useMemo(() => newWordsToTeach(lesson, progress.knownVocab), [lesson, progress.knownVocab])
+  const [teachIndex, setTeachIndex] = useState(0)
+  const speechSupported = canSpeak()
 
   const { queue, doneIds, missedOnce, hearts, combo } = run
   const total = lesson.exercises.length
@@ -170,6 +190,52 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
             Continue
           </motion.button>
         </motion.div>
+      </div>
+    )
+  }
+
+  if (teachIndex < teachWords.length) {
+    const word = teachWords[teachIndex]
+    const lastWord = teachIndex + 1 >= teachWords.length
+    return (
+      <div className="screen screen-lesson">
+        <div className="lesson-header">
+          <button type="button" className="lesson-exit" onClick={onExit} aria-label="Exit lesson">
+            <Icon name="x" size={22} strokeWidth={2.2} />
+          </button>
+          <span className="call-header-title">New words</span>
+        </div>
+
+        <div className="teach-zone">
+          <Mascot expression="happy" size={72} />
+          <p className="onboarding-subtext">
+            {teachIndex + 1} of {teachWords.length} — learn it, then we’ll practice
+          </p>
+          <motion.div
+            key={teachIndex}
+            className="teach-word-card"
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <p className="onboarding-quiz-word">{word.it}</p>
+            <p className="teach-word-meaning">{word.en}</p>
+            {speechSupported && (
+              <button type="button" className="dict-listen" onClick={() => speakItalian(word.it)} aria-label="Listen">
+                <Icon name="volume" size={20} strokeWidth={2} />
+              </button>
+            )}
+          </motion.div>
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            type="button"
+            className="btn-primary onboarding-confirm"
+            onClick={() => setTeachIndex((i) => i + 1)}
+          >
+            <Icon name="chevronRight" size={22} strokeWidth={1.9} />
+            {lastWord ? 'Let’s practice' : 'Got it'}
+          </motion.button>
+        </div>
       </div>
     )
   }
