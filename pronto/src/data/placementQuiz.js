@@ -58,7 +58,22 @@ function normalizeAnswer(raw) {
     .trim()
 }
 
+// A typed answer can honestly give more than one sense of a word ("hello/bye",
+// "hi or bye", "sorry, excuse me") — split on the common separators so each
+// sense is checked on its own instead of normalizing the whole string into
+// one run-together blob that matches nothing.
+function answerParts(raw) {
+  return (raw || '')
+    .split(/[/,;]|\band\b|\bor\b/i)
+    .map((p) => p.trim())
+    .filter(Boolean)
+}
+
 export function checkAnswer(item, raw) {
-  const norm = normalizeAnswer(raw)
-  return norm.length > 0 && item.accepted.some((a) => normalizeAnswer(a) === norm)
+  const parts = answerParts(raw)
+  if (parts.length === 0) return false
+  return parts.some((part) => {
+    const norm = normalizeAnswer(part)
+    return norm.length > 0 && item.accepted.some((a) => normalizeAnswer(a) === norm)
+  })
 }

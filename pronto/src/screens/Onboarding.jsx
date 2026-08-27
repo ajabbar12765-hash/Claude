@@ -25,30 +25,37 @@ const slide = {
   exit: { opacity: 0, x: -24, transition: { duration: 0.2 } },
 }
 
+// The placement quiz runs first and can't be skipped — everything else it
+// feeds (Volpe's vocabulary/level, which units get pre-unlocked) depends on
+// an honest read of what someone already knows, so there's no "Skip" here.
+// Motivation/pace are just preferences and stay skippable after it.
 export default function Onboarding({ onDone }) {
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(0) // 0=quiz, 1=motivation, 2=pace
   const [motivation, setMotivation] = useState(null)
   const [goalXpPerDay, setGoalXpPerDay] = useState(null)
+  const [quizResult, setQuizResult] = useState(null)
 
-  function pickMotivation(id) {
-    setMotivation(id)
-    setStep(1)
-  }
-
-  function pickPace(pace) {
-    setGoalXpPerDay(pace.goalXp)
-    setStep(2)
-  }
-
-  function finishQuiz(quizScore, quizTotal) {
-    onDone({
-      motivation,
-      goalXpPerDay,
+  function finishQuizStep(quizScore, quizTotal) {
+    setQuizResult({
       quizScore,
       quizTotal,
       skipAhead: quizScore >= QUIZ_PASS_SCORE,
       italianLevel: levelFromScore(quizScore),
     })
+    setStep(1)
+  }
+
+  function pickMotivation(id) {
+    setMotivation(id)
+    setStep(2)
+  }
+
+  function pickPace(pace) {
+    onDone({ motivation, goalXpPerDay: pace.goalXp, ...quizResult })
+  }
+
+  function skipRest() {
+    onDone({ motivation, goalXpPerDay, ...quizResult })
   }
 
   return (
@@ -58,13 +65,17 @@ export default function Onboarding({ onDone }) {
         <span className={`onboarding-dot ${step >= 1 ? 'onboarding-dot-active' : ''}`} />
         <span className={`onboarding-dot ${step >= 2 ? 'onboarding-dot-active' : ''}`} />
       </div>
-      <button type="button" className="onboarding-skip" onClick={() => onDone({})}>
-        Skip
-      </button>
+      {step > 0 && (
+        <button type="button" className="onboarding-skip" onClick={skipRest}>
+          Skip
+        </button>
+      )}
 
       <AnimatePresence mode="wait">
-        {step === 0 && (
-          <motion.div key="step0" className="onboarding-step" variants={slide} initial="hidden" animate="show" exit="exit">
+        {step === 0 && <PlacementQuiz key="step0" onFinish={finishQuizStep} confirmLabel="Continue" />}
+
+        {step === 1 && (
+          <motion.div key="step1" className="onboarding-step" variants={slide} initial="hidden" animate="show" exit="exit">
             <Mascot expression="idle" size={72} />
             <h1 className="onboarding-question">What are you learning Italian for?</h1>
             <div className="onboarding-options">
@@ -84,8 +95,8 @@ export default function Onboarding({ onDone }) {
           </motion.div>
         )}
 
-        {step === 1 && (
-          <motion.div key="step1" className="onboarding-step" variants={slide} initial="hidden" animate="show" exit="exit">
+        {step === 2 && (
+          <motion.div key="step2" className="onboarding-step" variants={slide} initial="hidden" animate="show" exit="exit">
             <Mascot expression="happy" size={72} />
             <h1 className="onboarding-question">How much time can you give it?</h1>
             <p className="onboarding-subtext">You can always change this later.</p>
@@ -98,10 +109,6 @@ export default function Onboarding({ onDone }) {
               ))}
             </div>
           </motion.div>
-        )}
-
-        {step === 2 && (
-          <PlacementQuiz key="step2" onFinish={finishQuiz} confirmLabel="Let’s go" />
         )}
       </AnimatePresence>
     </div>
