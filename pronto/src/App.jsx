@@ -243,13 +243,15 @@ export default function App() {
 
       {showChrome && <TopBar streak={progress.streak.count} xp={progress.xp} />}
       <main className="app-main">
-        {screen === 'home' && <Home progress={progress} onOpenLesson={openLesson} onOpenProfile={() => setScreen('profile')} />}
+        {screen === 'home' && (
+          <Home progress={progress} onOpenLesson={openLesson} onOpenProfile={() => setScreen('profile')} onOpenLevelCheck={() => setScreen('level-check')} />
+        )}
         {screen === 'profile' && (
           <Profile progress={progress} theme={theme} notifications={notifications} onOpenLevelCheck={() => setScreen('level-check')} />
         )}
         {screen === 'call' && <VoiceCall onExit={returnHome} progress={progress} />}
         {screen === 'dictionary' && <Dictionary onExit={returnHome} progress={progress} />}
-        {screen === 'level-check' && <LevelCheck progress={progress} onExit={() => setScreen('profile')} />}
+        {screen === 'level-check' && <LevelCheck progress={progress} onExit={() => setScreen('home')} />}
         {screen === 'lesson' && activeLesson?.type === 'lesson' && (
           <Lesson lesson={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />
         )}

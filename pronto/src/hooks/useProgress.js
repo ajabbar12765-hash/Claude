@@ -7,7 +7,7 @@ const XP_PER_LEVEL = 100
 // How many taught words/phrases to send Volpe as "known vocabulary" context.
 // Capped so a learner deep into the course doesn't balloon every voice-call
 // request — the most recent (most advanced) items in curriculum order win.
-const KNOWN_VOCAB_CAP = 80
+const KNOWN_VOCAB_CAP = 50
 
 const STORAGE_KEY = 'pronto:progress:v1'
 

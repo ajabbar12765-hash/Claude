@@ -111,8 +111,8 @@ const RECOMMENDED_UNITS = {
   fun: [],
 }
 
-export default function Home({ progress, onOpenLesson, onOpenProfile }) {
-  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation } = progress
+export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLevelCheck }) {
+  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation, italianLevel } = progress
   const currentUnitIndex = nextLesson ? nextLesson.unitIndex : UNITS.length - 1
   const heroEyebrow = MOTIVATION_EYEBROW[motivation] || 'Real-life readiness'
   const recommendedUnitIds = RECOMMENDED_UNITS[motivation] || []
@@ -156,6 +156,19 @@ export default function Home({ progress, onOpenLesson, onOpenProfile }) {
           <Mascot expression={dailyGoalMet ? 'happy' : 'idle'} celebrate={dailyGoalMet} size={72} />
         </div>
       </motion.section>
+
+      {!italianLevel && (
+        <motion.button variants={item} whileTap={{ scale: 0.98 }} type="button" className="level-cta-card" onClick={onOpenLevelCheck}>
+          <span className="level-cta-icon">
+            <Icon name="target" size={22} strokeWidth={1.9} />
+          </span>
+          <span className="level-cta-copy">
+            <span className="level-cta-title">Find your Italian level</span>
+            <span className="level-cta-sub">A 2-minute check — Volpe and your lessons match what you already know.</span>
+          </span>
+          <Icon name="chevronRight" size={18} strokeWidth={2.2} />
+        </motion.button>
+      )}
 
       <CourseMap currentUnitIndex={currentUnitIndex} isUnitUnlocked={isUnitUnlocked} isUnitComplete={isUnitComplete} />
 

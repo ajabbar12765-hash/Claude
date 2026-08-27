@@ -20,7 +20,7 @@ const MIN_RECORDING_MS = 500
 // How many recent turns to send back to Gemini each request. The full
 // transcript isn't needed for a natural reply, and re-sending an ever-growing
 // history is the main thing that makes a long call feel slower over time.
-const MAX_HISTORY_TURNS = 8
+const MAX_HISTORY_TURNS = 6
 
 // Native SpeechRecognition where it's actually reliable; raw audio
 // recording sent to the server everywhere else — including WebKit/Safari
@@ -230,7 +230,7 @@ export default function VoiceCall({ onExit, progress }) {
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.18 }}
+              transition={{ duration: 0.15 }}
             >
               {callState === 'listening' && 'Listening…'}
               {callState === 'recording' && (

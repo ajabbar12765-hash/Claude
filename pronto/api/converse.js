@@ -14,7 +14,7 @@ const LEVEL_RULES = {
   advanced: 'The learner is advanced or near-fluent. Speak the way you naturally would with a friend — full native pace, idioms, colloquialisms, subjunctive and any other mood/tense as it comes up. Don\'t simplify, slow down, or hold back.',
 }
 
-const MAX_KNOWN_VOCAB = 80
+const MAX_KNOWN_VOCAB = 50
 
 function formatKnownVocab(knownVocab) {
   if (!Array.isArray(knownVocab)) return ''
