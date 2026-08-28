@@ -1,39 +1,75 @@
 const APP_URL = 'https://impara-git-claude-duolingo-l-1a1bd8-ajabbar12765-hashs-projects.vercel.app'
 const ACCENT = '#ff5a36'
+const CREAM = '#fff3e8'
+const BLUSH = '#ff8b6b'
+const DARK = '#221813'
 const SPARKLE = '#ffb627'
 
 const FACES = {
   happy: {
-    eyes: `<path d="M71 88 Q79 80 87 88" stroke="#221813" stroke-width="4.5" fill="none" stroke-linecap="round" />
-           <path d="M113 88 Q121 80 129 88" stroke="#221813" stroke-width="4.5" fill="none" stroke-linecap="round" />`,
-    mouth: `<path d="M82 110 Q100 132 118 110 Q100 126 82 110 Z" fill="#221813" />`,
+    eyes: [
+      { type: 'stroke', d: 'M71 88 Q79 80 87 88', color: DARK, width: 4.5 },
+      { type: 'stroke', d: 'M113 88 Q121 80 129 88', color: DARK, width: 4.5 },
+    ],
+    mouth: [
+      { type: 'path', d: 'M82 110 Q100 132 118 110 Q100 126 82 110 Z', color: DARK },
+    ],
   },
   idle: {
-    eyes: `<circle cx="79" cy="90" r="7.5" fill="#221813" /><circle cx="121" cy="90" r="7.5" fill="#221813" />
-           <circle cx="81.5" cy="87.5" r="2.2" fill="#fff" /><circle cx="123.5" cy="87.5" r="2.2" fill="#fff" />`,
-    mouth: `<path d="M86 112 Q100 122 114 112" stroke="#221813" stroke-width="4" fill="none" stroke-linecap="round" />`,
+    eyes: [
+      { type: 'circle', cx: 79, cy: 90, r: 7.5, color: DARK },
+      { type: 'circle', cx: 121, cy: 90, r: 7.5, color: DARK },
+      { type: 'circle', cx: 81.5, cy: 87.5, r: 2.2, color: '#ffffff' },
+      { type: 'circle', cx: 123.5, cy: 87.5, r: 2.2, color: '#ffffff' },
+    ],
+    mouth: [
+      { type: 'stroke', d: 'M86 112 Q100 122 114 112', color: DARK, width: 4 },
+    ],
   },
   sleepy: {
-    eyes: `<path d="M71 90 L87 90" stroke="#221813" stroke-width="4.5" stroke-linecap="round" />
-           <path d="M113 90 L129 90" stroke="#221813" stroke-width="4.5" stroke-linecap="round" />`,
-    mouth: `<path d="M90 114 Q100 118 110 114" stroke="#221813" stroke-width="4" fill="none" stroke-linecap="round" />`,
-    extras: `<text x="138" y="58" font-size="13" fill="#ffffff" font-family="-apple-system" opacity="0.85">z</text>
-             <text x="150" y="46" font-size="9" fill="#ffffff" font-family="-apple-system" opacity="0.7">z</text>`,
+    eyes: [
+      { type: 'stroke', d: 'M71 90 L87 90', color: DARK, width: 4.5 },
+      { type: 'stroke', d: 'M113 90 L129 90', color: DARK, width: 4.5 },
+    ],
+    mouth: [
+      { type: 'stroke', d: 'M90 114 Q100 118 110 114', color: DARK, width: 4 },
+    ],
+    extras: [
+      { type: 'text', text: 'z', x: 136, y: 46, size: 15, color: '#ffffff', opacity: 0.85 },
+      { type: 'text', text: 'z', x: 148, y: 34, size: 10, color: '#ffffff', opacity: 0.7 },
+    ],
   },
   excited: {
-    eyes: `<circle cx="79" cy="88" r="9" fill="#221813" /><circle cx="121" cy="88" r="9" fill="#221813" />
-           <circle cx="82" cy="84" r="3" fill="#fff" /><circle cx="124" cy="84" r="3" fill="#fff" />`,
-    mouth: `<ellipse cx="100" cy="115" rx="13" ry="11" fill="#221813" /><ellipse cx="100" cy="112" rx="7" ry="4" fill="#ff8b6b" />`,
-    extras: `<path d="M60 72 L64 64 L68 72" stroke="${SPARKLE}" stroke-width="3" fill="none" stroke-linecap="round" />
-             <path d="M132 72 L136 64 L140 72" stroke="${SPARKLE}" stroke-width="3" fill="none" stroke-linecap="round" />`,
+    eyes: [
+      { type: 'circle', cx: 79, cy: 88, r: 9, color: DARK },
+      { type: 'circle', cx: 121, cy: 88, r: 9, color: DARK },
+      { type: 'circle', cx: 82, cy: 84, r: 3, color: '#ffffff' },
+      { type: 'circle', cx: 124, cy: 84, r: 3, color: '#ffffff' },
+    ],
+    mouth: [
+      { type: 'ellipse', cx: 100, cy: 115, rx: 13, ry: 11, color: DARK },
+      { type: 'ellipse', cx: 100, cy: 112, rx: 7, ry: 4, color: BLUSH },
+    ],
+    extras: [
+      { type: 'stroke', d: 'M60 72 L64 64 L68 72', color: SPARKLE, width: 3 },
+      { type: 'stroke', d: 'M132 72 L136 64 L140 72', color: SPARKLE, width: 3 },
+    ],
   },
   ecstatic: {
-    eyes: `<path d="M67 90 Q79 72 91 90" stroke="#221813" stroke-width="5.5" fill="none" stroke-linecap="round" />
-           <path d="M109 90 Q121 72 133 90" stroke="#221813" stroke-width="5.5" fill="none" stroke-linecap="round" />`,
-    mouth: `<path d="M78 108 Q100 138 122 108 Q100 132 78 108 Z" fill="#221813" /><ellipse cx="100" cy="119" rx="9" ry="6" fill="#ff8b6b" />`,
-    extras: `<path d="M48 66 L53 56 L58 66" stroke="${SPARKLE}" stroke-width="3.2" fill="none" stroke-linecap="round" />
-             <path d="M142 66 L147 56 L152 66" stroke="${SPARKLE}" stroke-width="3.2" fill="none" stroke-linecap="round" />
-             <circle cx="34" cy="94" r="3.5" fill="${SPARKLE}" /><circle cx="166" cy="94" r="3.5" fill="${SPARKLE}" />`,
+    eyes: [
+      { type: 'stroke', d: 'M67 90 Q79 72 91 90', color: DARK, width: 5.5 },
+      { type: 'stroke', d: 'M109 90 Q121 72 133 90', color: DARK, width: 5.5 },
+    ],
+    mouth: [
+      { type: 'path', d: 'M78 108 Q100 138 122 108 Q100 132 78 108 Z', color: DARK },
+      { type: 'ellipse', cx: 100, cy: 119, rx: 9, ry: 6, color: BLUSH },
+    ],
+    extras: [
+      { type: 'stroke', d: 'M48 66 L53 56 L58 66', color: SPARKLE, width: 3.2 },
+      { type: 'stroke', d: 'M142 66 L147 56 L152 66', color: SPARKLE, width: 3.2 },
+      { type: 'circle', cx: 34, cy: 94, r: 3.5, color: SPARKLE },
+      { type: 'circle', cx: 166, cy: 94, r: 3.5, color: SPARKLE },
+    ],
   },
 }
 
@@ -55,39 +91,95 @@ function timeGreeting(hour) {
   return { text: 'Buonanotte', icon: moon }
 }
 
-function mascotSvg(expression) {
-  const face = FACES[expression] || FACES.idle
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" width="140" height="154">
-    <path d="M148 178 Q194 172 186 122 Q182 92 152 100 Q176 128 150 178 Z" fill="${ACCENT}" />
-    <path d="M186 122 Q182 96 156 101 Q172 108 172 128 Q172 148 155 168 Z" fill="#fff3e8" opacity="0.9" />
-    <ellipse cx="52" cy="150" rx="13" ry="17" fill="${ACCENT}" />
-    <ellipse cx="148" cy="150" rx="13" ry="17" fill="${ACCENT}" />
-    <ellipse cx="100" cy="168" rx="60" ry="44" fill="${ACCENT}" />
-    <ellipse cx="100" cy="184" rx="34" ry="20" fill="#fff3e8" />
-    <path d="M66 132 L134 132 L100 164 Z" fill="#12b5ac" />
-    <circle cx="100" cy="136" r="7" fill="#12b5ac" />
-    <path d="M52 58 L34 2 L92 42 Z" fill="${ACCENT}" />
-    <path d="M56 52 L46 16 L82 40 Z" fill="#fff3e8" />
-    <path d="M148 58 L166 2 L108 42 Z" fill="${ACCENT}" />
-    <path d="M144 52 L154 16 L118 40 Z" fill="#fff3e8" />
-    <circle cx="100" cy="96" r="64" fill="${ACCENT}" />
-    <ellipse cx="100" cy="112" rx="36" ry="27" fill="#fff3e8" />
-    <ellipse cx="62" cy="108" rx="10" ry="7" fill="#ff8b6b" opacity="0.7" />
-    <ellipse cx="138" cy="108" rx="10" ry="7" fill="#ff8b6b" opacity="0.7" />
-    <path d="M100 96 L92 104 L108 104 Z" fill="#221813" />
-    ${face.eyes}
-    ${face.mouth}
-    ${face.extras || ''}
-  </svg>`
+function buildPath(d) {
+  const t = d.match(/[MLQZ]|-?\d+\.?\d*/g) || []
+  const path = new Path()
+  let i = 0
+  while (i < t.length) {
+    const cmd = t[i]
+    if (cmd === 'M') {
+      path.move(new Point(parseFloat(t[i + 1]), parseFloat(t[i + 2])))
+      i += 3
+    } else if (cmd === 'L') {
+      path.addLine(new Point(parseFloat(t[i + 1]), parseFloat(t[i + 2])))
+      i += 3
+    } else if (cmd === 'Q') {
+      const cx = parseFloat(t[i + 1])
+      const cy = parseFloat(t[i + 2])
+      const x = parseFloat(t[i + 3])
+      const y = parseFloat(t[i + 4])
+      path.addQuadCurve(new Point(x, y), new Point(cx, cy))
+      i += 5
+    } else if (cmd === 'Z') {
+      path.closeSubpath()
+      i += 1
+    } else {
+      i += 1
+    }
+  }
+  return path
 }
 
-async function renderMascotImage(expression) {
-  const html = `<!DOCTYPE html><html><head><meta name="viewport" content="width=140, initial-scale=1">
-    <style>html,body{margin:0;padding:0;background:transparent;}</style></head>
-    <body>${mascotSvg(expression)}</body></html>`
-  const wv = new WebView()
-  await wv.loadHTML(html)
-  return await wv.snapshot()
+function fillCircle(ctx, cx, cy, r, color) {
+  ctx.setFillColor(new Color(color))
+  ctx.fillEllipse(new Rect(cx - r, cy - r, r * 2, r * 2))
+}
+
+function fillEllipseXY(ctx, cx, cy, rx, ry, color) {
+  ctx.setFillColor(new Color(color))
+  ctx.fillEllipse(new Rect(cx - rx, cy - ry, rx * 2, ry * 2))
+}
+
+function fillPathD(ctx, d, color) {
+  ctx.setFillColor(new Color(color))
+  ctx.addPath(buildPath(d))
+  ctx.fillPath()
+}
+
+function strokePathD(ctx, d, color, width) {
+  ctx.setStrokeColor(new Color(color))
+  ctx.setLineWidth(width)
+  ctx.addPath(buildPath(d))
+  ctx.strokePath()
+}
+
+function drawOps(ctx, ops) {
+  for (const op of ops) {
+    if (op.type === 'circle') fillCircle(ctx, op.cx, op.cy, op.r, op.color)
+    else if (op.type === 'ellipse') fillEllipseXY(ctx, op.cx, op.cy, op.rx, op.ry, op.color)
+    else if (op.type === 'path') fillPathD(ctx, op.d, op.color)
+    else if (op.type === 'stroke') strokePathD(ctx, op.d, op.color, op.width)
+    else if (op.type === 'text') {
+      ctx.setFont(Font.boldSystemFont(op.size))
+      ctx.setTextColor(new Color(op.color, op.opacity ?? 1))
+      ctx.drawText(op.text, new Point(op.x, op.y))
+    }
+  }
+}
+
+function drawMascotImage(expression) {
+  const face = FACES[expression] || FACES.idle
+  const ctx = new DrawContext()
+  ctx.size = new Size(200, 150)
+  ctx.opaque = false
+  ctx.respectScreenScale = true
+
+  fillPathD(ctx, 'M52 58 L34 2 L92 42 Z', ACCENT)
+  fillPathD(ctx, 'M56 52 L46 16 L82 40 Z', CREAM)
+  fillPathD(ctx, 'M148 58 L166 2 L108 42 Z', ACCENT)
+  fillPathD(ctx, 'M144 52 L154 16 L118 40 Z', CREAM)
+
+  fillCircle(ctx, 100, 96, 64, ACCENT)
+  fillEllipseXY(ctx, 100, 112, 36, 27, CREAM)
+  fillEllipseXY(ctx, 62, 108, 10, 7, BLUSH)
+  fillEllipseXY(ctx, 138, 108, 10, 7, BLUSH)
+  fillPathD(ctx, 'M100 96 L92 104 L108 104 Z', DARK)
+
+  drawOps(ctx, face.eyes)
+  drawOps(ctx, face.mouth)
+  if (face.extras) drawOps(ctx, face.extras)
+
+  return ctx.getImage()
 }
 
 async function fetchData() {
@@ -136,7 +228,7 @@ function buildWidget(data, mascotImage, hour) {
 
   if (mascotImage) {
     const img = top.addImage(mascotImage)
-    img.imageSize = new Size(56, 62)
+    img.imageSize = new Size(64, 48)
   }
 
   widget.addSpacer(10)
@@ -181,13 +273,18 @@ try {
   const expr = pickExpression(data?.streak ?? 0, hour)
   let mascotImage = null
   try {
-    mascotImage = await renderMascotImage(expr)
+    mascotImage = drawMascotImage(expr)
   } catch {
   }
   widget = buildWidget(data, mascotImage, hour)
 } catch {
   const hour = new Date().getHours()
-  widget = buildWidget({ it: 'Ciao!', en: 'Could not reach Pronto - tap to open the app.', streak: 0 }, null, hour)
+  let mascotImage = null
+  try {
+    mascotImage = drawMascotImage('idle')
+  } catch {
+  }
+  widget = buildWidget({ it: 'Ciao!', en: 'Could not reach Pronto - tap to open the app.', streak: 0 }, mascotImage, hour)
 }
 
 if (config.runsInWidget) {
