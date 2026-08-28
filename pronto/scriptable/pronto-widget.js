@@ -105,7 +105,7 @@ function buildWidget(data, hour) {
   const fox = foxCol.addText('\u{1F98A}')
   fox.font = Font.systemFont(46)
 
-  widget.addSpacer(8)
+  widget.addSpacer()
 
   const pipRow = widget.addStack()
   pipRow.centerAlignContent()
@@ -118,7 +118,7 @@ function buildWidget(data, hour) {
     if (i < 6) pipRow.addSpacer(4)
   }
 
-  widget.addSpacer(7)
+  widget.addSpacer()
 
   const greet = timeGreeting(hour)
   const greetRow = widget.addStack()
@@ -130,7 +130,7 @@ function buildWidget(data, hour) {
   greetText.font = Font.semiboldSystemFont(11)
   greetText.textColor = new Color('#ffffff', 0.75)
 
-  widget.addSpacer(3)
+  widget.addSpacer(4)
 
   const italian = widget.addText(data?.it || 'Buongiorno!')
   italian.font = Font.boldSystemFont(18)
