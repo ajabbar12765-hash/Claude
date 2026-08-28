@@ -766,22 +766,26 @@ ul {
   transition: width 0.35s ease;
 }
 
-.lesson-hearts {
+.unit-test-progress {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-ink-soft);
+}
+
+.unit-test-timer {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   flex-shrink: 0;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
 }
 
-.lesson-heart-full {
+.unit-test-timer-low {
   color: var(--color-error);
-  fill: var(--color-error);
-}
-
-.lesson-heart-lost {
-  color: var(--color-border);
-  fill: none;
-  transform: scale(0.9);
+  animation: call-rec-blink 1s ease-in-out infinite;
 }
 
 /* ── In-lesson toasts: combo streak, floating XP ────────────── */

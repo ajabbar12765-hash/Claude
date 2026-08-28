@@ -3,19 +3,17 @@ import { AnimatePresence, motion } from 'framer-motion'
 import ExerciseRunner from '../components/exercises/ExerciseRunner.jsx'
 import Icon from '../components/Icon.jsx'
 import Mascot from '../components/Mascot.jsx'
-import { playComplete, playFail, playCombo } from '../lib/sound.js'
+import { playComplete, playCombo } from '../lib/sound.js'
 import { canSpeak, speakItalian } from '../lib/speech.js'
 import { vocabForLesson } from '../data/curriculum.js'
 
 let requeueCounter = 0
-const MAX_HEARTS = 5
 
 function freshState(lesson) {
   return {
     queue: lesson.exercises.map((ex) => ({ key: ex.id, exercise: ex })),
     doneIds: new Set(),
     missedOnce: new Set(),
-    hearts: MAX_HEARTS,
     combo: 0,
   }
 }
@@ -39,24 +37,23 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
   const [run, setRun] = useState(() => freshState(lesson))
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(null)
   const [finished, setFinished] = useState(false)
-  const [failed, setFailed] = useState(false)
   const [comboToast, setComboToast] = useState(null)
   const [xpPopup, setXpPopup] = useState(null)
   const teachWords = useMemo(() => newWordsToTeach(lesson, progress.knownVocab), [lesson, progress.knownVocab])
   const [teachIndex, setTeachIndex] = useState(0)
   const speechSupported = canSpeak()
 
-  const { queue, doneIds, missedOnce, hearts, combo } = run
+  const { queue, doneIds, missedOnce, combo } = run
   const total = lesson.exercises.length
   const current = queue[0]
 
   useEffect(() => {
-    if (queue.length === 0 && !finished && !failed) {
+    if (queue.length === 0 && !finished) {
       setFinished(true)
       progress.completeLesson(lesson.id, total, missedOnce.size === 0)
       playComplete()
     }
-  }, [queue, finished, failed, progress, lesson.id, total, missedOnce])
+  }, [queue, finished, progress, lesson.id, total, missedOnce])
 
   useEffect(() => {
     if (!comboToast) return
@@ -88,17 +85,11 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
         ...prev,
         missedOnce: new Set(prev.missedOnce).add(current.exercise.id),
         combo: 0,
-        hearts: Math.max(0, prev.hearts - 1),
       }))
     }
   }
 
   function handleContinue() {
-    if (!lastAnswerCorrect && hearts <= 0) {
-      setFailed(true)
-      playFail()
-      return
-    }
     setRun((prev) => {
       const [head, ...rest] = prev.queue
       if (lastAnswerCorrect) return { ...prev, queue: rest }
@@ -106,51 +97,6 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
       return { ...prev, queue: [...rest, { key: `${head.exercise.id}-r${requeueCounter}`, exercise: head.exercise }] }
     })
     setLastAnswerCorrect(null)
-  }
-
-  function retryLesson() {
-    setRun(freshState(lesson))
-    setLastAnswerCorrect(null)
-    setFinished(false)
-    setFailed(false)
-    setComboToast(null)
-    setXpPopup(null)
-  }
-
-  if (failed) {
-    return (
-      <div className="screen screen-lesson-complete">
-        <motion.div
-          className="complete-card"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-        >
-          <motion.span
-            className="complete-badge complete-badge-fail"
-            initial={{ scale: 0, rotate: -20 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 14, delay: 0.1 }}
-          >
-            <Mascot expression="thinking" size={72} />
-          </motion.span>
-          <h1>Out of hearts</h1>
-          <p className="complete-sub">Five misses and this attempt’s done — no XP for it. Take a breath and go again; nothing’s lost but a minute.</p>
-          <div className="complete-stats">
-            <div className="complete-stat">
-              <Icon name="check" size={18} strokeWidth={2} />
-              <span>{doneIds.size}/{total} phrases landed</span>
-            </div>
-          </div>
-          <motion.button whileTap={{ scale: 0.97 }} type="button" className="btn-primary" onClick={retryLesson}>
-            Try again
-          </motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} type="button" className="btn-reset" onClick={onExit}>
-            Back to home
-          </motion.button>
-        </motion.div>
-      </div>
-    )
   }
 
   if (finished) {
@@ -250,11 +196,6 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
         </button>
         <div className="lesson-progress-track">
           <motion.div className="lesson-progress-fill" animate={{ width: `${progressPct}%` }} transition={{ type: 'spring', stiffness: 200, damping: 26 }} />
-        </div>
-        <div className="lesson-hearts" aria-label={`${hearts} of ${MAX_HEARTS} hearts left`}>
-          {Array.from({ length: MAX_HEARTS }).map((_, i) => (
-            <Icon key={i} name="heart" size={16} strokeWidth={2.2} className={i < hearts ? 'lesson-heart-full' : 'lesson-heart-lost'} />
-          ))}
         </div>
       </div>
 

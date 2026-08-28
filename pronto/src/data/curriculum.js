@@ -13,13 +13,25 @@
 // real syllabus would.
 //
 // Exercise shapes:
-//   explain - a short grammar note (title + body + examples), no scoring
-//   mcq    - multiple choice (dir: 'it-en' recognize, or 'en-it' produce)
-//   build  - drag/tap word tiles into the correct Italian sentence
-//   type   - type the Italian translation from a free text box
-//   listen - hear the Italian spoken aloud, choose what it means
-//   match  - match a small set of Italian/English pairs
-//   speak  - say the Italian phrase out loud, scored against speech recognition
+//   explain   - a short grammar note (title + body + examples), no scoring
+//   mcq       - multiple choice (dir: 'it-en' recognize, or 'en-it' produce)
+//   build     - drag/tap word tiles into the correct Italian sentence, from English
+//   type      - type the Italian translation from a free text box
+//   listen    - hear the Italian spoken aloud, choose what it means
+//   match     - match a small set of Italian/English pairs
+//   speak     - say the Italian phrase out loud, scored against speech recognition
+//   dictation - hear the Italian spoken aloud, type exactly what you heard (no
+//               English shown up front) — classic dictation, tests sound-to-word
+//   reorder   - hear the Italian spoken aloud, drag its own (scrambled) words
+//               into the right order — word-order from listening, not translation
+//   respond   - hear an Italian prompt, reply out loud in your own words, scored
+//               against a short list of acceptable phrasings — open production,
+//               not an echo of one fixed line
+//
+// Every regular unit (u1-u6) also carries a `test` array: a short, timed
+// checkpoint (see UnitTest.jsx) that must be passed to unlock the next unit —
+// retrieval practice on material from across the whole unit, in fresh
+// phrasing, not a copy of the lesson questions.
 
 function lesson(id, title, subtitle, icon, exercises) {
   return {
@@ -68,6 +80,22 @@ function speak(it, en, extra = {}) {
   return { type: 'speak', it, en, ...extra }
 }
 
+function dictation(it, en, accept = [], extra = {}) {
+  return { type: 'dictation', it, en, accept, ...extra }
+}
+
+function reorder(it, en, extra = {}) {
+  return { type: 'reorder', it, en, ...extra }
+}
+
+function respond(promptIt, promptEn, accepts, modelEn, extra = {}) {
+  return { type: 'respond', promptIt, promptEn, accepts, modelEn, ...extra }
+}
+
+function unitTest(unitId, exercises) {
+  return exercises.map((ex, i) => ({ id: `${unitId}-test-e${i + 1}`, ...ex }))
+}
+
 export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
@@ -82,6 +110,14 @@ export const UNITS = [
       'Say you don’t understand and ask someone to slow down',
       'Know when to use tu vs. Lei',
     ],
+    test: unitTest('u1', [
+      mcq('it-en', 'Buonasera', 'Good evening', ['Good morning', 'Good evening', 'Goodbye', 'Hello']),
+      typeEx('My name is...', 'Mi chiamo...', ['mi chiamo']),
+      mcq('en-it', 'Piacere', 'Nice to meet you', ['Grazie', 'Prego', 'Piacere', 'Scusi']),
+      build('I don’t understand', 'Non capisco', ['lo', 'so']),
+      typeEx('Do you speak English?', 'Parla inglese?', ['parla inglese']),
+      listen('Come sta?', 'How are you? (formal)', ['How are you? (formal)', 'What’s your name?', 'Where are you from?', 'Nice to meet you']),
+    ]),
     lessons: [
       lesson('u1l1', 'Hello & Goodbye', 'Greetings that actually match the time of day', 'sun', [
         mcq('it-en', 'Buongiorno', 'Good morning / Good day', ['Good evening', 'Good morning / Good day', 'Good night', 'See you soon']),
@@ -163,6 +199,36 @@ export const UNITS = [
         speak('Non capisco', 'Say it out loud: I don’t understand'),
       ]),
 
+      lesson('u1l3x', 'Talking About Yourself', 'Nationality, work, and the essential verb "to be"', 'user', [
+        explain(
+          'The Verb Essere (To Be)',
+          'Essere is the single most essential — and irregular — verb in Italian. Between essere and avere, you can build an enormous share of everyday sentences.',
+          [
+            { it: 'io sono', en: 'I am' },
+            { it: 'tu sei', en: 'you are' },
+            { it: 'lui / lei è', en: 'he / she is' },
+          ],
+        ),
+        mcq('it-en', 'Di dove sei?', 'Where are you from?', ['Where are you going?', 'Where are you from?', 'How old are you?', 'Do you live here?']),
+        typeEx('I am American', 'Sono americano/a', ['sono americano', 'sono americana']),
+        dictation('Sono di New York', 'I’m from New York', ['sono di new york']),
+        build('What’s your profession?', 'Qual è la tua professione?', ['lavoro', 'mestiere'], {
+          note: '"Professione" and "lavoro" both mean roughly "job" — professione leans formal, lavoro is the everyday word.',
+        }),
+        reorder('Sono uno studente', 'I am a student'),
+        respond(
+          'Che lavoro fai?', 'What work do you do? (informal)',
+          ['Sono uno studente', 'Sono un insegnante', 'Lavoro in un ufficio'],
+          'I’m a student / I’m a teacher / I work in an office',
+        ),
+        match([
+          { it: 'Sono...', en: 'I am...' },
+          { it: 'Uno studente / Una studentessa', en: 'A student' },
+          { it: 'Un insegnante', en: 'A teacher' },
+          { it: 'Lavoro in...', en: 'I work in...' },
+        ]),
+      ]),
+
       scenario(
         'u1l4',
         'Checking In',
@@ -221,6 +287,14 @@ export const UNITS = [
       'Use un / una correctly with everyday nouns',
       'Ask for and pay the bill',
     ],
+    test: unitTest('u2', [
+      mcq('it-en', 'Vorrei un caffè, per favore', 'I would like a coffee, please', ['I have a coffee', 'I would like a coffee, please', 'Do you have coffee?', 'The coffee is good']),
+      typeEx('Sparkling water', 'Acqua frizzante', ['acqua frizzante']),
+      mcq('en-it', 'Sono vegetariano/a', 'I’m vegetarian', ['Sono vegetariano/a', 'Mi piacciono le verdure', 'Non mangio verdure', 'Sei vegetariano?']),
+      build('The check, please', 'Il conto, per favore', ['tavolo', 'menù']),
+      typeEx('How much does it cost?', 'Quanto costa?', ['quanto costa']),
+      listen('Ci sono noci?', 'Are there nuts in it?', ['Are there nuts in it?', 'I have nuts', 'Do you want nuts?', 'There are no nuts']),
+    ]),
     lessons: [
       lesson('u2l1', 'Ordering a Drink', 'Yes, including the water Duolingo forgot', 'droplet', [
         explain(
@@ -301,6 +375,33 @@ export const UNITS = [
         ]),
       ]),
 
+      lesson('u2l3x', 'Ordering Like a Regular', 'More café vocabulary and how a question actually sounds', 'cup', [
+        explain(
+          'Yes/No Questions Need No New Words',
+          'Turning a statement into a yes/no question in Italian doesn’t change the word order at all — you just say it with a rising intonation at the end (and add a question mark in writing). "È caldo" (It’s hot) becomes "È caldo?" (Is it hot?) with nothing else different.',
+          [
+            { it: 'È molto caldo.', en: 'It’s very hot.' },
+            { it: 'È molto caldo?', en: 'Is it very hot?' },
+          ],
+        ),
+        mcq('it-en', 'Un caffè macchiato', 'An espresso with a dash of milk', ['A milky coffee', 'An espresso with a dash of milk', 'A cold coffee', 'A decaf coffee']),
+        typeEx('Two coffees, please', 'Due caffè, per favore', ['due caffe per favore', 'due caffè per favore']),
+        dictation('Il conto, per favore', 'The check, please', ['il conto per favore']),
+        build('Is it very hot?', 'È molto caldo?', ['freddo', 'tiepido']),
+        reorder('Vorrei un tè caldo', 'I’d like a hot tea'),
+        respond(
+          'Cosa desidera?', 'What would you like?',
+          ['Vorrei un caffè', 'Vorrei un tè', 'Vorrei un cappuccino'],
+          'I’d like a coffee / a tea / a cappuccino',
+        ),
+        match([
+          { it: 'Un tè', en: 'A tea' },
+          { it: 'Caldo / freddo', en: 'Hot / cold' },
+          { it: 'Un caffè macchiato', en: 'Espresso with a dash of milk' },
+          { it: 'Cosa desidera?', en: 'What would you like?' },
+        ]),
+      ]),
+
       scenario(
         'u2l4',
         'Order Like a Local',
@@ -359,6 +460,14 @@ export const UNITS = [
       'Conjugate avere in the present tense',
       'Ask for extras and close out a meal',
     ],
+    test: unitTest('u3', [
+      mcq('it-en', 'Ho una prenotazione', 'I have a reservation', ['I need a reservation', 'I have a reservation', 'I cancelled my reservation', 'Do you take reservations?']),
+      typeEx('I’d like to order', 'Vorrei ordinare', ['vorrei ordinare']),
+      mcq('en-it', 'Sono celiaco/a', 'I have celiac disease', ['Sono celiaco/a', 'Sono vegetariano/a', 'Sono allergico/a', 'Non mangio carne']),
+      build('Is service included?', 'È incluso il servizio?', ['escluso', 'gratuito']),
+      typeEx('A little more bread, please', 'Un altro po’ di pane, per favore', ['un altro po di pane per favore', 'un altro po\' di pane per favore']),
+      listen('Tutto bene?', 'Is everything okay?', ['Is everything okay?', 'Are you finished?', 'Do you want dessert?', 'Is it too spicy?']),
+    ]),
     lessons: [
       lesson('u3l1', 'Getting a Table', 'Reservations, walk-ins, and getting seated', 'chair', [
         explain(
@@ -421,6 +530,33 @@ export const UNITS = [
           { it: 'Una forchetta', en: 'A fork' },
           { it: 'È incluso il servizio?', en: 'Is service included?' },
           { it: 'Il conto', en: 'The check' },
+        ]),
+      ]),
+
+      lesson('u3l3x', 'Dessert & Wine', 'Closing out a meal like you’ve done it before', 'plate', [
+        explain(
+          'Molto vs. Troppo',
+          'Both molto and troppo intensify an adjective, but they land very differently: molto ("very") is a compliment, troppo ("too much") is a complaint. Mixing them up can turn a compliment into an insult by accident.',
+          [
+            { it: 'È molto buono!', en: 'It’s very good!' },
+            { it: 'È troppo salato.', en: 'It’s too salty.' },
+          ],
+        ),
+        mcq('it-en', 'Il dolce', 'Dessert', ['The main course', 'Dessert', 'The appetizer', 'The bread']),
+        typeEx('Do you have a wine list?', 'Avete una lista dei vini?', ['avete una lista dei vini']),
+        dictation('Vorrei un dolce, per favore', 'I’d like a dessert, please', ['vorrei un dolce per favore']),
+        build('It was delicious', 'Era delizioso', ['buono', 'squisito']),
+        reorder('Posso avere il conto?', 'Can I have the bill?'),
+        respond(
+          'Vuole un dolce?', 'Would you like a dessert? (formal)',
+          ['Sì, grazie', 'No, grazie', 'Cosa consiglia?'],
+          'Yes, thanks / No, thanks / What do you recommend?',
+        ),
+        match([
+          { it: 'Il dolce', en: 'Dessert' },
+          { it: 'La lista dei vini', en: 'The wine list' },
+          { it: 'Era delizioso', en: 'It was delicious' },
+          { it: 'Molto / troppo', en: 'Very / too much' },
         ]),
       ]),
 
@@ -518,6 +654,14 @@ export const UNITS = [
       'Form questions with dove, quando, quanto',
       'Understand basic spoken directions',
     ],
+    test: unitTest('u4', [
+      mcq('it-en', 'Dov’è il bagno?', 'Where’s the bathroom?', ['Where’s the exit?', 'Where’s the bathroom?', 'Is there a bathroom?', 'The bathroom is closed']),
+      typeEx('Straight ahead', 'Sempre dritto', ['sempre dritto']),
+      mcq('en-it', 'Un biglietto per Firenze', 'A ticket to Florence', ['Un biglietto per Firenze', 'Un biglietto da Firenze', 'Il treno per Firenze', 'Una mappa di Firenze']),
+      build('What time does the train leave?', 'A che ora parte il treno?', ['arriva', 'parte il bus']),
+      typeEx('Round trip', 'Andata e ritorno', ['andata e ritorno']),
+      listen('È a due minuti a piedi', 'It’s a two-minute walk', ['It’s a two-minute walk', 'It’s two hours away', 'It’s closed today', 'It’s very far']),
+    ]),
     lessons: [
       lesson('u4l1', 'Where Is It?', 'The question you’ll ask more than any other', 'pin', [
         explain(
@@ -572,6 +716,33 @@ export const UNITS = [
         ]),
       ]),
 
+      lesson('u4l3x', 'At the Airport', 'Flights, gates, and things that have to happen on time', 'compass', [
+        explain(
+          'The Verb Dovere (Must / To Have To)',
+          'Dovere ("must") is the third of Italian’s essential modal verbs alongside potere (can) and volere (want). Like potere, it pairs with a second verb in its plain, unconjugated form.',
+          [
+            { it: 'Devo andare.', en: 'I have to go.' },
+            { it: 'Deve aspettare qui.', en: 'You have to wait here. (formal)' },
+          ],
+        ),
+        mcq('it-en', 'Il volo', 'The flight', ['The gate', 'The flight', 'The ticket', 'The luggage']),
+        typeEx('Where is the gate?', 'Dov’è il gate?', ['dove e il gate', 'dov\'è il gate']),
+        dictation('Il mio volo è in ritardo', 'My flight is delayed', ['il mio volo e in ritardo', 'il mio volo è in ritardo']),
+        build('I must check in', 'Devo fare il check-in', ['il volo', 'il bagaglio']),
+        reorder('Dove sono i bagagli?', 'Where is the luggage?'),
+        respond(
+          'Ha un documento d’identità?', 'Do you have an ID? (formal)',
+          ['Sì, ecco il passaporto', 'Sì, un momento'],
+          'Yes, here’s my passport / Yes, one moment',
+        ),
+        match([
+          { it: 'Il volo', en: 'The flight' },
+          { it: 'Il gate', en: 'The gate' },
+          { it: 'I bagagli', en: 'The luggage' },
+          { it: 'In ritardo', en: 'Delayed / late' },
+        ]),
+      ]),
+
       scenario(
         'u4l4',
         'Lost Near the Station',
@@ -622,6 +793,14 @@ export const UNITS = [
       'Use potere to ask what you’re able to do',
       'Report a lost item',
     ],
+    test: unitTest('u5', [
+      mcq('it-en', 'Ho bisogno di aiuto', 'I need help', ['I need help', 'I’m scared', 'Help, please', 'I don’t need it']),
+      typeEx('My head hurts', 'Mi fa male la testa', ['mi fa male la testa']),
+      mcq('en-it', 'Ho la febbre', 'I have a fever', ['Ho la febbre', 'Ho fame', 'Ho freddo', 'Ho sete']),
+      build('I lost my passport', 'Ho perso il passaporto', ['portafoglio', 'trovato']),
+      typeEx('Call a doctor, please (formal)', 'Chiami un medico, per favore', ['chiami un medico per favore']),
+      listen('Dov’è il commissariato?', 'Where’s the police station?', ['Where’s the police station?', 'Where’s the pharmacy?', 'Where’s the hospital?', 'Where’s the hotel?']),
+    ]),
     lessons: [
       lesson('u5l1', 'Asking for Help', 'The phrases for when something is actually wrong', 'alert', [
         explain(
@@ -671,6 +850,33 @@ export const UNITS = [
           { it: 'Il portafoglio', en: 'The wallet' },
           { it: 'La password del wifi', en: 'The wifi password' },
           { it: 'Il commissariato', en: 'The police station' },
+        ]),
+      ]),
+
+      lesson('u5l3x', 'At the Doctor', 'Describing what’s wrong and for how long', 'cross', [
+        explain(
+          'Da Quanto Tempo? (For How Long?)',
+          'To say how long something has been going on, Italian uses da ("since/for") with the present tense — where English switches to "have been" — plus a simple time phrase for the answer.',
+          [
+            { it: 'Da quanto tempo ha la febbre?', en: 'How long have you had the fever?' },
+            { it: 'Da due giorni.', en: 'For two days.' },
+          ],
+        ),
+        mcq('it-en', 'Il dottore', 'The doctor', ['The nurse', 'The doctor', 'The pharmacist', 'The hospital']),
+        typeEx('I feel dizzy', 'Mi gira la testa', ['mi gira la testa']),
+        dictation('Ho bisogno di un dottore', 'I need a doctor', ['ho bisogno di un dottore']),
+        build('It hurts here', 'Mi fa male qui', ['la testa', 'lo stomaco']),
+        reorder('Sono allergico alla penicillina', 'I’m allergic to penicillin'),
+        respond(
+          'Da quanto tempo ha questo dolore?', 'How long have you had this pain?',
+          ['Da due giorni', 'Da stamattina', 'Da una settimana'],
+          'For two days / Since this morning / For a week',
+        ),
+        match([
+          { it: 'Il dottore', en: 'The doctor' },
+          { it: 'Mi gira la testa', en: 'I feel dizzy' },
+          { it: 'Allergico/a a...', en: 'Allergic to...' },
+          { it: 'Da quanto tempo?', en: 'For how long?' },
         ]),
       ]),
 
@@ -724,6 +930,14 @@ export const UNITS = [
       'Count from 1–20 and beyond',
       'Try on and buy something at a market',
     ],
+    test: unitTest('u6', [
+      mcq('it-en', 'Quanto costa questo?', 'How much does this cost?', ['Is this for sale?', 'How much does this cost?', 'Where did you buy this?', 'Is this fresh?']),
+      typeEx('It’s too expensive', 'È troppo caro', ['e troppo caro', 'è troppo caro']),
+      mcq('en-it', 'Di dove sei?', 'Where are you from?', ['Di dove sei?', 'Dove vai?', 'Quanto tempo rimani?', 'Dove abiti?']),
+      build('I’ll take it', 'Lo prendo', ['lascio', 'provo']),
+      typeEx('Can I try it on?', 'Posso provarlo?', ['posso provarlo']),
+      listen('Solo sto guardando, grazie', 'I’m just looking, thanks', ['I’m just looking, thanks', 'I’ll take it, thanks', 'It doesn’t fit, thanks', 'I already paid, thanks']),
+    ]),
     lessons: [
       lesson('u6l1', 'Numbers & Prices', 'So you know exactly what you’re paying', 'euro', [
         explain(
@@ -750,7 +964,7 @@ export const UNITS = [
       ]),
 
       lesson('u6l2', 'Small Talk', 'The questions that turn a transaction into a conversation', 'chat', [
-        mcq('it-en', 'Di dove sei?', 'Where are you from? (informal)', ['Where are you going?', 'Where are you from?', 'How long are you staying?', 'Do you live here?']),
+        mcq('it-en', 'Di dove sei?', 'Where are you from?', ['Where are you going?', 'Where are you from?', 'How long are you staying?', 'Do you live here?']),
         typeEx('I come from the United States', 'Vengo dagli Stati Uniti', ['vengo dagli stati uniti'], { objectiveIds: ['small-talk'] }),
         build('How long are you staying? (informal)', 'Quanto tempo rimani?', ['sei stato', 'sei venuto'], { objectiveIds: ['small-talk'] }),
         mcq('en-it', 'Mi piace molto l’Italia', 'I like Italy a lot', ['Mi piace molto l’Italia', 'Non mi piace l’Italia', 'Vivo in Italia', 'Vado in Italia']),
@@ -774,6 +988,33 @@ export const UNITS = [
           { it: 'La taglia media', en: 'Medium size' },
           { it: 'Lo prendo', en: 'I’ll take it' },
           { it: 'Solo sto guardando', en: 'I’m just looking' },
+        ]),
+      ]),
+
+      lesson('u6l3x', 'Haggling & Compliments', 'This one, that one, and closing the deal warmly', 'basket', [
+        explain(
+          'Questo vs. Quello (This vs. That)',
+          'Questo ("this") points to something close to you; quello ("that") points to something farther away — both agree in gender and number with the noun, just like other adjectives.',
+          [
+            { it: 'Questo qui', en: 'This one here' },
+            { it: 'Quello là', en: 'That one there' },
+          ],
+        ),
+        mcq('it-en', 'Questo qui', 'This one here', ['That one there', 'This one here', 'Which one?', 'None of them']),
+        typeEx('How much for both?', 'Quanto per tutti e due?', ['quanto per tutti e due']),
+        dictation('È fatto a mano', 'It’s handmade', ['e fatto a mano', 'è fatto a mano']),
+        build('I’ll think about it', 'Ci penso', ['forse', 'magari']),
+        reorder('Mi piace molto questo colore', 'I like this color a lot'),
+        respond(
+          'Le piace questo?', 'Do you like this? (formal)',
+          ['Sì, molto', 'Non tanto', 'È carino'],
+          'Yes, a lot / Not really / It’s cute',
+        ),
+        match([
+          { it: 'Questo / quello', en: 'This / that' },
+          { it: 'Fatto a mano', en: 'Handmade' },
+          { it: 'Ci penso', en: 'I’ll think about it' },
+          { it: 'Mi piace molto', en: 'I like it a lot' },
         ]),
       ]),
 
@@ -895,11 +1136,15 @@ function vocabFromExercise(ex) {
     case 'build':
     case 'type':
     case 'listen':
+    case 'dictation':
+    case 'reorder':
       return ex.it && ex.en ? [{ it: ex.it, en: ex.en }] : []
     case 'match':
       return ex.pairs || []
     case 'explain':
       return ex.examples || []
+    case 'respond':
+      return ex.accepts?.length ? [{ it: ex.accepts[0], en: ex.modelEn || ex.promptEn }] : []
     default:
       return []
   }

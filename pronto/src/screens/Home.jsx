@@ -112,8 +112,8 @@ const RECOMMENDED_UNITS = {
   fun: [],
 }
 
-export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLevelCheck }) {
-  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation, italianLevel } = progress
+export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLevelCheck, onOpenUnitTest }) {
+  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, unitAwaitingTest, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation, italianLevel } = progress
   const currentUnitIndex = nextLesson ? nextLesson.unitIndex : UNITS.length - 1
   const heroEyebrow = MOTIVATION_EYEBROW[motivation] || 'Real-life readiness'
   const recommendedUnitIds = RECOMMENDED_UNITS[motivation] || []
@@ -236,28 +236,48 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLeve
                 </ul>
               )}
               {unlocked ? (
-                <motion.div className="lesson-path" variants={container} initial="hidden" animate="show">
-                  {(() => {
-                    let zigzag = 0
-                    return unit.lessons.map((lesson, li) => {
-                      const status = !isLessonUnlocked(ui, li) ? 'locked' : isLessonComplete(lesson.id) ? 'done' : 'open'
-                      const isMilestone = lesson.type === 'scenario' || lesson.checkpoint
-                      const side = isMilestone ? 'path-row-center' : PATH_SIDES[zigzag++ % 2 === 0 ? 0 : 2]
-                      return (
-                        <LessonNode
-                          key={lesson.id}
-                          unit={unit}
-                          lesson={lesson}
-                          index={li}
-                          total={unit.lessons.length}
-                          status={status}
-                          side={side}
-                          onOpen={onOpenLesson}
-                        />
-                      )
-                    })
-                  })()}
-                </motion.div>
+                <>
+                  <motion.div className="lesson-path" variants={container} initial="hidden" animate="show">
+                    {(() => {
+                      let zigzag = 0
+                      return unit.lessons.map((lesson, li) => {
+                        const status = !isLessonUnlocked(ui, li) ? 'locked' : isLessonComplete(lesson.id) ? 'done' : 'open'
+                        const isMilestone = lesson.type === 'scenario' || lesson.checkpoint
+                        const side = isMilestone ? 'path-row-center' : PATH_SIDES[zigzag++ % 2 === 0 ? 0 : 2]
+                        return (
+                          <LessonNode
+                            key={lesson.id}
+                            unit={unit}
+                            lesson={lesson}
+                            index={li}
+                            total={unit.lessons.length}
+                            status={status}
+                            side={side}
+                            onOpen={onOpenLesson}
+                          />
+                        )
+                      })
+                    })()}
+                  </motion.div>
+                  {unitAwaitingTest(ui) && (
+                    <motion.button
+                      variants={item}
+                      whileTap={{ scale: 0.98 }}
+                      type="button"
+                      className="level-cta-card"
+                      onClick={() => onOpenUnitTest(unit)}
+                    >
+                      <span className="level-cta-icon">
+                        <Icon name="clock" size={22} strokeWidth={1.9} />
+                      </span>
+                      <span className="level-cta-copy">
+                        <span className="level-cta-title">Take the {unit.title} test</span>
+                        <span className="level-cta-sub">Timed — pass it to unlock the next topic.</span>
+                      </span>
+                      <Icon name="chevronRight" size={18} strokeWidth={2.2} />
+                    </motion.button>
+                  )}
+                </>
               ) : (
                 // Locked units have nothing interactive to show yet — a
                 // full zigzag path of grey lock icons was just visual
@@ -265,7 +285,9 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLeve
                 <div className="unit-locked-summary">
                   <Icon name="lock" size={15} strokeWidth={2.1} />
                   <span>
-                    Finish the unit above to unlock {unit.lessons.length} lesson{unit.lessons.length === 1 ? '' : 's'}
+                    {ui > 0 && unitAwaitingTest(ui - 1)
+                      ? `Pass the ${UNITS[ui - 1].title} test above to unlock ${unit.lessons.length} lesson${unit.lessons.length === 1 ? '' : 's'}`
+                      : `Finish the unit above to unlock ${unit.lessons.length} lesson${unit.lessons.length === 1 ? '' : 's'}`}
                   </span>
                 </div>
               )}

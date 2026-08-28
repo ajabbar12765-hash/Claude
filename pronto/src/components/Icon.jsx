@@ -44,6 +44,7 @@ const PATHS = {
   bulb: 'M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5.9 1 .9 1.6v.5h5.2v-.5c0-.6.4-1.1.9-1.6A6 6 0 0012 3z',
   search: 'M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3',
   book: 'M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zM19 19H6a2 2 0 000 4h13',
+  clock: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 7v5l4 2',
 }
 
 export default function Icon({ name, size = 24, strokeWidth = 1.8, className = '', ...rest }) {

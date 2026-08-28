@@ -26,6 +26,7 @@ function defaultState() {
     xp: 0,
     streak: { count: 0, lastActiveDate: null },
     completedLessons: {},
+    unitTestPassed: {},
     correct: {},
     goalXpPerDay: 30,
     motivation: null,
@@ -96,6 +97,37 @@ export function useProgress() {
     })
   }, [])
 
+  // Passing a timed unit test unlocks the next unit and pays a flat XP bonus
+  // — idempotent like completeLesson's alreadyDone guard, so retaking an
+  // already-passed test for XP isn't a thing.
+  const UNIT_TEST_XP = 30
+
+  const passUnitTest = useCallback((unitId) => {
+    setState((prev) => {
+      if (prev.unitTestPassed[unitId]) return prev
+      const today = todayStr()
+      let { count, lastActiveDate } = prev.streak
+      if (lastActiveDate === today) {
+        // already active today, no streak change
+      } else if (lastActiveDate && daysBetween(lastActiveDate, today) === 1) {
+        count += 1
+      } else {
+        count = 1
+      }
+      const xpToday =
+        prev.xpToday.date === today
+          ? { date: today, amount: prev.xpToday.amount + UNIT_TEST_XP }
+          : { date: today, amount: UNIT_TEST_XP }
+      return {
+        ...prev,
+        xp: prev.xp + UNIT_TEST_XP,
+        streak: { count, lastActiveDate: today },
+        xpToday,
+        unitTestPassed: { ...prev.unitTestPassed, [unitId]: true },
+      }
+    })
+  }, [])
+
   const recordVoiceCall = useCallback(() => {
     setState((prev) => ({ ...prev, voiceCallCount: prev.voiceCallCount + 1 }))
   }, [])
@@ -140,9 +172,24 @@ export function useProgress() {
     (unitIndex) => {
       if (unitIndex === 0) return true
       const prevUnit = UNITS[unitIndex - 1]
-      return prevUnit.lessons.every((l) => state.completedLessons[l.id])
+      const lessonsDone = prevUnit.lessons.every((l) => state.completedLessons[l.id])
+      if (!lessonsDone) return false
+      if (prevUnit.test?.length) return !!state.unitTestPassed[prevUnit.id]
+      return true
     },
-    [state.completedLessons],
+    [state.completedLessons, state.unitTestPassed],
+  )
+
+  // True once a unit's lessons are all done but its timed test hasn't been
+  // passed yet — the gap between "finished practicing" and "topic unlocked."
+  const unitAwaitingTest = useCallback(
+    (unitIndex) => {
+      const unit = UNITS[unitIndex]
+      if (!unit?.test?.length) return false
+      const lessonsDone = unit.lessons.every((l) => state.completedLessons[l.id])
+      return lessonsDone && !state.unitTestPassed[unit.id]
+    },
+    [state.completedLessons, state.unitTestPassed],
   )
 
   const isLessonUnlocked = useCallback(
@@ -239,14 +286,17 @@ export function useProgress() {
     achievementStatuses,
     italianLevel: state.italianLevel,
     knownVocab,
+    unitTestPassed: state.unitTestPassed,
     recordCorrect,
     completeLesson,
+    passUnitTest,
     recordVoiceCall,
     recordDictionaryLookup,
     markLessonsComplete,
     isLessonComplete,
     isUnitUnlocked,
     isLessonUnlocked,
+    unitAwaitingTest,
     resetProgress,
     setOnboardingAnswers,
     setItalianLevel,

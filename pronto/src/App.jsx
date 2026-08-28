@@ -18,6 +18,7 @@ import Profile from './screens/Profile.jsx'
 import VoiceCall from './screens/VoiceCall.jsx'
 import Dictionary from './screens/Dictionary.jsx'
 import LevelCheck from './screens/LevelCheck.jsx'
+import UnitTest from './screens/UnitTest.jsx'
 
 const ONBOARDED_KEY = 'pronto:onboarded:v1'
 
@@ -73,6 +74,7 @@ export default function App() {
     return 'home'
   })
   const [activeLesson, setActiveLesson] = useState(null)
+  const [activeTestUnit, setActiveTestUnit] = useState(null)
   const [booting, setBooting] = useState(true)
   const [celebrate, setCelebrate] = useState(false)
   const prevCompletedCount = useRef(progress.completedCount)
@@ -177,8 +179,14 @@ export default function App() {
     setScreen('lesson')
   }
 
+  function openUnitTest(unit) {
+    setActiveTestUnit(unit)
+    setScreen('unit-test')
+  }
+
   function returnHome() {
     setActiveLesson(null)
+    setActiveTestUnit(null)
     setScreen('home')
   }
 
@@ -244,7 +252,13 @@ export default function App() {
       {showChrome && <TopBar streak={progress.streak.count} xp={progress.xp} />}
       <main className="app-main">
         {screen === 'home' && (
-          <Home progress={progress} onOpenLesson={openLesson} onOpenProfile={() => setScreen('profile')} onOpenLevelCheck={() => setScreen('level-check')} />
+          <Home
+            progress={progress}
+            onOpenLesson={openLesson}
+            onOpenProfile={() => setScreen('profile')}
+            onOpenLevelCheck={() => setScreen('level-check')}
+            onOpenUnitTest={openUnitTest}
+          />
         )}
         {screen === 'profile' && (
           <Profile progress={progress} theme={theme} notifications={notifications} onOpenLevelCheck={() => setScreen('level-check')} />
@@ -252,6 +266,7 @@ export default function App() {
         {screen === 'call' && <VoiceCall onExit={returnHome} progress={progress} />}
         {screen === 'dictionary' && <Dictionary onExit={returnHome} progress={progress} />}
         {screen === 'level-check' && <LevelCheck progress={progress} onExit={() => setScreen('home')} />}
+        {screen === 'unit-test' && activeTestUnit && <UnitTest unit={activeTestUnit} progress={progress} onExit={returnHome} />}
         {screen === 'lesson' && activeLesson?.type === 'lesson' && (
           <Lesson lesson={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />
         )}
