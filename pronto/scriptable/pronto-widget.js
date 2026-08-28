@@ -1,33 +1,6 @@
-// Pronto - Phrase of the Day + Streak
-// A Scriptable (https://scriptable.app) home-screen widget for the Pronto
-// Italian app. Shows Volpe the mascot (with an expression that reflects
-// your current streak), your streak count, and today's phrase. Tap to
-// open the app.
-//
-// Setup:
-//   1. Install the free "Scriptable" app from the App Store.
-//   2. Open it, tap "+", paste this whole file in, name it "Pronto Widget".
-//   3. Long-press your home screen -> tap "+" -> search "Scriptable" -> add a
-//      Small or Medium widget.
-//   4. Long-press the new widget -> Edit Widget -> set Script to "Pronto
-//      Widget" (and Parameter/When Interacting as you like).
-//
-// The streak shown here comes from a small server-side store the app
-// itself pushes to whenever your streak changes (see api/streak.js) - it
-// needs UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN set in the
-// Vercel project's Environment Variables to work; without them the
-// widget still works, just always shows a 0-day/sleepy Volpe.
-//
-// If you rename the deployed app or move it to a custom domain, update
-// APP_URL below to match.
-
 const APP_URL = 'https://impara-git-claude-duolingo-l-1a1bd8-ajabbar12765-hashs-projects.vercel.app'
 const ACCENT = '#ff5a36'
 
-// Volpe's SVG, ported from src/components/Mascot.jsx. Rendered via a
-// hidden WebView + snapshot since Scriptable widgets can't draw arbitrary
-// SVG directly - this keeps the mascot crisp at any widget size instead
-// of shipping a raster asset that goes blurry.
 const FACES = {
   happy: {
     eyes: `<path d="M71 88 Q79 80 87 88" stroke="#221813" stroke-width="4.5" fill="none" stroke-linecap="round" />
@@ -152,8 +125,6 @@ try {
   try {
     mascotImage = await renderMascotImage(data?.expression || 'idle')
   } catch {
-    // Mascot rendering can fail on some iOS/Scriptable versions - the
-    // widget still works fine without it, just no fox portrait.
   }
   widget = buildWidget(data, mascotImage)
 } catch {
