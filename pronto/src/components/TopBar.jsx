@@ -16,7 +16,7 @@ export default function TopBar({ streak, xp }) {
       </div>
       <div className="topbar-stats">
         <div className="stat-chip stat-streak" title="Day streak">
-          <Icon name="flame" size={18} strokeWidth={2} className={streak > 0 ? 'icon-flicker' : ''} />
+          <Icon name="flame" size={18} strokeWidth={2} />
           <span>{streakShown}</span>
         </div>
         <div className="stat-chip stat-xp" title="Total XP">
