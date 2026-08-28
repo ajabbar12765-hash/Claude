@@ -1,4 +1,4 @@
-// Pronto — Phrase of the Day + Streak
+// Pronto - Phrase of the Day + Streak
 // A Scriptable (https://scriptable.app) home-screen widget for the Pronto
 // Italian app. Shows Volpe the mascot (with an expression that reflects
 // your current streak), your streak count, and today's phrase. Tap to
@@ -7,13 +7,13 @@
 // Setup:
 //   1. Install the free "Scriptable" app from the App Store.
 //   2. Open it, tap "+", paste this whole file in, name it "Pronto Widget".
-//   3. Long-press your home screen → tap "+" → search "Scriptable" → add a
+//   3. Long-press your home screen -> tap "+" -> search "Scriptable" -> add a
 //      Small or Medium widget.
-//   4. Long-press the new widget → Edit Widget → set Script to "Pronto
+//   4. Long-press the new widget -> Edit Widget -> set Script to "Pronto
 //      Widget" (and Parameter/When Interacting as you like).
 //
 // The streak shown here comes from a small server-side store the app
-// itself pushes to whenever your streak changes (see api/streak.js) — it
+// itself pushes to whenever your streak changes (see api/streak.js) - it
 // needs UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN set in the
 // Vercel project's Environment Variables to work; without them the
 // widget still works, just always shows a 0-day/sleepy Volpe.
@@ -26,7 +26,7 @@ const ACCENT = '#ff5a36'
 
 // Volpe's SVG, ported from src/components/Mascot.jsx. Rendered via a
 // hidden WebView + snapshot since Scriptable widgets can't draw arbitrary
-// SVG directly — this keeps the mascot crisp at any widget size instead
+// SVG directly - this keeps the mascot crisp at any widget size instead
 // of shipping a raster asset that goes blurry.
 const FACES = {
   happy: {
@@ -111,7 +111,7 @@ function buildWidget(data, mascotImage) {
 
   const streakRow = textCol.addStack()
   streakRow.centerAlignContent()
-  const streakText = streakRow.addText(`🔥 ${data?.streak ?? 0} day${data?.streak === 1 ? '' : 's'}`)
+  const streakText = streakRow.addText(`\u{1F525} ${data?.streak ?? 0} day${data?.streak === 1 ? '' : 's'}`)
   streakText.font = Font.boldSystemFont(14)
   streakText.textColor = Color.white()
 
@@ -138,7 +138,7 @@ function buildWidget(data, mascotImage) {
 
   widget.addSpacer()
 
-  const footer = widget.addText('Tap to practice →')
+  const footer = widget.addText('Tap to practice ->')
   footer.font = Font.mediumSystemFont(11)
   footer.textColor = new Color('#ffffff', 0.7)
 
@@ -152,12 +152,12 @@ try {
   try {
     mascotImage = await renderMascotImage(data?.expression || 'idle')
   } catch {
-    // Mascot rendering can fail on some iOS/Scriptable versions — the
+    // Mascot rendering can fail on some iOS/Scriptable versions - the
     // widget still works fine without it, just no fox portrait.
   }
   widget = buildWidget(data, mascotImage)
 } catch {
-  widget = buildWidget({ it: 'Ciao!', en: 'Couldn’t reach Pronto — tap to open the app.', streak: 0 }, null)
+  widget = buildWidget({ it: 'Ciao!', en: 'Could not reach Pronto - tap to open the app.', streak: 0 }, null)
 }
 
 if (config.runsInWidget) {
