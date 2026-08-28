@@ -19,6 +19,8 @@ function allPhrases() {
 }
 
 function expressionForStreak(streak) {
+  if (streak >= 14) return 'ecstatic'
+  if (streak >= 7) return 'excited'
   if (streak >= 3) return 'happy'
   if (streak >= 1) return 'idle'
   return 'sleepy'
