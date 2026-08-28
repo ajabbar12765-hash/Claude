@@ -135,7 +135,7 @@ export default function App() {
   useEffect(() => {
     if (progress.completedCount > prevCompletedCount.current) {
       setCelebrate(true)
-      const t = setTimeout(() => setCelebrate(false), 1000)
+      const t = setTimeout(() => setCelebrate(false), 1300)
       prevCompletedCount.current = progress.completedCount
       return () => clearTimeout(t)
     }
@@ -148,7 +148,7 @@ export default function App() {
       setLevelUpToast({ level: progress.level })
       setCelebrate(true)
       playLevelUp()
-      const t1 = setTimeout(() => setCelebrate(false), 1000)
+      const t1 = setTimeout(() => setCelebrate(false), 1300)
       const t2 = setTimeout(() => setLevelUpToast(null), 2600)
       prevLevel.current = progress.level
       return () => {

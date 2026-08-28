@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { UNITS } from '../data/curriculum.js'
 import Icon from '../components/Icon.jsx'
 import Mascot from '../components/Mascot.jsx'
+import { useCountUp } from '../hooks/useCountUp.js'
 
 const container = {
   hidden: {},
@@ -123,13 +124,14 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLeve
 
   const circumference = 264
   const ringOffset = circumference - (readinessPercent / 100) * circumference
+  const readinessShown = useCountUp(readinessPercent)
 
   return (
     <motion.div className="screen screen-home" variants={container} initial="hidden" animate="show">
       <motion.section variants={item} className="hero-card">
         <div className="hero-copy">
           <p className="hero-eyebrow">{heroEyebrow}</p>
-          <h1 className="hero-title">{readinessPercent}% ready for Italy</h1>
+          <h1 className="hero-title">{readinessShown}% ready for Italy</h1>
           <p className="hero-sub">
             Not "lessons completed" — situations you can actually handle. See what you can already say on your{' '}
             <button type="button" className="link-inline" onClick={onOpenProfile}>
@@ -150,7 +152,7 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLeve
               transform="rotate(-90 50 50)"
             />
           </svg>
-          <span className="hero-ring-value">{readinessPercent}%</span>
+          <span className="hero-ring-value">{readinessShown}%</span>
         </div>
         <div className="hero-mascot">
           <Mascot expression={dailyGoalMet ? 'happy' : 'idle'} celebrate={dailyGoalMet} size={72} />

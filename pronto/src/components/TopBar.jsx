@@ -1,7 +1,11 @@
 import Icon from './Icon.jsx'
 import Mascot from './Mascot.jsx'
+import { useCountUp } from '../hooks/useCountUp.js'
 
 export default function TopBar({ streak, xp }) {
+  const streakShown = useCountUp(streak)
+  const xpShown = useCountUp(xp)
+
   return (
     <header className="topbar">
       <div className="topbar-brand">
@@ -12,12 +16,12 @@ export default function TopBar({ streak, xp }) {
       </div>
       <div className="topbar-stats">
         <div className="stat-chip stat-streak" title="Day streak">
-          <Icon name="flame" size={18} strokeWidth={2} />
-          <span>{streak}</span>
+          <Icon name="flame" size={18} strokeWidth={2} className={streak > 0 ? 'icon-flicker' : ''} />
+          <span>{streakShown}</span>
         </div>
         <div className="stat-chip stat-xp" title="Total XP">
           <Icon name="spark" size={18} strokeWidth={2} />
-          <span>{xp}</span>
+          <span>{xpShown}</span>
         </div>
       </div>
     </header>

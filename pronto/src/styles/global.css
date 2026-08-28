@@ -337,6 +337,7 @@ ul {
   top: -90px;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, transparent 70%);
   z-index: 0;
+  animation: hero-glow-drift 6s ease-in-out infinite;
 }
 
 .hero-card::after {
@@ -346,6 +347,46 @@ ul {
   bottom: -70px;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, transparent 70%);
   z-index: 0;
+  animation: hero-glow-drift 7s ease-in-out infinite reverse;
+}
+
+@keyframes hero-glow-drift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-10px, 12px) scale(1.12);
+    opacity: 0.75;
+  }
+}
+
+.icon-flicker {
+  animation: icon-flicker 2.6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes icon-flicker {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-4deg);
+  }
+  50% {
+    transform: scale(0.96) rotate(3deg);
+  }
+  75% {
+    transform: scale(1.06) rotate(-2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card::before,
+  .hero-card::after,
+  .icon-flicker {
+    animation: none;
+  }
 }
 
 .hero-card > * {
