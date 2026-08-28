@@ -229,6 +229,9 @@ function buildWidget(data, mascotImage, hour) {
   if (mascotImage) {
     const img = top.addImage(mascotImage)
     img.imageSize = new Size(64, 48)
+  } else {
+    const fallback = top.addText('\u{1F98A}')
+    fallback.font = Font.systemFont(40)
   }
 
   widget.addSpacer(10)
@@ -274,7 +277,8 @@ try {
   let mascotImage = null
   try {
     mascotImage = drawMascotImage(expr)
-  } catch {
+  } catch (e) {
+    console.error('mascot draw failed: ' + e)
   }
   widget = buildWidget(data, mascotImage, hour)
 } catch {
@@ -282,7 +286,8 @@ try {
   let mascotImage = null
   try {
     mascotImage = drawMascotImage('idle')
-  } catch {
+  } catch (e2) {
+    console.error('mascot draw failed: ' + e2)
   }
   widget = buildWidget({ it: 'Ciao!', en: 'Could not reach Pronto - tap to open the app.', streak: 0 }, mascotImage, hour)
 }
