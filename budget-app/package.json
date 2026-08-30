@@ -1,0 +1,20 @@
+{
+  "name": "budget-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A local-first monthly budgeting app: income, expenses, category budgets, recurring bills, and savings goals.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
+  }
+}
