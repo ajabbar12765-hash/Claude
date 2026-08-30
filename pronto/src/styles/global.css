@@ -2038,6 +2038,53 @@ ul {
   padding: 18px 20px;
 }
 
+.call-topic-progress {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.call-finish-early {
+  align-self: center;
+  margin: 0 20px 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.call-complete {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  padding: 30px 24px;
+}
+
+.call-complete h1 {
+  color: #fff;
+  font-size: 1.6rem;
+  font-family: var(--font-display);
+}
+
+.call-complete-sub {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.92rem;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
 .call-header .lesson-exit {
   color: rgba(255, 255, 255, 0.85);
 }

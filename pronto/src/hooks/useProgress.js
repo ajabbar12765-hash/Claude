@@ -217,11 +217,19 @@ export function useProgress() {
 
   const isLessonComplete = useCallback((lessonId) => !!state.completedLessons[lessonId], [state.completedLessons])
 
+  // A topicCall lesson depends on a live call to Volpe (Gemini) succeeding
+  // at least once, which can fail for reasons entirely outside the
+  // learner's control (a missing API key, Gemini at high demand, no
+  // network). It's offered on every unit as real, valuable practice, but
+  // it never gates moving on — only the reliable, always-available lesson
+  // types do.
+  const isRequiredLesson = (l) => l.type !== 'topicCall'
+
   const isUnitUnlocked = useCallback(
     (unitIndex) => {
       if (unitIndex === 0) return true
       const prevUnit = UNITS[unitIndex - 1]
-      const lessonsDone = prevUnit.lessons.every((l) => state.completedLessons[l.id])
+      const lessonsDone = prevUnit.lessons.filter(isRequiredLesson).every((l) => state.completedLessons[l.id])
       if (!lessonsDone) return false
       if (prevUnit.test?.length) return !!state.unitTestPassed[prevUnit.id]
       return true
@@ -235,7 +243,7 @@ export function useProgress() {
     (unitIndex) => {
       const unit = UNITS[unitIndex]
       if (!unit?.test?.length) return false
-      const lessonsDone = unit.lessons.every((l) => state.completedLessons[l.id])
+      const lessonsDone = unit.lessons.filter(isRequiredLesson).every((l) => state.completedLessons[l.id])
       return lessonsDone && !state.unitTestPassed[unit.id]
     },
     [state.completedLessons, state.unitTestPassed],

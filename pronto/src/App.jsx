@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useProgress } from './hooks/useProgress.js'
-import { UNITS } from './data/curriculum.js'
+import { UNITS, findLesson, vocabForUnit } from './data/curriculum.js'
 import { useTheme } from './hooks/useTheme.js'
 import { useNotifications } from './hooks/useNotifications.js'
 import TopBar from './components/TopBar.jsx'
@@ -191,6 +191,17 @@ export default function App() {
     setScreen('home')
   }
 
+  // A topicCall lesson finishes on its own terms (turnGoal reached, or the
+  // learner taps "Finish for now") rather than an exercise queue emptying,
+  // so it reports back through this callback instead of Lesson's onFinished.
+  function finishTopicCall(turnsDone) {
+    if (activeLesson) {
+      const credit = Math.max(turnsDone, activeLesson.turnGoal || 3)
+      progress.completeLesson(activeLesson.id, credit, true)
+    }
+    returnHome()
+  }
+
   function finishOnboarding(answers) {
     progress.setOnboardingAnswers(answers)
     if (answers.skipAhead) {
@@ -275,6 +286,18 @@ export default function App() {
         )}
         {screen === 'lesson' && activeLesson?.type === 'scenario' && (
           <Scenario scenario={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />
+        )}
+        {screen === 'lesson' && activeLesson?.type === 'topicCall' && (
+          <VoiceCall
+            progress={progress}
+            onExit={returnHome}
+            headerTitle={activeLesson.title}
+            topic={activeLesson.topic}
+            vocabOverride={vocabForUnit(findLesson(activeLesson.id)?.unit || { lessons: [] })}
+            greetingOverride={{ role: 'assistant', italian: activeLesson.greeting.it, gloss: activeLesson.greeting.en }}
+            turnGoal={activeLesson.turnGoal}
+            onLessonComplete={finishTopicCall}
+          />
         )}
       </main>
       {showChrome && <BottomTabs active={screen} onChange={setScreen} reviewDueCount={progress.dueReviewCount} />}

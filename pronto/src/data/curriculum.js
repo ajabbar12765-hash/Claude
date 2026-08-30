@@ -52,6 +52,14 @@ function scenario(id, title, subtitle, icon, intro, turns, objectiveIds) {
   return { id, type: 'scenario', title, subtitle, icon, intro, turns, objectiveIds }
 }
 
+// A live, open-ended conversation with Volpe about the unit's own topic,
+// restricted to that unit's vocabulary (see vocabForUnit) — the capstone of
+// each unit, where the learner has to produce their own sentences instead
+// of picking from options. `turnGoal` is how many exchanges complete it.
+function topicCall(id, title, subtitle, icon, topic, greeting, turnGoal, objectiveIds) {
+  return { id, type: 'topicCall', title, subtitle, icon, topic, greeting, turnGoal, objectiveIds }
+}
+
 function explain(title, body, examples = []) {
   return { type: 'explain', title, body, examples }
 }
@@ -278,6 +286,16 @@ export const UNITS = [
         ],
         ['greet-introduce', 'handle-confusion'],
       ),
+
+      topicCall(
+        'u1l5',
+        'Talk to Volpe',
+        'Live chat: introduce yourself',
+        'chat',
+        'introducing yourself and basic greetings',
+        { it: 'Ciao! Sono Volpe. Come ti chiami?', en: 'Hi! I’m Volpe. What’s your name?' },
+        3,
+      ),
     ],
   },
 
@@ -451,6 +469,16 @@ export const UNITS = [
         ],
         ['order-drink', 'pay-bill'],
       ),
+
+      topicCall(
+        'u2l5',
+        'Talk to Volpe',
+        'Live chat: order something at a café',
+        'chat',
+        'ordering food and drinks at a café',
+        { it: 'Ciao! Sei al bar con me. Cosa vuoi ordinare?', en: 'Hi! You’re at the café with me. What do you want to order?' },
+        3,
+      ),
     ],
   },
 
@@ -616,6 +644,16 @@ export const UNITS = [
           },
         ],
         ['order-meal-dietary', 'pay-bill'],
+      ),
+
+      topicCall(
+        'u3l5',
+        'Talk to Volpe',
+        'Live chat: order a meal',
+        'chat',
+        'ordering a meal at a restaurant',
+        { it: 'Buonasera! Benvenuto al ristorante. Cosa prendi stasera?', en: 'Good evening! Welcome to the restaurant. What are you having tonight?' },
+        3,
       ),
     ],
   },
@@ -784,6 +822,16 @@ export const UNITS = [
         ],
         ['ask-directions'],
       ),
+
+      topicCall(
+        'u4l5',
+        'Talk to Volpe',
+        'Live chat: ask for directions',
+        'chat',
+        'asking for and giving directions',
+        { it: 'Ciao! Sei perso? Dove vuoi andare?', en: 'Hi! Are you lost? Where do you want to go?' },
+        3,
+      ),
     ],
   },
 
@@ -920,6 +968,16 @@ export const UNITS = [
           },
         ],
         ['pharmacy'],
+      ),
+
+      topicCall(
+        'u5l5',
+        'Talk to Volpe',
+        'Live chat: ask for help',
+        'chat',
+        'asking for help in an emergency or at the pharmacy',
+        { it: 'Ciao, va tutto bene? Hai bisogno di aiuto?', en: 'Hi, is everything okay? Do you need help?' },
+        3,
       ),
     ],
   },
@@ -1058,6 +1116,16 @@ export const UNITS = [
           },
         ],
         ['negotiate-price', 'small-talk'],
+      ),
+
+      topicCall(
+        'u6l5',
+        'Talk to Volpe',
+        'Live chat: at the market',
+        'chat',
+        'shopping at the market and talking about prices',
+        { it: 'Ciao! Siamo al mercato. Cosa vuoi comprare oggi?', en: 'Hi! We’re at the market. What do you want to buy today?' },
+        3,
       ),
     ],
   },
@@ -1246,6 +1314,16 @@ export const UNITS = [
         ],
         ['talk-about-family'],
       ),
+
+      topicCall(
+        'u7l5',
+        'Talk to Volpe',
+        'Live chat: your family',
+        'chat',
+        'talking about your family and home',
+        { it: 'Ciao! Parlami della tua famiglia. Quante persone ci sono?', en: 'Hi! Tell me about your family. How many people are there?' },
+        3,
+      ),
     ],
   },
 
@@ -1396,6 +1474,16 @@ export const UNITS = [
           },
         ],
         ['daily-routine'],
+      ),
+
+      topicCall(
+        'u8l5',
+        'Talk to Volpe',
+        'Live chat: your daily routine',
+        'chat',
+        'your daily routine and telling time',
+        { it: 'Ciao! A che ora ti svegli di solito?', en: 'Hi! What time do you usually wake up?' },
+        3,
       ),
     ],
   },
@@ -1562,6 +1650,16 @@ export const UNITS = [
           },
         ],
         ['weather-hobbies'],
+      ),
+
+      topicCall(
+        'u9l5',
+        'Talk to Volpe',
+        'Live chat: weather and hobbies',
+        'chat',
+        'the weather and your hobbies',
+        { it: 'Ciao! Che tempo fa da te oggi?', en: 'Hi! What’s the weather like where you are today?' },
+        3,
       ),
     ],
   },
@@ -1743,6 +1841,16 @@ export const UNITS = [
         ],
         ['past-story'],
       ),
+
+      topicCall(
+        'u10l5',
+        'Talk to Volpe',
+        'Live chat: tell a story',
+        'chat',
+        'telling a story about something you did recently',
+        { it: 'Ciao! Cosa hai fatto ieri?', en: 'Hi! What did you do yesterday?' },
+        3,
+      ),
     ],
   },
 
@@ -1901,6 +2009,16 @@ export const UNITS = [
           },
         ],
         ['work-future'],
+      ),
+
+      topicCall(
+        'u11l5',
+        'Talk to Volpe',
+        'Live chat: work and plans',
+        'chat',
+        'your job and your future plans',
+        { it: 'Ciao! Che lavoro fai?', en: 'Hi! What do you do for work?' },
+        3,
       ),
     ],
   },
@@ -2061,6 +2179,16 @@ export const UNITS = [
         ],
         ['describe-people'],
       ),
+
+      topicCall(
+        'u12l5',
+        'Talk to Volpe',
+        'Live chat: describe people',
+        'chat',
+        'describing people and how you feel',
+        { it: 'Ciao! Come ti senti oggi? E come sono i tuoi amici?', en: 'Hi! How are you feeling today? And what are your friends like?' },
+        3,
+      ),
     ],
   },
 
@@ -2184,4 +2312,18 @@ export function vocabForLesson(lesson) {
     })
   }
   return (lesson.exercises || []).flatMap(vocabForExercise)
+}
+
+// Every {it, en} pair taught anywhere in a unit, deduped by Italian phrase —
+// scopes a unit's topicCall lesson to exactly the vocabulary that unit
+// introduced, rather than the learner's whole history (which would let
+// Volpe wander into words from other topics).
+export function vocabForUnit(unit) {
+  const seen = new Map()
+  for (const l of unit.lessons) {
+    for (const pair of vocabForLesson(l)) {
+      if (pair.it && pair.en) seen.set(pair.it.toLowerCase(), pair)
+    }
+  }
+  return Array.from(seen.values())
 }

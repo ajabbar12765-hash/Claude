@@ -48,8 +48,21 @@ function micMode() {
   return 'type'
 }
 
-export default function VoiceCall({ onExit, progress }) {
-  const [messages, setMessages] = useState([GREETING])
+// Renders both the free-chat "Call Volpe" tab and topic-practice lessons
+// embedded in a unit — the latter just pins the topic/vocab and expects
+// onLessonComplete once turnGoal exchanges have happened.
+export default function VoiceCall({
+  onExit,
+  progress,
+  topic,
+  vocabOverride,
+  greetingOverride,
+  turnGoal,
+  onLessonComplete,
+  headerTitle,
+}) {
+  const greeting = greetingOverride || GREETING
+  const [messages, setMessages] = useState([greeting])
   const [callState, setCallState] = useState('speaking') // idle | listening | recording | thinking | speaking | error-no-key | error
   const [typedValue, setTypedValue] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -62,11 +75,13 @@ export default function VoiceCall({ onExit, progress }) {
   const [recordingSeconds, setRecordingSeconds] = useState(0)
   const [revealedGloss, setRevealedGloss] = useState(() => new Set())
   const rewardedTurnsRef = useRef(0)
+  const [turnsCompleted, setTurnsCompleted] = useState(0)
+  const [topicDone, setTopicDone] = useState(false)
 
   useEffect(() => {
     progress?.recordVoiceCall()
     if (speechSupported) {
-      speakItalian(GREETING.italian, { onStart: () => setCallState('speaking'), onEnd: () => setCallState('idle') })
+      speakItalian(greeting.italian, { onStart: () => setCallState('speaking'), onEnd: () => setCallState('idle') })
     } else {
       setCallState('idle')
     }
@@ -80,6 +95,14 @@ export default function VoiceCall({ onExit, progress }) {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, callState])
+
+  useEffect(() => {
+    if (turnGoal && turnsCompleted >= turnGoal && callState === 'idle') setTopicDone(true)
+  }, [turnGoal, turnsCompleted, callState])
+
+  function finishNow() {
+    onLessonComplete?.(turnsCompleted)
+  }
 
   // Live recording timer — concrete, visible proof the mic is actually
   // capturing, instead of a spinner-of-faith while the user talks.
@@ -105,10 +128,10 @@ export default function VoiceCall({ onExit, progress }) {
 
     try {
       const level = progress?.italianLevel || undefined
-      const knownVocab = progress?.knownVocab
+      const knownVocab = vocabOverride || progress?.knownVocab
       const body = audioBlob
-        ? { history, audioBase64: await blobToBase64(audioBlob), audioMimeType: audioBlob.type, level, knownVocab }
-        : { history, text: text.trim(), level, knownVocab }
+        ? { history, audioBase64: await blobToBase64(audioBlob), audioMimeType: audioBlob.type, level, knownVocab, topic }
+        : { history, text: text.trim(), level, knownVocab, topic }
       if (!audioBlob && !body.text) {
         setCallState('idle')
         return
@@ -147,7 +170,9 @@ export default function VoiceCall({ onExit, progress }) {
         { role: 'user', text: data.heard || text || '(voice message)' },
         { role: 'assistant', italian: data.italian || '...', gloss: data.gloss || '' },
       ])
-      if (rewardedTurnsRef.current < MAX_REWARDED_TURNS) {
+      if (turnGoal) {
+        setTurnsCompleted((t) => t + 1)
+      } else if (rewardedTurnsRef.current < MAX_REWARDED_TURNS) {
         rewardedTurnsRef.current += 1
         progress?.recordVoiceTurn()
       }
@@ -244,14 +269,49 @@ export default function VoiceCall({ onExit, progress }) {
   const micActive = callState === 'listening' || callState === 'recording'
   const micBusy = callState === 'thinking' || callState === 'speaking'
 
+  if (topicDone) {
+    return (
+      <div className="screen screen-call">
+        <motion.div className="call-complete" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }}>
+          <Mascot expression="happy" celebrate size={80} />
+          <h1>Bel lavoro!</h1>
+          <p className="call-complete-sub">You held a real conversation about {topic} — every reply was your own sentence, not a multiple choice.</p>
+          <div className="complete-stats">
+            <div className="complete-stat">
+              <Icon name="spark" size={18} strokeWidth={2} />
+              <span>+{turnsCompleted * 10 + 20} XP</span>
+            </div>
+            <div className="complete-stat">
+              <Icon name="flame" size={18} strokeWidth={2} />
+              <span>{progress.streak.count} day streak</span>
+            </div>
+          </div>
+          <motion.button whileTap={{ scale: 0.97 }} type="button" className="btn-primary" onClick={finishNow}>
+            Continue
+          </motion.button>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="screen screen-call">
       <div className="call-header">
         <button type="button" className="lesson-exit" onClick={onExit} aria-label="End call">
           <Icon name="x" size={22} strokeWidth={2.2} />
         </button>
-        <span className="call-header-title">Call Volpe</span>
+        <span className="call-header-title">{headerTitle || 'Call Volpe'}</span>
+        {turnGoal && (
+          <span className="call-topic-progress">
+            {Math.min(turnsCompleted, turnGoal)}/{turnGoal}
+          </span>
+        )}
       </div>
+      {turnGoal && turnsCompleted > 0 && (
+        <button type="button" className="call-finish-early" onClick={finishNow}>
+          Finish for now ({turnsCompleted} exchange{turnsCompleted === 1 ? '' : 's'})
+        </button>
+      )}
 
       <div className="call-avatar-zone">
         <motion.div className={`call-avatar-ring ${micActive ? 'call-avatar-ring-listening' : ''} ${callState === 'speaking' ? 'call-avatar-ring-speaking' : ''}`}>
@@ -329,7 +389,7 @@ export default function VoiceCall({ onExit, progress }) {
           )}
         </AnimatePresence>
 
-        {messages.length === 1 && callState === 'idle' && (
+        {!topic && messages.length === 1 && callState === 'idle' && (
           <motion.div className="call-starters" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
             <p className="call-starters-label">Not sure what to say?</p>
             <div className="call-starters-grid">

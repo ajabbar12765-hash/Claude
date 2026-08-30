@@ -27,20 +27,24 @@ function formatKnownVocab(knownVocab) {
     .join('; ')
 }
 
-function buildSystemPrompt(level, knownVocab) {
+function buildSystemPrompt(level, knownVocab, topic) {
   const levelRule = LEVEL_RULES[level] || LEVEL_RULES.beginner
   const vocabList = formatKnownVocab(knownVocab)
   const vocabRule = vocabList
-    ? `\n- The learner has specifically been taught these Italian words/phrases so far, given as "italian=english": ${vocabList}. Prefer reusing this vocabulary so your Italian matches what they actually know — it's fine to include an occasional new simple word, but don't lean on grammar or vocabulary well beyond this list.`
+    ? `\n- The learner has specifically been taught these Italian words/phrases so far, given as "italian=english": ${vocabList}. Build your replies and questions almost entirely from this list — this is the whole point of the exercise, so treat words outside it as a last resort, not a normal choice.`
+    : ''
+  const topicRule = topic
+    ? `\n- This is a topic-practice call, not a free-ranging chat: stay on the topic of "${topic}" for the whole conversation. Every question you ask should invite the learner to produce their own sentence about this topic using the vocabulary above, rather than just answering yes/no. If they drift off-topic, warmly steer back within a line.`
     : ''
   const sentenceCap =
     level === 'beginner' ? 'exactly ONE short sentence' : level === 'elementary' ? 'one, or at most two, short sentences' : 'one to three sentences'
   return `You are Volpe, a friendly, patient Italian conversation partner inside a language-learning app called Pronto. You're on a phone call with an English-speaking learner practicing spoken Italian.
 
 Rules:
-- ${levelRule}${vocabRule}
+- ${levelRule}${vocabRule}${topicRule}
 - Put the English translation of your reply in the "gloss" field — never inside the "italian" field, and never combine them into one string.
 - Keep "italian" SHORT — ${sentenceCap}. This is a phone call, not an essay. Never pad a reply with a second idea just to sound fuller — shorter and simpler always wins over natural-but-long.
+- Your job is to get the learner producing their OWN sentences, not just picking answers — always end your turn with a question or prompt that requires them to build a sentence back, using the vocabulary above.
 - Stay in character as a warm, encouraging local friend, not a teacher lecturing. If the learner makes a mistake, gently model the correct phrase back in your reply rather than explicitly correcting them.
 - If the learner writes or says something in English, respond warmly in Italian anyway, and gently nudge them (in Italian, with the gloss) to try it in Italian.
 - Never break character to talk about being an AI or a language model.
@@ -73,7 +77,7 @@ export default async function handler(req, res) {
     return
   }
 
-  const { history, text, audioBase64, audioMimeType, level, knownVocab } = req.body || {}
+  const { history, text, audioBase64, audioMimeType, level, knownVocab, topic } = req.body || {}
   if (!Array.isArray(history)) {
     res.status(400).json({ error: 'bad_request', message: 'A history array is required.' })
     return
@@ -93,7 +97,7 @@ export default async function handler(req, res) {
     : [{ text }]
   contents.push({ role: 'user', parts: turnParts })
 
-  try {
+  async function callGemini() {
     const apiRes = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
@@ -101,7 +105,7 @@ export default async function handler(req, res) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents,
-          systemInstruction: { parts: [{ text: buildSystemPrompt(level, knownVocab) }] },
+          systemInstruction: { parts: [{ text: buildSystemPrompt(level, knownVocab, topic) }] },
           generationConfig: {
             // Replies are capped at 1-3 short sentences by the prompt itself;
             // a smaller budget here means less to generate, which is the
@@ -117,8 +121,21 @@ export default async function handler(req, res) {
         }),
       },
     )
-
     const data = await apiRes.json()
+    return { apiRes, data }
+  }
+
+  try {
+    let { apiRes, data } = await callGemini()
+
+    // "Model overloaded" (Google's own capacity, not our quota) is exactly
+    // the kind of transient failure worth one quiet retry before bothering
+    // the learner — a few hundred ms usually clears it.
+    const isOverloaded = !apiRes.ok && apiRes.status === 503 && /overloaded|high demand/i.test(data?.error?.message || '')
+    if (isOverloaded) {
+      await new Promise((r) => setTimeout(r, 800))
+      ;({ apiRes, data } = await callGemini())
+    }
 
     if (!apiRes.ok) {
       const message = data?.error?.message || 'Something went wrong reaching Volpe.'
@@ -126,6 +143,8 @@ export default async function handler(req, res) {
         res.status(401).json({ error: 'invalid_api_key', message: 'That Gemini API key looks invalid. Double-check GEMINI_API_KEY in your Vercel project settings.' })
       } else if (apiRes.status === 429) {
         res.status(429).json({ error: 'rate_limited', message: 'Volpe is a little overwhelmed — wait a moment and try again.' })
+      } else if (apiRes.status === 503) {
+        res.status(503).json({ error: 'overloaded', message: 'Volpe’s line is busy right now (Gemini is at high demand) — give it a few seconds and try again.' })
       } else {
         res.status(apiRes.status).json({ error: 'api_error', message })
       }

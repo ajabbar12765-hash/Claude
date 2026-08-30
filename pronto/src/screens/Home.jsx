@@ -57,7 +57,8 @@ const PATH_SIDES = ['path-row-left', 'path-row-center', 'path-row-right']
 function LessonNode({ unit, lesson, index, total, status, side, onOpen }) {
   const isScenario = lesson.type === 'scenario'
   const isCheckpoint = !!lesson.checkpoint
-  const isMilestone = isScenario || isCheckpoint
+  const isTopicCall = lesson.type === 'topicCall'
+  const isMilestone = isScenario || isCheckpoint || isTopicCall
   const locked = status === 'locked'
   const done = status === 'done'
 
@@ -89,7 +90,8 @@ function LessonNode({ unit, lesson, index, total, status, side, onOpen }) {
         <span className="path-node-title">{lesson.title}</span>
         {isScenario && <span className="scenario-tag">Scenario</span>}
         {isCheckpoint && <span className="checkpoint-tag">Checkpoint</span>}
-        {!isCheckpoint && <span className="path-node-index">Lesson {index + 1} of {total}</span>}
+        {isTopicCall && <span className="scenario-tag">Optional · Live chat</span>}
+        {!isCheckpoint && !isTopicCall && <span className="path-node-index">Lesson {index + 1} of {total}</span>}
       </span>
     </motion.div>
   )
@@ -118,8 +120,11 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLeve
   const heroEyebrow = MOTIVATION_EYEBROW[motivation] || 'Real-life readiness'
   const recommendedUnitIds = RECOMMENDED_UNITS[motivation] || []
 
+  // A topicCall lesson (live chat with Volpe) is valuable practice but
+  // depends on a working AI call, so it doesn't gate progress — a unit
+  // reads as "done" without it, matching useProgress's own unlock rules.
   function isUnitComplete(ui) {
-    return UNITS[ui].lessons.every((l) => isLessonComplete(l.id))
+    return UNITS[ui].lessons.filter((l) => l.type !== 'topicCall').every((l) => isLessonComplete(l.id))
   }
 
   const circumference = 264
