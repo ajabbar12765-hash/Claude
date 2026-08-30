@@ -262,7 +262,15 @@ export default function App() {
       </div>
 
       {showChrome && <TopBar streak={progress.streak.count} xp={progress.xp} />}
-      <main className="app-main">
+      <AnimatePresence mode="wait">
+      <motion.main
+        key={screen}
+        className="app-main"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+      >
         {screen === 'home' && (
           <Home
             progress={progress}
@@ -299,7 +307,8 @@ export default function App() {
             onLessonComplete={finishTopicCall}
           />
         )}
-      </main>
+      </motion.main>
+      </AnimatePresence>
       {showChrome && <BottomTabs active={screen} onChange={setScreen} reviewDueCount={progress.dueReviewCount} />}
     </div>
   )
