@@ -19,6 +19,7 @@ import VoiceCall from './screens/VoiceCall.jsx'
 import Dictionary from './screens/Dictionary.jsx'
 import LevelCheck from './screens/LevelCheck.jsx'
 import UnitTest from './screens/UnitTest.jsx'
+import Review from './screens/Review.jsx'
 
 const ONBOARDED_KEY = 'pronto:onboarded:v1'
 
@@ -207,7 +208,7 @@ export default function App() {
     return <Onboarding onDone={finishOnboarding} />
   }
 
-  const showChrome = screen === 'home' || screen === 'profile' || screen === 'dictionary'
+  const showChrome = screen === 'home' || screen === 'profile' || screen === 'dictionary' || screen === 'review'
 
   return (
     <div className="app-shell">
@@ -258,6 +259,7 @@ export default function App() {
             onOpenProfile={() => setScreen('profile')}
             onOpenLevelCheck={() => setScreen('level-check')}
             onOpenUnitTest={openUnitTest}
+            onOpenReview={() => setScreen('review')}
           />
         )}
         {screen === 'profile' && (
@@ -265,6 +267,7 @@ export default function App() {
         )}
         {screen === 'call' && <VoiceCall onExit={returnHome} progress={progress} />}
         {screen === 'dictionary' && <Dictionary onExit={returnHome} progress={progress} />}
+        {screen === 'review' && <Review onExit={returnHome} progress={progress} />}
         {screen === 'level-check' && <LevelCheck progress={progress} onExit={() => setScreen('home')} />}
         {screen === 'unit-test' && activeTestUnit && <UnitTest unit={activeTestUnit} progress={progress} onExit={returnHome} />}
         {screen === 'lesson' && activeLesson?.type === 'lesson' && (
@@ -274,7 +277,7 @@ export default function App() {
           <Scenario scenario={activeLesson} progress={progress} onExit={returnHome} onFinished={returnHome} />
         )}
       </main>
-      {showChrome && <BottomTabs active={screen} onChange={setScreen} />}
+      {showChrome && <BottomTabs active={screen} onChange={setScreen} reviewDueCount={progress.dueReviewCount} />}
     </div>
   )
 }

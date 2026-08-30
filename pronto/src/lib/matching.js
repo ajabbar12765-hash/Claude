@@ -42,6 +42,29 @@ export function speechMatchRatio(transcript, target) {
   return matches / wanted.length
 }
 
+// Same matching as speechMatchRatio, but keeps which target words were
+// actually heard — used by the Shadow exercise to show the learner exactly
+// which words landed and which didn't, instead of a single opaque score.
+export function speechMatchDetails(transcript, target) {
+  const heard = normalize(transcript).split(' ').filter(Boolean)
+  const wanted = normalize(target).split(' ').filter(Boolean)
+  const targetWords = target.split(' ').filter(Boolean)
+  if (!wanted.length) return { ratio: 0, words: [] }
+  const remainingHeard = [...heard]
+  let matches = 0
+  const words = targetWords.map((displayWord, i) => {
+    const normalized = wanted[i]
+    const idx = remainingHeard.indexOf(normalized)
+    if (idx !== -1) {
+      matches += 1
+      remainingHeard.splice(idx, 1)
+      return { word: displayWord, matched: true }
+    }
+    return { word: displayWord, matched: false }
+  })
+  return { ratio: matches / wanted.length, words }
+}
+
 export function shuffle(array) {
   const copy = [...array]
   for (let i = copy.length - 1; i > 0; i--) {

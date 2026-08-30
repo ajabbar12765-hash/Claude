@@ -117,7 +117,10 @@ ul {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: var(--color-cream);
+  background:
+    radial-gradient(560px 320px at 100% -8%, color-mix(in srgb, var(--color-teal) 10%, transparent), transparent 65%),
+    radial-gradient(520px 360px at -6% 4%, color-mix(in srgb, var(--color-gold) 16%, transparent), transparent 60%),
+    var(--color-cream);
 }
 
 .app-main {
@@ -302,9 +305,39 @@ ul {
   color: var(--color-terracotta);
 }
 
+.bottom-tab-active .bottom-tab-icon::before {
+  content: '';
+  position: absolute;
+  inset: -6px -12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-terracotta) 12%, transparent);
+  z-index: -1;
+}
+
+.bottom-tab-icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.bottom-tab-badge {
+  position: absolute;
+  top: -5px;
+  right: -9px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--color-error);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 15px;
+  text-align: center;
+}
+
 /* ── Home: hero / readiness ring ────────────────────────────── */
 .hero-card {
-  background: var(--color-terracotta);
+  background: linear-gradient(135deg, var(--color-terracotta-light) 0%, var(--color-terracotta) 55%, var(--color-terracotta-dark) 100%);
   color: #fff;
   border-radius: var(--radius-xl);
   padding: 24px 22px;
@@ -312,6 +345,20 @@ ul {
   align-items: center;
   gap: 16px;
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 14px 30px -10px color-mix(in srgb, var(--color-terracotta) 55%, transparent);
+}
+
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22), transparent 70%);
+  pointer-events: none;
 }
 
 .hero-eyebrow {
@@ -429,7 +476,7 @@ ul {
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
-  background: var(--color-teal);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-teal) 82%, white), var(--color-teal-dark));
   color: white;
   border: none;
   border-radius: var(--radius-lg);
@@ -437,6 +484,7 @@ ul {
   text-align: left;
   transition: transform 0.1s ease;
   position: relative;
+  box-shadow: 0 10px 22px -10px color-mix(in srgb, var(--color-teal) 60%, transparent);
 }
 
 .continue-card:active {
@@ -549,9 +597,10 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--unit-color) 14%, white);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--unit-color) 20%, white), color-mix(in srgb, var(--unit-color) 10%, white));
   color: var(--unit-color);
   flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--unit-color) 18%, transparent);
 }
 
 .unit-title {
@@ -665,10 +714,11 @@ ul {
 }
 
 .path-node-done {
-  background: var(--unit-color);
+  background: linear-gradient(150deg, color-mix(in srgb, var(--unit-color) 88%, white), var(--unit-color));
   border-color: var(--unit-color);
   border-style: solid;
   color: #fff;
+  box-shadow: var(--shadow-card), 0 6px 14px -6px color-mix(in srgb, var(--unit-color) 60%, transparent);
 }
 
 .path-node-locked {
@@ -729,7 +779,8 @@ ul {
 
 /* ── Lesson / scenario chrome ───────────────────────────────── */
 .screen-lesson,
-.screen-scenario {
+.screen-scenario,
+.screen-review {
   padding-top: 0;
 }
 
@@ -935,37 +986,43 @@ ul {
 }
 
 .btn-check:not(:disabled) {
-  background: var(--color-terracotta);
+  background: linear-gradient(135deg, var(--color-terracotta-light), var(--color-terracotta));
+  box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--color-terracotta) 65%, transparent);
 }
 
 .btn-check:not(:disabled):active {
   transform: scale(0.98);
   background: var(--color-terracotta-dark);
+  box-shadow: 0 4px 10px -6px color-mix(in srgb, var(--color-terracotta) 55%, transparent);
 }
 
 .btn-check-correct {
-  background: var(--color-success);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-success) 75%, white), var(--color-success));
+  box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--color-success) 55%, transparent);
 }
 
 .btn-check-incorrect {
-  background: var(--color-error);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-error) 75%, white), var(--color-error));
+  box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--color-error) 55%, transparent);
 }
 
 .btn-primary {
   padding: 15px 22px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--color-terracotta);
+  background: linear-gradient(135deg, var(--color-terracotta-light), var(--color-terracotta));
   color: white;
   font-weight: 800;
   font-size: 0.98rem;
   width: 100%;
-  transition: transform 0.1s ease, background 0.1s ease;
+  box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--color-terracotta) 65%, transparent);
+  transition: transform 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
 }
 
 .btn-primary:active {
   transform: scale(0.98);
   background: var(--color-terracotta-dark);
+  box-shadow: 0 4px 10px -6px color-mix(in srgb, var(--color-terracotta) 55%, transparent);
 }
 
 /* ── MCQ / Listen options ────────────────────────────────────── */
@@ -1211,6 +1268,50 @@ ul {
   width: auto;
   padding: 12px 24px;
   margin-top: 6px;
+}
+
+/* ── Shadow exercise ─────────────────────────────────────────── */
+.shadow-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-cream);
+  border: 1px solid var(--color-border);
+}
+
+.shadow-result-words {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.shadow-word {
+  padding: 1px 4px;
+  border-radius: 6px;
+}
+
+.shadow-word-hit {
+  color: var(--color-success);
+}
+
+.shadow-word-miss {
+  color: var(--color-ink-soft);
+  text-decoration: line-through;
+  text-decoration-color: var(--color-error);
+}
+
+.shadow-result-score {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-ink-soft);
 }
 
 /* ── Match exercise ──────────────────────────────────────────── */
@@ -2161,7 +2262,7 @@ ul {
 }
 
 .course-map-node-done {
-  background: var(--unit-color);
+  background: linear-gradient(150deg, color-mix(in srgb, var(--unit-color) 88%, white), var(--unit-color));
   border-color: var(--unit-color);
   color: #fff;
 }
@@ -2422,6 +2523,49 @@ ul {
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--color-ink-soft);
+}
+
+/* ── Review: spaced-repetition flashcard deck ───────────────── */
+.review-caught-up-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 4px 0 0;
+}
+
+.review-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 20px 24px;
+}
+
+.review-card-word {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.review-card-answer {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-terracotta-dark);
+}
+
+.review-answer-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.review-answer-buttons .btn-check {
+  flex: 1;
+  width: auto;
 }
 
 .quiz-answer-form {

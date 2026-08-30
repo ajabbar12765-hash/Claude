@@ -112,8 +112,8 @@ const RECOMMENDED_UNITS = {
   fun: [],
 }
 
-export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLevelCheck, onOpenUnitTest }) {
-  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, unitAwaitingTest, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation, italianLevel } = progress
+export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLevelCheck, onOpenUnitTest, onOpenReview }) {
+  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, unitAwaitingTest, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation, italianLevel, dueReviewCount } = progress
   const currentUnitIndex = nextLesson ? nextLesson.unitIndex : UNITS.length - 1
   const heroEyebrow = MOTIVATION_EYEBROW[motivation] || 'Real-life readiness'
   const recommendedUnitIds = RECOMMENDED_UNITS[motivation] || []
@@ -190,6 +190,19 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLeve
         </div>
         {dailyGoalMet && <p className="goal-met">Today’s goal is done — anything more is a bonus. 🎉</p>}
       </motion.section>
+
+      {dueReviewCount > 0 && (
+        <motion.button variants={item} whileTap={{ scale: 0.98 }} type="button" className="level-cta-card" onClick={onOpenReview}>
+          <span className="level-cta-icon">
+            <Icon name="refresh" size={22} strokeWidth={1.9} />
+          </span>
+          <span className="level-cta-copy">
+            <span className="level-cta-title">{dueReviewCount} word{dueReviewCount === 1 ? '' : 's'} due for review</span>
+            <span className="level-cta-sub">A quick refresh keeps what you’ve learned from fading.</span>
+          </span>
+          <Icon name="chevronRight" size={18} strokeWidth={2.2} />
+        </motion.button>
+      )}
 
       {nextLesson && (
         <motion.button variants={item} whileTap={{ scale: 0.98 }} type="button" className="continue-card" onClick={() => onOpenLesson(nextLesson.lesson)}>

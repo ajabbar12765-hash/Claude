@@ -8,6 +8,7 @@ import SpeakExercise from './SpeakExercise.jsx'
 import DictationExercise from './DictationExercise.jsx'
 import ReorderExercise from './ReorderExercise.jsx'
 import RespondExercise from './RespondExercise.jsx'
+import ShadowExercise from './ShadowExercise.jsx'
 
 const RENDERERS = {
   mcq: McqExercise,
@@ -20,6 +21,7 @@ const RENDERERS = {
   dictation: DictationExercise,
   reorder: ReorderExercise,
   respond: RespondExercise,
+  shadow: ShadowExercise,
 }
 
 export default function ExerciseRunner({ exercise, onAnswered, onContinue }) {

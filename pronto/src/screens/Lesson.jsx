@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import ExerciseRunner from '../components/exercises/ExerciseRunner.jsx'
 import Icon from '../components/Icon.jsx'
 import Mascot from '../components/Mascot.jsx'
 import { playComplete, playCombo } from '../lib/sound.js'
 import { canSpeak, speakItalian } from '../lib/speech.js'
-import { vocabForLesson } from '../data/curriculum.js'
+import { vocabForExercise } from '../data/curriculum.js'
 
 let requeueCounter = 0
 
@@ -18,16 +18,18 @@ function freshState(lesson) {
   }
 }
 
-// New words this lesson actually teaches, minus anything the learner has
-// already been taught in a prior completed lesson (progress.knownVocab) —
-// the app shouldn't re-teach a word it already knows the learner knows.
-function newWordsToTeach(lesson, knownVocab) {
-  const known = new Set((knownVocab || []).map((p) => p.it.toLowerCase()))
+// Which of one exercise's words the learner hasn't met yet this run and
+// doesn't already know from a prior lesson — taught one at a time, right
+// before the exercise that uses it, instead of a batch of flashcards up
+// front. Explain cards show their own examples inline, so they never get a
+// separate flashcard step.
+function newWordsForExercise(ex, taught) {
+  if (!ex || ex.type === 'explain') return []
   const seen = new Set()
-  return vocabForLesson(lesson).filter((p) => {
+  return vocabForExercise(ex).filter((p) => {
     if (!p.it || !p.en) return false
     const key = p.it.toLowerCase()
-    if (known.has(key) || seen.has(key)) return false
+    if (taught.has(key) || seen.has(key)) return false
     seen.add(key)
     return true
   })
@@ -35,12 +37,15 @@ function newWordsToTeach(lesson, knownVocab) {
 
 export default function Lesson({ lesson, progress, onExit, onFinished }) {
   const [run, setRun] = useState(() => freshState(lesson))
-  const [lastAnswerCorrect, setLastAnswerCorrect] = useState(null)
+  // A ref, not state: some exercises (Explain) call onAnswered and onContinue
+  // back-to-back in the same event handler with no render in between, so
+  // state wouldn't have committed yet by the time handleContinue reads it.
+  const lastAnswerCorrect = useRef(null)
   const [finished, setFinished] = useState(false)
   const [comboToast, setComboToast] = useState(null)
   const [xpPopup, setXpPopup] = useState(null)
-  const teachWords = useMemo(() => newWordsToTeach(lesson, progress.knownVocab), [lesson, progress.knownVocab])
-  const [teachIndex, setTeachIndex] = useState(0)
+  const [taught, setTaught] = useState(() => new Set((progress.knownVocab || []).map((p) => p.it.toLowerCase())))
+  const [pendingTeach, setPendingTeach] = useState(() => newWordsForExercise(run.queue[0]?.exercise, taught))
   const speechSupported = canSpeak()
 
   const { queue, doneIds, missedOnce, combo } = run
@@ -55,6 +60,14 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
     }
   }, [queue, finished, progress, lesson.id, total, missedOnce])
 
+  // Every time the queue lands on a different exercise, work out which of
+  // its words are genuinely new and line them up as teaching cards shown
+  // one at a time immediately before that exercise runs.
+  useEffect(() => {
+    setPendingTeach(newWordsForExercise(current?.exercise, taught))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current?.key])
+
   useEffect(() => {
     if (!comboToast) return
     const t = setTimeout(() => setComboToast(null), 1500)
@@ -68,7 +81,7 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
   }, [xpPopup])
 
   function handleAnswered(isCorrect) {
-    setLastAnswerCorrect(isCorrect)
+    lastAnswerCorrect.current = isCorrect
     if (isCorrect) {
       progress.recordCorrect(current.exercise.id)
       setXpPopup({ id: Date.now(), text: '+10 XP' })
@@ -90,13 +103,23 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
   }
 
   function handleContinue() {
+    // Capture the ref's value now, synchronously — React may not invoke the
+    // setRun updater below until its next render pass, by which point the
+    // ref reset at the end of this function would already have run.
+    const wasCorrect = lastAnswerCorrect.current
     setRun((prev) => {
       const [head, ...rest] = prev.queue
-      if (lastAnswerCorrect) return { ...prev, queue: rest }
+      if (wasCorrect) return { ...prev, queue: rest }
       requeueCounter += 1
       return { ...prev, queue: [...rest, { key: `${head.exercise.id}-r${requeueCounter}`, exercise: head.exercise }] }
     })
-    setLastAnswerCorrect(null)
+    lastAnswerCorrect.current = null
+  }
+
+  function handleTeachNext() {
+    const [word, ...rest] = pendingTeach
+    if (word) setTaught((prev) => new Set(prev).add(word.it.toLowerCase()))
+    setPendingTeach(rest)
   }
 
   if (finished) {
@@ -140,25 +163,22 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
     )
   }
 
-  if (teachIndex < teachWords.length) {
-    const word = teachWords[teachIndex]
-    const lastWord = teachIndex + 1 >= teachWords.length
+  if (pendingTeach.length > 0) {
+    const word = pendingTeach[0]
     return (
       <div className="screen screen-lesson">
         <div className="lesson-header">
           <button type="button" className="lesson-exit" onClick={onExit} aria-label="Exit lesson">
             <Icon name="x" size={22} strokeWidth={2.2} />
           </button>
-          <span className="call-header-title">New words</span>
+          <span className="call-header-title">New word</span>
         </div>
 
         <div className="teach-zone">
           <Mascot expression="happy" size={72} />
-          <p className="onboarding-subtext">
-            {teachIndex + 1} of {teachWords.length} — learn it, then we’ll practice
-          </p>
+          <p className="onboarding-subtext">Learn it, then use it right away</p>
           <motion.div
-            key={teachIndex}
+            key={word.it}
             className="teach-word-card"
             initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
@@ -176,10 +196,10 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
             whileTap={{ scale: 0.96 }}
             type="button"
             className="btn-primary onboarding-confirm"
-            onClick={() => setTeachIndex((i) => i + 1)}
+            onClick={handleTeachNext}
           >
             <Icon name="chevronRight" size={22} strokeWidth={1.9} />
-            {lastWord ? 'Let’s practice' : 'Got it'}
+            Try it
           </motion.button>
         </div>
       </div>

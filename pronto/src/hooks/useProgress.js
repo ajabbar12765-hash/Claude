@@ -9,10 +9,25 @@ const XP_PER_LEVEL = 100
 // request — the most recent (most advanced) items in curriculum order win.
 const KNOWN_VOCAB_CAP = 50
 
+// Leitner-style spaced repetition: each box index is the number of days
+// until the next review after a correct recall. A miss always drops an
+// item back to box 0 (review again tomorrow) rather than losing all prior
+// progress, since a slip after weeks of correct recalls isn't "starting over."
+const SRS_INTERVALS = [1, 2, 4, 8, 16, 30, 60]
+const REVIEW_XP_PER_ITEM = 3
+// Cap a single review session so it stays a quick daily habit, not homework.
+const REVIEW_SESSION_SIZE = 15
+
 const STORAGE_KEY = 'pronto:progress:v1'
 
 function todayStr() {
   const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function addDays(dateStr, n) {
+  const d = new Date(dateStr)
+  d.setDate(d.getDate() + n)
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
@@ -36,6 +51,8 @@ function defaultState() {
     voiceCallCount: 0,
     dictionaryLookups: 0,
     italianLevel: null,
+    srs: {},
+    reviewSessionsCompleted: 0,
   }
 }
 
@@ -231,17 +248,19 @@ export function useProgress() {
       streak: state.streak.count,
       voiceCallCount: state.voiceCallCount,
       dictionaryLookups: state.dictionaryLookups,
+      reviewSessionsCompleted: state.reviewSessionsCompleted,
       level,
       readinessPercent,
     }
     return ACHIEVEMENTS.map((a) => ({ ...a, unlocked: a.check(snapshot) }))
-  }, [completedCount, state.perfectLessons, state.streak.count, state.voiceCallCount, state.dictionaryLookups, level, readinessPercent])
+  }, [completedCount, state.perfectLessons, state.streak.count, state.voiceCallCount, state.dictionaryLookups, state.reviewSessionsCompleted, level, readinessPercent])
 
-  // Every {it, en} pair from lessons the learner has actually completed —
-  // grounds Volpe's vocabulary in what was really taught rather than a
-  // generic level bucket. Deduped by Italian phrase, capped to the most
-  // recent items in curriculum order so it stays small as the course grows.
-  const knownVocab = useMemo(() => {
+  // Every {it, en} pair from lessons the learner has actually completed,
+  // deduped by Italian phrase in curriculum order. Feeds both Volpe's
+  // vocabulary context (capped below) and the spaced-repetition Review deck
+  // (uncapped — every taught word is worth resurfacing, not just the recent
+  // ones a live voice call needs).
+  const allKnownVocab = useMemo(() => {
     const seen = new Map()
     for (const unit of UNITS) {
       for (const l of unit.lessons) {
@@ -251,8 +270,83 @@ export function useProgress() {
         }
       }
     }
-    return Array.from(seen.values()).slice(-KNOWN_VOCAB_CAP)
+    return Array.from(seen.values())
   }, [state.completedLessons])
+
+  const knownVocab = useMemo(() => allKnownVocab.slice(-KNOWN_VOCAB_CAP), [allKnownVocab])
+
+  // Every newly-learned word gets entered into the Leitner review deck the
+  // moment its lesson is completed — due immediately, so it resurfaces in
+  // the very next Review session rather than waiting on a fixed delay.
+  // Words already tracked keep their existing box/due date untouched.
+  useEffect(() => {
+    setState((prev) => {
+      let changed = false
+      const srs = { ...prev.srs }
+      const today = todayStr()
+      for (const pair of allKnownVocab) {
+        const key = pair.it.toLowerCase()
+        if (!srs[key]) {
+          srs[key] = { it: pair.it, en: pair.en, box: 0, dueDate: today, reps: 0 }
+          changed = true
+        }
+      }
+      return changed ? { ...prev, srs } : prev
+    })
+  }, [allKnownVocab])
+
+  const dueReviewItems = useMemo(() => {
+    const today = todayStr()
+    return Object.values(state.srs)
+      .filter((item) => item.dueDate <= today)
+      .sort((a, b) => (a.dueDate < b.dueDate ? -1 : a.dueDate > b.dueDate ? 1 : 0))
+      .slice(0, REVIEW_SESSION_SIZE)
+  }, [state.srs])
+
+  const recordReview = useCallback((it, gotIt) => {
+    setState((prev) => {
+      const key = it.toLowerCase()
+      const item = prev.srs[key]
+      if (!item) return prev
+      const nextBox = gotIt ? Math.min(item.box + 1, SRS_INTERVALS.length - 1) : 0
+      return {
+        ...prev,
+        srs: {
+          ...prev.srs,
+          [key]: { ...item, box: nextBox, dueDate: addDays(todayStr(), SRS_INTERVALS[nextBox]), reps: item.reps + 1 },
+        },
+      }
+    })
+  }, [])
+
+  // Finishing a Review session pays XP and counts toward the daily streak,
+  // same as a lesson — reviewing is real practice, not a lesser activity.
+  const recordReviewSession = useCallback((itemsReviewed) => {
+    if (itemsReviewed <= 0) return
+    setState((prev) => {
+      const xpGain = itemsReviewed * REVIEW_XP_PER_ITEM
+      const today = todayStr()
+      let { count, lastActiveDate } = prev.streak
+      if (lastActiveDate === today) {
+        // already active today, no streak change
+      } else if (lastActiveDate && daysBetween(lastActiveDate, today) === 1) {
+        count += 1
+      } else {
+        count = 1
+      }
+      const xpToday =
+        prev.xpToday.date === today
+          ? { date: today, amount: prev.xpToday.amount + xpGain }
+          : { date: today, amount: xpGain }
+      return {
+        ...prev,
+        xp: prev.xp + xpGain,
+        streak: { count, lastActiveDate: today },
+        xpToday,
+        reviewSessionsCompleted: prev.reviewSessionsCompleted + 1,
+      }
+    })
+  }, [])
 
   const nextLesson = useMemo(() => {
     for (let ui = 0; ui < UNITS.length; ui++) {
@@ -287,11 +381,16 @@ export function useProgress() {
     italianLevel: state.italianLevel,
     knownVocab,
     unitTestPassed: state.unitTestPassed,
+    dueReviewItems,
+    dueReviewCount: dueReviewItems.length,
+    reviewSessionsCompleted: state.reviewSessionsCompleted,
     recordCorrect,
     completeLesson,
     passUnitTest,
     recordVoiceCall,
     recordDictionaryLookup,
+    recordReview,
+    recordReviewSession,
     markLessonsComplete,
     isLessonComplete,
     isUnitUnlocked,

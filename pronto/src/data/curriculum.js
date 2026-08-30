@@ -80,6 +80,13 @@ function speak(it, en, extra = {}) {
   return { type: 'speak', it, en, ...extra }
 }
 
+// Like speak, but the Italian text stays hidden until after the attempt —
+// the learner reacts to audio alone instead of reading along, then sees
+// which words of the target they actually landed.
+function shadow(it, en, extra = {}) {
+  return { type: 'shadow', it, en, ...extra }
+}
+
 function dictation(it, en, accept = [], extra = {}) {
   return { type: 'dictation', it, en, accept, ...extra }
 }
@@ -1058,7 +1065,7 @@ export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
     id: 'c2',
-    title: 'Final Checkpoint',
+    title: 'Checkpoint Two',
     subtitle: 'Review: Units 4–6',
     icon: 'trophy',
     color: '#D9A441',
@@ -1083,6 +1090,1009 @@ export const UNITS = [
       ]),
     ],
   },
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u7',
+    title: 'Family & Home',
+    subtitle: 'Famiglia e Casa',
+    icon: 'home',
+    color: '#3F8C5B',
+    learn: [
+      'Talk about your family using possessive adjectives',
+      'Say how old someone is',
+      'Describe your home and its rooms',
+      'Ask about someone else’s family',
+    ],
+    test: unitTest('u7', [
+      mcq('it-en', 'Questa è mia sorella', 'This is my sister', ['This is my mother', 'This is my sister', 'This is my daughter', 'This is my friend']),
+      typeEx('I have two brothers', 'Ho due fratelli', ['ho due fratelli']),
+      mcq('en-it', 'La mia casa è piccola', 'My house is small', ['La mia casa è piccola', 'La mia casa è grande', 'Il mio letto è piccolo', 'La mia macchina è piccola']),
+      build('How old are you?', 'Quanti anni hai?', ['anno', 'sei']),
+      listen('C’è un giardino?', 'Is there a garden?', ['Is there a garden?', 'Is there a kitchen?', 'Where is the bathroom?', 'Is the house big?']),
+      match([
+        { it: 'Mia madre', en: 'My mother' },
+        { it: 'Mio fratello', en: 'My brother' },
+        { it: 'La cucina', en: 'The kitchen' },
+        { it: 'Quanti anni hai?', en: 'How old are you?' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u7l1', 'Meet the Family', 'The words for everyone in your life', 'heart', [
+        explain(
+          'Possessive Adjectives: Mio / Mia',
+          'Italian possessives agree with the gender of the thing owned, not the owner — mio for masculine nouns, mia for feminine, regardless of whether you’re a man or a woman.',
+          [
+            { it: 'mio padre', en: 'my father' },
+            { it: 'mia madre', en: 'my mother' },
+          ],
+        ),
+        mcq('it-en', 'Mia madre', 'My mother', ['My father', 'My mother', 'My sister', 'My aunt']),
+        typeEx('My father', 'Mio padre', ['mio padre']),
+        mcq('en-it', 'Tua sorella', 'Your sister', ['Tua sorella', 'Tuo fratello', 'Tua madre', 'Tuo padre']),
+        build('This is my brother', 'Questo è mio fratello', ['sorella', 'padre']),
+        listen('Hai fratelli o sorelle?', 'Do you have brothers or sisters?', ['Do you have brothers or sisters?', 'Do you have children?', 'Are you married?', 'Where is your family?']),
+        match([
+          { it: 'Madre', en: 'Mother' },
+          { it: 'Padre', en: 'Father' },
+          { it: 'Fratello', en: 'Brother' },
+          { it: 'Sorella', en: 'Sister' },
+        ]),
+        speak('Questa è la mia famiglia', 'Say it out loud: This is my family'),
+      ]),
+
+      lesson('u7l2', 'How Old Are You?', 'Ages, and the verb avere at work again', 'user', [
+        explain(
+          'Avere + Anni (To Be a Certain Age)',
+          'Italian doesn’t use “to be” for age the way English does — it uses avere (“to have”) + a number + anni (“years”). Ho trent’anni literally means “I have thirty years.”',
+          [
+            { it: 'Ho trent’anni', en: 'I am thirty years old' },
+            { it: 'Quanti anni hai?', en: 'How old are you?' },
+          ],
+        ),
+        mcq('it-en', 'Quanti anni hai?', 'How old are you?', ['What’s your name?', 'How old are you?', 'Where do you live?', 'Are you married?']),
+        typeEx('I am thirty years old', 'Ho trent’anni', ['ho trentanni', 'ho trent anni']),
+        mcq('en-it', 'Ho venticinque anni', 'I am twenty-five', ['Ho venticinque anni', 'Ho quindici anni', 'Ho cinquanta anni', 'Ho due figli']),
+        build('How old is your brother?', 'Quanti anni ha tuo fratello?', ['sorella', 'madre']),
+        dictation('Ho ventotto anni', 'I am twenty-eight years old', ['ho ventotto anni']),
+        listen('Mia nonna ha ottant’anni', 'My grandmother is eighty years old', ['My grandmother is eighty years old', 'My grandfather is eighty years old', 'My mother is eighty years old', 'My grandmother is eighteen']),
+        match([
+          { it: 'Nonno', en: 'Grandfather' },
+          { it: 'Nonna', en: 'Grandmother' },
+          { it: 'Zio', en: 'Uncle' },
+          { it: 'Zia', en: 'Aunt' },
+        ]),
+      ]),
+
+      lesson('u7l3', 'At Home', 'The rooms and “there is / there are”', 'home', [
+        explain(
+          'C’è / Ci Sono (There Is / There Are)',
+          'C’è introduces one thing, ci sono introduces more than one — the single most useful pair of words for describing any space, from a house to a hotel room.',
+          [
+            { it: 'C’è una cucina', en: 'There is a kitchen' },
+            { it: 'Ci sono tre camere', en: 'There are three bedrooms' },
+          ],
+        ),
+        mcq('it-en', 'La cucina', 'The kitchen', ['The bathroom', 'The kitchen', 'The bedroom', 'The garden']),
+        typeEx('The bedroom', 'La camera da letto', ['la camera da letto']),
+        mcq('en-it', 'Il bagno', 'The bathroom', ['Il bagno', 'Il salotto', 'La cucina', 'Il giardino'], { objectiveIds: ['talk-about-family'] }),
+        build('There are three bedrooms', 'Ci sono tre camere da letto', ['c’è', 'una']),
+        listen('C’è un giardino?', 'Is there a garden?', ['Is there a garden?', 'Is there a kitchen?', 'Is the house big?', 'Where do you live?']),
+        match([
+          { it: 'La cucina', en: 'The kitchen' },
+          { it: 'Il salotto', en: 'The living room' },
+          { it: 'La camera da letto', en: 'The bedroom' },
+          { it: 'Il bagno', en: 'The bathroom' },
+        ]),
+      ]),
+
+      lesson('u7l3x', 'Extended Family', 'Cousins, marriage, and talking about a big family', 'chat', [
+        mcq('it-en', 'Sono sposato', 'I am married', ['I am single', 'I am married', 'I have children', 'I am divorced']),
+        typeEx('I am single', 'Sono single', ['sono single'], { objectiveIds: ['talk-about-family'] }),
+        build('My cousin lives in Rome', 'Mio cugino vive a Roma', ['abita', 'sorella']),
+        reorder('Ho una grande famiglia', 'I have a big family'),
+        respond(
+          'Hai una famiglia numerosa?', 'Do you have a big family? (informal)',
+          ['Sì, ho tre fratelli', 'No, siamo solo in tre', 'Ho una famiglia media'],
+          'Yes, I have three siblings / No, there’s just three of us / I have a medium-sized family',
+          { objectiveIds: ['talk-about-family'] },
+        ),
+        match([
+          { it: 'Cugino / Cugina', en: 'Cousin' },
+          { it: 'Marito', en: 'Husband' },
+          { it: 'Moglie', en: 'Wife' },
+          { it: 'Figlio / Figlia', en: 'Son / Daughter' },
+        ]),
+      ]),
+
+      scenario(
+        'u7l4',
+        'Video Call Home',
+        'Scenario: showing an Italian friend around your place',
+        'wave',
+        'You’re on a video call with an Italian friend who wants the full tour and an introduction to your family.',
+        [
+          {
+            speaker: 'Friend', it: 'Ciao! Fammi vedere la tua casa!', en: 'Hi! Show me your house!',
+            choices: [
+              { it: 'Certo! Questo è il salotto, e qui c’è la cucina.', en: 'Sure! This is the living room, and here’s the kitchen.', correct: true, feedback: 'A natural, easy way to start a tour — point and name the room.' },
+              { it: 'Ho fame.', en: 'I’m hungry.', correct: false, feedback: 'Doesn’t answer the request to see your house at all.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'That’s a restaurant phrase — nobody’s bringing you a bill on a video call.' },
+            ],
+          },
+          {
+            speaker: 'Friend', it: 'Bella! Chi vive con te?', en: 'Nice! Who lives with you?',
+            choices: [
+              { it: 'Vivo con mia sorella e il nostro gatto.', en: 'I live with my sister and our cat.', correct: true, feedback: 'Direct answer to “who” — exactly what was asked.' },
+              { it: 'Vivo in Italia.', en: 'I live in Italy.', correct: false, feedback: 'That answers “where,” not “who” — a different question.' },
+              { it: 'Non lo so.', en: 'I don’t know.', correct: false, feedback: 'A strange thing to say about your own housemates.' },
+            ],
+          },
+          {
+            speaker: 'Friend', it: 'Quanti anni ha tua sorella?', en: 'How old is your sister?',
+            choices: [
+              { it: 'Ha ventitré anni.', en: 'She’s twenty-three.', correct: true, feedback: 'Uses avere + anni correctly — the exact structure this lesson covered.' },
+              { it: 'Si chiama Anna.', en: 'Her name is Anna.', correct: false, feedback: 'That’s her name, not her age.' },
+              { it: 'Abita a Milano.', en: 'She lives in Milan.', correct: false, feedback: 'Where she lives isn’t how old she is.' },
+            ],
+          },
+          {
+            speaker: 'Friend', it: 'Devo andare. È stato bello vedere la tua famiglia!', en: 'I have to go. It was nice seeing your family!',
+            choices: [
+              { it: 'Anche per me! A presto!', en: 'Likewise! See you soon!', correct: true, feedback: 'A warm, natural way to close out a video call.' },
+              { it: 'Vorrei un caffè.', en: 'I would like a coffee.', correct: false, feedback: 'Out of nowhere — nobody’s ordering anything here.' },
+              { it: 'Dov’è la stazione?', en: 'Where’s the station?', correct: false, feedback: 'Random directions question with nothing to do with saying goodbye.' },
+            ],
+          },
+        ],
+        ['talk-about-family'],
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u8',
+    title: 'Daily Routine & Time',
+    subtitle: 'La Routine Quotidiana',
+    icon: 'clock',
+    color: '#2E8B95',
+    learn: [
+      'Tell time in Italian',
+      'Talk through your daily routine using reflexive verbs',
+      'Use frequency words like always, often, and never',
+      'Ask someone about their schedule',
+    ],
+    test: unitTest('u8', [
+      mcq('it-en', 'Mi alzo alle sette', 'I get up at seven', ['I go to bed at seven', 'I get up at seven', 'I wake up early', 'I work until seven']),
+      typeEx('I go to bed at eleven', 'Vado a letto alle undici', ['vado a letto alle undici']),
+      mcq('en-it', 'Sempre', 'Always', ['Sempre', 'Mai', 'A volte', 'Spesso']),
+      build('What time is it?', 'Che ore sono?', ['ora', 'quando']),
+      listen('A che ora ti svegli?', 'What time do you wake up?', ['What time do you wake up?', 'What time do you go to bed?', 'What do you do in the morning?', 'Do you wake up early?']),
+      match([
+        { it: 'La mattina', en: 'The morning' },
+        { it: 'Il pomeriggio', en: 'The afternoon' },
+        { it: 'La sera', en: 'The evening' },
+        { it: 'Mi alzo', en: 'I get up' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u8l1', 'What Time Is It?', 'Sono le… and the one exception to remember', 'clock', [
+        explain(
+          'Telling Time: Sono le… / È l’una',
+          'For most hours, use Sono le + the number: sono le tre (it’s three o’clock). One o’clock is the odd one out — it’s singular, so it takes è l’una instead.',
+          [
+            { it: 'Sono le tre', en: 'It’s three o’clock' },
+            { it: 'È l’una', en: 'It’s one o’clock' },
+          ],
+        ),
+        mcq('it-en', 'Che ore sono?', 'What time is it?', ['What day is it?', 'What time is it?', 'When do you arrive?', 'How long does it take?']),
+        typeEx('It is three o’clock', 'Sono le tre', ['sono le tre']),
+        mcq('en-it', 'È l’una', 'It is one o’clock', ['È l’una', 'Sono le una', 'È le une', 'Sono l’uno']),
+        build('It is half past four', 'Sono le quattro e mezza', ['un quarto', 'meno']),
+        listen('Sono le otto e un quarto', 'It’s a quarter past eight', ['It’s a quarter past eight', 'It’s eight o’clock', 'It’s half past eight', 'It’s a quarter to eight']),
+        match([
+          { it: 'La mattina', en: 'Morning' },
+          { it: 'Il pomeriggio', en: 'Afternoon' },
+          { it: 'La sera', en: 'Evening' },
+          { it: 'La notte', en: 'Night' },
+        ]),
+        shadow('Sono le tre e mezza', 'It’s half past three'),
+      ]),
+
+      lesson('u8l2', 'My Morning', 'Reflexive verbs: things you do to yourself', 'sun', [
+        explain(
+          'Reflexive Verbs: Mi Alzo, Mi Vesto',
+          'A reflexive verb describes an action you do to yourself, so it needs a small pronoun (mi/ti/si) right before it — mi alzo literally means “I get myself up.”',
+          [
+            { it: 'mi alzo', en: 'I get up' },
+            { it: 'si sveglia', en: 'he/she wakes up' },
+          ],
+        ),
+        mcq('it-en', 'Mi alzo alle sette', 'I get up at seven', ['I go to bed at seven', 'I get up at seven', 'I wake her up at seven', 'I work at seven']),
+        typeEx('I get dressed quickly', 'Mi vesto velocemente', ['mi vesto velocemente']),
+        mcq('en-it', 'Mi lavo', 'I wash up', ['Mi lavo', 'Mi alzo', 'Mi vesto', 'Mi sveglio'], { objectiveIds: ['daily-routine'] }),
+        build('She wakes up early', 'Si sveglia presto', ['tardi', 'alzo']),
+        dictation('Mi alzo presto la mattina', 'I get up early in the morning', ['mi alzo presto la mattina']),
+        listen('A che ora ti svegli?', 'What time do you wake up?', ['What time do you wake up?', 'What time do you go to bed?', 'Do you get up early?', 'What time is it?']),
+        match([
+          { it: 'Svegliarsi', en: 'To wake up' },
+          { it: 'Alzarsi', en: 'To get up' },
+          { it: 'Vestirsi', en: 'To get dressed' },
+          { it: 'Lavarsi', en: 'To wash up' },
+        ]),
+      ]),
+
+      lesson('u8l2x', 'Always, Often, Never', 'Frequency words that make any routine specific', 'refresh', [
+        mcq('it-en', 'Vado sempre in palestra', 'I always go to the gym', ['I never go to the gym', 'I always go to the gym', 'I sometimes go to the gym', 'I used to go to the gym']),
+        typeEx('I never eat breakfast', 'Non faccio mai colazione', ['non faccio mai colazione'], { objectiveIds: ['daily-routine'] }),
+        build('I often work late', 'Lavoro spesso fino a tardi', ['sempre', 'presto']),
+        reorder('Faccio colazione ogni giorno', 'I have breakfast every day'),
+        respond(
+          'Cosa fai di solito la sera?', 'What do you usually do in the evening? (informal)',
+          ['Guardo la TV', 'Leggo un libro', 'Esco con gli amici'],
+          'I watch TV / I read a book / I go out with friends',
+          { objectiveIds: ['daily-routine'] },
+        ),
+        match([
+          { it: 'Sempre', en: 'Always' },
+          { it: 'Spesso', en: 'Often' },
+          { it: 'A volte', en: 'Sometimes' },
+          { it: 'Mai', en: 'Never' },
+        ]),
+      ]),
+
+      lesson('u8l3', 'The Workday', 'The verbs that carry you from morning to night', 'bulb', [
+        mcq('it-en', 'Vado al lavoro alle otto', 'I go to work at eight', ['I leave work at eight', 'I go to work at eight', 'I wake up at eight', 'I have dinner at eight']),
+        typeEx('I have lunch at noon', 'Pranzo a mezzogiorno', ['pranzo a mezzogiorno']),
+        mcq('en-it', 'Torno a casa alle sei', 'I come home at six', ['Torno a casa alle sei', 'Vado a casa alle sei', 'Esco di casa alle sei', 'Ceno alle sei']),
+        build('I finish work at five', 'Finisco di lavorare alle cinque', ['inizio', 'sette']),
+        listen('Che cosa fai di mattina?', 'What do you do in the morning?', ['What do you do in the morning?', 'What do you do in the evening?', 'When do you wake up?', 'Where do you work?']),
+        match([
+          { it: 'Lavorare', en: 'To work' },
+          { it: 'Pranzare', en: 'To have lunch' },
+          { it: 'Tornare', en: 'To return' },
+          { it: 'Cenare', en: 'To have dinner' },
+        ]),
+      ]),
+
+      scenario(
+        'u8l4',
+        'A Day in the Life',
+        'Scenario: a new coworker asks about your routine',
+        'clock',
+        'It’s your first week at an office in Italy, and a coworker asks about your daily routine over coffee.',
+        [
+          {
+            speaker: 'Coworker', it: 'A che ora inizi a lavorare di solito?', en: 'What time do you usually start work?',
+            choices: [
+              { it: 'Di solito inizio alle nove.', en: 'I usually start at nine.', correct: true, feedback: 'Simple, direct, and answers exactly what was asked.' },
+              { it: 'Ho fame.', en: 'I’m hungry.', correct: false, feedback: 'Completely unrelated to your start time.' },
+              { it: 'Mi chiamo Marco.', en: 'My name is Marco.', correct: false, feedback: 'You’ve presumably already introduced yourself — this doesn’t answer the question.' },
+            ],
+          },
+          {
+            speaker: 'Coworker', it: 'Fai colazione prima di venire?', en: 'Do you have breakfast before coming?',
+            choices: [
+              { it: 'Sì, faccio sempre colazione a casa.', en: 'Yes, I always have breakfast at home.', correct: true, feedback: 'Uses “sempre” to actually answer how often — a natural, complete reply.' },
+              { it: 'No, non ho fratelli.', en: 'No, I don’t have siblings.', correct: false, feedback: 'Family, not breakfast — a total non sequitur here.' },
+              { it: 'Vado in palestra la sera.', en: 'I go to the gym in the evening.', correct: false, feedback: 'That’s an evening habit, not an answer about breakfast.' },
+            ],
+          },
+          {
+            speaker: 'Coworker', it: 'A che ora torni a casa la sera?', en: 'What time do you go home in the evening?',
+            choices: [
+              { it: 'Di solito torno verso le sei.', en: 'I usually get home around six.', correct: true, feedback: 'Answers the evening question with the evening time — no confusion.' },
+              { it: 'Mi alzo alle sette.', en: 'I get up at seven.', correct: false, feedback: 'That’s your morning, and the question was about the evening.' },
+              { it: 'Non lo so ancora.', en: 'I don’t know yet.', correct: false, feedback: 'Odd to not know your own routine — pick a time.' },
+            ],
+          },
+          {
+            speaker: 'Coworker', it: 'Interessante, grazie per aver condiviso!', en: 'Interesting, thanks for sharing!',
+            choices: [
+              { it: 'Di niente! E tu, com’è la tua giornata?', en: 'You’re welcome! And you, what’s your day like?', correct: true, feedback: 'Turns the conversation back to them — exactly how small talk keeps going.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'You’re having coffee at the office, not closing out a restaurant bill.' },
+              { it: 'Dov’è la stazione?', en: 'Where’s the station?', correct: false, feedback: 'Random directions question that has nothing to do with this chat.' },
+            ],
+          },
+        ],
+        ['daily-routine'],
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u9',
+    title: 'Weather & Hobbies',
+    subtitle: 'Tempo e Passatempi',
+    icon: 'sun',
+    color: '#E0912E',
+    learn: [
+      'Talk about the weather',
+      'Name the seasons and say which is your favorite',
+      'Say what you like using piacere',
+      'Talk about hobbies and sports',
+    ],
+    test: unitTest('u9', [
+      mcq('it-en', 'Fa caldo oggi', 'It’s hot today', ['It’s cold today', 'It’s hot today', 'It’s raining today', 'It’s windy today']),
+      typeEx('It’s raining', 'Piove', ['piove']),
+      mcq('en-it', 'Mi piace leggere', 'I like to read', ['Mi piace leggere', 'Mi piace cucinare', 'Mi piace ballare', 'Mi piace nuotare']),
+      build('What’s the weather like?', 'Che tempo fa?', ['piove', 'freddo']),
+      listen('Mi piacciono gli sport', 'I like sports', ['I like sports', 'I like movies', 'I like music', 'I don’t like sports']),
+      match([
+        { it: 'La primavera', en: 'Spring' },
+        { it: 'L’estate', en: 'Summer' },
+        { it: 'L’autunno', en: 'Fall' },
+        { it: 'L’inverno', en: 'Winter' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u9l1', 'What’s the Weather?', 'Fa caldo, piove, nevica — the essentials', 'sun', [
+        explain(
+          'Weather with Fare, Piovere, Nevicare',
+          'Most weather uses fare (“to do/make”): fa caldo, fa freddo — literally “it makes hot/cold.” Rain and snow get their own verbs instead: piove (it’s raining), nevica (it’s snowing).',
+          [
+            { it: 'Fa caldo', en: 'It’s hot' },
+            { it: 'Piove', en: 'It’s raining' },
+          ],
+        ),
+        mcq('it-en', 'Fa caldo', 'It’s hot', ['It’s cold', 'It’s hot', 'It’s windy', 'It’s raining']),
+        typeEx('It’s cold', 'Fa freddo', ['fa freddo']),
+        mcq('en-it', 'Piove', 'It’s raining', ['Piove', 'Nevica', 'Fa caldo', 'C’è vento']),
+        build('What’s the weather like today?', 'Che tempo fa oggi?', ['piove', 'domani']),
+        listen('Nevica in montagna', 'It’s snowing in the mountains', ['It’s snowing in the mountains', 'It’s raining in the city', 'It’s sunny at the beach', 'It’s windy today']),
+        match([
+          { it: 'Il sole', en: 'Sun' },
+          { it: 'La pioggia', en: 'Rain' },
+          { it: 'La neve', en: 'Snow' },
+          { it: 'Il vento', en: 'Wind' },
+        ]),
+        shadow('Che tempo fa oggi?', 'What’s the weather like today?'),
+      ]),
+
+      lesson('u9l2', 'The Seasons', 'In primavera, in estate — the same little word every time', 'refresh', [
+        explain(
+          'The Four Seasons: In + Season',
+          'Unlike a lot of Italian prepositions, this one stays simple — every season uses in: in primavera, in estate, in autunno, in inverno. No exceptions to memorize.',
+          [
+            { it: 'In estate fa caldo', en: 'In summer it’s hot' },
+            { it: 'In inverno nevica', en: 'In winter it snows' },
+          ],
+        ),
+        mcq('it-en', 'In estate fa caldo', 'In summer it’s hot', ['In winter it’s hot', 'In summer it’s hot', 'In summer it snows', 'In summer it rains']),
+        typeEx('In winter it’s cold', 'In inverno fa freddo', ['in inverno fa freddo']),
+        mcq('en-it', 'La primavera', 'Spring', ['La primavera', 'L’estate', 'L’autunno', 'L’inverno'], { objectiveIds: ['weather-hobbies'] }),
+        build('I like autumn', 'Mi piace l’autunno', ['piacciono', 'estate']),
+        listen('Qual è la tua stagione preferita?', 'What’s your favorite season?', ['What’s your favorite season?', 'What’s the weather like?', 'Do you like winter?', 'When is your birthday?']),
+        match([
+          { it: 'La primavera', en: 'Spring' },
+          { it: 'L’estate', en: 'Summer' },
+          { it: 'L’autunno', en: 'Fall' },
+          { it: 'L’inverno', en: 'Winter' },
+        ]),
+      ]),
+
+      lesson('u9l2x', 'Free Time & Piacere', 'The verb that works backwards from English', 'heart', [
+        explain(
+          'Piacere (To Like)',
+          'Piacere works in reverse from English — it literally means “to be pleasing.” Use mi piace for one thing/an activity, mi piacciono for more than one: mi piace leggere (reading is pleasing to me), mi piacciono i film (movies are pleasing to me).',
+          [
+            { it: 'Mi piace leggere', en: 'I like to read' },
+            { it: 'Mi piacciono i film', en: 'I like movies' },
+          ],
+        ),
+        mcq('it-en', 'Mi piace leggere', 'I like to read', ['I like to write', 'I like to read', 'I like to travel', 'I don’t like to read']),
+        typeEx('I like movies', 'Mi piacciono i film', ['mi piacciono i film']),
+        build('Do you like music? (informal)', 'Ti piace la musica?', ['piacciono', 'film']),
+        reorder('Non mi piace il calcio', 'I don’t like soccer'),
+        respond(
+          'Cosa ti piace fare nel tempo libero?', 'What do you like to do in your free time? (informal)',
+          ['Mi piace leggere', 'Mi piace viaggiare', 'Mi piace cucinare'],
+          'I like to read / I like to travel / I like to cook',
+          { objectiveIds: ['weather-hobbies'] },
+        ),
+        match([
+          { it: 'Leggere', en: 'To read' },
+          { it: 'Viaggiare', en: 'To travel' },
+          { it: 'Cucinare', en: 'To cook' },
+          { it: 'Disegnare', en: 'To draw' },
+        ]),
+      ]),
+
+      lesson('u9l3', 'Hobbies & Sports', 'Giocare a for games, fare for everything else', 'target', [
+        explain(
+          'Giocare a vs. Fare',
+          'Use giocare a for games and sports you play against someone (giocare a calcio, giocare a tennis). Use fare for individual activities and exercise instead (fare yoga, fare nuoto).',
+          [
+            { it: 'Gioco a calcio', en: 'I play soccer' },
+            { it: 'Faccio yoga', en: 'I do yoga' },
+          ],
+        ),
+        mcq('it-en', 'Gioco a calcio', 'I play soccer', ['I watch soccer', 'I play soccer', 'I play tennis', 'I do yoga']),
+        typeEx('I do yoga', 'Faccio yoga', ['faccio yoga'], { objectiveIds: ['weather-hobbies'] }),
+        mcq('en-it', 'Gioco a tennis', 'I play tennis', ['Gioco a tennis', 'Faccio tennis', 'Gioco a calcio', 'Faccio yoga']),
+        build('She swims every week', 'Lei nuota ogni settimana', ['gioca', 'mese']),
+        listen('Mi piacciono gli sport', 'I like sports', ['I like sports', 'I don’t like sports', 'I like movies', 'I play soccer']),
+        match([
+          { it: 'Il calcio', en: 'Soccer' },
+          { it: 'Il nuoto', en: 'Swimming' },
+          { it: 'La palestra', en: 'The gym' },
+          { it: 'Ballare', en: 'To dance' },
+        ]),
+      ]),
+
+      scenario(
+        'u9l4',
+        'Planning a Weekend',
+        'Scenario: the forecast decides what you and a friend do',
+        'compass',
+        'A friend calls to plan the weekend, and the forecast isn’t exactly cooperating with the first idea.',
+        [
+          {
+            speaker: 'Friend', it: 'Che tempo fa questo weekend?', en: 'What’s the weather like this weekend?',
+            choices: [
+              { it: 'Piove sabato, ma domenica c’è il sole.', en: 'It’s raining Saturday, but Sunday is sunny.', correct: true, feedback: 'A clear, useful forecast — exactly the info needed to plan around.' },
+              { it: 'Mi piace il calcio.', en: 'I like soccer.', correct: false, feedback: 'A hobby, not a weather report — doesn’t answer the question.' },
+              { it: 'Ho trent’anni.', en: 'I am thirty years old.', correct: false, feedback: 'Your age has nothing to do with Saturday’s forecast.' },
+            ],
+          },
+          {
+            speaker: 'Friend', it: 'Allora cosa facciamo sabato, se piove?', en: 'So what do we do Saturday, if it rains?',
+            choices: [
+              { it: 'Possiamo guardare un film a casa.', en: 'We can watch a movie at home.', correct: true, feedback: 'Sensible plan B for a rainy day — matches the forecast you just gave.' },
+              { it: 'Andiamo in spiaggia!', en: 'Let’s go to the beach!', correct: false, feedback: 'You literally just said it’s raining Saturday — contradicts your own forecast.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'That’s a restaurant phrase, not weekend planning.' },
+            ],
+          },
+          {
+            speaker: 'Friend', it: 'Buona idea! E domenica, con il sole?', en: 'Good idea! And Sunday, with the sun?',
+            choices: [
+              { it: 'Possiamo giocare a tennis al parco.', en: 'We can play tennis at the park.', correct: true, feedback: 'An outdoor sport that fits perfectly with sunny weather.' },
+              { it: 'Nevica troppo.', en: 'It’s snowing too much.', correct: false, feedback: 'Contradicts the sunny Sunday you were just told about.' },
+              { it: 'Non mi piace lo sport.', en: 'I don’t like sports.', correct: false, feedback: 'A fair opinion in general, but it shuts down the planning instead of moving it forward.' },
+            ],
+          },
+          {
+            speaker: 'Friend', it: 'Perfetto, ci vediamo sabato!', en: 'Perfect, see you Saturday!',
+            choices: [
+              { it: 'Ci vediamo! A presto!', en: 'See you! Talk soon!', correct: true, feedback: 'A warm, simple sign-off to end the call.' },
+              { it: 'Dov’è la farmacia?', en: 'Where’s the pharmacy?', correct: false, feedback: 'Completely unrelated to wrapping up weekend plans.' },
+              { it: 'Ho perso il passaporto.', en: 'I lost my passport.', correct: false, feedback: 'An emergency phrase with nothing to do with this conversation.' },
+            ],
+          },
+        ],
+        ['weather-hobbies'],
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'c3',
+    title: 'Checkpoint Three',
+    subtitle: 'Review: Units 7–9',
+    icon: 'trophy',
+    color: '#D9A441',
+    checkpointUnit: true,
+    learn: ['A cumulative review of family, home, routines, and hobbies.'],
+    lessons: [
+      checkpointLesson('c3l1', 'Halfway Through Real Life', 'Family, home, time, and hobbies — all together', 'trophy', [
+        mcq('it-en', 'Questa è mia sorella', 'This is my sister', ['This is my mother', 'This is my sister', 'This is my daughter', 'This is my aunt']),
+        typeEx('I get up at seven', 'Mi alzo alle sette', ['mi alzo alle sette']),
+        mcq('en-it', 'È l’una', 'It is one o’clock', ['È l’una', 'Sono le una', 'È le une', 'Sono l’uno']),
+        build('I like to read', 'Mi piace leggere', ['piacciono', 'cucinare']),
+        mcq('it-en', 'Non faccio mai colazione', 'I never eat breakfast', ['I always eat breakfast', 'I never eat breakfast', 'I sometimes eat breakfast', 'I often eat breakfast']),
+        typeEx('It’s raining', 'Piove', ['piove']),
+        listen('Qual è la tua stagione preferita?', 'What’s your favorite season?', ['What’s your favorite season?', 'What’s the weather like?', 'Do you like winter?', 'How old are you?']),
+        mcq('en-it', 'Gioco a calcio', 'I play soccer', ['Gioco a calcio', 'Faccio calcio', 'Gioco a tennis', 'Faccio yoga']),
+        match([
+          { it: 'Mio fratello', en: 'My brother' },
+          { it: 'La cucina', en: 'The kitchen' },
+          { it: 'Sempre', en: 'Always' },
+          { it: 'L’estate', en: 'Summer' },
+        ]),
+      ]),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u10',
+    title: 'Talking About the Past',
+    subtitle: 'Il Passato',
+    icon: 'book',
+    color: '#6C63A6',
+    learn: [
+      'Form the passato prossimo with avere',
+      'Form the passato prossimo with essere',
+      'Talk about what you did yesterday or last week',
+      'Tell a simple story using first, then, and finally',
+    ],
+    test: unitTest('u10', [
+      mcq('it-en', 'Ho mangiato la pizza', 'I ate pizza', ['I am eating pizza', 'I ate pizza', 'I want pizza', 'I made pizza']),
+      typeEx('I went to Rome', 'Sono andato a Roma', ['sono andato a roma', 'sono andata a roma']),
+      mcq('en-it', 'Ha viaggiato a Firenze', 'She traveled to Florence', ['Ha viaggiato a Firenze', 'È viaggiata a Firenze', 'Viaggia a Firenze', 'Ha viaggiare a Firenze']),
+      build('Yesterday I worked a lot', 'Ieri ho lavorato molto', ['oggi', 'poco']),
+      listen('Cosa hai fatto ieri?', 'What did you do yesterday?', ['What did you do yesterday?', 'What are you doing today?', 'What will you do tomorrow?', 'Where did you go?']),
+      match([
+        { it: 'Ieri', en: 'Yesterday' },
+        { it: 'La settimana scorsa', en: 'Last week' },
+        { it: 'L’anno scorso', en: 'Last year' },
+        { it: 'Stamattina', en: 'This morning' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u10l1', 'Yesterday', 'The passato prossimo with avere', 'book', [
+        explain(
+          'Passato Prossimo with Avere',
+          'Most verbs form the past with avere (present tense) + a past participle: -are verbs end in -ato, -ere in -uto, -ire in -ito. Ho mangiato (I ate) breaks down as ho (I have) + mangiato (eaten).',
+          [
+            { it: 'Ho mangiato', en: 'I ate' },
+            { it: 'Ha studiato', en: 'She/He studied' },
+          ],
+        ),
+        mcq('it-en', 'Ho mangiato la pizza', 'I ate pizza', ['I am eating pizza', 'I ate pizza', 'I want pizza', 'I cook pizza']),
+        typeEx('I worked yesterday', 'Ho lavorato ieri', ['ho lavorato ieri']),
+        mcq('en-it', 'Ho guardato un film', 'I watched a movie', ['Ho guardato un film', 'Guardo un film', 'Ho visto la TV', 'Ho ascoltato la radio'], { objectiveIds: ['past-story'] }),
+        build('She studied Italian', 'Ha studiato italiano', ['studia', 'inglese']),
+        listen('Cosa hai fatto ieri?', 'What did you do yesterday?', ['What did you do yesterday?', 'What are you doing now?', 'What will you do tomorrow?', 'Did you eat?']),
+        match([
+          { it: 'Ho mangiato', en: 'I ate' },
+          { it: 'Ho lavorato', en: 'I worked' },
+          { it: 'Ho studiato', en: 'I studied' },
+          { it: 'Ho guardato', en: 'I watched' },
+        ]),
+        shadow('Cosa hai fatto ieri?', 'What did you do yesterday?'),
+      ]),
+
+      lesson('u10l2', 'Where Did You Go?', 'The passato prossimo with essere', 'compass', [
+        explain(
+          'Passato Prossimo with Essere',
+          'Verbs of motion and state (andare, venire, tornare, arrivare, stare) use essere instead of avere — and the past participle then agrees with the subject’s gender, like an adjective: sono andato if you’re male, sono andata if you’re female.',
+          [
+            { it: 'Sono andato/a al mercato', en: 'I went to the market' },
+            { it: 'È arrivata tardi', en: 'She arrived late' },
+          ],
+        ),
+        mcq('it-en', 'Sono andato al mercato', 'I went to the market', ['I am going to the market', 'I went to the market', 'I want to go to the market', 'I work at the market']),
+        typeEx('I went to Rome', 'Sono andato a Roma', ['sono andato a roma', 'sono andata a roma']),
+        mcq('en-it', 'È arrivata tardi', 'She arrived late', ['È arrivata tardi', 'Ha arrivato tardi', 'Arriva tardi', 'È arrivato presto']),
+        build('We stayed at home', 'Siamo rimasti a casa', ['usciti', 'lavorato']),
+        dictation('Sono tornato a casa tardi', 'I came home late', ['sono tornato a casa tardi', 'sono tornata a casa tardi']),
+        listen('Dove sei andato ieri?', 'Where did you go yesterday?', ['Where did you go yesterday?', 'Where do you live?', 'Where are you going now?', 'Where were you born?']),
+        match([
+          { it: 'Sono andato/a', en: 'I went' },
+          { it: 'Sono venuto/a', en: 'I came' },
+          { it: 'Sono tornato/a', en: 'I returned' },
+          { it: 'Sono arrivato/a', en: 'I arrived' },
+        ]),
+      ]),
+
+      lesson('u10l2x', 'Last Week, Last Year', 'Time words for the past, and the participles that don’t follow the rules', 'clock', [
+        mcq('it-en', 'Ho fatto molte cose', 'I did a lot of things', ['I do a lot of things', 'I did a lot of things', 'I will do a lot of things', 'I want to do a lot of things']),
+        typeEx('I saw a beautiful movie', 'Ho visto un bel film', ['ho visto un bel film'], { objectiveIds: ['past-story'] }),
+        build('He said something interesting', 'Ha detto qualcosa di interessante', ['dice', 'noioso']),
+        reorder('La settimana scorsa ho viaggiato', 'Last week I traveled'),
+        respond(
+          'Cosa hai fatto il weekend scorso?', 'What did you do last weekend? (informal)',
+          ['Ho visto amici', 'Sono andato al cinema', 'Ho lavorato'],
+          'I saw friends / I went to the movies / I worked',
+          { objectiveIds: ['past-story'] },
+        ),
+        match([
+          { it: 'Fatto', en: 'Done' },
+          { it: 'Visto', en: 'Seen' },
+          { it: 'Detto', en: 'Said' },
+          { it: 'Preso', en: 'Taken' },
+        ]),
+      ]),
+
+      lesson('u10l3', 'Telling a Story', 'Prima, poi, dopo — the words that turn events into a story', 'chat', [
+        mcq('it-en', 'Prima ho fatto colazione, poi sono uscito', 'First I had breakfast, then I went out', ['First I went out, then I had breakfast', 'First I had breakfast, then I went out', 'I had breakfast and stayed home', 'I never have breakfast']),
+        typeEx('Then we went to the beach', 'Poi siamo andati in spiaggia', ['poi siamo andati in spiaggia'], { objectiveIds: ['past-story'] }),
+        mcq('en-it', 'Infine siamo tornati a casa', 'Finally we came home', ['Infine siamo tornati a casa', 'Prima siamo tornati a casa', 'Infine siamo usciti', 'Poi siamo arrivati']),
+        build('After that I called my mother', 'Dopo ho chiamato mia madre', ['prima', 'padre']),
+        listen('Poi cosa è successo?', 'Then what happened?', ['Then what happened?', 'What happened first?', 'What will happen?', 'Did something happen?']),
+        match([
+          { it: 'Prima', en: 'First' },
+          { it: 'Poi', en: 'Then' },
+          { it: 'Dopo', en: 'After' },
+          { it: 'Infine', en: 'Finally' },
+        ]),
+      ]),
+
+      scenario(
+        'u10l4',
+        'What Did You Do This Weekend?',
+        'Scenario: recounting your weekend to a friend',
+        'chat',
+        'You run into a friend on Monday morning, and they want the full story of your weekend.',
+        [
+          {
+            speaker: 'Friend', it: 'Ciao! Com’è andato il weekend?', en: 'Hi! How was the weekend?',
+            choices: [
+              { it: 'È andato benissimo, grazie!', en: 'It went really well, thanks!', correct: true, feedback: 'Passato prossimo with essere, matching the question’s own tense — a clean, natural answer.' },
+              { it: 'Vado bene, grazie.', en: 'I’m doing well, thanks.', correct: false, feedback: 'Present tense answers “how are you,” not “how was your weekend.”' },
+              { it: 'Ho fame.', en: 'I’m hungry.', correct: false, feedback: 'Doesn’t address the weekend at all.' },
+            ],
+          },
+          {
+            speaker: 'Friend', it: 'Cosa hai fatto?', en: 'What did you do?',
+            choices: [
+              { it: 'Sono andato al mare con la mia famiglia.', en: 'I went to the seaside with my family.', correct: true, feedback: 'Passato prossimo with essere — exactly the past-tense recap the question is asking for.' },
+              { it: 'Vado al mare ogni giorno.', en: 'I go to the seaside every day.', correct: false, feedback: 'Present tense here answers “what do you usually do,” not “what did you do this weekend.”' },
+              { it: 'Mi piace il mare.', en: 'I like the seaside.', correct: false, feedback: 'A preference, not an account of what actually happened.' },
+            ],
+          },
+          {
+            speaker: 'Friend', it: 'Che bello! Che tempo faceva?', en: 'How nice! What was the weather like?',
+            choices: [
+              { it: 'Ha fatto caldo tutto il giorno.', en: 'It was hot all day.', correct: true, feedback: 'Past tense weather report — fits right in with the rest of the story.' },
+              { it: 'Nevica sempre in estate.', en: 'It always snows in summer.', correct: false, feedback: 'Both wrong tense and wrong season — it doesn’t snow in summer.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'A restaurant phrase with nothing to do with weekend weather.' },
+            ],
+          },
+          {
+            speaker: 'Friend', it: 'Sembra fantastico. Ci vediamo domani!', en: 'Sounds fantastic. See you tomorrow!',
+            choices: [
+              { it: 'Sì, a domani!', en: 'Yes, see you tomorrow!', correct: true, feedback: 'Short, warm, and exactly matches the goodbye you were just given.' },
+              { it: 'Dov’è la stazione?', en: 'Where’s the station?', correct: false, feedback: 'Random directions question with nothing to do with saying goodbye.' },
+              { it: 'Ho perso il portafoglio.', en: 'I lost my wallet.', correct: false, feedback: 'An unrelated emergency out of nowhere.' },
+            ],
+          },
+        ],
+        ['past-story'],
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u11',
+    title: 'Work & Future Plans',
+    subtitle: 'Lavoro e Progetti',
+    icon: 'bulb',
+    color: '#4E8098',
+    learn: [
+      'Talk about professions',
+      'Form the futuro semplice for what you’ll do next',
+      'Talk about goals and plans',
+      'Share a simple opinion with secondo me',
+    ],
+    test: unitTest('u11', [
+      mcq('it-en', 'Sono medico', 'I am a doctor', ['I am a teacher', 'I am a doctor', 'I am a lawyer', 'I am an engineer']),
+      typeEx('I will work tomorrow', 'Lavorerò domani', ['lavorerò domani']),
+      mcq('en-it', 'Secondo me, è una buona idea', 'In my opinion, it’s a good idea', ['Secondo me, è una buona idea', 'Non sono d’accordo', 'Hai ragione', 'Non lo so']),
+      build('What do you do for work?', 'Che lavoro fai?', ['lavori', 'quando']),
+      listen('Cosa farai il prossimo anno?', 'What will you do next year?', ['What will you do next year?', 'What did you do last year?', 'What do you do now?', 'Where will you go?']),
+      match([
+        { it: 'Medico', en: 'Doctor' },
+        { it: 'Insegnante', en: 'Teacher' },
+        { it: 'Avvocato', en: 'Lawyer' },
+        { it: 'Ingegnere', en: 'Engineer' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u11l1', 'What Do You Do?', 'Professions, and the article Italian skips', 'user', [
+        explain(
+          'Professions Skip the Article',
+          'Unlike English (“I am a doctor”), Italian drops the article after essere with a profession: sono medico, sono insegnante — no un/una needed, unless you add a description like un bravo medico (a good doctor).',
+          [
+            { it: 'Sono medico', en: 'I am a doctor' },
+            { it: 'È insegnante', en: 'She/He is a teacher' },
+          ],
+        ),
+        mcq('it-en', 'Sono medico', 'I am a doctor', ['I am a teacher', 'I am a doctor', 'I am a lawyer', 'I am an engineer']),
+        typeEx('I am a teacher', 'Sono insegnante', ['sono insegnante']),
+        mcq('en-it', 'È ingegnere', 'She is an engineer', ['È ingegnere', 'È un ingegnere', 'È medico', 'È avvocato'], { objectiveIds: ['work-future'] }),
+        build('What do you do for work?', 'Che lavoro fai?', ['lavoro', 'quando']),
+        listen('Lavoro in un ospedale', 'I work in a hospital', ['I work in a hospital', 'I work in a school', 'I work in an office', 'I work in a restaurant']),
+        match([
+          { it: 'Medico', en: 'Doctor' },
+          { it: 'Insegnante', en: 'Teacher' },
+          { it: 'Avvocato', en: 'Lawyer' },
+          { it: 'Ingegnere', en: 'Engineer' },
+        ]),
+        shadow('Che lavoro fai?', 'What do you do for work?'),
+      ]),
+
+      lesson('u11l2', 'Tomorrow, Next Year', 'The futuro semplice for what’s coming up', 'clock', [
+        explain(
+          'Futuro Semplice',
+          'Drop the final -e of the infinitive and add the future endings (-ò, -ai, -à…). -Are verbs also swap their a to e first: lavorare becomes lavorer- before the ending is added.',
+          [
+            { it: 'Lavorerò domani', en: 'I will work tomorrow' },
+            { it: 'Partirà domani', en: 'He/She will leave tomorrow' },
+          ],
+        ),
+        mcq('it-en', 'Lavorerò domani', 'I will work tomorrow', ['I worked yesterday', 'I will work tomorrow', 'I work every day', 'I don’t want to work']),
+        typeEx('I will speak Italian', 'Parlerò italiano', ['parlerò italiano']),
+        mcq('en-it', 'Partirà domani', 'He will leave tomorrow', ['Partirà domani', 'È partito ieri', 'Parte oggi', 'Partiamo domani']),
+        build('We will eat at eight', 'Mangeremo alle otto', ['mangiamo', 'sette']),
+        dictation('Partirò domani mattina', 'I will leave tomorrow morning', ['partirò domani mattina']),
+        listen('Cosa farai stasera?', 'What will you do tonight?', ['What will you do tonight?', 'What did you do tonight?', 'What are you doing now?', 'Where will you go?']),
+        match([
+          { it: 'Lavorerò', en: 'I will work' },
+          { it: 'Parlerò', en: 'I will speak' },
+          { it: 'Partirà', en: 'He/She will leave' },
+          { it: 'Mangeremo', en: 'We will eat' },
+        ]),
+      ]),
+
+      lesson('u11l2x', 'Goals & Plans', 'The irregular futures worth knowing by heart', 'target', [
+        mcq('it-en', 'Sarò felice', 'I will be happy', ['I am happy', 'I will be happy', 'I was happy', 'I want to be happy']),
+        typeEx('I will have a new job', 'Avrò un nuovo lavoro', ['avrò un nuovo lavoro'], { objectiveIds: ['work-future'] }),
+        build('I will go to university', 'Andrò all’università', ['vado', 'scuola']),
+        reorder('Il prossimo anno cambierò lavoro', 'Next year I will change jobs'),
+        respond(
+          'Cosa farai tra cinque anni?', 'What will you do in five years? (informal)',
+          ['Avrò un lavoro migliore', 'Vivrò all’estero', 'Non lo so ancora'],
+          'I’ll have a better job / I’ll live abroad / I don’t know yet',
+          { objectiveIds: ['work-future'] },
+        ),
+        match([
+          { it: 'Sarò', en: 'I will be' },
+          { it: 'Avrò', en: 'I will have' },
+          { it: 'Andrò', en: 'I will go' },
+          { it: 'Farò', en: 'I will do' },
+        ]),
+      ]),
+
+      lesson('u11l3', 'Sharing an Opinion', 'Secondo me — the easiest way to say what you think', 'chat', [
+        explain(
+          'Giving an Opinion: Secondo Me',
+          'Secondo me (“according to me” / “in my opinion”) is the simplest, most common way Italians share an opinion — and unlike “penso che,” it needs no special verb form afterward.',
+          [
+            { it: 'Secondo me, è una buona idea', en: 'In my opinion, it’s a good idea' },
+            { it: 'Secondo te?', en: 'What do you think? (informal)' },
+          ],
+        ),
+        mcq('it-en', 'Secondo me, è una buona idea', 'In my opinion, it’s a good idea', ['I don’t agree', 'In my opinion, it’s a good idea', 'You’re right', 'I don’t know']),
+        typeEx('In my opinion, Italian is beautiful', 'Secondo me, l’italiano è bello', ['secondo me litaliano è bello', 'secondo me l’italiano è bello']),
+        mcq('en-it', 'Secondo me, questo ristorante è caro', 'In my opinion, this restaurant is expensive', ['Secondo me, questo ristorante è caro', 'Secondo me, questo ristorante è economico', 'Non mi piace questo ristorante', 'Ho fame']),
+        build('I agree with you', 'Sono d’accordo con te', ['sei', 'noi']),
+        listen('Cosa ne pensi?', 'What do you think about it?', ['What do you think about it?', 'Do you like it?', 'What will you do?', 'Are you sure?']),
+        match([
+          { it: 'Secondo me', en: 'In my opinion' },
+          { it: 'Sono d’accordo', en: 'I agree' },
+          { it: 'Non sono d’accordo', en: 'I disagree' },
+          { it: 'Hai ragione', en: 'You’re right' },
+        ]),
+      ]),
+
+      scenario(
+        'u11l4',
+        'The Job Interview',
+        'Scenario: a low-stakes interview for a summer job',
+        'bulb',
+        'You’re interviewing for a summer job at an Italian language school, and they want to know about you.',
+        [
+          {
+            speaker: 'Interviewer', it: 'Allora, che lavoro fai adesso?', en: 'So, what do you do for work now?',
+            choices: [
+              { it: 'Sono insegnante d’inglese.', en: 'I am an English teacher.', correct: true, feedback: 'States your job directly with the article correctly skipped — a clean, confident answer.' },
+              { it: 'Ho trent’anni.', en: 'I am thirty years old.', correct: false, feedback: 'Your age wasn’t asked — this dodges the actual question.' },
+              { it: 'Mi piace insegnare.', en: 'I like teaching.', correct: false, feedback: 'A preference, not your actual job title — close, but not quite an answer.' },
+            ],
+          },
+          {
+            speaker: 'Interviewer', it: 'Interessante. Cosa farai se ti assumiamo?', en: 'Interesting. What will you do if we hire you?',
+            choices: [
+              { it: 'Insegnerò conversazione agli studenti.', en: 'I will teach conversation to students.', correct: true, feedback: 'Future tense, matching the hypothetical “if we hire you” framing perfectly.' },
+              { it: 'Ho insegnato l’anno scorso.', en: 'I taught last year.', correct: false, feedback: 'Past tense answers a different question than what you’ll do going forward.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'A restaurant phrase in the middle of a job interview.' },
+            ],
+          },
+          {
+            speaker: 'Interviewer', it: 'Secondo te, cosa rende una buona lezione?', en: 'In your opinion, what makes a good lesson?',
+            choices: [
+              { it: 'Secondo me, la pratica è più importante della teoria.', en: 'In my opinion, practice is more important than theory.', correct: true, feedback: 'A real opinion, clearly framed with secondo me — exactly what a good interview answer looks like.' },
+              { it: 'Non lo so.', en: 'I don’t know.', correct: false, feedback: 'A weak answer for an interview question asking for your opinion.' },
+              { it: 'Mi piace la pizza.', en: 'I like pizza.', correct: false, feedback: 'Charming, but completely unrelated to teaching.' },
+            ],
+          },
+          {
+            speaker: 'Interviewer', it: 'Ottimo, ti faremo sapere presto!', en: 'Great, we’ll let you know soon!',
+            choices: [
+              { it: 'Grazie mille, spero di sentirvi presto!', en: 'Thank you so much, I hope to hear from you soon!', correct: true, feedback: 'Polite, enthusiastic, and closes the interview on a strong note.' },
+              { it: 'Dov’è la stazione?', en: 'Where’s the station?', correct: false, feedback: 'Out of nowhere — save directions questions for after you leave.' },
+              { it: 'Non mi interessa.', en: 'I’m not interested.', correct: false, feedback: 'A strange, dismissive thing to say right after interviewing for the job.' },
+            ],
+          },
+        ],
+        ['work-future'],
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u12',
+    title: 'People & Emotions',
+    subtitle: 'Descrivere le Persone',
+    icon: 'heart',
+    color: '#C2477C',
+    learn: [
+      'Describe someone’s appearance',
+      'Describe personality with comparatives',
+      'Talk about how you’re feeling',
+      'Compare two things as equal with tanto quanto',
+    ],
+    test: unitTest('u12', [
+      mcq('it-en', 'È alto e simpatico', 'He is tall and nice', ['He is short and shy', 'He is tall and nice', 'He is tall and shy', 'He is short and nice']),
+      typeEx('She has curly hair', 'Ha i capelli ricci', ['ha i capelli ricci']),
+      mcq('en-it', 'Sono più felice di ieri', 'I am happier than yesterday', ['Sono più felice di ieri', 'Sono meno felice di ieri', 'Ero felice ieri', 'Sarò felice domani']),
+      build('He is taller than me', 'Lui è più alto di me', ['bassa', 'quanto']),
+      listen('Come ti senti oggi?', 'How do you feel today?', ['How do you feel today?', 'How old are you?', 'What do you look like?', 'Are you tired?']),
+      match([
+        { it: 'Felice', en: 'Happy' },
+        { it: 'Triste', en: 'Sad' },
+        { it: 'Stanco/a', en: 'Tired' },
+        { it: 'Arrabbiato/a', en: 'Angry' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u12l1', 'What Do They Look Like?', 'Physical description, and adjectives that agree', 'user', [
+        explain(
+          'Describing Appearance: Adjectives Agree',
+          'Like every Italian adjective, appearance words change ending to match gender and number: alto/alta/alti/alte. Hair and eyes use avere (ha i capelli ricci — “he/she has curly hair”), not essere.',
+          [
+            { it: 'È alto', en: 'He is tall' },
+            { it: 'Ha i capelli ricci', en: 'She/He has curly hair' },
+          ],
+        ),
+        mcq('it-en', 'È alto', 'He is tall', ['He is short', 'He is tall', 'He is young', 'He is nice']),
+        typeEx('She is short', 'È bassa', ['è bassa']),
+        mcq('en-it', 'Ha i capelli corti', 'He has short hair', ['Ha i capelli corti', 'Ha i capelli lunghi', 'Ha i capelli ricci', 'È basso'], { objectiveIds: ['describe-people'] }),
+        build('She has curly hair', 'Ha i capelli ricci', ['lisci', 'occhi']),
+        listen('Ha gli occhi verdi', 'He/She has green eyes', ['He/She has green eyes', 'He/She has brown hair', 'He/She is tall', 'He/She has blue eyes']),
+        match([
+          { it: 'Alto/a', en: 'Tall' },
+          { it: 'Basso/a', en: 'Short' },
+          { it: 'I capelli', en: 'Hair' },
+          { it: 'Gli occhi', en: 'Eyes' },
+        ]),
+        shadow('Ha i capelli ricci e gli occhi verdi', 'She has curly hair and green eyes'),
+      ]),
+
+      lesson('u12l2', 'Personality', 'Comparing people with più… di and meno… di', 'chat', [
+        explain(
+          'Comparatives: Più… Di / Meno… Di',
+          'To compare two things, sandwich the adjective between più (more) or meno (less) and di (than): più alto di lui (taller than him), meno timido di me (less shy than me).',
+          [
+            { it: 'Più alto di lui', en: 'Taller than him' },
+            { it: 'Meno timido di me', en: 'Less shy than me' },
+          ],
+        ),
+        mcq('it-en', 'È molto simpatico', 'He is very nice', ['He is very shy', 'He is very nice', 'He is very tall', 'He is very tired']),
+        typeEx('She is more intelligent than him', 'Lei è più intelligente di lui', ['lei è più intelligente di lui']),
+        mcq('en-it', 'Sono meno timido di mia sorella', 'I am less shy than my sister', ['Sono meno timido di mia sorella', 'Sono più timido di mia sorella', 'Sono timido come mia sorella', 'Mia sorella è timida'], { objectiveIds: ['describe-people'] }),
+        build('He is funnier than me', 'Lui è più divertente di me', ['meno', 'noiosa']),
+        dictation('È simpatica e generosa', 'She is nice and generous', ['è simpatica e generosa']),
+        listen('Com’è il tuo migliore amico?', 'What’s your best friend like?', ['What’s your best friend like?', 'Where’s your best friend?', 'How old is your best friend?', 'Do you have a best friend?']),
+        match([
+          { it: 'Simpatico/a', en: 'Nice' },
+          { it: 'Timido/a', en: 'Shy' },
+          { it: 'Generoso/a', en: 'Generous' },
+          { it: 'Divertente', en: 'Funny' },
+        ]),
+      ]),
+
+      lesson('u12l2x', 'How Are You Feeling?', 'The vocabulary for every mood', 'heart', [
+        mcq('it-en', 'Sono felice', 'I am happy', ['I am sad', 'I am happy', 'I am tired', 'I am angry']),
+        typeEx('I am tired', 'Sono stanco', ['sono stanco', 'sono stanca'], { objectiveIds: ['describe-people'] }),
+        build('She is worried', 'Lei è preoccupata', ['felice', 'lui']),
+        reorder('Oggi mi sento un po’ triste', 'Today I feel a bit sad'),
+        respond(
+          'Come ti senti oggi?', 'How do you feel today? (informal)',
+          ['Mi sento bene', 'Sono un po’ stanco', 'Sono molto felice'],
+          'I feel good / I’m a bit tired / I’m very happy',
+          { objectiveIds: ['describe-people'] },
+        ),
+        match([
+          { it: 'Felice', en: 'Happy' },
+          { it: 'Triste', en: 'Sad' },
+          { it: 'Arrabbiato/a', en: 'Angry' },
+          { it: 'Stanco/a', en: 'Tired' },
+        ]),
+      ]),
+
+      lesson('u12l3', 'Just As…', 'Comparing two equal things with tanto quanto', 'target', [
+        explain(
+          'Comparing Equals: (Tanto)… Quanto',
+          'When two things are equally matched rather than one beating the other, drop più/meno and use quanto (or tanto… quanto) instead: alto quanto te (as tall as you).',
+          [
+            { it: 'Alto quanto te', en: 'As tall as you' },
+            { it: 'Simpatico quanto sua sorella', en: 'As nice as his sister' },
+          ],
+        ),
+        mcq('it-en', 'È tanto simpatico quanto sua sorella', 'He is as nice as his sister', ['He is nicer than his sister', 'He is as nice as his sister', 'His sister is nicer than him', 'He is not nice at all']),
+        typeEx('I am as tall as you', 'Sono alto quanto te', ['sono alto quanto te', 'sono alta quanto te']),
+        mcq('en-it', 'Questa città è bella quanto Roma', 'This city is as beautiful as Rome', ['Questa città è bella quanto Roma', 'Questa città è più bella di Roma', 'Roma è più bella di questa città', 'Questa città non è bella']),
+        build('My brother is as funny as me', 'Mio fratello è divertente quanto me', ['più', 'lei']),
+        listen('Sei più alto di tuo padre?', 'Are you taller than your father?', ['Are you taller than your father?', 'Is your father tall?', 'Are you as tall as your father?', 'How tall is your father?']),
+        match([
+          { it: 'Più… di', en: 'More… than' },
+          { it: 'Meno… di', en: 'Less… than' },
+          { it: '…quanto', en: 'As… as' },
+          { it: 'Molto', en: 'Very' },
+        ]),
+      ]),
+
+      scenario(
+        'u12l4',
+        'Describing a Friend',
+        'Scenario: painting a picture of a friend before they arrive',
+        'heart',
+        'You’re at a party, and a new acquaintance asks you to describe a mutual friend who hasn’t shown up yet.',
+        [
+          {
+            speaker: 'Acquaintance', it: 'Com’è Marco? Non l’ho mai incontrato.', en: 'What’s Marco like? I’ve never met him.',
+            choices: [
+              { it: 'È alto, con i capelli scuri, ed è molto simpatico.', en: 'He’s tall, with dark hair, and he’s very nice.', correct: true, feedback: 'Covers looks and personality in one natural sentence — exactly what “what’s he like” is asking for.' },
+              { it: 'Ha trent’anni.', en: 'He is thirty years old.', correct: false, feedback: 'His age doesn’t describe what he looks like or is like.' },
+              { it: 'Lavora in banca.', en: 'He works at a bank.', correct: false, feedback: 'His job isn’t a description of him as a person.' },
+            ],
+          },
+          {
+            speaker: 'Acquaintance', it: 'È timido o estroverso?', en: 'Is he shy or outgoing?',
+            choices: [
+              { it: 'È molto estroverso, parla con tutti.', en: 'He’s very outgoing, he talks to everyone.', correct: true, feedback: 'Directly answers the either/or question with a supporting detail.' },
+              { it: 'È più alto di me.', en: 'He is taller than me.', correct: false, feedback: 'That’s about height, and the question was about personality.' },
+              { it: 'Non lo so, l’ho appena conosciuto.', en: 'I don’t know, I just met him.', correct: false, feedback: 'You’re describing him in detail elsewhere in this conversation — this contradicts that you know him well.' },
+            ],
+          },
+          {
+            speaker: 'Acquaintance', it: 'Sembra simpatico! È più divertente di te?', en: 'Sounds nice! Is he funnier than you?',
+            choices: [
+              { it: 'Ah, sì, è molto più divertente di me!', en: 'Ah, yes, he’s much funnier than me!', correct: true, feedback: 'A comparative answer that actually engages with the playful question.' },
+              { it: 'Sono stanco oggi.', en: 'I’m tired today.', correct: false, feedback: 'Dodges the question entirely with something unrelated.' },
+              { it: 'Non mi piace il calcio.', en: 'I don’t like soccer.', correct: false, feedback: 'Completely off topic.' },
+            ],
+          },
+          {
+            speaker: 'Acquaintance', it: 'Non vedo l’ora di conoscerlo!', en: 'I can’t wait to meet him!',
+            choices: [
+              { it: 'Arriverà tra poco, tranquillo!', en: 'He’ll arrive soon, don’t worry!', correct: true, feedback: 'A reassuring, natural close using the future tense — ties the conversation off nicely.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'A restaurant phrase that has nothing to do with the party.' },
+              { it: 'Dov’è la farmacia?', en: 'Where’s the pharmacy?', correct: false, feedback: 'Random and unrelated to meeting Marco.' },
+            ],
+          },
+        ],
+        ['describe-people'],
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'c4',
+    title: 'Final Checkpoint',
+    subtitle: 'Review: Units 10–12',
+    icon: 'trophy',
+    color: '#D9A441',
+    checkpointUnit: true,
+    learn: ['A cumulative review across the entire course — every topic, one last time.'],
+    lessons: [
+      checkpointLesson('c4l1', 'Complete Mastery', 'Past, future, and describing anyone — the whole course, together', 'trophy', [
+        mcq('it-en', 'Sono andato al mercato', 'I went to the market', ['I am going to the market', 'I went to the market', 'I want to go to the market', 'I work at the market']),
+        typeEx('I will work tomorrow', 'Lavorerò domani', ['lavorerò domani']),
+        mcq('en-it', 'Secondo me, è una buona idea', 'In my opinion, it’s a good idea', ['Secondo me, è una buona idea', 'Non sono d’accordo', 'Hai ragione', 'Non lo so']),
+        build('He is taller than me', 'Lui è più alto di me', ['bassa', 'quanto']),
+        mcq('it-en', 'Sono felice', 'I am happy', ['I am sad', 'I am happy', 'I am tired', 'I am angry']),
+        typeEx('I ate pizza yesterday', 'Ho mangiato la pizza ieri', ['ho mangiato la pizza ieri']),
+        listen('Cosa farai domani?', 'What will you do tomorrow?', ['What will you do tomorrow?', 'What did you do yesterday?', 'What are you doing now?', 'Where did you go?']),
+        mcq('en-it', 'Lei è simpatica quanto sua sorella', 'She is as nice as her sister', ['Lei è simpatica quanto sua sorella', 'Lei è più simpatica di sua sorella', 'Sua sorella è più simpatica', 'Lei non è simpatica']),
+        match([
+          { it: 'Sono andato/a', en: 'I went' },
+          { it: 'Lavorerò', en: 'I will work' },
+          { it: 'Secondo me', en: 'In my opinion' },
+          { it: 'Più alto di me', en: 'Taller than me' },
+        ]),
+      ]),
+    ],
+  },
+
 ]
 
 export const OBJECTIVES = [
@@ -1098,6 +2108,12 @@ export const OBJECTIVES = [
   { id: 'pharmacy', label: 'Describe a symptom at a pharmacy', unit: 'u5' },
   { id: 'negotiate-price', label: 'Ask the price and haggle a little', unit: 'u6' },
   { id: 'small-talk', label: 'Make small talk about where you’re from', unit: 'u6' },
+  { id: 'talk-about-family', label: 'Talk about your family and describe your home', unit: 'u7' },
+  { id: 'daily-routine', label: 'Describe your daily routine', unit: 'u8' },
+  { id: 'weather-hobbies', label: 'Talk about the weather and your hobbies', unit: 'u9' },
+  { id: 'past-story', label: 'Tell a simple story about the past', unit: 'u10' },
+  { id: 'work-future', label: 'Talk about your job and future plans', unit: 'u11' },
+  { id: 'describe-people', label: 'Describe a person’s appearance and personality', unit: 'u12' },
 ]
 
 // Flat lookup of every exercise/scenario id -> the objective ids it proves,
@@ -1130,7 +2146,10 @@ export function findLesson(lessonId) {
   return null
 }
 
-function vocabFromExercise(ex) {
+// The {it, en} vocab pair(s) a single exercise draws on — exported so the
+// Lesson screen can teach a word right as it first comes up, instead of
+// dumping every new word in the lesson on the learner before anything starts.
+export function vocabForExercise(ex) {
   switch (ex.type) {
     case 'mcq':
     case 'build':
@@ -1138,6 +2157,8 @@ function vocabFromExercise(ex) {
     case 'listen':
     case 'dictation':
     case 'reorder':
+    case 'speak':
+    case 'shadow':
       return ex.it && ex.en ? [{ it: ex.it, en: ex.en }] : []
     case 'match':
       return ex.pairs || []
@@ -1162,5 +2183,5 @@ export function vocabForLesson(lesson) {
       return [{ it: t.it, en: t.en }, ...(correct ? [{ it: correct.it, en: correct.en }] : [])]
     })
   }
-  return (lesson.exercises || []).flatMap(vocabFromExercise)
+  return (lesson.exercises || []).flatMap(vocabForExercise)
 }

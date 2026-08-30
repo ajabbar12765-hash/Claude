@@ -17,4 +17,5 @@ export const ACHIEVEMENTS = [
   { id: 'level-10', label: 'Level 10', desc: 'Reach level 10', icon: 'trophy', check: (p) => p.level >= 10 },
   { id: 'ready', label: 'Ready for Italy', desc: 'Reach 100% real-life ready', icon: 'compass', check: (p) => p.readinessPercent >= 100 },
   { id: 'streak-30', label: 'Unstoppable', desc: 'Reach a 30-day streak', icon: 'flame', check: (p) => p.streak >= 30 },
+  { id: 'reviewer', label: 'Refresher', desc: 'Complete 5 Review sessions', icon: 'refresh', check: (p) => p.reviewSessionsCompleted >= 5 },
 ]
