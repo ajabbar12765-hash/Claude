@@ -8,6 +8,7 @@ export const ACHIEVEMENTS = [
   { id: 'perfect-1', label: 'Flawless', desc: 'Finish a lesson with zero mistakes', icon: 'spark', check: (p) => p.perfectLessons >= 1 },
   { id: 'streak-3', label: 'Warming Up', desc: 'Reach a 3-day streak', icon: 'flame', check: (p) => p.streak >= 3 },
   { id: 'chatterbox', label: 'Chatterbox', desc: 'Call Volpe for a live conversation', icon: 'chat', check: (p) => p.voiceCallCount >= 1 },
+  { id: 'conversationalist', label: 'Conversationalist', desc: 'Call Volpe 10 times', icon: 'chat', check: (p) => p.voiceCallCount >= 10 },
   { id: 'wordsmith', label: 'Wordsmith', desc: 'Look up 10 words in the Dictionary', icon: 'book', check: (p) => p.dictionaryLookups >= 10 },
   { id: 'streak-7', label: 'One Week In', desc: 'Reach a 7-day streak', icon: 'flame', check: (p) => p.streak >= 7 },
   { id: 'level-5', label: 'Level 5', desc: 'Reach level 5', icon: 'trophy', check: (p) => p.level >= 5 },

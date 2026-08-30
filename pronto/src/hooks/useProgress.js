@@ -149,6 +149,38 @@ export function useProgress() {
     setState((prev) => ({ ...prev, voiceCallCount: prev.voiceCallCount + 1 }))
   }, [])
 
+  const VOICE_XP_PER_TURN = 4
+
+  // Pays a small XP bonus per exchanged turn on a call with Volpe — actually
+  // speaking Italian back and forth is real practice and used to earn
+  // nothing at all, unlike every other activity in the app. The caller caps
+  // how many turns per call get rewarded, so a call still counts toward the
+  // daily goal and streak without being a way to farm infinite free XP.
+  const recordVoiceTurn = useCallback(() => {
+    setState((prev) => {
+      const xpGain = VOICE_XP_PER_TURN
+      const today = todayStr()
+      let { count, lastActiveDate } = prev.streak
+      if (lastActiveDate === today) {
+        // already active today, no streak change
+      } else if (lastActiveDate && daysBetween(lastActiveDate, today) === 1) {
+        count += 1
+      } else {
+        count = 1
+      }
+      const xpToday =
+        prev.xpToday.date === today
+          ? { date: today, amount: prev.xpToday.amount + xpGain }
+          : { date: today, amount: xpGain }
+      return {
+        ...prev,
+        xp: prev.xp + xpGain,
+        streak: { count, lastActiveDate: today },
+        xpToday,
+      }
+    })
+  }, [])
+
   const recordDictionaryLookup = useCallback(() => {
     setState((prev) => ({ ...prev, dictionaryLookups: prev.dictionaryLookups + 1 }))
   }, [])
@@ -388,6 +420,7 @@ export function useProgress() {
     completeLesson,
     passUnitTest,
     recordVoiceCall,
+    recordVoiceTurn,
     recordDictionaryLookup,
     recordReview,
     recordReviewSession,

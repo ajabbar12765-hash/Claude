@@ -17,6 +17,21 @@ const RECOGNITION_ERROR_MESSAGES = {
 
 const MIN_RECORDING_MS = 500
 
+// Simple, level-agnostic Italian openers a learner can tap to send as-is —
+// useful both to break the "what do I even say" freeze on a blank call and
+// as a small modeled example of a natural, correct phrase.
+const CONVERSATION_STARTERS = [
+  { it: 'Parliamo del cibo', en: 'Let’s talk about food' },
+  { it: 'Che tempo fa oggi?', en: 'What’s the weather like today?' },
+  { it: 'Raccontami della tua giornata', en: 'Tell me about your day' },
+  { it: 'Parliamo dei tuoi hobby', en: 'Let’s talk about your hobbies' },
+]
+
+// Caps how many exchanged turns on a single call earn XP — enough to reward
+// a real conversation without turning the call into a way to farm infinite
+// XP by sending one-word messages back and forth.
+const MAX_REWARDED_TURNS = 10
+
 // How many recent turns to send back to Gemini each request. The full
 // transcript isn't needed for a natural reply, and re-sending an ever-growing
 // history is the main thing that makes a long call feel slower over time.
@@ -45,6 +60,8 @@ export default function VoiceCall({ onExit, progress }) {
   const scrollRef = useRef(null)
   const speechSupported = canSpeak()
   const [recordingSeconds, setRecordingSeconds] = useState(0)
+  const [revealedGloss, setRevealedGloss] = useState(() => new Set())
+  const rewardedTurnsRef = useRef(0)
 
   useEffect(() => {
     progress?.recordVoiceCall()
@@ -130,6 +147,10 @@ export default function VoiceCall({ onExit, progress }) {
         { role: 'user', text: data.heard || text || '(voice message)' },
         { role: 'assistant', italian: data.italian || '...', gloss: data.gloss || '' },
       ])
+      if (rewardedTurnsRef.current < MAX_REWARDED_TURNS) {
+        rewardedTurnsRef.current += 1
+        progress?.recordVoiceTurn()
+      }
       if (speechSupported && data.italian) {
         speakItalian(data.italian, { onStart: () => setCallState('speaking'), onEnd: () => setCallState('idle') })
       } else {
@@ -205,6 +226,20 @@ export default function VoiceCall({ onExit, progress }) {
     setTypedValue('')
   }
 
+  function sendStarter(starter) {
+    if (callState !== 'idle' && callState !== 'error') return
+    sendTurn({ text: starter.it })
+  }
+
+  function toggleGloss(index) {
+    setRevealedGloss((prev) => {
+      const next = new Set(prev)
+      if (next.has(index)) next.delete(index)
+      else next.add(index)
+      return next
+    })
+  }
+
   const mascotExpression = callState === 'speaking' ? 'talking' : callState === 'thinking' ? 'thinking' : 'idle'
   const micActive = callState === 'listening' || callState === 'recording'
   const micBusy = callState === 'thinking' || callState === 'speaking'
@@ -248,19 +283,65 @@ export default function VoiceCall({ onExit, progress }) {
       </div>
 
       <div className="call-transcript" ref={scrollRef}>
+        {messages.length <= 2 && <p className="call-transcript-hint">Tap Volpe’s messages to see the translation</p>}
         <AnimatePresence initial={false}>
-          {messages.map((m, i) => (
-            <motion.div
-              key={i}
-              className={`call-bubble ${m.role === 'user' ? 'call-bubble-user' : 'call-bubble-volpe'}`}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 340, damping: 30 }}
-            >
-              {m.role === 'assistant' ? m.italian : m.text}
-            </motion.div>
-          ))}
+          {messages.map((m, i) =>
+            m.role === 'assistant' ? (
+              <motion.div
+                key={i}
+                className="call-bubble call-bubble-volpe"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 340, damping: 30 }}
+                onClick={() => m.gloss && toggleGloss(i)}
+                role={m.gloss ? 'button' : undefined}
+                tabIndex={m.gloss ? 0 : undefined}
+              >
+                <div className="call-bubble-row">
+                  <span>{m.italian}</span>
+                  {speechSupported && (
+                    <button
+                      type="button"
+                      className="call-bubble-replay"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        speakItalian(m.italian)
+                      }}
+                      aria-label="Replay this line"
+                    >
+                      <Icon name="volume" size={14} strokeWidth={2.2} />
+                    </button>
+                  )}
+                </div>
+                {revealedGloss.has(i) && m.gloss && <div className="call-bubble-gloss">{m.gloss}</div>}
+              </motion.div>
+            ) : (
+              <motion.div
+                key={i}
+                className="call-bubble call-bubble-user"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 340, damping: 30 }}
+              >
+                {m.text}
+              </motion.div>
+            ),
+          )}
         </AnimatePresence>
+
+        {messages.length === 1 && callState === 'idle' && (
+          <motion.div className="call-starters" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+            <p className="call-starters-label">Not sure what to say?</p>
+            <div className="call-starters-grid">
+              {CONVERSATION_STARTERS.map((starter) => (
+                <button type="button" key={starter.it} className="call-starter-chip" onClick={() => sendStarter(starter)}>
+                  <span className="call-starter-chip-it">{starter.it}</span>
+                  <span className="call-starter-chip-en">{starter.en}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {(callState === 'error' || callState === 'error-no-key') && errorMessage && (
           <div className={`call-error ${callState === 'error-no-key' ? 'call-error-key' : ''}`}>{errorMessage}</div>
