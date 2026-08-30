@@ -39,7 +39,25 @@ export function speakItalian(text, { rate = 0.88, onStart, onEnd } = {}) {
   if (!voicesLoaded) cachedItalianVoice = pickItalianVoice()
   if (cachedItalianVoice) utterance.voice = cachedItalianVoice
   if (onStart) utterance.onstart = onStart
-  if (onEnd) utterance.onend = onEnd
+
+  let settled = false
+  let safetyTimer
+  const settle = () => {
+    if (settled) return
+    settled = true
+    clearTimeout(safetyTimer)
+    onEnd?.()
+  }
+  utterance.onend = settle
+  utterance.onerror = settle
+  // Some browsers never fire `end` at all — mobile Safari/Chrome silently
+  // dropping speech that wasn't started from a direct tap, or Chrome's
+  // long-standing bug where a playing utterance's `end` event just never
+  // arrives. Any caller gating UI (like a disabled mic button) on onEnd
+  // would otherwise be stuck forever, so force it after a generous,
+  // length-scaled timeout.
+  safetyTimer = setTimeout(settle, Math.max(2500, text.length * 90))
+
   synth.speak(utterance)
   return true
 }

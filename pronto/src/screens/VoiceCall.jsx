@@ -188,7 +188,8 @@ export default function VoiceCall({
   }
 
   function startListening() {
-    if (callState !== 'idle') return
+    if (callState !== 'idle' && callState !== 'speaking') return
+    if (callState === 'speaking') window.speechSynthesis?.cancel()
     setCallState('listening')
     recognitionRef.current = listenOnce({
       lang: 'it-IT',
@@ -206,7 +207,8 @@ export default function VoiceCall({
   }
 
   async function startRecording() {
-    if (callState !== 'idle' && callState !== 'error') return
+    if (callState !== 'idle' && callState !== 'error' && callState !== 'speaking') return
+    if (callState === 'speaking') window.speechSynthesis?.cancel()
     setErrorMessage('')
     try {
       recorderRef.current = await startAudioRecording()
@@ -245,14 +247,16 @@ export default function VoiceCall({
 
   function handleTypedSubmit(e) {
     e.preventDefault()
-    if (callState !== 'idle' && callState !== 'error' && callState !== 'error-no-key') return
+    if (callState !== 'idle' && callState !== 'error' && callState !== 'error-no-key' && callState !== 'speaking') return
     if (!typedValue.trim()) return
+    if (callState === 'speaking') window.speechSynthesis?.cancel()
     sendTurn({ text: typedValue })
     setTypedValue('')
   }
 
   function sendStarter(starter) {
-    if (callState !== 'idle' && callState !== 'error') return
+    if (callState !== 'idle' && callState !== 'error' && callState !== 'speaking') return
+    if (callState === 'speaking') window.speechSynthesis?.cancel()
     sendTurn({ text: starter.it })
   }
 
@@ -267,7 +271,11 @@ export default function VoiceCall({
 
   const mascotExpression = callState === 'speaking' ? 'talking' : callState === 'thinking' ? 'thinking' : 'idle'
   const micActive = callState === 'listening' || callState === 'recording'
-  const micBusy = callState === 'thinking' || callState === 'speaking'
+  // Only truly disabled while waiting on the network — tapping during
+  // 'speaking' is allowed on purpose, so the user can barge in and cut
+  // Volpe off instead of being stuck waiting for playback to finish (see
+  // startListening/startRecording, which cancel the in-progress speech).
+  const micBusy = callState === 'thinking'
 
   if (topicDone) {
     return (
