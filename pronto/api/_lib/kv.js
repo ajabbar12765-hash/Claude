@@ -17,7 +17,13 @@ async function upstash(...args) {
   const url = `${base}/${args.map(encodeURIComponent).join('/')}`
   const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
   if (!res.ok) {
-    const err = new Error(`Upstash request failed (${res.status}).`)
+    // Upstash's response body normally names the exact problem (e.g. a
+    // read-only REST token rejecting a write) — surfacing it in both the
+    // error and the server log is the difference between "something broke"
+    // and knowing what to fix in the Upstash/Vercel dashboards.
+    const body = await res.text().catch(() => '')
+    console.error(`upstash ${args[0]} failed: ${res.status} ${body}`)
+    const err = new Error(`Upstash request failed (${res.status}): ${body || 'no response body'}`)
     err.code = 'upstash_error'
     throw err
   }

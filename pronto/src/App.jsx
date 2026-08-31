@@ -131,7 +131,14 @@ export default function App() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ streak: progress.streak.count }),
-    }).catch(() => {})
+    })
+      .then((res) => {
+        // fetch() only rejects on a network failure, never on a 4xx/5xx —
+        // an HTTP error here was silently invisible before this check, so
+        // the widget could quietly show a stale streak indefinitely.
+        if (!res.ok) return res.json().then((data) => console.warn('Streak sync to widget failed:', data?.message || res.status))
+      })
+      .catch(() => {})
   }, [progress.streak.count])
 
   // Fires the confetti burst whenever a lesson/scenario/checkpoint completes.
