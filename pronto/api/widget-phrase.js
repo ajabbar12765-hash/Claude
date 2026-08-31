@@ -35,19 +35,28 @@ export default async function handler(req, res) {
   // phrase-of-the-day feature works fine without it, just without a real
   // streak number, so a missing/failed store is never fatal here.
   let streak = 0
+  let streakDate = null
   try {
-    ;({ streak } = await getStreak())
+    ;({ streak, date: streakDate } = await getStreak())
   } catch {
     // no streak store configured yet — widget falls back to 0/sleepy
   }
+
+  const today = new Date().toISOString().slice(0, 10)
+  // The app only pushes a streak update the moment the day's first
+  // XP-earning activity lands (see App.jsx's sync effect), so streakDate
+  // matching today's server date IS "already practiced today" — exactly
+  // the signal the widget needs to decide whether to nudge or celebrate.
+  const doneToday = streakDate === today
 
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Cache-Control', 'public, max-age=300')
   res.status(200).json({
     it: phrase.it,
     en: phrase.en,
-    date: new Date().toISOString().slice(0, 10),
+    date: today,
     streak,
+    doneToday,
     expression: expressionForStreak(streak),
   })
 }

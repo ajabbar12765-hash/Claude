@@ -9,8 +9,13 @@ const FLAME_SIZE = {
   ecstatic: 32,
 }
 
-function pickExpression(streak, hour) {
+function pickExpression(streak, hour, doneToday) {
   if (hour >= 0 && hour < 5) return 'sleepy'
+  // Not done yet today: the fox is waiting on you, not celebrating a streak
+  // tier it hasn't actually earned yet today — keep it low-key regardless
+  // of how long the streak already is, so the widget doesn't look "already
+  // happy" when there's still a nudge to make.
+  if (!doneToday) return streak >= 1 ? 'idle' : 'sleepy'
   if (streak >= 14) return 'ecstatic'
   if (streak >= 7) return 'excited'
   if (streak >= 3) return 'happy'
@@ -30,14 +35,23 @@ async function fetchData() {
 
 function buildWidget(data) {
   const streak = data?.streak ?? 0
+  const doneToday = !!data?.doneToday
   const hour = new Date().getHours()
-  const expr = pickExpression(streak, hour)
+  const expr = pickExpression(streak, hour, doneToday)
 
   const widget = new ListWidget()
   widget.url = APP_URL
 
+  // Two deliberately different moods, not just two colors: done-today
+  // reads as a warm, settled reward; not-done reads as a hotter, more
+  // saturated "come back" red-orange — the same brand hue pushed toward
+  // urgency instead of a jarring, off-brand color swap.
   const gradient = new LinearGradient()
-  gradient.colors = [new Color(ACCENT), new Color('#ffb627')]
+  if (doneToday) {
+    gradient.colors = [new Color(ACCENT), new Color('#ffb627')]
+  } else {
+    gradient.colors = [new Color('#c81e3a'), new Color(ACCENT)]
+  }
   gradient.locations = [0, 1]
   widget.backgroundGradient = gradient
 
@@ -53,7 +67,9 @@ function buildWidget(data) {
   streakRow.addSpacer(4)
   const streakNum = streakRow.addText(`${streak}`)
   streakNum.font = Font.heavySystemFont(32)
-  streakNum.textColor = Color.white()
+  // Dimmed (not absent) when today isn't done yet — a visible gap between
+  // "what you have" and "what's confirmed today" without hiding the number.
+  streakNum.textColor = doneToday ? Color.white() : new Color('#ffffff', 0.72)
 
   top.addSpacer()
 
@@ -63,7 +79,17 @@ function buildWidget(data) {
   const fox = foxCol.addText('\u{1F98A}')
   fox.font = Font.systemFont(48)
 
-  widget.addSpacer()
+  widget.addSpacer(6)
+
+  // Small, always-present state label — never rely on color alone to
+  // signal done vs. not-done.
+  const stateRow = widget.addStack()
+  stateRow.centerAlignContent()
+  const stateLabel = stateRow.addText(doneToday ? 'OGGI FATTO' : 'MANCA OGGI')
+  stateLabel.font = Font.boldSystemFont(11)
+  stateLabel.textColor = new Color('#ffffff', 0.85)
+
+  widget.addSpacer(8)
 
   const pipRow = widget.addStack()
   pipRow.centerAlignContent()
@@ -78,10 +104,15 @@ function buildWidget(data) {
 
   widget.addSpacer()
 
-  const italian = widget.addText(data?.it || 'Buongiorno!')
-  italian.font = Font.boldSystemFont(21)
-  italian.textColor = Color.white()
-  italian.minimumScaleFactor = 0.6
+  // Done today: show the phrase of the day, as before — there's nothing
+  // left to pull them toward. Not done: replace it with an explicit,
+  // action-shaped nudge instead of a passive fact, so the widget is
+  // asking for something rather than just reporting.
+  const bottomText = doneToday ? data?.it || 'Bravo!' : 'Non perdere la serie →'
+  const bottom = widget.addText(bottomText)
+  bottom.font = Font.boldSystemFont(21)
+  bottom.textColor = Color.white()
+  bottom.minimumScaleFactor = 0.6
 
   return widget
 }
@@ -91,7 +122,7 @@ try {
   const data = await fetchData()
   widget = buildWidget(data)
 } catch {
-  widget = buildWidget({ it: 'Ciao!', streak: 0 })
+  widget = buildWidget({ it: 'Ciao!', streak: 0, doneToday: false })
 }
 
 if (config.runsInWidget) {
