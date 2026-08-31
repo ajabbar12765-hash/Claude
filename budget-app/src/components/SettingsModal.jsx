@@ -1,6 +1,7 @@
 import Modal from './Modal'
 import { CURRENCIES } from '../lib/currency'
 import { IconDownload } from './icons'
+import BankConnect from './BankConnect'
 
 export default function SettingsModal({ state, actions, onClose }) {
   const exportData = () => {
@@ -21,7 +22,7 @@ export default function SettingsModal({ state, actions, onClose }) {
   }
 
   return (
-    <Modal title="Settings" onClose={onClose}>
+    <Modal title="Settings" onClose={onClose} wide>
       <div className="form">
         <label>
           Currency
@@ -33,6 +34,11 @@ export default function SettingsModal({ state, actions, onClose }) {
             ))}
           </select>
         </label>
+
+        <div className="settings-section">
+          <h4 className="settings-section-title">Bank connection</h4>
+          <BankConnect state={state} actions={actions} />
+        </div>
 
         <div>
           <p className="text-muted" style={{ marginBottom: 8 }}>

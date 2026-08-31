@@ -22,6 +22,7 @@ export function createDefaultState() {
     recurring: [],
     recurringPaid: [],
     goals: [],
+    bank: null,
   }
 }
 

@@ -14,7 +14,7 @@ function withMonth(state, key) {
 export function useBudget() {
   const [state, setState] = useState(() => {
     const loaded = load(STORE_KEY, null)
-    return loaded || createDefaultState()
+    return loaded ? { ...createDefaultState(), ...loaded } : createDefaultState()
   })
 
   useEffect(() => {
@@ -196,6 +196,68 @@ export function useBudget() {
     setState(createDefaultState())
   }, [])
 
+  // --- bank connection (GoCardless / Revolut) ---
+  const setBank = useCallback((patch) => {
+    setState((s) => ({ ...s, bank: { ...(s.bank || {}), ...patch } }))
+  }, [])
+
+  const clearBank = useCallback(() => {
+    setState((s) => ({ ...s, bank: null }))
+  }, [])
+
+  // Imports normalized bank transactions (see src/lib/gocardless.js), skipping
+  // any whose id was already imported. Negative amounts become expense
+  // transactions, positive amounts become income entries.
+  const importBankTransactions = useCallback((items) => {
+    let imported = 0
+    setState((s) => {
+      const alreadyImported = new Set(s.bank?.importedIds || [])
+      const fallbackCategoryId =
+        s.categories.find((c) => c.name === 'Other')?.id || s.categories[0]?.id
+
+      let months = s.months
+      const newIds = []
+
+      for (const item of items) {
+        if (!item.id || alreadyImported.has(item.id) || item.pending || !item.date || !item.amount) continue
+        const key = item.date.slice(0, 7)
+        months = withMonth({ months }, key).months
+        const m = months[key]
+
+        if (item.amount < 0) {
+          const transactions = [
+            ...m.transactions,
+            {
+              id: makeId(),
+              categoryId: fallbackCategoryId,
+              amount: Math.abs(item.amount),
+              note: item.description,
+              date: item.date,
+              externalId: item.id,
+            },
+          ]
+          months = { ...months, [key]: { ...m, transactions } }
+        } else {
+          const income = [
+            ...m.income,
+            { id: makeId(), source: item.description, amount: item.amount, externalId: item.id },
+          ]
+          months = { ...months, [key]: { ...m, income } }
+        }
+        newIds.push(item.id)
+        imported++
+      }
+
+      if (newIds.length === 0) return s
+      return {
+        ...s,
+        months,
+        bank: { ...(s.bank || {}), importedIds: [...alreadyImported, ...newIds], lastSyncedAt: Date.now() },
+      }
+    })
+    return imported
+  }, [])
+
   return useMemo(
     () => ({
       state,
@@ -218,6 +280,9 @@ export function useBudget() {
       removeGoal,
       contributeToGoal,
       resetAll,
+      setBank,
+      clearBank,
+      importBankTransactions,
     }),
     [
       state,
@@ -240,6 +305,9 @@ export function useBudget() {
       removeGoal,
       contributeToGoal,
       resetAll,
+      setBank,
+      clearBank,
+      importBankTransactions,
     ]
   )
 }

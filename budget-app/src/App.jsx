@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Sidebar from './components/Sidebar'
 import MonthSwitcher from './components/MonthSwitcher'
 import Dashboard from './components/Dashboard'
@@ -8,6 +8,7 @@ import RecurringView from './components/RecurringView'
 import GoalsView from './components/GoalsView'
 import SettingsModal from './components/SettingsModal'
 import { useBudget, currentMonthKey } from './lib/useBudget'
+import { getStatus } from './lib/gocardless'
 
 export default function App() {
   const budget = useBudget()
@@ -16,6 +17,30 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false)
 
   const month = budget.getMonth(monthKey)
+
+  // Finish the GoCardless/Revolut consent flow: the user is redirected back
+  // here after authorizing (or declining) access at Revolut.
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (url.searchParams.get('gocardless') !== 'return') return
+    url.searchParams.delete('gocardless')
+    window.history.replaceState({}, '', url.toString())
+
+    const requisitionId = budget.state.bank?.requisitionId
+    if (!requisitionId) return
+
+    getStatus(requisitionId)
+      .then(({ status, accountIds }) => {
+        if (status === 'LN' && accountIds.length > 0) {
+          budget.setBank({ status: 'linked', accountIds, connectedAt: Date.now() })
+        } else {
+          budget.setBank({ status: 'error', error: `Connection did not complete (status: ${status}).` })
+        }
+      })
+      .catch((e) => budget.setBank({ status: 'error', error: e.message }))
+    setShowSettings(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="app-shell" data-tab={tab}>
