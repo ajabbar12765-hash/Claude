@@ -66,6 +66,17 @@ export function canListen() {
   return typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition)
 }
 
+// Whether tapping a mic and getting a native transcript back is actually a
+// good bet here — not just technically present. WebKit's speech recognition
+// (see isAppleWebKit() below) is known to fail silently or throw a bare
+// generic error after a permission prompt or a moment of ambient noise, so
+// any exercise that scores a transcript locally (no server-side fallback to
+// fall back to, unlike the voice call) should skip straight to its
+// self-report path on WebKit rather than offer a mic that's likely to error.
+export function canListenReliably() {
+  return canListen() && !isAppleWebKit()
+}
+
 // Safari/WebKit (desktop Safari, and *everything* on iOS/iPadOS, since Apple
 // forces every browser there onto WebKit) technically exposes
 // webkitSpeechRecognition, but the implementation is well known to be

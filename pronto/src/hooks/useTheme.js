@@ -21,7 +21,12 @@ function applyAccent(accent) {
 export function useTheme() {
   const [accentId, setAccentId] = useState(() => {
     if (typeof window === 'undefined') return ACCENTS[0].id
-    return window.localStorage.getItem(STORAGE_KEY) || ACCENTS[0].id
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY)
+      return ACCENTS.some((a) => a.id === stored) ? stored : ACCENTS[0].id
+    } catch {
+      return ACCENTS[0].id
+    }
   })
 
   useEffect(() => {

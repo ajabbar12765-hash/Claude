@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Icon from '../Icon.jsx'
 import Mascot from '../Mascot.jsx'
-import { canSpeak, canListen, speakItalian, listenOnce } from '../../lib/speech.js'
+import { canSpeak, canListenReliably, speakItalian, listenOnce } from '../../lib/speech.js'
 import { speechMatchRatio, normalize } from '../../lib/matching.js'
 import { playCorrect, playIncorrect } from '../../lib/sound.js'
 
@@ -26,7 +26,7 @@ export default function SpeakExercise({ exercise, onAnswered, onContinue }) {
   const [heard, setHeard] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const speechAvailable = canSpeak()
-  const listenAvailable = canListen()
+  const listenAvailable = canListenReliably()
   const wordCount = normalize(it).split(' ').filter(Boolean).length
   const threshold = wordCount <= 2 ? 1 : 0.6
 

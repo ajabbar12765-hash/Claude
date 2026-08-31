@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Icon from '../Icon.jsx'
 import Mascot from '../Mascot.jsx'
-import { canSpeak, canListen, speakItalian, listenOnce } from '../../lib/speech.js'
+import { canSpeak, canListenReliably, speakItalian, listenOnce } from '../../lib/speech.js'
 import { speechMatchDetails, normalize } from '../../lib/matching.js'
 import { playCorrect, playIncorrect } from '../../lib/sound.js'
 
@@ -27,7 +27,7 @@ export default function ShadowExercise({ exercise, onAnswered, onContinue }) {
   const [result, setResult] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const speechAvailable = canSpeak()
-  const listenAvailable = canListen()
+  const listenAvailable = canListenReliably()
   const wordCount = normalize(it).split(' ').filter(Boolean).length
   const threshold = wordCount <= 2 ? 1 : 0.6
 
