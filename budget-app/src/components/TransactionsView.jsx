@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { formatMoney } from '../lib/currency'
 import { categoryById } from '../lib/calc'
 import TransactionModal from './TransactionModal'
+import { IconEdit, IconTrash, IconPlus } from './icons'
 
 export default function TransactionsView({ state, month, monthKey, actions }) {
   const [modal, setModal] = useState(null) // { mode: 'add' | 'edit', tx }
@@ -35,7 +36,7 @@ export default function TransactionsView({ state, month, monthKey, actions }) {
             ))}
           </select>
           <button className="btn btn--primary" onClick={() => setModal({ tx: null })}>
-            + Add transaction
+            <IconPlus size={15} /> Add transaction
           </button>
         </div>
       </div>
@@ -73,14 +74,14 @@ export default function TransactionsView({ state, month, monthKey, actions }) {
                     <td className="num">{formatMoney(t.amount, state.currency)}</td>
                     <td className="row-actions">
                       <button className="icon-btn" onClick={() => setModal({ tx: t })} aria-label="Edit">
-                        ✎
+                        <IconEdit size={15} />
                       </button>
                       <button
                         className="icon-btn"
                         onClick={() => actions.removeTransaction(monthKey, t.id)}
                         aria-label="Delete"
                       >
-                        🗑
+                        <IconTrash size={15} />
                       </button>
                     </td>
                   </tr>

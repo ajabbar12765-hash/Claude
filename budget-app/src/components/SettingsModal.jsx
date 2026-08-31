@@ -1,5 +1,6 @@
 import Modal from './Modal'
 import { CURRENCIES } from '../lib/currency'
+import { IconDownload } from './icons'
 
 export default function SettingsModal({ state, actions, onClose }) {
   const exportData = () => {
@@ -38,7 +39,7 @@ export default function SettingsModal({ state, actions, onClose }) {
             All data is stored only in this browser (localStorage) — nothing is sent anywhere.
           </p>
           <button type="button" className="btn btn--ghost" onClick={exportData}>
-            Export data as JSON
+            <IconDownload size={14} /> Export data as JSON
           </button>
         </div>
 

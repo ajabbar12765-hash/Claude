@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { formatMoney } from '../lib/currency'
 import { monthTotals } from '../lib/calc'
 import CategoryModal from './CategoryModal'
+import { IconTrash, IconPlus } from './icons'
 
 export default function BudgetsView({ state, month, monthKey, actions }) {
   const [showCategoryModal, setShowCategoryModal] = useState(false)
@@ -39,7 +40,7 @@ export default function BudgetsView({ state, month, monthKey, actions }) {
                 <span className="row-right">
                   <span className="text-pos">{formatMoney(i.amount, state.currency)}</span>
                   <button className="icon-btn" onClick={() => actions.removeIncome(monthKey, i.id)} aria-label="Remove">
-                    🗑
+                    <IconTrash size={15} />
                   </button>
                 </span>
               </li>
@@ -90,14 +91,14 @@ export default function BudgetsView({ state, month, monthKey, actions }) {
                   onChange={(e) => changeBudget(c.id, e.target.value)}
                 />
                 <button className="icon-btn" onClick={() => actions.removeCategory(c.id)} aria-label="Delete category">
-                  🗑
+                  <IconTrash size={15} />
                 </button>
               </span>
             </li>
           ))}
         </ul>
         <button className="btn btn--ghost" onClick={() => setShowCategoryModal(true)}>
-          + New category
+          <IconPlus size={14} /> New category
         </button>
       </div>
 

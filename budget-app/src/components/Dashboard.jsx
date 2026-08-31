@@ -1,11 +1,15 @@
 import { formatMoney } from '../lib/currency'
 import { categoryBreakdown, monthTotals, monthTrend } from '../lib/calc'
-import { lastNMonthKeys } from '../lib/dates'
+import { lastNMonthKeys, shiftMonth } from '../lib/dates'
 import ProgressBar from './ProgressBar'
 import TrendChart from './TrendChart'
+import StatCard from './StatCard'
+import { IconBanknote, IconCalendarDue } from './icons'
 
 export default function Dashboard({ state, month, monthKey, onTab }) {
   const { totalIncome, totalSpent, remaining, totalBudgeted } = monthTotals(month)
+  const prevMonth = state.months[shiftMonth(monthKey, -1)]
+  const prevTotals = prevMonth ? monthTotals(prevMonth) : null
   const breakdown = categoryBreakdown(month, state.categories)
     .filter((b) => b.spent > 0 || b.budget > 0)
     .sort((a, b) => b.spent - a.spent)
@@ -15,24 +19,26 @@ export default function Dashboard({ state, month, monthKey, onTab }) {
   return (
     <div className="view">
       <div className="stat-row">
-        <div className="stat-card">
-          <div className="stat-label">Income</div>
-          <div className="stat-value stat-value--pos">{formatMoney(totalIncome, state.currency)}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Spent</div>
-          <div className="stat-value">{formatMoney(totalSpent, state.currency)}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Remaining</div>
-          <div className={`stat-value ${remaining >= 0 ? 'stat-value--pos' : 'stat-value--neg'}`}>
-            {formatMoney(remaining, state.currency)}
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Budgeted</div>
-          <div className="stat-value">{formatMoney(totalBudgeted, state.currency)}</div>
-        </div>
+        <StatCard
+          label="Income"
+          value={totalIncome}
+          currency={state.currency}
+          tone="pos"
+          delta={prevTotals ? totalIncome - prevTotals.totalIncome : null}
+        />
+        <StatCard
+          label="Spent"
+          value={totalSpent}
+          currency={state.currency}
+          delta={prevTotals ? -(totalSpent - prevTotals.totalSpent) : null}
+        />
+        <StatCard
+          label="Remaining"
+          value={remaining}
+          currency={state.currency}
+          tone={remaining >= 0 ? 'pos' : 'neg'}
+        />
+        <StatCard label="Budgeted" value={totalBudgeted} currency={state.currency} />
       </div>
 
       <div className="grid-2">
@@ -103,8 +109,9 @@ function RecurringMini({ items, state, monthKey }) {
     <div className="recurring-mini-list">
       {items.slice(0, 5).map((r) => (
         <div className="recurring-mini-row" key={r.id}>
-          <span>
-            {r.kind === 'income' ? '💵' : '📅'} {r.name}
+          <span className="recurring-mini-name">
+            {r.kind === 'income' ? <IconBanknote size={16} /> : <IconCalendarDue size={16} />}
+            {r.name}
           </span>
           <span className="text-muted">{formatMoney(r.amount, state.currency)}</span>
         </div>

@@ -18,7 +18,11 @@ export default function App() {
   const month = budget.getMonth(monthKey)
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-tab={tab}>
+      <div className="ambient-glow" aria-hidden="true">
+        <span className="ambient-blob ambient-blob--a" />
+        <span className="ambient-blob ambient-blob--b" />
+      </div>
       <Sidebar tab={tab} onTab={setTab} onSettings={() => setShowSettings(true)} />
       <main className="main">
         <header className="topbar">

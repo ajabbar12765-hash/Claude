@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { formatMoney } from '../lib/currency'
 import { categoryById } from '../lib/calc'
 import RecurringModal from './RecurringModal'
+import { IconBanknote, IconCalendarDue, IconTrash, IconPlus } from './icons'
 
 export default function RecurringView({ state, monthKey, actions }) {
   const [showModal, setShowModal] = useState(false)
@@ -11,7 +12,7 @@ export default function RecurringView({ state, monthKey, actions }) {
       <div className="view-header">
         <h2>Recurring Bills &amp; Income</h2>
         <button className="btn btn--primary" onClick={() => setShowModal(true)}>
-          + Add recurring item
+          <IconPlus size={15} /> Add recurring item
         </button>
       </div>
 
@@ -39,8 +40,9 @@ export default function RecurringView({ state, monthKey, actions }) {
                 const paid = actions.isRecurringPaid(monthKey, r.id)
                 return (
                   <tr key={r.id}>
-                    <td>
-                      {r.kind === 'income' ? '💵' : '📅'} {r.name}
+                    <td className="recurring-name-cell">
+                      {r.kind === 'income' ? <IconBanknote size={16} /> : <IconCalendarDue size={16} />}
+                      {r.name}
                     </td>
                     <td>{cat ? `${cat.icon} ${cat.name}` : <span className="text-muted">Income</span>}</td>
                     <td>{r.day}</td>
@@ -58,7 +60,7 @@ export default function RecurringView({ state, monthKey, actions }) {
                     </td>
                     <td className="row-actions">
                       <button className="icon-btn" onClick={() => actions.removeRecurring(r.id)} aria-label="Delete">
-                        🗑
+                        <IconTrash size={15} />
                       </button>
                     </td>
                   </tr>
