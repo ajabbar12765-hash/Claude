@@ -1183,6 +1183,28 @@ ul {
   text-align: center;
 }
 
+.listen-hint {
+  font-size: 0.85rem;
+  color: var(--color-ink-faint);
+  text-align: center;
+}
+
+/* Draws the eye to the play button before it's been tapped — the options
+   are inert until then, so this is where attention actually belongs. */
+@keyframes listen-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-teal) 45%, transparent); }
+  50% { box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-teal) 0%, transparent); }
+}
+.listen-play-pulse {
+  animation: listen-pulse 1.8s ease-out infinite;
+}
+
+.option-grid-locked {
+  opacity: 0.45;
+  filter: saturate(0.6);
+  pointer-events: none;
+}
+
 /* ── Speak exercise (pronunciation practice) ────────────────── */
 .speak-block {
   display: flex;
