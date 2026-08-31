@@ -27,7 +27,7 @@ function formatKnownVocab(knownVocab) {
     .join('; ')
 }
 
-function buildSystemPrompt(level, knownVocab, topic) {
+function buildSystemPrompt(level, knownVocab, topic, isAudio) {
   const levelRule = LEVEL_RULES[level] || LEVEL_RULES.beginner
   const vocabList = formatKnownVocab(knownVocab)
   const vocabRule = vocabList
@@ -47,20 +47,30 @@ Rules:
 - Your job is to get the learner producing their OWN sentences, not just picking answers — always end your turn with a question or prompt that requires them to build a sentence back, using the vocabulary above.
 - Stay in character as a warm, encouraging local friend, not a teacher lecturing. If the learner makes a mistake, gently model the correct phrase back in your reply rather than explicitly correcting them.
 - If the learner writes or says something in English, respond warmly in Italian anyway, and gently nudge them (in Italian, with the gloss) to try it in Italian.
-- Never break character to talk about being an AI or a language model.
-- If your input is audio, transcribe exactly what the learner said (in whatever language they said it) into the "heard" field. If your input is already text, copy that same text into "heard" unchanged.`
+- Never break character to talk about being an AI or a language model.${
+    isAudio
+      ? '\n- Your input this turn is audio — transcribe exactly what the learner said (in whatever language they said it) into the "heard" field.'
+      : ''
+  }`
 }
 
 const MODEL = 'gemini-3.6-flash'
 
-const RESPONSE_SCHEMA = {
-  type: 'OBJECT',
-  properties: {
-    heard: { type: 'STRING', description: 'Transcription of the learner’s turn, verbatim.' },
+// "heard" (a verbatim transcription) is only meaningful — and only asked
+// for — when the turn is audio. For typed turns the client already has the
+// exact text, so making the model regenerate it as an echo would just be
+// wasted output tokens on every single turn, adding latency for nothing.
+function buildResponseSchema(isAudio) {
+  const properties = {
     italian: { type: 'STRING', description: 'Your reply, in Italian only.' },
     gloss: { type: 'STRING', description: 'English translation of the italian field.' },
-  },
-  required: ['heard', 'italian', 'gloss'],
+  }
+  const required = ['italian', 'gloss']
+  if (isAudio) {
+    properties.heard = { type: 'STRING', description: 'Transcription of the learner’s turn, verbatim.' }
+    required.unshift('heard')
+  }
+  return { type: 'OBJECT', properties, required }
 }
 
 export default async function handler(req, res) {
@@ -92,7 +102,8 @@ export default async function handler(req, res) {
     parts: [{ text: h.text }],
   }))
 
-  const turnParts = audioBase64
+  const isAudio = !!audioBase64
+  const turnParts = isAudio
     ? [{ inlineData: { mimeType: audioMimeType || 'audio/webm', data: audioBase64 } }, { text: 'Respond to what I just said, in character, following the JSON schema.' }]
     : [{ text }]
   contents.push({ role: 'user', parts: turnParts })
@@ -105,14 +116,14 @@ export default async function handler(req, res) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents,
-          systemInstruction: { parts: [{ text: buildSystemPrompt(level, knownVocab, topic) }] },
+          systemInstruction: { parts: [{ text: buildSystemPrompt(level, knownVocab, topic, isAudio) }] },
           generationConfig: {
             // Replies are capped at 1-3 short sentences by the prompt itself;
             // a smaller budget here means less to generate, which is the
             // other big lever on response latency besides thinkingConfig.
-            maxOutputTokens: 260,
+            maxOutputTokens: isAudio ? 260 : 190,
             responseMimeType: 'application/json',
-            responseSchema: RESPONSE_SCHEMA,
+            responseSchema: buildResponseSchema(isAudio),
             // Volpe doesn't need to reason before answering — every extra
             // "thinking" token here is pure added latency on a phone call
             // where the learner is sitting waiting for a reply.
