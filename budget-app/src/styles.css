@@ -909,6 +909,29 @@ select:focus {
   font-size: 12.5px;
 }
 
+.csv-steps p {
+  margin: 0 0 4px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.csv-file-btn {
+  display: inline-flex;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.csv-preview {
+  background: var(--panel-2);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+
+.csv-preview p {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+}
+
 /* --- modal --- */
 
 .modal-overlay {

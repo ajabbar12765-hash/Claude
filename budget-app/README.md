@@ -13,8 +13,10 @@ day-to-day use — everything is stored in your browser's `localStorage`.
 - **Recurring bills** — rent, subscriptions, or a paycheck that repeats every
   month; mark each one paid/received per month with one click.
 - **Savings goals** — set a target and log contributions toward it.
-- **Bank connection (optional)** — link a Revolut account via GoCardless Open
-  Banking and pull in real transactions automatically. See below.
+- **Import from Revolut (CSV)** — export a statement from the Revolut app and
+  upload it to add all those transactions at once. See below.
+- **Bank connection (optional, Open Banking)** — live sync via GoCardless,
+  for if/when you get access. See below.
 - **Settings** — switch currency (PKR, EUR, USD, GBP), export your data as
   JSON, or reset everything.
 
@@ -22,15 +24,34 @@ Design: a dark, glassmorphic "cinema" theme with an ambient glow that shifts
 accent color per section, a Calistoga + Inter + JetBrains Mono type system,
 and hand-drawn SVG icons throughout (no emoji in the interface chrome).
 
-## Bank connection setup (Revolut)
+## Importing transactions from Revolut (CSV)
 
-Revolut doesn't offer individuals a direct API, so this connects through
+The straightforward way to get your Revolut transactions in, and the one
+that works with zero setup:
+
+1. In the Revolut app: open the account → the **⋯** menu → **Statement** →
+   pick a date range → export as **CSV**.
+2. In the budgeting app: **Transactions → Import from Revolut** (or
+   **Settings → Import from Revolut**), choose the file, review the preview,
+   click Import.
+3. Expenses land in that month's transaction list under the "Other" category
+   so you can re-file them; incoming payments become income entries.
+   Re-importing a file (e.g. an overlapping date range) skips transactions
+   already imported, matched by date + description + amount — so it's safe
+   to just export "everything" each time rather than tracking exact ranges.
+
+## Bank connection setup (Open Banking, optional)
+
+Live sync — no manual export needed — via
 [GoCardless Bank Account Data](https://bankaccountdata.gocardless.com/)
-(formerly Nordigen), a licensed Open Banking data provider with a free tier.
+(formerly Nordigen), since Revolut doesn't offer individuals a direct API.
+**Note:** GoCardless has closed self-serve signups for new developers as of
+this writing, so this path may require applying for access rather than
+signing up instantly — the CSV import above is the reliable option today.
 Access is read-only and consent expires automatically after 90 days.
 
-1. Create a free account at bankaccountdata.gocardless.com and generate a
-   `secret_id` / `secret_key` pair (User secrets → Create new).
+1. Get a `secret_id` / `secret_key` pair from GoCardless (User secrets →
+   Create new, once you have access).
 2. Add them as **server-side** environment variables on the Vercel project
    (Project Settings → Environment Variables) — never in client code, never
    in this repo:
@@ -39,10 +60,8 @@ Access is read-only and consent expires automatically after 90 days.
 3. Redeploy. Open the app → Settings → Bank connection → pick your country →
    Connect Revolut. You'll be redirected to Revolut's real login to grant
    access, then back here.
-4. Use "Sync transactions" any time to pull in new transactions (expenses go
-   into that month's transaction list under the "Other" category so you can
-   re-file them; incoming payments become income entries). Previously
-   imported transactions are skipped automatically.
+4. Use "Sync transactions" any time to pull in new transactions, deduped the
+   same way as CSV import.
 
 The `api/gocardless/*` serverless functions hold the secrets and talk to
 GoCardless; the browser never sees them.

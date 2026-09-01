@@ -2,11 +2,13 @@ import { useMemo, useState } from 'react'
 import { formatMoney } from '../lib/currency'
 import { categoryById } from '../lib/calc'
 import TransactionModal from './TransactionModal'
-import { IconEdit, IconTrash, IconPlus } from './icons'
+import CsvImportModal from './CsvImportModal'
+import { IconEdit, IconTrash, IconPlus, IconDownload } from './icons'
 
 export default function TransactionsView({ state, month, monthKey, actions }) {
   const [modal, setModal] = useState(null) // { mode: 'add' | 'edit', tx }
   const [filterCat, setFilterCat] = useState('all')
+  const [showImport, setShowImport] = useState(false)
 
   const transactions = useMemo(() => {
     const list = filterCat === 'all' ? month.transactions : month.transactions.filter((t) => t.categoryId === filterCat)
@@ -35,6 +37,9 @@ export default function TransactionsView({ state, month, monthKey, actions }) {
               </option>
             ))}
           </select>
+          <button className="btn btn--ghost" onClick={() => setShowImport(true)}>
+            <IconDownload size={14} /> Import from Revolut
+          </button>
           <button className="btn btn--primary" onClick={() => setModal({ tx: null })}>
             <IconPlus size={15} /> Add transaction
           </button>
@@ -100,6 +105,8 @@ export default function TransactionsView({ state, month, monthKey, actions }) {
           onClose={() => setModal(null)}
         />
       )}
+
+      {showImport && <CsvImportModal state={state} actions={actions} onClose={() => setShowImport(false)} />}
     </div>
   )
 }
