@@ -82,13 +82,15 @@ This needs its own storage, since a background job has no browser to read
    `UPSTASH_REDIS_REST_*`) environment variables `api/_lib/kv.js` reads —
    nothing to configure by hand.
 2. That's it for setup — `vercel.json` already defines the cron schedule
-   (`/api/cron/sync`, hourly) and the app already calls the sync endpoints
-   once a bank connection is linked.
+   (`/api/cron/sync`, daily at 07:00 UTC) and the app already calls the
+   sync endpoints once a bank connection is linked.
 
 **Two real limits, not a bug if you hit them:**
-- **Vercel's Hobby (free) plan caps cron jobs at roughly once a day**,
-  regardless of the hourly schedule in `vercel.json` — Vercel silently
-  throttles it. Pro removes that cap.
+- **Vercel's Hobby (free) plan only allows cron jobs to run once a day** —
+  it's a hard limit, not a soft throttle: a more frequent schedule in
+  `vercel.json` fails the deployment outright with `cron_jobs_limits_reached`.
+  Upgrading to Pro allows more frequent schedules (e.g. hourly), which you'd
+  set by editing the `schedule` in `vercel.json`.
 - It's "checked automatically, shown next time you open the app" — not a
   live push the instant you tap your card. Nothing (free or not) does true
   per-transaction real-time for a personal project like this.
