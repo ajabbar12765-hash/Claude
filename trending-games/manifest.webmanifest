@@ -1,0 +1,14 @@
+{
+  "name": "Play Zone — Trending Games",
+  "short_name": "Play Zone",
+  "description": "A collection of fast, fun, timer-based trending mini-games that work fully offline.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1220",
+  "theme_color": "#0f1220",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
