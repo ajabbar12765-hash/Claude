@@ -1,5 +1,11 @@
 import { useState } from 'react'
-import { startConnect, fetchTransactions, disconnect as disconnectApi } from '../lib/gocardless'
+import {
+  startConnect,
+  fetchTransactions,
+  disconnect as disconnectApi,
+  saveSyncConfig,
+  clearSyncConfig,
+} from '../lib/gocardless'
 import { IconBanknote, IconAlertTriangle } from './icons'
 
 const EU_COUNTRIES = [
@@ -51,6 +57,14 @@ export default function BankConnect({ state, actions }) {
       const { transactions } = await fetchTransactions(bank.accountIds)
       const imported = actions.importBankTransactions(transactions)
       setSyncMsg(imported > 0 ? `Imported ${imported} new transaction${imported === 1 ? '' : 's'}.` : 'Already up to date.')
+      // Reconciles the server's dedupe set so the background cron job
+      // doesn't re-surface transactions this manual sync already caught.
+      saveSyncConfig({
+        requisitionId: bank.requisitionId,
+        accountIds: bank.accountIds,
+        institutionName: bank.institutionName,
+        importedIds: transactions.map((t) => t.id).filter(Boolean),
+      }).catch(() => {})
     } catch (e) {
       setError(e.message)
     } finally {
@@ -67,6 +81,7 @@ export default function BankConnect({ state, actions }) {
     } catch {
       // requisition may already be expired/gone server-side — clear locally regardless
     } finally {
+      clearSyncConfig().catch(() => {})
       actions.clearBank()
       setBusy(false)
     }

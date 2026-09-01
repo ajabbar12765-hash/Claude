@@ -66,6 +66,37 @@ Access is read-only and consent expires automatically after 90 days.
 The `api/gocardless/*` serverless functions hold the secrets and talk to
 GoCardless; the browser never sees them.
 
+## Background auto-sync (optional, needs the bank connection above)
+
+Once connected, new transactions can appear without manually clicking
+"Sync" — a scheduled job checks GoCardless in the background and the app
+picks up whatever it found next time you open it (or bring the tab back
+into focus).
+
+This needs its own storage, since a background job has no browser to read
+`localStorage` from:
+
+1. Vercel dashboard → the project → **Storage** tab → add a Redis database
+   (Marketplace Database Integrations → **Upstash for Redis**, or similar).
+   This auto-injects the `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or
+   `UPSTASH_REDIS_REST_*`) environment variables `api/_lib/kv.js` reads —
+   nothing to configure by hand.
+2. That's it for setup — `vercel.json` already defines the cron schedule
+   (`/api/cron/sync`, hourly) and the app already calls the sync endpoints
+   once a bank connection is linked.
+
+**Two real limits, not a bug if you hit them:**
+- **Vercel's Hobby (free) plan caps cron jobs at roughly once a day**,
+  regardless of the hourly schedule in `vercel.json` — Vercel silently
+  throttles it. Pro removes that cap.
+- It's "checked automatically, shown next time you open the app" — not a
+  live push the instant you tap your card. Nothing (free or not) does true
+  per-transaction real-time for a personal project like this.
+
+Without a Redis database attached, this silently no-ops — the cron
+endpoint returns a clear "no Redis attached" error and nothing breaks;
+manual "Sync now" and CSV import keep working exactly as before.
+
 ## Development
 
 ```bash

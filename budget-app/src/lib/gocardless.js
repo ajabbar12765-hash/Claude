@@ -28,3 +28,29 @@ export function disconnect(requisitionId) {
     body: JSON.stringify({ requisitionId }),
   })
 }
+
+// --- background sync (server-side, for the cron job) ---
+
+export function saveSyncConfig({ requisitionId, accountIds, institutionName, importedIds }) {
+  return call('/api/sync/config', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ requisitionId, accountIds, institutionName, importedIds }),
+  })
+}
+
+export function clearSyncConfig() {
+  return call('/api/sync/config', { method: 'DELETE' })
+}
+
+export function getPendingSync() {
+  return call('/api/sync/pending')
+}
+
+export function ackPendingSync(ids) {
+  return call('/api/sync/ack', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  })
+}
