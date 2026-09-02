@@ -111,15 +111,42 @@ select:disabled option:disabled { color: #666; }
 }
 .item .meta .duration { color: var(--muted); font-size: 0.8rem; }
 
-.item a.download {
-  background: var(--accent);
-  color: white;
-  text-decoration: none;
-  padding: 0.5rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  white-space: nowrap;
+.item.error { color: #ff8080; font-size: 0.85rem; }
+
+#keyGate {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
 }
 
-.item.error { color: #ff8080; font-size: 0.85rem; }
+.gate-box {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+
+.gate-box h2 { margin-top: 0; font-size: 1.2rem; }
+.gate-box p { color: var(--muted); font-size: 0.85rem; }
+
+.gate-box input {
+  width: 100%;
+  background: #11151a;
+  color: var(--text);
+  border: 1px solid #2a2f37;
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.gate-box button { width: 100%; padding: 0.7rem; }
+.gate-box .error { color: #ff8080; min-height: 1.2em; }

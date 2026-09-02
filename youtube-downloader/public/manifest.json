@@ -1,0 +1,11 @@
+{
+  "name": "Offline Video Grabber",
+  "short_name": "Video Grabber",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1216",
+  "theme_color": "#0f1216",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

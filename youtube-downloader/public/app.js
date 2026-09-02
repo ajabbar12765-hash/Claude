@@ -4,19 +4,87 @@ const addBtn = document.getElementById('addBtn');
 const statusEl = document.getElementById('status');
 const listEl = document.getElementById('list');
 const capNoteEl = document.getElementById('capNote');
+const keyGateEl = document.getElementById('keyGate');
+const keyInputEl = document.getElementById('keyInput');
+const keySubmitEl = document.getElementById('keySubmit');
+const keyErrorEl = document.getElementById('keyError');
 
 const seen = new Set();
+const KEY_STORAGE = 'ytdl_access_key';
 
-init();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
 
-async function init() {
+function authHeaders() {
+  const key = localStorage.getItem(KEY_STORAGE);
+  return key ? { 'x-access-key': key } : {};
+}
+
+async function apiFetch(url, opts = {}) {
+  return fetch(url, { ...opts, headers: { ...(opts.headers || {}), ...authHeaders() } });
+}
+
+boot();
+
+async function boot() {
   try {
-    const res = await fetch('/api/capabilities');
+    const res = await fetch('/needs-key');
+    const { required } = await res.json();
+
+    if (!required) return startApp();
+
+    const stored = localStorage.getItem(KEY_STORAGE);
+    if (stored) {
+      const check = await apiFetch('/api/capabilities');
+      if (check.ok) return startApp();
+      localStorage.removeItem(KEY_STORAGE);
+    }
+    showKeyGate();
+  } catch {
+    startApp();
+  }
+}
+
+function showKeyGate() {
+  keyGateEl.hidden = false;
+  keyInputEl.focus();
+
+  const submit = async () => {
+    const key = keyInputEl.value.trim();
+    if (!key) return;
+    localStorage.setItem(KEY_STORAGE, key);
+    const check = await apiFetch('/api/capabilities');
+    if (check.ok) {
+      keyGateEl.hidden = true;
+      startApp();
+    } else {
+      localStorage.removeItem(KEY_STORAGE);
+      keyErrorEl.textContent = 'Wrong key — try again.';
+    }
+  };
+
+  keySubmitEl.addEventListener('click', submit);
+  keyInputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+}
+
+let started = false;
+function startApp() {
+  if (started) return;
+  started = true;
+  initCapabilities();
+}
+
+async function initCapabilities() {
+  try {
+    const res = await apiFetch('/api/capabilities');
     const { ffmpeg } = await res.json();
     if (!ffmpeg) {
       formatEl.querySelector('option[value="best"]').disabled = true;
       formatEl.querySelector('option[value="audio"]').disabled = true;
-      capNoteEl.textContent = 'ffmpeg not detected on this machine — only Standard quality is available. See README to install ffmpeg for Best/Audio.';
+      capNoteEl.textContent = 'ffmpeg not detected on this server — only Standard quality is available.';
     } else {
       formatEl.value = 'best';
       capNoteEl.textContent = 'ffmpeg detected — Best quality available.';
@@ -49,7 +117,7 @@ addBtn.addEventListener('click', async () => {
     listEl.prepend(li);
 
     try {
-      const res = await fetch(`/api/info?url=${encodeURIComponent(url)}`);
+      const res = await apiFetch(`/api/info?url=${encodeURIComponent(url)}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch info');
 
@@ -89,7 +157,7 @@ async function startDownload(btn, url, title, format) {
 
   try {
     const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&format=${format}&title=${encodeURIComponent(title)}`;
-    const res = await fetch(downloadUrl);
+    const res = await apiFetch(downloadUrl);
     if (!res.ok) throw new Error(await res.text());
 
     const disposition = res.headers.get('Content-Disposition') || '';

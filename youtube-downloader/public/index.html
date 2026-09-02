@@ -2,11 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Offline Video Grabber</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f1216" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Video Grabber" />
+  <link rel="apple-touch-icon" href="icon.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="keyGate" hidden>
+    <div class="gate-box">
+      <h2>Enter access key</h2>
+      <p>This deployment is password-protected so random visitors can't use it.</p>
+      <input id="keyInput" type="password" placeholder="Access key" autocomplete="off" />
+      <button id="keySubmit">Unlock</button>
+      <p id="keyError" class="error"></p>
+    </div>
+  </div>
+
   <main>
     <h1>Offline Video Grabber</h1>
     <p class="subtitle">Paste YouTube links (one per line), fetch them, then download before you board.</p>

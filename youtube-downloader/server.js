@@ -5,25 +5,53 @@ import fs from 'fs';
 import { promises as fsp } from 'fs';
 import { fileURLToPath } from 'url';
 import { execFileSync } from 'child_process';
-import youtubedl from 'youtube-dl-exec';
+import { create } from 'youtube-dl-exec';
+import bundledYoutubedl from 'youtube-dl-exec';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4321;
+const ACCESS_KEY = process.env.ACCESS_KEY || '';
 
-let hasFfmpeg = false;
-try {
-  execFileSync('ffmpeg', ['-version'], { stdio: 'ignore' });
-  hasFfmpeg = true;
-} catch {
-  hasFfmpeg = false;
+function which(bin, versionFlag = '--version') {
+  try {
+    execFileSync(bin, [versionFlag], { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
 }
+
+// Prefer a system-installed yt-dlp (e.g. via pip/brew, or baked into the Docker
+// image) over the one youtube-dl-exec's postinstall tries to fetch from GitHub —
+// that fetch can fail behind flaky networks/rate limits, whereas a system binary
+// is deterministic and easy to keep updated independently of npm.
+const youtubedl = which('yt-dlp') ? create('yt-dlp') : bundledYoutubedl;
+
+// ffmpeg only understands single-dash flags (-version), unlike most other CLIs.
+let hasFfmpeg = which('ffmpeg', '-version');
 if (!hasFfmpeg) {
   console.warn('ffmpeg not found — "Best" and "Audio" quality options will be unavailable. See README.');
 }
 
 app.use(express.json());
+
+if (ACCESS_KEY) {
+  app.use('/api', (req, res, next) => {
+    if (req.header('x-access-key') === ACCESS_KEY) return next();
+    res.status(401).json({ error: 'unauthorized' });
+  });
+} else {
+  console.warn('ACCESS_KEY not set — /api routes are unauthenticated. Fine for localhost, NOT fine for a public deployment.');
+}
+
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Deliberately outside the /api auth gate: the frontend needs to know whether
+// to show the key-entry screen before it has a key to authenticate with.
+app.get('/needs-key', (req, res) => {
+  res.json({ required: Boolean(ACCESS_KEY) });
+});
 
 function isYoutubeUrl(raw) {
   try {
