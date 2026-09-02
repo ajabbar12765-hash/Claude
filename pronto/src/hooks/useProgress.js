@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { UNITS, OBJECTIVES, OBJECTIVE_REQUIREMENTS, vocabForLesson } from '../data/curriculum.js'
 import { ACHIEVEMENTS } from '../data/achievements.js'
 
@@ -19,6 +19,14 @@ const REVIEW_XP_PER_ITEM = 3
 const REVIEW_SESSION_SIZE = 15
 
 const STORAGE_KEY = 'pronto:progress:v1'
+// Tracks when this device last actually saved, kept out of the synced
+// `state` object itself so none of the callbacks below need to know sync
+// exists at all.
+const UPDATED_AT_KEY = 'pronto:progress:updatedAt:v1'
+// How long to let rapid-fire local changes (mid-lesson) settle before
+// pushing — one network write per burst of activity instead of one per
+// keystroke-level update.
+const SYNC_DEBOUNCE_MS = 1500
 
 function todayStr() {
   const d = new Date()
@@ -70,14 +78,70 @@ function loadState() {
 
 export function useProgress() {
   const [state, setState] = useState(loadState)
+  // Gates the very first push until reconcileWithServer() below has run
+  // once — otherwise a device that just opened the app could push its
+  // (possibly stale) local state before it's had a chance to pull and
+  // adopt anything newer a companion device already saved.
+  const reconciledRef = useRef(false)
+  const pushTimerRef = useRef(null)
 
   useEffect(() => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      window.localStorage.setItem(UPDATED_AT_KEY, String(Date.now()))
     } catch {
       // localStorage unavailable (private mode, quota, etc.) — progress just won't persist
     }
+
+    if (!reconciledRef.current) return
+    if (pushTimerRef.current) clearTimeout(pushTimerRef.current)
+    pushTimerRef.current = setTimeout(() => {
+      const updatedAt = Number(window.localStorage.getItem(UPDATED_AT_KEY)) || Date.now()
+      fetch('/api/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state, updatedAt }),
+      }).catch(() => {
+        // Offline or the sync store isn't configured — local progress is
+        // already saved above, so nothing is lost; this device just pushes
+        // again next time something changes and it's back online.
+      })
+    }, SYNC_DEBOUNCE_MS)
+
+    return () => {
+      if (pushTimerRef.current) clearTimeout(pushTimerRef.current)
+    }
   }, [state])
+
+  // One-time pull on mount: if a companion device (phone/iPad) saved
+  // something more recent than what's here, adopt it before this device
+  // ever pushes anything of its own — see the reconciledRef guard above.
+  useEffect(() => {
+    let cancelled = false
+    async function reconcile() {
+      try {
+        const res = await fetch('/api/progress')
+        if (!res.ok) throw new Error('progress fetch failed')
+        const remote = await res.json()
+        const localUpdatedAt = Number(window.localStorage.getItem(UPDATED_AT_KEY)) || 0
+        if (remote?.state && remote.updatedAt > localUpdatedAt && !cancelled) {
+          setState({ ...defaultState(), ...remote.state })
+          window.localStorage.setItem(UPDATED_AT_KEY, String(remote.updatedAt))
+        }
+      } catch {
+        // Offline on first load, or sync isn't configured yet — carry on
+        // with whatever's in localStorage; this device just stays
+        // local-only until it can reach the server.
+      } finally {
+        if (!cancelled) reconciledRef.current = true
+      }
+    }
+    reconcile()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const recordCorrect = useCallback((itemId) => {
     setState((prev) => ({

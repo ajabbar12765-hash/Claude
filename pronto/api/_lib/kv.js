@@ -45,3 +45,23 @@ export async function setStreak(streak) {
   const payload = JSON.stringify({ streak, date: new Date().toISOString().slice(0, 10) })
   await upstash('set', STREAK_KEY, payload)
 }
+
+// Full-progress sync between the learner's own devices (phone + iPad) —
+// same personal, single-key store as the streak above, just holding the
+// whole progress blob instead of one number. Last-write-wins by
+// `updatedAt`, resolved client-side in useProgress.js.
+const PROGRESS_KEY = 'pronto:progress-sync:v1'
+
+export async function getSyncedProgress() {
+  const raw = await upstash('get', PROGRESS_KEY)
+  if (!raw) return { state: null, updatedAt: 0 }
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return { state: null, updatedAt: 0 }
+  }
+}
+
+export async function setSyncedProgress(state, updatedAt) {
+  await upstash('set', PROGRESS_KEY, JSON.stringify({ state, updatedAt }))
+}
