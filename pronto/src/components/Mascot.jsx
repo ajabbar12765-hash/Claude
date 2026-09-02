@@ -54,6 +54,17 @@ const FACES = {
     </>,
     mouth: <path d="M88 116 L112 116" stroke="#221813" strokeWidth="4" fill="none" strokeLinecap="round" />,
   },
+  // Reserved for a real milestone (a long streak) — round aviator lenses
+  // plus a smug, one-sided smirk instead of a plain smile.
+  cool: {
+    eyes: <>
+      <ellipse cx="79" cy="90" rx="16" ry="10" fill="#1a1a1a" />
+      <ellipse cx="121" cy="90" rx="16" ry="10" fill="#1a1a1a" />
+      <rect x="95" y="86" width="10" height="4" fill="#1a1a1a" />
+      <path d="M70 85 Q76 82 82 85" stroke="#ffffff" strokeWidth="1.8" fill="none" opacity="0.55" strokeLinecap="round" />
+    </>,
+    mouth: <path d="M88 114 Q100 120 116 110" stroke="#221813" strokeWidth="4" fill="none" strokeLinecap="round" />,
+  },
 }
 
 // Eye shapes on these expressions read fine mid-blink; happy's closed

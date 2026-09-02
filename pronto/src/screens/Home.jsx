@@ -21,11 +21,13 @@ function scrollToUnit(unitId) {
 // Volpe's hero-card mood: asleep late at night regardless of anything
 // else, visibly unimpressed if today's goal isn't done yet (rather than
 // a neutral "idle" that looks the same whether you've shown up or not),
-// and happier the longer the streak once you actually have.
+// happier once there's a short streak going, and — the reward for real
+// commitment — shades-on smug once a streak survives two full weeks.
 function pickHeroExpression(dailyGoalMet, streakCount) {
   const hour = new Date().getHours()
   if (hour >= 0 && hour < 5) return 'sleepy'
   if (!dailyGoalMet) return 'bored'
+  if (streakCount >= 14) return 'cool'
   return streakCount >= 3 ? 'happy' : 'idle'
 }
 
@@ -145,7 +147,7 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLeve
 
   return (
     <motion.div className="screen screen-home" variants={container} initial="hidden" animate="show">
-      <motion.section variants={item} className="hero-card">
+      <motion.section variants={item} className={`hero-card hero-card-${heroExpression}`}>
         <div className="hero-copy">
           <p className="hero-eyebrow">{heroEyebrow}</p>
           <h1 className="hero-title">{readinessShown}% ready for Italy</h1>

@@ -365,6 +365,56 @@ ul {
   border-radius: 999px;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.22), transparent 70%);
   pointer-events: none;
+  transition: background 0.6s ease;
+}
+
+/* Mood variants — the card itself reacts to Volpe's state, not just his
+   face, the same way Duolingo's home screen shifts around its mascot. */
+.hero-card {
+  transition: background 0.6s ease, box-shadow 0.6s ease;
+}
+
+/* Goal not met yet today: same family, drained of warmth. */
+.hero-card-bored {
+  background: linear-gradient(135deg, #a99c93 0%, #8c8079 55%, #6f645d 100%);
+  box-shadow: 0 14px 30px -10px rgba(70, 62, 56, 0.4);
+}
+
+.hero-card-bored::before {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 70%);
+}
+
+/* Small hours: a quiet night sky instead of daytime terracotta. */
+.hero-card-sleepy {
+  background: linear-gradient(135deg, #2c2a52 0%, #1c1a3a 55%, #121026 100%);
+  box-shadow: 0 14px 30px -10px rgba(18, 16, 38, 0.55);
+}
+
+.hero-card-sleepy::before {
+  background:
+    radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.9), transparent 60%),
+    radial-gradient(2px 2px at 70% 20%, rgba(255, 255, 255, 0.7), transparent 60%),
+    radial-gradient(1.5px 1.5px at 45% 55%, rgba(255, 255, 255, 0.8), transparent 60%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+}
+
+/* 14+ day streak: the flex background — richer, warmer, with a slow
+   light sweep across the card to match the sunglasses. */
+.hero-card-cool {
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-terracotta) 48%, var(--color-teal-dark) 100%);
+  box-shadow: 0 16px 34px -10px color-mix(in srgb, var(--color-teal) 55%, transparent);
+}
+
+.hero-card-cool::before {
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent 70%);
+  animation: hero-cool-sweep 3.6s ease-in-out infinite;
+}
+
+@keyframes hero-cool-sweep {
+  0%, 100% { transform: translate(0, 0); opacity: 0.7; }
+  50% { transform: translate(-70px, 40px); opacity: 1; }
 }
 
 .hero-eyebrow {
