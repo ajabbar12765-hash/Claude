@@ -44,22 +44,39 @@ const FACES = {
     </>,
     mouth: <path d="M90 114 Q100 118 110 114" stroke="#221813" strokeWidth="4" fill="none" strokeLinecap="round" />,
   },
+  // Half-lidded, "you haven't shown up yet today" — distinct from sleepy's
+  // fully-closed rest: eyes are open just enough to read as waiting, not
+  // asleep, with a flat unimpressed mouth instead of a frown.
+  bored: {
+    eyes: <>
+      <path d="M70 89 Q79 92 88 89 L88 91 Q79 95 70 91 Z" fill="#221813" />
+      <path d="M112 89 Q121 92 130 89 L130 91 Q121 95 112 91 Z" fill="#221813" />
+    </>,
+    mouth: <path d="M88 116 L112 116" stroke="#221813" strokeWidth="4" fill="none" strokeLinecap="round" />,
+  },
 }
+
+// Eye shapes on these expressions read fine mid-blink; happy's closed
+// upward arcs and sleepy's already-shut lines don't need it.
+const BLINKABLE = new Set(['idle', 'thinking', 'talking', 'bored'])
 
 export default function Mascot({ expression = 'idle', size = 96, celebrate = false, className = '' }) {
   const face = FACES[expression] || FACES.idle
+  const blinkable = BLINKABLE.has(expression)
 
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 200 220"
-      className={`mascot mascot-${expression} ${celebrate ? 'mascot-celebrate' : ''} ${className}`}
+      className={`mascot mascot-${expression} ${celebrate ? 'mascot-celebrate' : ''} ${blinkable ? 'mascot-blinkable' : ''} ${className}`}
       aria-hidden="true"
     >
       {/* tail */}
-      <path d="M148 178 Q194 172 186 122 Q182 92 152 100 Q176 128 150 178 Z" fill="var(--mascot-body)" />
-      <path d="M186 122 Q182 96 156 101 Q172 108 172 128 Q172 148 155 168 Z" fill="var(--mascot-cream)" opacity="0.9" />
+      <g className="mascot-tail">
+        <path d="M148 178 Q194 172 186 122 Q182 92 152 100 Q176 128 150 178 Z" fill="var(--mascot-body)" />
+        <path d="M186 122 Q182 96 156 101 Q172 108 172 128 Q172 148 155 168 Z" fill="var(--mascot-cream)" opacity="0.9" />
+      </g>
 
       {/* paws (raise on celebrate) */}
       <g className="mascot-paw mascot-paw-left">
@@ -96,7 +113,7 @@ export default function Mascot({ expression = 'idle', size = 96, celebrate = fal
       {/* nose */}
       <path d="M100 96 L92 104 L108 104 Z" fill="#221813" />
 
-      {face.eyes}
+      <g className="mascot-eyes">{face.eyes}</g>
       {face.mouth}
     </svg>
   )

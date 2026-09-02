@@ -18,6 +18,17 @@ function scrollToUnit(unitId) {
   document.getElementById(`unit-${unitId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
+// Volpe's hero-card mood: asleep late at night regardless of anything
+// else, visibly unimpressed if today's goal isn't done yet (rather than
+// a neutral "idle" that looks the same whether you've shown up or not),
+// and happier the longer the streak once you actually have.
+function pickHeroExpression(dailyGoalMet, streakCount) {
+  const hour = new Date().getHours()
+  if (hour >= 0 && hour < 5) return 'sleepy'
+  if (!dailyGoalMet) return 'bored'
+  return streakCount >= 3 ? 'happy' : 'idle'
+}
+
 function CourseMap({ currentUnitIndex, isUnitUnlocked, isUnitComplete }) {
   return (
     <motion.section variants={item} className="course-map" aria-label="Course map">
@@ -115,7 +126,8 @@ const RECOMMENDED_UNITS = {
 }
 
 export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLevelCheck, onOpenUnitTest, onOpenReview }) {
-  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, unitAwaitingTest, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation, italianLevel, dueReviewCount } = progress
+  const { isLessonComplete, isUnitUnlocked, isLessonUnlocked, unitAwaitingTest, readinessPercent, xpToday, goalXpPerDay, dailyGoalMet, nextLesson, motivation, italianLevel, dueReviewCount, streak } = progress
+  const heroExpression = pickHeroExpression(dailyGoalMet, streak.count)
   const currentUnitIndex = nextLesson ? nextLesson.unitIndex : UNITS.length - 1
   const heroEyebrow = MOTIVATION_EYEBROW[motivation] || 'Real-life readiness'
   const recommendedUnitIds = RECOMMENDED_UNITS[motivation] || []
@@ -160,7 +172,7 @@ export default function Home({ progress, onOpenLesson, onOpenProfile, onOpenLeve
           <span className="hero-ring-value">{readinessShown}%</span>
         </div>
         <div className="hero-mascot">
-          <Mascot expression={dailyGoalMet ? 'happy' : 'idle'} celebrate={dailyGoalMet} size={72} />
+          <Mascot expression={heroExpression} celebrate={dailyGoalMet} size={72} />
         </div>
       </motion.section>
 
