@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Icon from '../Icon.jsx'
 import Mascot from '../Mascot.jsx'
-import { canSpeak, canListenReliably, speakItalian, listenOnce } from '../../lib/speech.js'
+import { canSpeak, pickRecordingMode, speakItalian, listenOnce, startAudioRecording, transcribeAudio } from '../../lib/speech.js'
 import { speechMatchRatio, normalize } from '../../lib/matching.js'
 import { playCorrect, playIncorrect } from '../../lib/sound.js'
 
@@ -15,25 +15,34 @@ const ERROR_MESSAGES = {
   network: 'A network hiccup interrupted listening. Try again.',
 }
 
+const MIN_RECORDING_MS = 500
+
 // Open-ended voice production: given a situation in Italian, reply aloud
 // with any appropriate response of your own choosing — scored against a
-// short list of acceptable phrasings rather than one fixed line — the way
-// a real conversation actually tests you, not just an echo of a set phrase.
+// short list of acceptable phrasings rather than one fixed line. Native
+// Web Speech recognition where it's reliable; on WebKit (unreliable there —
+// see speech.js) records and transcribes server-side instead, so this
+// actually hears you everywhere rather than trusting a self-report.
 export default function RespondExercise({ exercise, onAnswered, onContinue }) {
   const { promptIt, promptEn, accepts = [], modelEn, note } = exercise
   const [status, setStatus] = useState('answering')
   const [listening, setListening] = useState(false)
+  const [recording, setRecording] = useState(false)
+  const [transcribing, setTranscribing] = useState(false)
   const [heard, setHeard] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const speechAvailable = canSpeak()
-  const listenAvailable = canListenReliably()
+  const mode = useRef(pickRecordingMode())
+  const recorderRef = useRef(null)
+  const recordStartRef = useRef(0)
 
   useEffect(() => {
     if (speechAvailable) speakItalian(promptIt)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise.id])
 
-  function report(isCorrect) {
+  function report(isCorrect, transcript) {
+    if (transcript != null) setHeard(transcript)
     setStatus(isCorrect ? 'correct' : 'incorrect')
     if (isCorrect) playCorrect()
     else playIncorrect()
@@ -53,14 +62,68 @@ export default function RespondExercise({ exercise, onAnswered, onContinue }) {
     setListening(true)
     listenOnce({
       lang: 'it-IT',
-      onResult: (transcript) => {
-        setHeard(transcript)
-        report(matchesAny(transcript))
-      },
+      onResult: (transcript) => report(matchesAny(transcript), transcript),
       onError: (code) => setErrorMessage(ERROR_MESSAGES[code] || 'Something went wrong while listening. Try again.'),
       onEnd: () => setListening(false),
     })
   }
+
+  async function startRecording() {
+    setErrorMessage('')
+    try {
+      recorderRef.current = await startAudioRecording()
+      recordStartRef.current = Date.now()
+      setRecording(true)
+    } catch (err) {
+      setErrorMessage(
+        err?.name === 'NotAllowedError'
+          ? 'Microphone access was denied — check your browser’s site permissions.'
+          : 'Couldn’t access the microphone on this device.',
+      )
+    }
+  }
+
+  async function stopRecording() {
+    if (!recorderRef.current) return
+    const elapsed = Date.now() - recordStartRef.current
+    const blob = await recorderRef.current.stop()
+    recorderRef.current = null
+    setRecording(false)
+    if (elapsed < MIN_RECORDING_MS) {
+      setErrorMessage('That was too quick to catch — hold the mic a beat longer and try again.')
+      return
+    }
+    setTranscribing(true)
+    try {
+      const transcript = await transcribeAudio(blob)
+      if (!transcript.trim()) {
+        setErrorMessage('Didn’t catch what you said — try again, and start speaking right after you tap the mic.')
+        return
+      }
+      report(matchesAny(transcript), transcript)
+    } catch (err) {
+      setErrorMessage(err.message || 'Something went wrong. Try again.')
+    } finally {
+      setTranscribing(false)
+    }
+  }
+
+  function handleMicTap() {
+    if (mode.current === 'native') startListening()
+    else if (mode.current === 'record') (recording ? stopRecording() : startRecording())
+  }
+
+  const micActive = listening || recording
+  const micBusy = status !== 'answering' || transcribing
+  const hintText = transcribing
+    ? 'Checking your reply…'
+    : recording
+      ? 'Recording — tap again when you’re done'
+      : listening
+        ? 'Listening…'
+        : status === 'answering'
+          ? 'Tap the mic and reply in Italian'
+          : ''
 
   return (
     <div className="exercise">
@@ -78,19 +141,19 @@ export default function RespondExercise({ exercise, onAnswered, onContinue }) {
             </button>
           )}
 
-          {listenAvailable ? (
+          {mode.current !== 'none' ? (
             <>
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.93 }}
-                className={`speak-mic ${listening ? 'speak-mic-active' : ''}`}
-                disabled={status !== 'answering'}
-                onClick={startListening}
+                className={`speak-mic ${micActive ? 'speak-mic-active' : ''}`}
+                disabled={micBusy}
+                onClick={handleMicTap}
                 aria-label="Tap and reply out loud"
               >
-                <Icon name={listening ? 'x' : 'volume'} size={24} strokeWidth={2} />
+                <Icon name={micActive ? 'x' : 'volume'} size={24} strokeWidth={2} />
               </motion.button>
-              <p className="speak-hint">{listening ? 'Listening…' : status === 'answering' ? 'Tap the mic and reply in Italian' : ''}</p>
+              <p className="speak-hint">{hintText}</p>
               {heard && status !== 'answering' && <p className="speak-heard">You said: “{heard}”</p>}
               {errorMessage && <p className="speak-error">{errorMessage}</p>}
             </>

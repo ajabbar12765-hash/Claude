@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Icon from '../Icon.jsx'
 import Mascot from '../Mascot.jsx'
-import { canSpeak, canListenReliably, speakItalian, listenOnce } from '../../lib/speech.js'
+import { canSpeak, pickRecordingMode, speakItalian, listenOnce, startAudioRecording, transcribeAudio } from '../../lib/speech.js'
 import { speechMatchDetails, normalize } from '../../lib/matching.js'
 import { playCorrect, playIncorrect } from '../../lib/sound.js'
 
@@ -15,19 +15,28 @@ const ERROR_MESSAGES = {
   network: 'A network hiccup interrupted listening. Try again.',
 }
 
+const MIN_RECORDING_MS = 500
+
 // True shadowing: the Italian text stays hidden until after you attempt it,
 // so you're reacting to sound alone rather than reading along — a different
 // skill from Speak (text shown) or Respond (open-ended reply). Feedback
-// shows exactly which words of the target landed and which didn't.
+// shows exactly which words of the target landed and which didn't. Native
+// Web Speech recognition where it's reliable; on WebKit (unreliable there —
+// see speech.js) records and transcribes server-side instead, so this
+// actually hears you everywhere rather than trusting a self-report.
 export default function ShadowExercise({ exercise, onAnswered, onContinue }) {
   const { it, en, note } = exercise
   const [status, setStatus] = useState('answering') // answering | correct | incorrect
   const [listening, setListening] = useState(false)
+  const [recording, setRecording] = useState(false)
+  const [transcribing, setTranscribing] = useState(false)
   const [playCount, setPlayCount] = useState(0)
   const [result, setResult] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const speechAvailable = canSpeak()
-  const listenAvailable = canListenReliably()
+  const mode = useRef(pickRecordingMode())
+  const recorderRef = useRef(null)
+  const recordStartRef = useRef(0)
   const wordCount = normalize(it).split(' ').filter(Boolean).length
   const threshold = wordCount <= 2 ? 1 : 0.6
 
@@ -61,6 +70,63 @@ export default function ShadowExercise({ exercise, onAnswered, onContinue }) {
     })
   }
 
+  async function startRecording() {
+    setErrorMessage('')
+    try {
+      recorderRef.current = await startAudioRecording()
+      recordStartRef.current = Date.now()
+      setRecording(true)
+    } catch (err) {
+      setErrorMessage(
+        err?.name === 'NotAllowedError'
+          ? 'Microphone access was denied — check your browser’s site permissions.'
+          : 'Couldn’t access the microphone on this device.',
+      )
+    }
+  }
+
+  async function stopRecording() {
+    if (!recorderRef.current) return
+    const elapsed = Date.now() - recordStartRef.current
+    const blob = await recorderRef.current.stop()
+    recorderRef.current = null
+    setRecording(false)
+    if (elapsed < MIN_RECORDING_MS) {
+      setErrorMessage('That was too quick to catch — hold the mic a beat longer and try again.')
+      return
+    }
+    setTranscribing(true)
+    try {
+      const transcript = await transcribeAudio(blob)
+      if (!transcript.trim()) {
+        setErrorMessage('Didn’t catch what you said — try again, and start speaking right after you tap the mic.')
+        return
+      }
+      report(speechMatchDetails(transcript, it))
+    } catch (err) {
+      setErrorMessage(err.message || 'Something went wrong. Try again.')
+    } finally {
+      setTranscribing(false)
+    }
+  }
+
+  function handleMicTap() {
+    if (mode.current === 'native') startListening()
+    else if (mode.current === 'record') (recording ? stopRecording() : startRecording())
+  }
+
+  const micActive = listening || recording
+  const micBusy = status !== 'answering' || transcribing
+  const hintText = transcribing
+    ? 'Checking what you said…'
+    : recording
+      ? 'Recording — tap again when you’re done'
+      : listening
+        ? 'Listening…'
+        : status === 'answering'
+          ? 'Tap the mic and repeat what you heard'
+          : ''
+
   return (
     <div className="exercise">
       <div className="exercise-body">
@@ -74,19 +140,19 @@ export default function ShadowExercise({ exercise, onAnswered, onContinue }) {
           {playCount > 1 && <p className="speak-hint">Played {playCount} times — replay as often as you need</p>}
           {!speechAvailable && <p className="listen-fallback">Your browser can’t play audio here.</p>}
 
-          {listenAvailable ? (
+          {mode.current !== 'none' ? (
             <>
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.93 }}
-                className={`speak-mic ${listening ? 'speak-mic-active' : ''}`}
-                disabled={status !== 'answering'}
-                onClick={startListening}
+                className={`speak-mic ${micActive ? 'speak-mic-active' : ''}`}
+                disabled={micBusy}
+                onClick={handleMicTap}
                 aria-label="Repeat what you heard"
               >
-                <Icon name={listening ? 'x' : 'volume'} size={24} strokeWidth={2} />
+                <Icon name={micActive ? 'x' : 'volume'} size={24} strokeWidth={2} />
               </motion.button>
-              <p className="speak-hint">{listening ? 'Listening…' : status === 'answering' ? 'Tap the mic and repeat what you heard' : ''}</p>
+              <p className="speak-hint">{hintText}</p>
               {errorMessage && <p className="speak-error">{errorMessage}</p>}
             </>
           ) : (

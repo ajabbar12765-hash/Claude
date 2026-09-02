@@ -183,3 +183,31 @@ export function blobToBase64(blob) {
     reader.readAsDataURL(blob)
   })
 }
+
+// Which speech-input path an exercise should actually offer: 'native'
+// (Web Speech API, reliable everywhere except WebKit), 'record' (capture
+// audio and transcribe it server-side — the only real option on WebKit,
+// and a fallback anywhere native recognition is simply absent), or 'none'
+// (no microphone path exists on this device at all).
+export function pickRecordingMode() {
+  if (canRecordAudio() && isAppleWebKit()) return 'record'
+  if (canListen()) return 'native'
+  if (canRecordAudio()) return 'record'
+  return 'none'
+}
+
+// Sends a recorded clip to the server for transcription — the same
+// Gemini-backed path the voice call uses for WebKit, now shared by any
+// exercise that needs to actually hear a spoken answer rather than trust
+// a self-report. Throws with a message suitable for direct display.
+export async function transcribeAudio(blob) {
+  const audioBase64 = await blobToBase64(blob)
+  const res = await fetch('/api/transcribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ audioBase64, audioMimeType: blob.type }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data?.message || 'Couldn’t reach the transcription service. Try again.')
+  return data.heard || ''
+}
