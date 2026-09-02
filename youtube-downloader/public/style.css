@@ -1,0 +1,106 @@
+:root {
+  color-scheme: light dark;
+  --bg: #0f1216;
+  --card: #1a1e24;
+  --text: #e8eaed;
+  --muted: #9aa2ad;
+  --accent: #e63946;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+main { width: 100%; max-width: 640px; }
+
+h1 { margin-bottom: 0.25rem; font-size: 1.6rem; }
+.subtitle { color: var(--muted); margin-top: 0; margin-bottom: 1.5rem; }
+
+textarea {
+  width: 100%;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid #2a2f37;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  align-items: center;
+}
+
+select, button {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid #2a2f37;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+button {
+  background: var(--accent);
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:hover { opacity: 0.9; }
+
+#status { color: var(--muted); min-height: 1.2em; font-size: 0.9rem; }
+
+#list { list-style: none; padding: 0; margin-top: 1rem; }
+
+.item {
+  display: flex;
+  gap: 0.75rem;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 0.6rem;
+  margin-bottom: 0.6rem;
+  align-items: center;
+}
+
+.item img {
+  width: 96px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.item .meta { flex: 1; min-width: 0; }
+.item .meta .title {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.item .meta .duration { color: var(--muted); font-size: 0.8rem; }
+
+.item a.download {
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.item.error { color: #ff8080; font-size: 0.85rem; }

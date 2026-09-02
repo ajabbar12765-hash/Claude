@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offline Video Grabber</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h1>Offline Video Grabber</h1>
+    <p class="subtitle">Paste YouTube links (one per line), fetch them, then download before you board.</p>
+
+    <textarea id="urls" rows="4" placeholder="https://www.youtube.com/watch?v=...
+https://youtu.be/..."></textarea>
+
+    <div class="row">
+      <label for="format">Quality</label>
+      <select id="format">
+        <option value="standard">Standard (works without extra setup)</option>
+        <option value="best">Best (needs ffmpeg installed)</option>
+        <option value="audio">Audio only</option>
+      </select>
+      <button id="addBtn">Fetch</button>
+    </div>
+
+    <p id="status"></p>
+
+    <ul id="list"></ul>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "youtube-downloader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local web app to save YouTube videos for offline viewing (e.g. before a flight).",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "youtube-dl-exec": "^3.0.10"
+  }
+}
