@@ -24,8 +24,8 @@ const RENDERERS = {
   shadow: ShadowExercise,
 }
 
-export default function ExerciseRunner({ exercise, onAnswered, onContinue }) {
+export default function ExerciseRunner({ exercise, onAnswered, onContinue, distractorPool }) {
   const Renderer = RENDERERS[exercise.type]
   if (!Renderer) return null
-  return <Renderer key={exercise.id} exercise={exercise} onAnswered={onAnswered} onContinue={onContinue} />
+  return <Renderer key={exercise.id} exercise={exercise} onAnswered={onAnswered} onContinue={onContinue} distractorPool={distractorPool} />
 }

@@ -73,3 +73,24 @@ export function shuffle(array) {
   }
   return copy
 }
+
+// The same fixed 3-4 wrong answers, hand-authored once per item, keep
+// reappearing verbatim every time that item comes up — shuffled into a new
+// order, but a learner quickly starts recognizing the *set* itself rather
+// than actually evaluating the current prompt. Mixing in a couple of
+// randomly-drawn extra distractors from the learner's own known vocabulary
+// (a different combination on every attempt) breaks that memorized shape
+// without touching the hand-picked, plausible-confusion distractors that
+// make the exercise meaningful — and a bigger option grid is a little
+// harder to blitz through than a fixed 4.
+export function expandOptions(correctAnswer, authoredOptions, pool, { max = 6 } = {}) {
+  const known = new Set(authoredOptions)
+  const extraCandidates = shuffle((pool || []).filter((v) => v && !known.has(v)))
+  // Only bother if there's enough real variety to draw from — a handful of
+  // extra candidates would just make the same two or three items rotate in
+  // and out, which is the same staleness problem in a different shape.
+  if (extraCandidates.length < 4) return shuffle(authoredOptions)
+  const room = Math.max(0, max - authoredOptions.length)
+  const extraCount = Math.min(room, 1 + Math.floor(Math.random() * Math.min(2, room)))
+  return shuffle([...authoredOptions, ...extraCandidates.slice(0, extraCount)])
+}

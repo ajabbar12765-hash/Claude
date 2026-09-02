@@ -2,12 +2,19 @@ import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import ExerciseShell from '../ExerciseShell.jsx'
 import Icon from '../Icon.jsx'
-import { shuffle } from '../../lib/matching.js'
+import { expandOptions } from '../../lib/matching.js'
 import { canSpeak, speakItalian } from '../../lib/speech.js'
 
-export default function ListenExercise({ exercise, onAnswered, onContinue }) {
+const EYEBROWS = ['Listen and choose what it means', 'What does this mean?', 'Listen, then pick the meaning']
+
+export default function ListenExercise({ exercise, onAnswered, onContinue, distractorPool }) {
   const { it, en, options, note } = exercise
-  const shuffledOptions = useMemo(() => shuffle(options), [exercise.id])
+  const shuffledOptions = useMemo(() => {
+    const pool = (distractorPool || []).map((p) => p.en)
+    return expandOptions(en, options, pool)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exercise.id])
+  const eyebrow = useMemo(() => EYEBROWS[Math.floor(Math.random() * EYEBROWS.length)], [exercise.id])
   const [selected, setSelected] = useState(null)
   const [status, setStatus] = useState('answering')
   // Options used to be visible (and the audio auto-played) the instant the
@@ -39,7 +46,7 @@ export default function ListenExercise({ exercise, onAnswered, onContinue }) {
 
   return (
     <ExerciseShell
-      eyebrow="Listen and choose what it means"
+      eyebrow={eyebrow}
       status={status}
       canCheck={hasPlayed && selected != null}
       onCheck={handleCheck}

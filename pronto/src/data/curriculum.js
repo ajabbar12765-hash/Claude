@@ -559,7 +559,7 @@ export const UNITS = [
         typeEx('Could you bring me another fork, please?', 'Mi porta un’altra forchetta, per favore?', ['mi porta unaltra forchetta per favore', 'mi porta un\'altra forchetta per favore']),
         build('Is service included?', 'È incluso il servizio?', ['escluso', 'gratuito'], {}),
         mcq('en-it', 'Il conto, per favore', 'The check, please', ['Il conto, per favore', 'Il tavolo, per favore', 'Il menù, per favore', 'La cucina, per favore']),
-        listen('Tutto bene?', 'Is everything okay?', ['Is everything okay?', 'Are you finished?', 'Do you want dessert?', 'Is it too spicy?']),
+        listen('Ha bisogno di altro?', 'Do you need anything else?', ['Do you need anything else?', 'Is the table ready?', 'Would you like the menu again?', 'Can I take your plate?']),
         match([
           { it: 'Un altro po’ di pane', en: 'A little more bread' },
           { it: 'Una forchetta', en: 'A fork' },
@@ -899,7 +899,7 @@ export const UNITS = [
         typeEx('I lost my wallet', 'Ho perso il portafoglio', ['ho perso il portafoglio']),
         build('What’s the wifi password?', 'Qual è la password del wifi?', ['nome utente', 'account'], {}),
         mcq('en-it', 'Il mio telefono non funziona', 'My phone isn’t working', ['Il mio telefono non funziona', 'Il mio telefono è nuovo', 'Non ho un telefono', 'Il telefono è caro']),
-        listen('Dov’è il commissariato?', 'Where’s the police station?', ['Where’s the police station?', 'Where’s the pharmacy?', 'Where’s the hospital?', 'Where’s the hotel?']),
+        listen('Posso usare il suo telefono?', 'Can I use your phone? (formal)', ['Can I use your phone? (formal)', 'Is my phone broken?', 'Do you have a charger?', 'Where can I buy a phone?']),
         match([
           { it: 'Ho perso...', en: 'I lost...' },
           { it: 'Il portafoglio', en: 'The wallet' },
@@ -1047,7 +1047,7 @@ export const UNITS = [
         typeEx('Do you have a medium size?', 'Avete la taglia media?', ['avete la taglia media'], { objectiveIds: ['negotiate-price'] }),
         build('What color?', 'Di che colore?', ['quanto', 'quale taglia'], {}),
         mcq('en-it', 'Lo prendo', 'I’ll take it', ['Lo prendo', 'Lo lascio', 'Non lo voglio', 'Lo provo']),
-        listen('Solo sto guardando, grazie', 'I’m just looking, thanks', ['I’m just looking, thanks', 'I’ll take it, thanks', 'It doesn’t fit, thanks', 'I already paid, thanks']),
+        listen('Avete un’altra taglia?', 'Do you have another size?', ['Do you have another size?', 'Is this the last one?', 'Do you have another color?', 'Can I pay by card?']),
         match([
           { it: 'Posso provarlo?', en: 'Can I try it on?' },
           { it: 'La taglia media', en: 'Medium size' },

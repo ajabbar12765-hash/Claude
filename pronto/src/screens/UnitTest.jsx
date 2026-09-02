@@ -145,7 +145,7 @@ export default function UnitTest({ unit, progress, onExit }) {
           {minutes}:{seconds}
         </div>
       </div>
-      <ExerciseRunner key={current.id} exercise={current} onAnswered={handleAnswered} onContinue={handleContinue} />
+      <ExerciseRunner key={current.id} exercise={current} onAnswered={handleAnswered} onContinue={handleContinue} distractorPool={progress.knownVocab} />
     </div>
   )
 }

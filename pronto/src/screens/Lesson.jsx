@@ -250,7 +250,15 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
         </AnimatePresence>
       </div>
 
-      {current && <ExerciseRunner key={current.key} exercise={current.exercise} onAnswered={handleAnswered} onContinue={handleContinue} />}
+      {current && (
+        <ExerciseRunner
+          key={current.key}
+          exercise={current.exercise}
+          onAnswered={handleAnswered}
+          onContinue={handleContinue}
+          distractorPool={progress.knownVocab}
+        />
+      )}
     </div>
   )
 }
