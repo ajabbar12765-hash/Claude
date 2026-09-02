@@ -2033,6 +2033,9 @@ ul {
 .mascot {
   display: block;
   overflow: visible;
+  /* Root bob/hop/slouch/nod rotate around the feet, not the svg's
+     center — a body leaning from its base reads as weight, not spin. */
+  transform-origin: 100px 210px;
 }
 
 .mascot-paw {
@@ -2049,10 +2052,26 @@ ul {
   transform: translate(6px, -46px) rotate(25deg);
 }
 
+/* Small idle fidget — opposite-phase so the paws never move in lockstep
+   — replaced entirely by the transition-based raised pose on celebrate. */
+.mascot:not(.mascot-celebrate) .mascot-paw-left {
+  animation: mascot-paw-idle 3.4s ease-in-out infinite;
+}
+
+.mascot:not(.mascot-celebrate) .mascot-paw-right {
+  animation: mascot-paw-idle 3.4s ease-in-out infinite -1.7s;
+}
+
 .mascot-idle,
 .mascot-thinking,
 .mascot-happy {
   animation: mascot-bob 3.2s ease-in-out infinite;
+}
+
+.mascot-cool {
+  /* Slower and shallower than the peppy idle bob — a settled, confident
+     lean rather than a bounce. */
+  animation: mascot-cool-bob 4.4s ease-in-out infinite;
 }
 
 .mascot-celebrate {
@@ -2077,6 +2096,43 @@ ul {
   animation: mascot-nod 4.5s ease-in-out infinite;
 }
 
+/* Weight-shift sway, layered under the root bob on its own element so
+   the two run at different rhythms instead of one rigid loop — this is
+   what actually reads as "moving" rather than just "bouncing". Pivots
+   near the feet, same as the root transform. */
+.mascot-sway {
+  transform-origin: 100px 210px;
+  animation: mascot-sway 4.6s ease-in-out infinite;
+}
+
+.mascot-cool .mascot-sway {
+  animation: mascot-cool-sway 5.6s ease-in-out infinite;
+}
+
+.mascot-bored .mascot-sway {
+  animation: mascot-sway 6.2s ease-in-out infinite;
+}
+
+.mascot-sleepy .mascot-sway {
+  animation: none;
+}
+
+/* Breathing — independent of every other motion, so it keeps going even
+   mid-hop or mid-nod instead of freezing the torso while everything
+   else moves. */
+.mascot-torso {
+  transform-origin: 100px 168px;
+  animation: mascot-breathe 3.6s ease-in-out infinite;
+}
+
+.mascot-sleepy .mascot-torso {
+  animation: mascot-breathe-deep 5.5s ease-in-out infinite;
+}
+
+.mascot-bored .mascot-torso {
+  animation: mascot-breathe-shallow 4.4s ease-in-out infinite;
+}
+
 /* Ambient life independent of the overall pose — a real character never
    holds perfectly still even when its "state" isn't animating. */
 .mascot-tail {
@@ -2085,6 +2141,23 @@ ul {
 }
 
 .mascot-sleepy .mascot-tail {
+  animation: none;
+}
+
+/* Ears twitch independently of each other, at different, longer, and
+   slightly irregular intervals — synced ears read as mechanical. */
+.mascot-ear-right {
+  transform-origin: 128px 50px;
+  animation: mascot-ear-twitch 7.5s ease-in-out infinite;
+}
+
+.mascot-ear-left {
+  transform-origin: 72px 50px;
+  animation: mascot-ear-twitch-left 11s ease-in-out infinite;
+}
+
+.mascot-sleepy .mascot-ear-right,
+.mascot-sleepy .mascot-ear-left {
   animation: none;
 }
 
@@ -2099,6 +2172,15 @@ ul {
   }
   50% {
     transform: translateY(-5px) rotate(-1.5deg);
+  }
+}
+
+@keyframes mascot-cool-bob {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2.5px) rotate(-1deg);
   }
 }
 
@@ -2141,12 +2223,95 @@ ul {
   }
 }
 
+@keyframes mascot-sway {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  50% {
+    transform: translateX(-1.5px) rotate(1.1deg);
+  }
+}
+
+@keyframes mascot-cool-sway {
+  /* A slower, one-sided lean rather than an even side-to-side rock —
+     reads as "leaning back, pleased with himself" instead of idling. */
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  60% {
+    transform: translateX(-2px) rotate(1.8deg);
+  }
+}
+
+@keyframes mascot-breathe {
+  0%, 100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.015, 0.985);
+  }
+}
+
+@keyframes mascot-breathe-deep {
+  0%, 100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.03, 0.96);
+  }
+}
+
+@keyframes mascot-breathe-shallow {
+  0%, 100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.006, 0.994);
+  }
+}
+
 @keyframes mascot-tail-sway {
   0%, 100% {
     transform: rotate(0deg);
   }
+  30% {
+    transform: rotate(5deg);
+  }
+  55% {
+    transform: rotate(-2deg);
+  }
+  80% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes mascot-ear-twitch {
+  0%, 75%, 84%, 100% {
+    transform: rotate(0deg);
+  }
+  79% {
+    transform: rotate(-9deg);
+  }
+  81.5% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes mascot-ear-twitch-left {
+  0%, 88%, 94%, 100% {
+    transform: rotate(0deg);
+  }
+  91% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes mascot-paw-idle {
+  0%, 100% {
+    transform: translateY(0);
+  }
   50% {
-    transform: rotate(4deg);
+    transform: translateY(-2px);
   }
 }
 
@@ -2163,10 +2328,23 @@ ul {
   .mascot-idle,
   .mascot-thinking,
   .mascot-happy,
+  .mascot-cool,
   .mascot-celebrate,
   .mascot-bored,
   .mascot-sleepy,
+  .mascot-sway,
+  .mascot-cool .mascot-sway,
+  .mascot-bored .mascot-sway,
+  .mascot-torso,
+  .mascot-sleepy .mascot-torso,
+  .mascot-bored .mascot-torso,
   .mascot-tail,
+  .mascot-ear-right,
+  .mascot-ear-left,
+  .mascot-paw-left,
+  .mascot-paw-right,
+  .mascot:not(.mascot-celebrate) .mascot-paw-left,
+  .mascot:not(.mascot-celebrate) .mascot-paw-right,
   .mascot-blinkable .mascot-eyes,
   .mascot-talking .mascot-mouth-talk {
     animation: none;

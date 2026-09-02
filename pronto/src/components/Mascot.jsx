@@ -83,49 +83,61 @@ export default function Mascot({ expression = 'idle', size = 96, celebrate = fal
       className={`mascot mascot-${expression} ${celebrate ? 'mascot-celebrate' : ''} ${blinkable ? 'mascot-blinkable' : ''} ${className}`}
       aria-hidden="true"
     >
-      {/* tail */}
-      <g className="mascot-tail">
-        <path d="M148 178 Q194 172 186 122 Q182 92 152 100 Q176 128 150 178 Z" fill="var(--mascot-body)" />
-        <path d="M186 122 Q182 96 156 101 Q172 108 172 128 Q172 148 155 168 Z" fill="var(--mascot-cream)" opacity="0.9" />
+      {/* Everything below rides on one weight-shift sway, layered under
+          the root bob/hop/slouch/nod transform on the <svg> itself — two
+          independent motions at different rhythms read as alive instead
+          of a single rigid loop. */}
+      <g className="mascot-sway">
+        {/* tail */}
+        <g className="mascot-tail">
+          <path d="M148 178 Q194 172 186 122 Q182 92 152 100 Q176 128 150 178 Z" fill="var(--mascot-body)" />
+          <path d="M186 122 Q182 96 156 101 Q172 108 172 128 Q172 148 155 168 Z" fill="var(--mascot-cream)" opacity="0.9" />
+        </g>
+
+        {/* paws (raise on celebrate, idle fidget otherwise) */}
+        <g className="mascot-paw mascot-paw-left">
+          <ellipse cx="52" cy="150" rx="13" ry="17" fill="var(--mascot-body)" />
+        </g>
+        <g className="mascot-paw mascot-paw-right">
+          <ellipse cx="148" cy="150" rx="13" ry="17" fill="var(--mascot-body)" />
+        </g>
+
+        {/* body — breathes on its own, independent of the root bob */}
+        <g className="mascot-torso">
+          <ellipse cx="100" cy="168" rx="60" ry="44" fill="var(--mascot-body)" />
+          <ellipse cx="100" cy="184" rx="34" ry="20" fill="var(--mascot-cream)" />
+        </g>
+
+        {/* neckerchief */}
+        <path d="M66 132 L134 132 L100 164 Z" fill="var(--mascot-scarf)" />
+        <circle cx="100" cy="136" r="7" fill="var(--mascot-scarf)" />
+
+        {/* ears (occasional twitch) */}
+        <g className="mascot-ear mascot-ear-left">
+          <path d="M52 58 L34 2 L92 42 Z" fill="var(--mascot-body)" />
+          <path d="M56 52 L46 16 L82 40 Z" fill="var(--mascot-cream)" />
+        </g>
+        <g className="mascot-ear mascot-ear-right">
+          <path d="M148 58 L166 2 L108 42 Z" fill="var(--mascot-body)" />
+          <path d="M144 52 L154 16 L118 40 Z" fill="var(--mascot-cream)" />
+        </g>
+
+        {/* head */}
+        <circle cx="100" cy="96" r="64" fill="var(--mascot-body)" />
+
+        {/* muzzle */}
+        <ellipse cx="100" cy="112" rx="36" ry="27" fill="var(--mascot-cream)" />
+
+        {/* cheeks */}
+        <ellipse cx="62" cy="108" rx="10" ry="7" fill="var(--mascot-blush)" opacity="0.7" />
+        <ellipse cx="138" cy="108" rx="10" ry="7" fill="var(--mascot-blush)" opacity="0.7" />
+
+        {/* nose */}
+        <path d="M100 96 L92 104 L108 104 Z" fill="#221813" />
+
+        <g className="mascot-eyes">{face.eyes}</g>
+        {face.mouth}
       </g>
-
-      {/* paws (raise on celebrate) */}
-      <g className="mascot-paw mascot-paw-left">
-        <ellipse cx="52" cy="150" rx="13" ry="17" fill="var(--mascot-body)" />
-      </g>
-      <g className="mascot-paw mascot-paw-right">
-        <ellipse cx="148" cy="150" rx="13" ry="17" fill="var(--mascot-body)" />
-      </g>
-
-      {/* body */}
-      <ellipse cx="100" cy="168" rx="60" ry="44" fill="var(--mascot-body)" />
-      <ellipse cx="100" cy="184" rx="34" ry="20" fill="var(--mascot-cream)" />
-
-      {/* neckerchief */}
-      <path d="M66 132 L134 132 L100 164 Z" fill="var(--mascot-scarf)" />
-      <circle cx="100" cy="136" r="7" fill="var(--mascot-scarf)" />
-
-      {/* ears */}
-      <path d="M52 58 L34 2 L92 42 Z" fill="var(--mascot-body)" />
-      <path d="M56 52 L46 16 L82 40 Z" fill="var(--mascot-cream)" />
-      <path d="M148 58 L166 2 L108 42 Z" fill="var(--mascot-body)" />
-      <path d="M144 52 L154 16 L118 40 Z" fill="var(--mascot-cream)" />
-
-      {/* head */}
-      <circle cx="100" cy="96" r="64" fill="var(--mascot-body)" />
-
-      {/* muzzle */}
-      <ellipse cx="100" cy="112" rx="36" ry="27" fill="var(--mascot-cream)" />
-
-      {/* cheeks */}
-      <ellipse cx="62" cy="108" rx="10" ry="7" fill="var(--mascot-blush)" opacity="0.7" />
-      <ellipse cx="138" cy="108" rx="10" ry="7" fill="var(--mascot-blush)" opacity="0.7" />
-
-      {/* nose */}
-      <path d="M100 96 L92 104 L108 104 Z" fill="#221813" />
-
-      <g className="mascot-eyes">{face.eyes}</g>
-      {face.mouth}
     </svg>
   )
 }
