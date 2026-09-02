@@ -17,13 +17,14 @@ https://youtu.be/..."></textarea>
     <div class="row">
       <label for="format">Quality</label>
       <select id="format">
-        <option value="standard">Standard (works without extra setup)</option>
-        <option value="best">Best (needs ffmpeg installed)</option>
-        <option value="audio">Audio only</option>
+        <option value="standard">Standard (no ffmpeg needed)</option>
+        <option value="best">Best quality (needs ffmpeg)</option>
+        <option value="audio">Audio only, MP3 (needs ffmpeg)</option>
       </select>
       <button id="addBtn">Fetch</button>
     </div>
 
+    <p id="capNote" class="note"></p>
     <p id="status"></p>
 
     <ul id="list"></ul>

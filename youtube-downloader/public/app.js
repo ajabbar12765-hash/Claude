@@ -3,8 +3,28 @@ const formatEl = document.getElementById('format');
 const addBtn = document.getElementById('addBtn');
 const statusEl = document.getElementById('status');
 const listEl = document.getElementById('list');
+const capNoteEl = document.getElementById('capNote');
 
 const seen = new Set();
+
+init();
+
+async function init() {
+  try {
+    const res = await fetch('/api/capabilities');
+    const { ffmpeg } = await res.json();
+    if (!ffmpeg) {
+      formatEl.querySelector('option[value="best"]').disabled = true;
+      formatEl.querySelector('option[value="audio"]').disabled = true;
+      capNoteEl.textContent = 'ffmpeg not detected on this machine — only Standard quality is available. See README to install ffmpeg for Best/Audio.';
+    } else {
+      formatEl.value = 'best';
+      capNoteEl.textContent = 'ffmpeg detected — Best quality available.';
+    }
+  } catch {
+    capNoteEl.textContent = '';
+  }
+}
 
 addBtn.addEventListener('click', async () => {
   const lines = urlsEl.value
@@ -33,17 +53,7 @@ addBtn.addEventListener('click', async () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch info');
 
-      const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&format=${format}&title=${encodeURIComponent(data.title)}`;
-
-      li.className = 'item';
-      li.innerHTML = `
-        <img src="${data.thumbnail || ''}" alt="" />
-        <div class="meta">
-          <div class="title">${escapeHtml(data.title)}</div>
-          <div class="duration">${data.duration || ''}</div>
-        </div>
-        <a class="download" href="${downloadUrl}">Download</a>
-      `;
+      renderItem(li, url, data, format);
     } catch (err) {
       li.className = 'item error';
       li.textContent = `${url} — ${err.message}`;
@@ -53,6 +63,59 @@ addBtn.addEventListener('click', async () => {
   statusEl.textContent = '';
   addBtn.disabled = false;
 });
+
+function renderItem(li, url, data, format) {
+  li.className = 'item';
+  li.innerHTML = `
+    <img src="${data.thumbnail || ''}" alt="" />
+    <div class="meta">
+      <div class="title">${escapeHtml(data.title)}</div>
+      <div class="duration">${data.duration || ''}</div>
+    </div>
+    <button class="download">Download</button>
+  `;
+
+  const btn = li.querySelector('button.download');
+  btn.addEventListener('click', () => startDownload(btn, url, data.title, format));
+}
+
+async function startDownload(btn, url, title, format) {
+  btn.disabled = true;
+  const started = Date.now();
+  const tick = setInterval(() => {
+    const secs = Math.round((Date.now() - started) / 1000);
+    btn.textContent = secs < 3 ? 'Downloading…' : `Downloading… (${secs}s)`;
+  }, 500);
+
+  try {
+    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&format=${format}&title=${encodeURIComponent(title)}`;
+    const res = await fetch(downloadUrl);
+    if (!res.ok) throw new Error(await res.text());
+
+    const disposition = res.headers.get('Content-Disposition') || '';
+    const match = disposition.match(/filename="(.+)"/);
+    const filename = match ? match[1] : `${title}.mp4`;
+
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(blobUrl);
+
+    btn.textContent = 'Saved ✓';
+  } catch (err) {
+    btn.textContent = 'Failed — retry';
+    btn.disabled = false;
+    console.error(err);
+  } finally {
+    clearInterval(tick);
+    if (btn.textContent === 'Saved ✓') btn.disabled = true;
+  }
+}
 
 function escapeHtml(str) {
   const div = document.createElement('div');

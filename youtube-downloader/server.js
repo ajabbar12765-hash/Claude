@@ -1,11 +1,26 @@
 import express from 'express';
 import path from 'path';
+import os from 'os';
+import fs from 'fs';
+import { promises as fsp } from 'fs';
 import { fileURLToPath } from 'url';
+import { execFileSync } from 'child_process';
 import youtubedl from 'youtube-dl-exec';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4321;
+
+let hasFfmpeg = false;
+try {
+  execFileSync('ffmpeg', ['-version'], { stdio: 'ignore' });
+  hasFfmpeg = true;
+} catch {
+  hasFfmpeg = false;
+}
+if (!hasFfmpeg) {
+  console.warn('ffmpeg not found — "Best" and "Audio" quality options will be unavailable. See README.');
+}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -20,11 +35,34 @@ function isYoutubeUrl(raw) {
   }
 }
 
+// bestvideo+bestaudio merged by ffmpeg gets the actual highest resolution/bitrate
+// YouTube offers (often only available as separate video/audio tracks); the
+// mp4-first ordering keeps the result compatible with the widest range of players.
 const FORMATS = {
-  standard: { format: 'best[ext=mp4]/best', ext: 'mp4' },
-  best: { format: 'bestvideo+bestaudio/best', ext: 'mp4', mergeOutputFormat: 'mp4' },
-  audio: { format: 'bestaudio/best', ext: 'm4a' },
+  standard: {
+    format: 'best[ext=mp4]/best',
+    ext: 'mp4',
+    requiresFfmpeg: false,
+  },
+  best: {
+    format: 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best',
+    mergeOutputFormat: 'mp4',
+    ext: 'mp4',
+    requiresFfmpeg: true,
+  },
+  audio: {
+    format: 'bestaudio/best',
+    extractAudio: true,
+    audioFormat: 'mp3',
+    audioQuality: 0,
+    ext: 'mp3',
+    requiresFfmpeg: true,
+  },
 };
+
+app.get('/api/capabilities', (req, res) => {
+  res.json({ ffmpeg: hasFfmpeg });
+});
 
 app.get('/api/info', async (req, res) => {
   const url = req.query.url;
@@ -56,47 +94,65 @@ app.get('/api/download', async (req, res) => {
   if (!isYoutubeUrl(url)) return res.status(400).send('Not a valid YouTube URL');
 
   const chosen = FORMATS[format] || FORMATS.standard;
-  const safeTitle = String(title).replace(/[^\w\-.,() ]/g, '').slice(0, 100) || 'video';
+  if (chosen.requiresFfmpeg && !hasFfmpeg) {
+    return res.status(400).send('This quality requires ffmpeg to be installed. See the README for a one-line install command.');
+  }
 
-  res.setHeader('Content-Disposition', `attachment; filename="${safeTitle}.${chosen.ext}"`);
-  res.setHeader('Content-Type', 'application/octet-stream');
+  const safeTitle = String(title).replace(/[^\w\-.,() ]/g, '').slice(0, 100) || 'video';
+  const tempDir = await fsp.mkdtemp(path.join(os.tmpdir(), 'ytdl-'));
+  const outTemplate = path.join(tempDir, 'download.%(ext)s');
 
   const subprocess = youtubedl.exec(
     url,
     {
-      output: '-',
+      output: outTemplate,
       format: chosen.format,
       ...(chosen.mergeOutputFormat ? { mergeOutputFormat: chosen.mergeOutputFormat } : {}),
+      ...(chosen.extractAudio ? { extractAudio: true } : {}),
+      ...(chosen.audioFormat ? { audioFormat: chosen.audioFormat } : {}),
+      ...(chosen.audioQuality !== undefined ? { audioQuality: chosen.audioQuality } : {}),
       noWarnings: true,
       noCheckCertificates: true,
       addHeader: ['referer:youtube.com', 'user-agent:googlebot'],
     },
-    { stdio: ['ignore', 'pipe', 'pipe'] }
+    { stdio: ['ignore', 'ignore', 'pipe'] }
   );
-
-  subprocess.stdout.pipe(res);
-
-  let stderr = '';
-  subprocess.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
-
-  subprocess.on('error', (err) => {
-    console.error('yt-dlp failed to start:', err);
-    if (!res.headersSent) res.status(500).end('Download failed to start.');
-  });
-
-  subprocess.on('close', (code) => {
-    if (code !== 0) {
-      console.error('yt-dlp exited with code', code, stderr.slice(-2000));
-      if (!res.headersSent) res.status(500).end('Download failed. See server logs.');
-      else res.end();
-    }
-  });
 
   req.on('close', () => {
     if (!subprocess.killed) subprocess.kill('SIGKILL');
   });
+
+  let stderr = '';
+  subprocess.stderr?.on('data', (chunk) => { stderr += chunk.toString(); });
+
+  try {
+    await subprocess;
+
+    const files = await fsp.readdir(tempDir);
+    if (files.length === 0) throw new Error('yt-dlp produced no output file');
+    const outputFile = path.join(tempDir, files[0]);
+    const ext = path.extname(outputFile).slice(1) || chosen.ext;
+    const stat = await fsp.stat(outputFile);
+
+    res.setHeader('Content-Disposition', `attachment; filename="${safeTitle}.${ext}"`);
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Length', stat.size);
+
+    const readStream = fs.createReadStream(outputFile);
+    const cleanup = () => fsp.rm(tempDir, { recursive: true, force: true }).catch(() => {});
+    readStream.on('close', cleanup);
+    readStream.on('error', cleanup);
+    readStream.pipe(res);
+  } catch (err) {
+    console.error('Download failed:', stderr.slice(-2000) || err.message);
+    await fsp.rm(tempDir, { recursive: true, force: true }).catch(() => {});
+    if (!res.headersSent) {
+      res.status(500).send('Download failed. It may be private, age-restricted, region-locked, or need a newer yt-dlp.');
+    }
+  }
 });
 
 app.listen(PORT, () => {
   console.log(`\nYouTube downloader running at http://localhost:${PORT}\n`);
+  console.log(`ffmpeg detected: ${hasFfmpeg ? 'yes (Best/Audio available)' : 'no (only Standard quality available)'}\n`);
 });
