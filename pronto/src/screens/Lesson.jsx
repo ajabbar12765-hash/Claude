@@ -9,20 +9,9 @@ import { vocabForExercise } from '../data/curriculum.js'
 
 let requeueCounter = 0
 
-function freshState(lesson) {
-  return {
-    queue: lesson.exercises.map((ex) => ({ key: ex.id, exercise: ex })),
-    doneIds: new Set(),
-    missedOnce: new Set(),
-    combo: 0,
-  }
-}
-
 // Which of one exercise's words the learner hasn't met yet this run and
-// doesn't already know from a prior lesson — taught one at a time, right
-// before the exercise that uses it, instead of a batch of flashcards up
-// front. Explain cards show their own examples inline, so they never get a
-// separate flashcard step.
+// doesn't already know from a prior lesson. Explain cards show their own
+// examples inline, so they never get a separate flashcard step.
 function newWordsForExercise(ex, taught) {
   if (!ex || ex.type === 'explain') return []
   const seen = new Set()
@@ -35,8 +24,66 @@ function newWordsForExercise(ex, taught) {
   })
 }
 
+// Turns a lesson's authored exercise list into a fixed run order that never
+// tests a word on the same screen it was just taught on. Teaching a phrase
+// and then immediately re-asking about that exact phrase isn't retrieval —
+// it's just re-reading, so nothing sticks and every question becomes a
+// giveaway. Real spaced-repetition research (Pimsleur's graduated interval
+// recall, Duolingo's half-life regression) agrees on one thing: even the
+// *first* re-test after learning something needs a real gap, not zero.
+//
+// This holds each newly-taught exercise back by exactly one slot: teaching
+// a word always releases whatever was held before it, so the schedule
+// naturally alternates teach → (a different, unrelated) exercise → the
+// exercise that needed teaching → teach → ... An exercise that needs no
+// teaching (already-known vocab, or an explain card) just runs in place and
+// costs nothing. Anything still held when the lesson runs out is flushed at
+// the end, so nothing is ever skipped — only reordered.
+function scheduleLesson(exercises, knownWords) {
+  const taught = new Set(knownWords)
+  const steps = []
+  let held = null
+
+  for (const ex of exercises) {
+    const newWords = newWordsForExercise(ex, taught)
+    if (newWords.length > 0) {
+      // Teach this exercise's new word(s) first, THEN release whatever was
+      // previously held — that ordering is what actually puts a different
+      // teach card between the held exercise's own teach moment and its
+      // test. Releasing first would put the held exercise right after its
+      // own teach card again, with nothing new in between.
+      for (const word of newWords) {
+        steps.push({ type: 'teach', word })
+        taught.add(word.it.toLowerCase())
+      }
+      if (held) {
+        steps.push({ type: 'exercise', exercise: held })
+      }
+      held = ex
+    } else {
+      steps.push({ type: 'exercise', exercise: ex })
+    }
+  }
+  if (held) steps.push({ type: 'exercise', exercise: held })
+
+  return steps
+}
+
+function freshState(lesson, knownWords) {
+  const steps = scheduleLesson(lesson.exercises, knownWords)
+  return {
+    queue: steps.map((step, i) => ({
+      key: step.type === 'teach' ? `teach-${i}-${step.word.it}` : step.exercise.id,
+      step,
+    })),
+    doneIds: new Set(),
+    missedOnce: new Set(),
+    combo: 0,
+  }
+}
+
 export default function Lesson({ lesson, progress, onExit, onFinished }) {
-  const [run, setRun] = useState(() => freshState(lesson))
+  const [run, setRun] = useState(() => freshState(lesson, (progress.knownVocab || []).map((p) => p.it.toLowerCase())))
   // A ref, not state: some exercises (Explain) call onAnswered and onContinue
   // back-to-back in the same event handler with no render in between, so
   // state wouldn't have committed yet by the time handleContinue reads it.
@@ -44,8 +91,6 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
   const [finished, setFinished] = useState(false)
   const [comboToast, setComboToast] = useState(null)
   const [xpPopup, setXpPopup] = useState(null)
-  const [taught, setTaught] = useState(() => new Set((progress.knownVocab || []).map((p) => p.it.toLowerCase())))
-  const [pendingTeach, setPendingTeach] = useState(() => newWordsForExercise(run.queue[0]?.exercise, taught))
   const speechSupported = canSpeak()
 
   const { queue, doneIds, missedOnce, combo } = run
@@ -59,14 +104,6 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
       playComplete()
     }
   }, [queue, finished, progress, lesson.id, total, missedOnce])
-
-  // Every time the queue lands on a different exercise, work out which of
-  // its words are genuinely new and line them up as teaching cards shown
-  // one at a time immediately before that exercise runs.
-  useEffect(() => {
-    setPendingTeach(newWordsForExercise(current?.exercise, taught))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.key])
 
   useEffect(() => {
     if (!comboToast) return
@@ -82,8 +119,9 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
 
   function handleAnswered(isCorrect) {
     lastAnswerCorrect.current = isCorrect
+    const exerciseId = current.step.exercise.id
     if (isCorrect) {
-      progress.recordCorrect(current.exercise.id)
+      progress.recordCorrect(exerciseId)
       setXpPopup({ id: Date.now(), text: '+10 XP' })
       setRun((prev) => {
         const nextCombo = prev.combo + 1
@@ -91,12 +129,12 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
           setComboToast({ id: Date.now(), count: nextCombo })
           playCombo()
         }
-        return { ...prev, doneIds: new Set(prev.doneIds).add(current.exercise.id), combo: nextCombo }
+        return { ...prev, doneIds: new Set(prev.doneIds).add(exerciseId), combo: nextCombo }
       })
     } else {
       setRun((prev) => ({
         ...prev,
-        missedOnce: new Set(prev.missedOnce).add(current.exercise.id),
+        missedOnce: new Set(prev.missedOnce).add(exerciseId),
         combo: 0,
       }))
     }
@@ -111,15 +149,16 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
       const [head, ...rest] = prev.queue
       if (wasCorrect) return { ...prev, queue: rest }
       requeueCounter += 1
-      return { ...prev, queue: [...rest, { key: `${head.exercise.id}-r${requeueCounter}`, exercise: head.exercise }] }
+      return { ...prev, queue: [...rest, { key: `${head.step.exercise.id}-r${requeueCounter}`, step: head.step }] }
     })
     lastAnswerCorrect.current = null
   }
 
-  function handleTeachNext() {
-    const [word, ...rest] = pendingTeach
-    if (word) setTaught((prev) => new Set(prev).add(word.it.toLowerCase()))
-    setPendingTeach(rest)
+  // Dismissing a teach card just advances past it — the exercise that
+  // actually needs this word is scheduled later (see scheduleLesson), not
+  // next, so there's nothing to answer or track here.
+  function handleTeachContinue() {
+    setRun((prev) => ({ ...prev, queue: prev.queue.slice(1) }))
   }
 
   if (finished) {
@@ -163,8 +202,8 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
     )
   }
 
-  if (pendingTeach.length > 0) {
-    const word = pendingTeach[0]
+  if (current?.step.type === 'teach') {
+    const word = current.step.word
     return (
       <div className="screen screen-lesson">
         <div className="lesson-header">
@@ -176,7 +215,7 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
 
         <div className="teach-zone">
           <Mascot expression="happy" size={72} />
-          <p className="onboarding-subtext">Learn it, then use it right away</p>
+          <p className="onboarding-subtext">You’ll be asked about this again in a bit — no need to memorize it now</p>
           <motion.div
             key={word.it}
             className="teach-word-card"
@@ -196,10 +235,10 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
             whileTap={{ scale: 0.96 }}
             type="button"
             className="btn-primary onboarding-confirm"
-            onClick={handleTeachNext}
+            onClick={handleTeachContinue}
           >
             <Icon name="chevronRight" size={22} strokeWidth={1.9} />
-            Try it
+            Got it
           </motion.button>
         </div>
       </div>
@@ -253,7 +292,7 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
       {current && (
         <ExerciseRunner
           key={current.key}
-          exercise={current.exercise}
+          exercise={current.step.exercise}
           onAnswered={handleAnswered}
           onContinue={handleContinue}
           distractorPool={progress.knownVocab}
