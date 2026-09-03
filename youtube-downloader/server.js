@@ -46,6 +46,13 @@ if (!hasFfmpeg) {
 
 app.use(express.json());
 
+// Belt-and-braces against any CDN/edge/browser cache along the way — every
+// dynamic response here reflects live state and must never be reused.
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
+
 if (ACCESS_KEY) {
   app.use('/api', (req, res, next) => {
     // Accept the key via header (used by the app's own fetch calls) or a

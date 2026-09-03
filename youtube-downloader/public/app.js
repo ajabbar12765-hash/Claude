@@ -18,6 +18,11 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// A ?key=... in the URL pre-seeds storage so the very first request succeeds
+// without ever hitting a 401.
+const urlKey = new URLSearchParams(location.search).get('key');
+if (urlKey) localStorage.setItem(KEY_STORAGE, urlKey);
+
 function authHeaders() {
   const key = localStorage.getItem(KEY_STORAGE);
   return key ? { 'x-access-key': key } : {};
@@ -25,8 +30,6 @@ function authHeaders() {
 
 // A hung request otherwise leaves the caller waiting forever with no way to
 // recover — every network call in this file goes through this.
-// Render's free tier warns cold starts can take 50+ seconds, so this needs
-// real headroom or it'll falsely report "timed out" during a normal wake-up.
 async function fetchWithTimeout(url, opts = {}, timeoutMs = 60000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -37,84 +40,58 @@ async function fetchWithTimeout(url, opts = {}, timeoutMs = 60000) {
   }
 }
 
+// No separate "is a key required?" pre-check — that round trip was the
+// actual source of trouble (some layer between client and server returning
+// a stale/wrong answer for it). Instead: just try the real request, and if
+// the server itself says 401, ask for a key right then and retry. This is
+// self-correcting by construction — it can't get out of sync with the
+// server's actual state, because it always asks the server directly.
 async function apiFetch(url, opts = {}, timeoutMs) {
-  return fetchWithTimeout(url, { ...opts, headers: { ...(opts.headers || {}), ...authHeaders() } }, timeoutMs);
-}
+  let showError = false;
+  for (;;) {
+    const res = await fetchWithTimeout(
+      url,
+      { ...opts, headers: { ...(opts.headers || {}), ...authHeaders() } },
+      timeoutMs
+    );
+    if (res.status !== 401) return res;
 
-// A ?key=... in the URL is the most bulletproof way in: it works even if
-// something above is broken, since the server checks it directly too.
-const urlKey = new URLSearchParams(location.search).get('key');
-if (urlKey) localStorage.setItem(KEY_STORAGE, urlKey);
-
-boot();
-
-async function boot() {
-  try {
-    const res = await fetchWithTimeout('/needs-key');
-    const { required } = await res.json();
-
-    if (!required) return startApp();
-
-    const stored = localStorage.getItem(KEY_STORAGE);
-    if (stored) {
-      const check = await apiFetch('/api/capabilities');
-      if (check.ok) return startApp();
-      localStorage.removeItem(KEY_STORAGE);
-    }
-    showKeyGate();
-  } catch {
-    // Couldn't even reach the server (e.g. genuinely offline) — a key
-    // gate would be a dead end here since there's nothing to verify
-    // against. Show the cached app shell instead; any actual API call
-    // (Fetch/Download) will fail with a clear per-item error, and the
-    // server still enforces the real key check on every one of those.
-    startApp();
+    const key = await promptForKey(showError);
+    if (!key) return res; // user gave up; caller sees the 401
+    localStorage.setItem(KEY_STORAGE, key);
+    showError = true; // if we loop again, this attempt also failed
   }
 }
 
-function showKeyGate() {
-  keyGateEl.hidden = false;
-  keyInputEl.focus();
+function promptForKey(showError) {
+  return new Promise((resolve) => {
+    keyGateEl.hidden = false;
+    keyInputEl.value = '';
+    keyErrorEl.textContent = showError ? 'Wrong key — try again.' : '';
+    keySubmitEl.disabled = false;
+    keySubmitEl.textContent = 'Unlock';
+    keyInputEl.focus();
 
-  const submit = async () => {
-    const key = keyInputEl.value.trim();
-    if (!key) return;
-    keyInputEl.blur(); // dismiss the keyboard so the error text below isn't hidden off-screen
-    keySubmitEl.disabled = true;
-    keySubmitEl.textContent = 'Checking…';
-    keyErrorEl.textContent = '';
+    const submit = () => {
+      const key = keyInputEl.value.trim();
+      if (!key) return;
+      cleanup();
+      resolve(key);
+    };
+    const onKeydown = (e) => { if (e.key === 'Enter') submit(); };
 
-    try {
-      localStorage.setItem(KEY_STORAGE, key);
-      const check = await apiFetch('/api/capabilities');
-      if (check.ok) {
-        keyGateEl.hidden = true;
-        startApp();
-        return;
-      }
-      localStorage.removeItem(KEY_STORAGE);
-      keyErrorEl.textContent = check.status === 401 ? 'Wrong key — try again.' : `Server error (${check.status}) — try again.`;
-    } catch (err) {
-      localStorage.removeItem(KEY_STORAGE);
-      keyErrorEl.textContent = err.name === 'AbortError'
-        ? 'Timed out — the server may be waking up. Try again in a moment.'
-        : `Network error: ${err.message}`;
-    } finally {
-      keySubmitEl.disabled = false;
-      keySubmitEl.textContent = 'Unlock';
+    function cleanup() {
+      keyGateEl.hidden = true;
+      keySubmitEl.removeEventListener('click', submit);
+      keyInputEl.removeEventListener('keydown', onKeydown);
     }
-  };
 
-  keySubmitEl.addEventListener('click', submit);
-  keyInputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+    keySubmitEl.addEventListener('click', submit);
+    keyInputEl.addEventListener('keydown', onKeydown);
+  });
 }
 
-let started = false;
-function startApp() {
-  if (started) return;
-  started = true;
-  initCapabilities();
-}
+initCapabilities();
 
 async function initCapabilities() {
   try {
