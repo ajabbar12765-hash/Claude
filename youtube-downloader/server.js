@@ -12,7 +12,6 @@ import ffmpegStaticPath from 'ffmpeg-static';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4321;
-const ACCESS_KEY = (process.env.ACCESS_KEY || '').trim();
 
 function which(bin, versionFlag = '--version') {
   try {
@@ -53,25 +52,13 @@ app.use((req, res, next) => {
   next();
 });
 
-if (ACCESS_KEY) {
-  app.use('/api', (req, res, next) => {
-    // Accept the key via header (used by the app's own fetch calls) or a
-    // ?key= query param (a plain link works even if the JS gate breaks).
-    const supplied = req.header('x-access-key') || req.query.key || '';
-    if (supplied === ACCESS_KEY) return next();
-    res.status(401).json({ error: 'unauthorized' });
-  });
-} else {
-  console.warn('ACCESS_KEY not set — /api routes are unauthenticated. Fine for localhost, NOT fine for a public deployment.');
-}
-
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Deliberately outside the /api auth gate: the frontend needs to know whether
-// to show the key-entry screen before it has a key to authenticate with.
-app.get('/needs-key', (req, res) => {
-  res.json({ required: Boolean(ACCESS_KEY) });
-});
+// There is deliberately no access-key check here. An earlier version gated
+// /api behind an ACCESS_KEY env var, but a stale value on the host kept
+// locking the owner out of their own tool with no way to clear it from the
+// app itself. Access control now depends solely on the URL being unlisted.
+// To reinstate a key, add the check here AND in public/app.js together.
 
 function isYoutubeUrl(raw) {
   try {

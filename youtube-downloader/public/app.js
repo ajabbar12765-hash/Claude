@@ -4,28 +4,20 @@ const addBtn = document.getElementById('addBtn');
 const statusEl = document.getElementById('status');
 const listEl = document.getElementById('list');
 const capNoteEl = document.getElementById('capNote');
-const keyGateEl = document.getElementById('keyGate');
-const keyInputEl = document.getElementById('keyInput');
-const keySubmitEl = document.getElementById('keySubmit');
-const keyErrorEl = document.getElementById('keyError');
 
 const seen = new Set();
-const KEY_STORAGE = 'ytdl_access_key';
 
+// An earlier version registered a service worker to cache the app shell. It
+// is unregistered here instead: it kept serving a stale copy of this file
+// long after the server was fixed, which made every fix look like it hadn't
+// deployed. Losing offline shell caching is worth always running live code.
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
-}
-
-// A ?key=... in the URL pre-seeds storage so the very first request succeeds
-// without ever hitting a 401.
-const urlKey = new URLSearchParams(location.search).get('key');
-if (urlKey) localStorage.setItem(KEY_STORAGE, urlKey);
-
-function authHeaders() {
-  const key = localStorage.getItem(KEY_STORAGE);
-  return key ? { 'x-access-key': key } : {};
+  navigator.serviceWorker.getRegistrations()
+    .then((regs) => regs.forEach((r) => r.unregister()))
+    .catch(() => {});
+  if (window.caches) {
+    caches.keys().then((keys) => keys.forEach((k) => caches.delete(k))).catch(() => {});
+  }
 }
 
 // A hung request otherwise leaves the caller waiting forever with no way to
@@ -40,55 +32,8 @@ async function fetchWithTimeout(url, opts = {}, timeoutMs = 60000) {
   }
 }
 
-// No separate "is a key required?" pre-check — that round trip was the
-// actual source of trouble (some layer between client and server returning
-// a stale/wrong answer for it). Instead: just try the real request, and if
-// the server itself says 401, ask for a key right then and retry. This is
-// self-correcting by construction — it can't get out of sync with the
-// server's actual state, because it always asks the server directly.
 async function apiFetch(url, opts = {}, timeoutMs) {
-  let showError = false;
-  for (;;) {
-    const res = await fetchWithTimeout(
-      url,
-      { ...opts, headers: { ...(opts.headers || {}), ...authHeaders() } },
-      timeoutMs
-    );
-    if (res.status !== 401) return res;
-
-    const key = await promptForKey(showError);
-    if (!key) return res; // user gave up; caller sees the 401
-    localStorage.setItem(KEY_STORAGE, key);
-    showError = true; // if we loop again, this attempt also failed
-  }
-}
-
-function promptForKey(showError) {
-  return new Promise((resolve) => {
-    keyGateEl.hidden = false;
-    keyInputEl.value = '';
-    keyErrorEl.textContent = showError ? 'Wrong key — try again.' : '';
-    keySubmitEl.disabled = false;
-    keySubmitEl.textContent = 'Unlock';
-    keyInputEl.focus();
-
-    const submit = () => {
-      const key = keyInputEl.value.trim();
-      if (!key) return;
-      cleanup();
-      resolve(key);
-    };
-    const onKeydown = (e) => { if (e.key === 'Enter') submit(); };
-
-    function cleanup() {
-      keyGateEl.hidden = true;
-      keySubmitEl.removeEventListener('click', submit);
-      keyInputEl.removeEventListener('keydown', onKeydown);
-    }
-
-    keySubmitEl.addEventListener('click', submit);
-    keyInputEl.addEventListener('keydown', onKeydown);
-  });
+  return fetchWithTimeout(url, opts, timeoutMs);
 }
 
 initCapabilities();
