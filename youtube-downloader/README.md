@@ -15,7 +15,11 @@ fetching a video always requires an internet connection, to reach YouTube — th
 can't be made to work offline. Do it before you board. Once a file is saved to your
 device, watching it needs no connection at all.
 
-There are two ways to run this, depending on what device you're using.
+There are a few ways to run this, depending on what device you're using and what's
+already deployed. It also supports Vercel directly (see `vercel.json` and `api/index.js`)
+via a serverless function that bundles `ffmpeg-static` since Vercel has no apt/pip
+access; a project can be linked to this repo's `youtube-downloader` root directory
+and it deploys on every push, no Dockerfile needed there.
 
 ## Option A — on a laptop/desktop you control
 
