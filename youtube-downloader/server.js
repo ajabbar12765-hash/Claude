@@ -11,7 +11,7 @@ import bundledYoutubedl from 'youtube-dl-exec';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4321;
-const ACCESS_KEY = process.env.ACCESS_KEY || '';
+const ACCESS_KEY = (process.env.ACCESS_KEY || '').trim();
 
 function which(bin, versionFlag = '--version') {
   try {
@@ -38,7 +38,10 @@ app.use(express.json());
 
 if (ACCESS_KEY) {
   app.use('/api', (req, res, next) => {
-    if (req.header('x-access-key') === ACCESS_KEY) return next();
+    // Accept the key via header (used by the app's own fetch calls) or a
+    // ?key= query param (a plain link works even if the JS gate breaks).
+    const supplied = req.header('x-access-key') || req.query.key || '';
+    if (supplied === ACCESS_KEY) return next();
     res.status(401).json({ error: 'unauthorized' });
   });
 } else {

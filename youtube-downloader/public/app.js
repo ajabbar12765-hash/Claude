@@ -27,11 +27,28 @@ async function apiFetch(url, opts = {}) {
   return fetch(url, { ...opts, headers: { ...(opts.headers || {}), ...authHeaders() } });
 }
 
+// A ?key=... in the URL is the most bulletproof way in: it works even if
+// something above is broken, since the server checks it directly too.
+const urlKey = new URLSearchParams(location.search).get('key');
+if (urlKey) localStorage.setItem(KEY_STORAGE, urlKey);
+
+// fetch() never times out on its own — a sleeping free-tier instance or a
+// dead connection would otherwise hang forever with zero visible feedback.
+async function fetchWithTimeout(url, opts = {}, timeoutMs = 20000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...opts, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 boot();
 
 async function boot() {
   try {
-    const res = await fetch('/needs-key');
+    const res = await fetchWithTimeout('/needs-key');
     const { required } = await res.json();
 
     if (!required) return startApp();
@@ -44,7 +61,7 @@ async function boot() {
     }
     showKeyGate();
   } catch {
-    startApp();
+    showKeyGate();
   }
 }
 
@@ -55,14 +72,29 @@ function showKeyGate() {
   const submit = async () => {
     const key = keyInputEl.value.trim();
     if (!key) return;
-    localStorage.setItem(KEY_STORAGE, key);
-    const check = await apiFetch('/api/capabilities');
-    if (check.ok) {
-      keyGateEl.hidden = true;
-      startApp();
-    } else {
+    keyInputEl.blur(); // dismiss the keyboard so the error text below isn't hidden off-screen
+    keySubmitEl.disabled = true;
+    keySubmitEl.textContent = 'Checking…';
+    keyErrorEl.textContent = '';
+
+    try {
+      localStorage.setItem(KEY_STORAGE, key);
+      const check = await apiFetch('/api/capabilities');
+      if (check.ok) {
+        keyGateEl.hidden = true;
+        startApp();
+        return;
+      }
       localStorage.removeItem(KEY_STORAGE);
-      keyErrorEl.textContent = 'Wrong key — try again.';
+      keyErrorEl.textContent = check.status === 401 ? 'Wrong key — try again.' : `Server error (${check.status}) — try again.`;
+    } catch (err) {
+      localStorage.removeItem(KEY_STORAGE);
+      keyErrorEl.textContent = err.name === 'AbortError'
+        ? 'Timed out — the server may be waking up. Try again in a moment.'
+        : `Network error: ${err.message}`;
+    } finally {
+      keySubmitEl.disabled = false;
+      keySubmitEl.textContent = 'Unlock';
     }
   };
 
