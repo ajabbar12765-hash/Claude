@@ -63,7 +63,12 @@ async function boot() {
     }
     showKeyGate();
   } catch {
-    showKeyGate();
+    // Couldn't even reach the server (e.g. genuinely offline) — a key
+    // gate would be a dead end here since there's nothing to verify
+    // against. Show the cached app shell instead; any actual API call
+    // (Fetch/Download) will fail with a clear per-item error, and the
+    // server still enforces the real key check on every one of those.
+    startApp();
   }
 }
 
