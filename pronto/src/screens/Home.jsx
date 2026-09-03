@@ -123,7 +123,7 @@ const MOTIVATION_EYEBROW = {
 const RECOMMENDED_UNITS = {
   trip: ['u2', 'u3', 'u4'],
   family: ['u1', 'u6'],
-  living: ['u4', 'u5', 'u6'],
+  living: ['u4', 'u5', 'u6', 'u19'],
   fun: [],
 }
 

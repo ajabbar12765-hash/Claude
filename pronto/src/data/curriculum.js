@@ -2195,14 +2195,14 @@ export const UNITS = [
   // ────────────────────────────────────────────────────────────
   {
     id: 'c4',
-    title: 'Final Checkpoint',
+    title: 'Checkpoint Four',
     subtitle: 'Review: Units 10–12',
     icon: 'trophy',
     color: '#D9A441',
     checkpointUnit: true,
-    learn: ['A cumulative review across the entire course — every topic, one last time.'],
+    learn: ['A cumulative review of past, future, and describing people — before the course goes further.'],
     lessons: [
-      checkpointLesson('c4l1', 'Complete Mastery', 'Past, future, and describing anyone — the whole course, together', 'trophy', [
+      checkpointLesson('c4l1', 'Past, Future & Description', 'Past, future, and describing anyone, together', 'trophy', [
         mcq('it-en', 'Sono andato al mercato', 'I went to the market', ['I am going to the market', 'I went to the market', 'I want to go to the market', 'I work at the market']),
         typeEx('I will work tomorrow', 'Lavorerò domani', ['lavorerò domani']),
         mcq('en-it', 'Secondo me, è una buona idea', 'In my opinion, it’s a good idea', ['Secondo me, è una buona idea', 'Non sono d’accordo', 'Hai ragione', 'Non lo so']),
@@ -2216,6 +2216,1389 @@ export const UNITS = [
           { it: 'Lavorerò', en: 'I will work' },
           { it: 'Secondo me', en: 'In my opinion' },
           { it: 'Più alto di me', en: 'Taller than me' },
+        ]),
+      ]),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u13',
+    title: 'Life Back Then',
+    subtitle: 'L’Imperfetto',
+    icon: 'clock',
+    color: '#9A6B3F',
+    learn: [
+      'Form and use the imperfetto for habits and ongoing states in the past',
+      'Describe what things used to be like',
+      'Tell the difference between imperfetto (background) and passato prossimo (event)',
+      'Talk about your childhood',
+    ],
+    test: unitTest('u13', [
+      mcq('it-en', 'Da bambino giocavo sempre fuori', 'As a child I always played outside', ['As a child I play outside', 'As a child I always played outside', 'As a child I will play outside', 'As a child I played once outside']),
+      typeEx('I used to live in Rome', 'Abitavo a Roma', ['abitavo a roma']),
+      mcq('en-it', 'Quando ero giovane, ero felice', 'When I was young, I was happy', ['Quando ero giovane, ero felice', 'Quando sono giovane, sono felice', 'Quando ero giovane, sarò felice', 'Ero giovane e felice ora']),
+      build('We used to go to the beach every summer', 'Andavamo al mare ogni estate', ['andiamo', 'inverno']),
+      listen('Cosa facevi da bambino?', 'What did you use to do as a child?', ['What did you use to do as a child?', 'What are you doing now?', 'What will you do?', 'What did you do yesterday?']),
+      match([
+        { it: 'Ero', en: 'I was (used to be)' },
+        { it: 'Avevo', en: 'I had (used to have)' },
+        { it: 'Facevo', en: 'I used to do' },
+        { it: 'C’era', en: 'There was / used to be' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u13l1', 'When I Was a Child', 'The imperfetto for habits', 'user', [
+        explain(
+          'The Imperfetto: Habits & Ongoing States',
+          'The imperfetto describes what things were like or what you used to do regularly — not one finished event. Regular endings: -are → -avo, -ere → -evo, -ire → -ivo (io form), with matching endings for tu/lui-lei/noi/voi/loro.',
+          [
+            { it: 'Giocavo a calcio ogni giorno', en: 'I used to play soccer every day' },
+            { it: 'Leggevo molti libri', en: 'I used to read a lot of books' },
+          ],
+        ),
+        mcq('it-en', 'Giocavo a calcio ogni giorno', 'I used to play soccer every day', ['I play soccer every day', 'I used to play soccer every day', 'I played soccer once', 'I will play soccer']),
+        typeEx('I used to watch cartoons', 'Guardavo i cartoni animati', ['guardavo i cartoni animati']),
+        mcq('en-it', 'Ballava ogni weekend', 'She used to dance every weekend', ['Ballava ogni weekend', 'Balla ogni weekend', 'Ha ballato una volta', 'Ballerà ogni weekend']),
+        build('My brother used to sleep a lot', 'Mio fratello dormiva molto', ['dorme', 'poco']),
+        listen('Cosa giocavi da bambino?', 'What did you play as a child?', ['What did you play as a child?', 'What do you play now?', 'What will you play?', 'Did you play yesterday?']),
+        match([
+          { it: 'Giocavo', en: 'I used to play' },
+          { it: 'Leggevo', en: 'I used to read' },
+          { it: 'Guardavo', en: 'I used to watch' },
+          { it: 'Dormivo', en: 'I used to sleep' },
+        ]),
+        speak('Giocavo a calcio ogni giorno', 'Say it out loud: I used to play soccer every day'),
+      ]),
+
+      lesson('u13l2', 'The Way Things Were', 'Essere and avere in the imperfetto', 'compass', [
+        explain(
+          'Essere and Avere in the Imperfetto',
+          'Essere is irregular in the imperfetto: ero, eri, era, eravamo, eravate, erano. Avere is regular: avevo, avevi, aveva... Both constantly set a scene — "C’era una volta" (once upon a time) uses c’è + era.',
+          [
+            { it: 'Ero molto timido', en: 'I was very shy' },
+            { it: 'Avevamo un cane', en: 'We had a dog' },
+          ],
+        ),
+        mcq('it-en', 'Ero molto timido da piccolo', 'I was very shy as a kid', ['I am very shy now', 'I was very shy as a kid', 'I will be shy', 'I was never shy']),
+        typeEx('We had a big garden', 'Avevamo un giardino grande', ['avevamo un giardino grande']),
+        mcq('en-it', 'C’era una vecchia casa qui', 'There was an old house here', ['C’era una vecchia casa qui', 'C’è una vecchia casa qui', 'Era una vecchia casa', 'Ci sono vecchie case qui']),
+        build('My grandparents were very kind', 'I miei nonni erano molto gentili', ['sono', 'severi']),
+        dictation('Eravamo sempre insieme', 'We were always together', ['eravamo sempre insieme']),
+        listen('C’era una volta una principessa', 'Once upon a time there was a princess', ['Once upon a time there was a princess', 'There is a princess now', 'A princess will come', 'I met a princess']),
+        match([
+          { it: 'Ero', en: 'I was' },
+          { it: 'Eri', en: 'You were' },
+          { it: 'Era', en: 'He/She was' },
+          { it: 'Avevamo', en: 'We had' },
+        ]),
+      ]),
+
+      lesson('u13l2x', 'Imperfetto or Passato Prossimo?', 'Background versus event — the classic contrast', 'clock', [
+        mcq('it-en', 'Mentre dormivo, è suonato il telefono', 'While I was sleeping, the phone rang', ['While I was sleeping, the phone rang', 'I slept and the phone was ringing', 'I will sleep when the phone rings', 'The phone rang while I slept once']),
+        typeEx('It was raining when I left the house', 'Pioveva quando sono uscito di casa', ['pioveva quando sono uscito di casa', 'pioveva quando sono uscita di casa'], { objectiveIds: ['talk-childhood'] }),
+        build('I was eating when you called me', 'Mangiavo quando mi hai chiamato', ['ho mangiato', 'chiami']),
+        reorder('Faceva freddo quando siamo arrivati', 'It was cold when we arrived'),
+        respond(
+          'Che tempo faceva ieri?', 'What was the weather like yesterday?',
+          ['Faceva bel tempo', 'Pioveva tutto il giorno', 'Faceva molto freddo'],
+          'It was nice / It rained all day / It was very cold',
+          { objectiveIds: ['talk-childhood'] },
+        ),
+        match([
+          { it: 'Mentre', en: 'While' },
+          { it: 'Quando', en: 'When' },
+          { it: 'D’un tratto', en: 'Suddenly' },
+          { it: 'Improvvisamente', en: 'All of a sudden' },
+        ]),
+      ]),
+
+      lesson('u13l3', 'Do You Remember?', 'Reminiscing and asking about memories', 'chat', [
+        mcq('it-en', 'Ti ricordi di quella vacanza?', 'Do you remember that vacation?', ['Do you remember that vacation?', 'Did you like that vacation?', 'Do you want to go on vacation?', 'Is that vacation over?']),
+        typeEx('I remember it well', 'Me lo ricordo bene', ['me lo ricordo bene'], { objectiveIds: ['talk-childhood'] }),
+        mcq('en-it', 'Una volta andavamo in montagna ogni inverno', 'Once, we went to the mountains every winter', ['Una volta andavamo in montagna ogni inverno', 'Una volta siamo andati in montagna', 'Andiamo sempre in montagna', 'Andremo in montagna una volta']),
+        build('Things were simpler back then', 'Le cose erano più semplici allora', ['sono', 'complicate']),
+        listen('Come era la tua infanzia?', 'What was your childhood like?', ['What was your childhood like?', 'How old are you?', 'Where were you born?', 'Do you have children?']),
+        match([
+          { it: 'Mi ricordo', en: 'I remember' },
+          { it: 'Una volta', en: 'Once / Back then' },
+          { it: 'Allora', en: 'Back then / So' },
+          { it: 'Da piccolo/a', en: 'As a child' },
+        ]),
+        speak('Ti ricordi di quella vacanza?', 'Say it out loud: Do you remember that vacation?'),
+      ]),
+
+      scenario(
+        'u13l4',
+        'Grandma’s Stories',
+        'Scenario: listening to memories of the old days',
+        'chat',
+        'You’re visiting your Italian grandmother, and she starts telling you about life when she was young.',
+        [
+          {
+            speaker: 'Nonna', it: 'Quando ero giovane, la vita era molto diversa.', en: 'When I was young, life was very different.',
+            choices: [
+              { it: 'Com’era la tua vita, nonna?', en: 'What was your life like, grandma?', correct: true, feedback: 'Perfect follow-up — imperfetto matching hers, inviting more of the story.' },
+              { it: 'Come sarà la tua vita?', en: 'What will your life be like?', correct: false, feedback: 'Wrong tense entirely — she just told you about the past, not the future.' },
+              { it: 'Non mi interessa.', en: 'I’m not interested.', correct: false, feedback: 'Rude, and not what you actually mean if you want her to keep going.' },
+            ],
+          },
+          {
+            speaker: 'Nonna', it: 'Non avevamo la televisione, e giocavamo sempre fuori.', en: 'We didn’t have television, and we always played outside.',
+            choices: [
+              { it: 'Che bello! Cosa giocavate?', en: 'How nice! What did you play?', correct: true, feedback: 'Imperfetto again, keeping pace with her storytelling tense.' },
+              { it: 'Che noia!', en: 'How boring!', correct: false, feedback: 'Dismissive — not how you’d want to respond to grandma’s memories.' },
+              { it: 'Ho una televisione grande.', en: 'I have a big television.', correct: false, feedback: 'Doesn’t follow the conversation — she’s talking about not having one.' },
+            ],
+          },
+          {
+            speaker: 'Nonna', it: 'Giocavamo a nascondino e correvamo nei campi.', en: 'We played hide and seek and ran in the fields.',
+            choices: [
+              { it: 'Sembra bellissimo, nonna.', en: 'That sounds wonderful, grandma.', correct: true, feedback: 'Warm and simple — exactly the kind of response that keeps a grandmother talking.' },
+              { it: 'Preferisco i videogiochi.', en: 'I prefer video games.', correct: false, feedback: 'True, maybe, but a strange thing to say to grandma mid-story.' },
+              { it: 'Dov’è il bagno?', en: 'Where’s the bathroom?', correct: false, feedback: 'Completely off-topic.' },
+            ],
+          },
+          {
+            speaker: 'Nonna', it: 'Anche tu avrai delle belle storie da raccontare un giorno.', en: 'You’ll have good stories to tell someday too.',
+            choices: [
+              { it: 'Lo spero, nonna. Grazie per la storia.', en: 'I hope so, grandma. Thanks for the story.', correct: true, feedback: 'A warm, grateful close — a great way to end a family moment.' },
+              { it: 'Non credo.', en: 'I don’t think so.', correct: false, feedback: 'Needlessly negative in a sweet moment.' },
+              { it: 'Che ore sono?', en: 'What time is it?', correct: false, feedback: 'Changes the subject abruptly — not the note to end on.' },
+            ],
+          },
+        ],
+        ['talk-childhood'],
+      ),
+
+      topicCall(
+        'u13l5',
+        'Talk to Volpe',
+        'Live chat: your childhood',
+        'chat',
+        'your childhood and how things used to be',
+        { it: 'Ciao! Com’era la tua vita da bambino/a?', en: 'Hi! What was your life like as a child?' },
+        3,
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u14',
+    title: 'Polite Requests & Advice',
+    subtitle: 'Il Condizionale',
+    icon: 'bulb',
+    color: '#4C7A93',
+    learn: [
+      'Form the condizionale for polite requests (vorrei, potrebbe)',
+      'Give and ask for advice (dovresti, ti consiglio di)',
+      'Express wishes and hypothetical desires (mi piacerebbe)',
+      'Soften requests to sound more polite than the plain present tense',
+    ],
+    test: unitTest('u14', [
+      mcq('it-en', 'Vorrei prenotare un tavolo', 'I would like to book a table', ['I want to book a table', 'I would like to book a table', 'I booked a table', 'I will book a table']),
+      typeEx('Could you help me? (formal)', 'Potrebbe aiutarmi?', ['potrebbe aiutarmi']),
+      mcq('en-it', 'Dovresti bere più acqua', 'You should drink more water', ['Dovresti bere più acqua', 'Devi bere più acqua', 'Bevi più acqua', 'Berrai più acqua']),
+      build('I would like to travel more', 'Mi piacerebbe viaggiare di più', ['piace', 'meno']),
+      listen('Cosa mi consiglia?', 'What do you recommend to me?', ['What do you recommend to me?', 'What did you recommend?', 'Do you like it?', 'What do you need?']),
+      match([
+        { it: 'Vorrei', en: 'I would like' },
+        { it: 'Potrebbe', en: 'Could you (formal)' },
+        { it: 'Dovresti', en: 'You should' },
+        { it: 'Mi piacerebbe', en: 'I would like / love to' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u14l1', 'Asking Politely', 'The condizionale for polite requests', 'heart', [
+        explain(
+          'The Condizionale for Polite Requests',
+          'The conditional softens a request or statement, turning "I want" into the much politer "I would like." Regular -are/-ere verbs use endings -ei, -esti, -ebbe...; volere becomes vorrei, potere becomes potrei.',
+          [
+            { it: 'Vorrei un caffè', en: 'I would like a coffee' },
+            { it: 'Potresti aiutarmi?', en: 'Could you help me? (informal)' },
+          ],
+        ),
+        mcq('it-en', 'Vorrei un tavolo per due', 'I would like a table for two', ['I would like a table for two', 'I want a table for two now', 'I booked a table for two', 'I will want a table for two']),
+        typeEx('I would like some information', 'Vorrei delle informazioni', ['vorrei delle informazioni']),
+        mcq('en-it', 'Potrebbe ripetere, per favore?', 'Could you repeat, please? (formal)', ['Potrebbe ripetere, per favore?', 'Ripeta subito.', 'Ha ripetuto?', 'Ripeterebbe mai?']),
+        build('Would you like a coffee? (informal)', 'Vorresti un caffè?', ['vuoi', 'tè']),
+        listen('Vorrebbe qualcosa da bere?', 'Would you like something to drink? (formal)', ['Would you like something to drink? (formal)', 'Do you want something to drink? (informal)', 'Did you drink something?', 'What do you drink?']),
+        match([
+          { it: 'Vorrei', en: 'I would like' },
+          { it: 'Vorresti', en: 'You would like (informal)' },
+          { it: 'Vorrebbe', en: 'You would like (formal)' },
+          { it: 'Potrebbe', en: 'Could you (formal)' },
+        ]),
+        speak('Vorrei un tavolo per due', 'Say it out loud: I would like a table for two'),
+      ]),
+
+      lesson('u14l2', 'Giving Advice', 'Dovere in the condizionale', 'bulb', [
+        explain(
+          'Dovere in the Condizionale',
+          'Dovere (must/have to) in the conditional becomes dovrei/dovresti/dovrebbe — "should," much gentler than the flat obligation of devo. It’s the natural way to give advice.',
+          [
+            { it: 'Dovresti riposare', en: 'You should rest' },
+            { it: 'Dovrei studiare di più', en: 'I should study more' },
+          ],
+        ),
+        mcq('it-en', 'Dovresti bere più acqua', 'You should drink more water', ['You must drink more water', 'You should drink more water', 'You drink water', 'You will drink water']),
+        typeEx('You should see a doctor', 'Dovresti andare dal dottore', ['dovresti andare dal dottore']),
+        mcq('en-it', 'Dovrei dormire di più', 'I should sleep more', ['Dovrei dormire di più', 'Devo dormire di più', 'Dormo di più', 'Dormirò di più']),
+        build('I recommend that you rest', 'Ti consiglio di riposare', ['consigli', 'lavorare']),
+        dictation('Dovresti parlare con un medico', 'You should talk to a doctor', ['dovresti parlare con un medico']),
+        listen('Cosa dovrei fare?', 'What should I do?', ['What should I do?', 'What did I do?', 'What will I do?', 'What am I doing?']),
+        match([
+          { it: 'Dovrei', en: 'I should' },
+          { it: 'Dovresti', en: 'You should' },
+          { it: 'Ti consiglio di', en: 'I recommend that you' },
+          { it: 'Sarebbe meglio', en: 'It would be better' },
+        ]),
+      ]),
+
+      lesson('u14l2x', 'What I Wish For', 'Wishes and hypothetical desires', 'spark', [
+        mcq('it-en', 'Mi piacerebbe imparare il francese', 'I would love to learn French', ['I learn French', 'I would love to learn French', 'I learned French', 'I will learn French']),
+        typeEx('It would be nice to travel together', 'Sarebbe bello viaggiare insieme', ['sarebbe bello viaggiare insieme'], { objectiveIds: ['give-advice'] }),
+        build('We would like to stay longer', 'Vorremmo restare più a lungo', ['restiamo', 'breve']),
+        reorder('Mi piacerebbe vivere in Italia', 'I would love to live in Italy'),
+        respond(
+          'Cosa ti piacerebbe fare questo weekend?', 'What would you like to do this weekend?',
+          ['Mi piacerebbe rilassarmi', 'Vorrei uscire con gli amici', 'Mi piacerebbe viaggiare'],
+          'I’d like to relax / I’d like to go out with friends / I’d love to travel',
+          { objectiveIds: ['give-advice'] },
+        ),
+        match([
+          { it: 'Mi piacerebbe', en: 'I’d love to' },
+          { it: 'Vorremmo', en: 'We’d like' },
+          { it: 'Sarebbe bello', en: 'It would be nice' },
+          { it: 'Preferirei', en: 'I’d prefer' },
+        ]),
+      ]),
+
+      lesson('u14l3', 'At the Pharmacy Counter', 'Asking for and following advice', 'pill', [
+        mcq('it-en', 'Cosa mi consiglia per il mal di testa?', 'What do you recommend for a headache?', ['What do you recommend for a headache?', 'Do you have a headache?', 'What caused your headache?', 'Is this medicine strong?']),
+        typeEx('Could you recommend something? (formal)', 'Potrebbe consigliarmi qualcosa?', ['potrebbe consigliarmi qualcosa'], { objectiveIds: ['give-advice'] }),
+        mcq('en-it', 'Questa medicina dovrebbe aiutare', 'This medicine should help', ['Questa medicina dovrebbe aiutare', 'Questa medicina aiuta sempre', 'Questa medicina ha aiutato', 'Questa medicina aiuterà']),
+        build('You should take it after meals', 'Dovrebbe prenderla dopo i pasti', ['prende', 'prima']),
+        listen('Le andrebbe bene questo?', 'Would this work for you? (formal)', ['Would this work for you? (formal)', 'Does this work for you? (formal)', 'Did this work for you?', 'Will this ever work?']),
+        match([
+          { it: 'Mi consiglia...?', en: 'Do you recommend...?' },
+          { it: 'Dovrebbe aiutare', en: 'It should help' },
+          { it: 'Dopo i pasti', en: 'After meals' },
+          { it: 'Le andrebbe bene?', en: 'Would that work for you?' },
+        ]),
+        speak('Cosa mi consiglia per il mal di testa?', 'Say it out loud: What do you recommend for a headache?'),
+      ]),
+
+      scenario(
+        'u14l4',
+        'A Little Under the Weather',
+        'Scenario: asking a pharmacist for advice',
+        'pill',
+        'You’ve had a scratchy throat for two days and stop by the neighborhood pharmacy for advice.',
+        [
+          {
+            speaker: 'Farmacista', it: 'Buongiorno, mi dica.', en: 'Good morning, how can I help?',
+            choices: [
+              { it: 'Buongiorno, ho mal di gola da due giorni.', en: 'Good morning, I’ve had a sore throat for two days.', correct: true, feedback: 'Clear and specific — exactly the kind of detail a pharmacist needs.' },
+              { it: 'Buongiorno, vorrei un caffè.', en: 'Good morning, I would like a coffee.', correct: false, feedback: 'Wrong shop — that’s a bar order, not a pharmacy symptom.' },
+              { it: 'Non ho niente.', en: 'I don’t have anything.', correct: false, feedback: 'Contradicts why you’d be standing at the counter in the first place.' },
+            ],
+          },
+          {
+            speaker: 'Farmacista', it: 'Capisco. Ha anche la febbre?', en: 'I see. Do you also have a fever?',
+            choices: [
+              { it: 'No, solo mal di gola e un po’ di tosse.', en: 'No, just a sore throat and a bit of a cough.', correct: true, feedback: 'Answers exactly what was asked and adds a useful extra detail.' },
+              { it: 'Sì, ho vinto la lotteria.', en: 'Yes, I won the lottery.', correct: false, feedback: 'Doesn’t answer the question — "febbre" means fever, not fortune.' },
+              { it: 'Forse.', en: 'Maybe.', correct: false, feedback: 'Too vague to be useful for a pharmacist trying to help you.' },
+            ],
+          },
+          {
+            speaker: 'Farmacista', it: 'Le consiglio queste pastiglie. Dovrebbe prenderne una ogni sei ore.', en: 'I recommend these lozenges. You should take one every six hours.',
+            choices: [
+              { it: 'Va bene, grazie. Devo prenderle con il cibo?', en: 'Okay, thank you. Should I take them with food?', correct: true, feedback: 'A smart, natural follow-up — exactly what you’d actually want to know.' },
+              { it: 'Non mi piacciono le pastiglie.', en: 'I don’t like lozenges.', correct: false, feedback: 'Beside the point when you’re the one who asked for advice.' },
+              { it: 'Costa troppo.', en: 'That’s too expensive.', correct: false, feedback: 'You haven’t even asked the price yet — jumping ahead unnecessarily.' },
+            ],
+          },
+          {
+            speaker: 'Farmacista', it: 'No, vanno bene anche a stomaco vuoto. Si riguardi!', en: 'No, they’re fine even on an empty stomach. Take care of yourself!',
+            choices: [
+              { it: 'Grazie mille, altrettanto!', en: 'Thanks a lot, you too!', correct: true, feedback: 'A warm, natural sign-off — matches the pharmacist’s own kindness.' },
+              { it: 'Arrivederci per sempre.', en: 'Goodbye forever.', correct: false, feedback: 'Overly dramatic for a routine pharmacy visit.' },
+              { it: 'Non ho capito niente.', en: 'I didn’t understand anything.', correct: false, feedback: 'Undercuts the whole conversation you just handled just fine.' },
+            ],
+          },
+        ],
+        ['give-advice'],
+      ),
+
+      topicCall(
+        'u14l5',
+        'Talk to Volpe',
+        'Live chat: ask for advice',
+        'chat',
+        'asking for and giving advice or recommendations',
+        { it: 'Ciao! Hai bisogno di un consiglio?', en: 'Hi! Do you need some advice?' },
+        3,
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u15',
+    title: 'Sharing Opinions',
+    subtitle: 'Il Congiuntivo',
+    icon: 'chat',
+    color: '#B15FA0',
+    learn: [
+      'Recognize when Italian requires the congiuntivo (opinion, doubt, emotion)',
+      'Form the present subjunctive for regular verbs',
+      'Give and politely disagree with opinions',
+      'Express hope, doubt, and uncertainty',
+    ],
+    test: unitTest('u15', [
+      mcq('it-en', 'Penso che sia una buona idea', 'I think it’s a good idea', ['I think it’s a good idea', 'I know it’s a good idea', 'I thought it was a good idea', 'It’s not a good idea']),
+      typeEx('I hope you’re well', 'Spero che tu stia bene', ['spero che tu stia bene']),
+      mcq('en-it', 'Non credo che sia vero', 'I don’t think it’s true', ['Non credo che sia vero', 'Non penso vero', 'Non è vero', 'Credo che non è vero']),
+      build('It’s important that you understand', 'È importante che tu capisca', ['capisci', 'sbagliata']),
+      listen('Credi che abbia ragione?', 'Do you think I’m right?', ['Do you think I’m right?', 'Do you know if I’m right?', 'Were you right?', 'I was right']),
+      match([
+        { it: 'Penso che', en: 'I think that' },
+        { it: 'Credo che', en: 'I believe that' },
+        { it: 'Spero che', en: 'I hope that' },
+        { it: 'Non sono sicuro che', en: 'I’m not sure that' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u15l1', 'I Think That...', 'When Italian needs the congiuntivo', 'chat', [
+        explain(
+          'When Italian Needs the Congiuntivo',
+          'After verbs of opinion, doubt, hope, or emotion (penso che, credo che, spero che, ho paura che), Italian switches from the indicative to the congiuntivo — a mood, not a tense, marking the second clause as subjective rather than fact.',
+          [
+            { it: 'Penso che sia tardi', en: 'I think it’s late' },
+            { it: 'Spero che tu venga', en: 'I hope you come' },
+          ],
+        ),
+        mcq('it-en', 'Penso che sia una buona idea', 'I think it’s a good idea', ['I know it’s a good idea', 'I think it’s a good idea', 'It’s a good idea', 'It was a good idea']),
+        typeEx('I think it’s difficult', 'Penso che sia difficile', ['penso che sia difficile']),
+        mcq('en-it', 'Credo che abbia ragione', 'I believe he is right', ['Credo che abbia ragione', 'Credo che ha ragione', 'So che ha ragione', 'Penso che ha ragione']),
+        build('I hope it doesn’t rain', 'Spero che non piova', ['piove', 'sempre']),
+        listen('Penso che il film sia interessante', 'I think the movie is interesting', ['I think the movie is interesting', 'The movie is interesting', 'I liked the movie', 'I will watch the movie']),
+        match([
+          { it: 'Sia', en: '(that) is / be — from essere' },
+          { it: 'Abbia', en: '(that) has — from avere' },
+          { it: 'Vada', en: '(that) goes — from andare' },
+          { it: 'Faccia', en: '(that) does — from fare' },
+        ]),
+        speak('Penso che sia una buona idea', 'Say it out loud: I think it’s a good idea'),
+      ]),
+
+      lesson('u15l2', 'Doubt, Hope & Fear', 'More congiuntivo triggers', 'spark', [
+        explain(
+          'More Congiuntivo Triggers',
+          'Doubt (non sono sicuro che, dubito che), hope (spero che), and fear (ho paura che) all pull the following verb into the congiuntivo, same as opinion does. È possibile che and può darsi che work the same way for possibility.',
+          [
+            { it: 'Dubito che venga', en: 'I doubt he’s coming' },
+            { it: 'Ho paura che sia tardi', en: 'I’m afraid it’s late' },
+          ],
+        ),
+        mcq('it-en', 'Non sono sicuro che funzioni', 'I’m not sure it works', ['I’m not sure it works', 'I know it works', 'It doesn’t work', 'It worked before']),
+        typeEx('It’s possible that it’s true', 'È possibile che sia vero', ['è possibile che sia vero']),
+        mcq('en-it', 'Dubito che venga stasera', 'I doubt he’s coming tonight', ['Dubito che venga stasera', 'Dubito che viene stasera', 'So che non viene', 'Spero che venga stasera']),
+        build('I’m afraid we’re late', 'Ho paura che siamo in ritardo', ['siano', 'presto']),
+        dictation('Può darsi che abbia ragione', 'It could be that he’s right', ['può darsi che abbia ragione']),
+        listen('Speriamo che vada tutto bene', 'Let’s hope everything goes well', ['Let’s hope everything goes well', 'Everything went well', 'Everything is fine now', 'Nothing went well']),
+        match([
+          { it: 'Dubito che', en: 'I doubt that' },
+          { it: 'Ho paura che', en: 'I’m afraid that' },
+          { it: 'È possibile che', en: 'It’s possible that' },
+          { it: 'Può darsi che', en: 'It could be that' },
+        ]),
+      ]),
+
+      lesson('u15l2x', 'Agree or Disagree', 'The everyday phrases for taking a side', 'target', [
+        mcq('it-en', 'Sono d’accordo con te', 'I agree with you', ['I agree with you', 'I disagree with you', 'I don’t know', 'I agreed once']),
+        typeEx('I disagree', 'Non sono d’accordo', ['non sono d’accordo', 'non sono d accordo'], { objectiveIds: ['share-opinion'] }),
+        build('In my opinion, it’s too expensive', 'Secondo me, è troppo caro', ['te', 'economico']),
+        reorder('Hai perfettamente ragione', 'You’re absolutely right'),
+        respond(
+          'Cosa ne pensi di questo?', 'What do you think about this?',
+          ['Penso che sia interessante', 'Non sono d’accordo', 'Secondo me, hai ragione'],
+          'I think it’s interesting / I disagree / In my opinion, you’re right',
+          { objectiveIds: ['share-opinion'] },
+        ),
+        match([
+          { it: 'Sono d’accordo', en: 'I agree' },
+          { it: 'Non sono d’accordo', en: 'I disagree' },
+          { it: 'Hai ragione', en: 'You’re right' },
+          { it: 'Secondo me', en: 'In my opinion' },
+        ]),
+      ]),
+
+      lesson('u15l3', 'A Debate at the Table', 'Point of view, and disagreeing without a fight', 'chat', [
+        mcq('it-en', 'Secondo me, dovremmo parlarne di più', 'In my opinion, we should talk about it more', ['In my opinion, we should talk about it more', 'We already talked about it', 'I never talk about it', 'You should talk about it']),
+        typeEx('What’s your opinion?', 'Qual è la tua opinione?', ['qual è la tua opinione'], { objectiveIds: ['share-opinion'] }),
+        mcq('en-it', 'Dipende dalla situazione', 'It depends on the situation', ['Dipende dalla situazione', 'Dipende da te', 'Non dipende', 'È la situazione']),
+        build('Everyone has their own opinion', 'Ognuno ha la propria opinione', ['la mia', 'nessuno']),
+        listen('Non capisco il tuo punto di vista', 'I don’t understand your point of view', ['I don’t understand your point of view', 'I agree with your point of view', 'What’s your point of view?', 'I have no point of view']),
+        match([
+          { it: 'Dipende', en: 'It depends' },
+          { it: 'Punto di vista', en: 'Point of view' },
+          { it: 'Da un lato... dall’altro', en: 'On one hand... on the other' },
+          { it: 'Comunque', en: 'Anyway / However' },
+        ]),
+        speak('Secondo me, dovremmo parlarne di più', 'Say it out loud: In my opinion, we should talk about it more'),
+      ]),
+
+      scenario(
+        'u15l4',
+        'A Friendly Disagreement',
+        'Scenario: debating the best pizzeria in the neighborhood',
+        'chat',
+        'Over dinner, a friend brings up a topic you don’t quite agree on — the best pizzeria in the neighborhood.',
+        [
+          {
+            speaker: 'Amico', it: 'Secondo me, la migliore pizzeria è quella vicino alla stazione.', en: 'In my opinion, the best pizzeria is the one near the station.',
+            choices: [
+              { it: 'Non sono del tutto d’accordo, penso che quella in centro sia meglio.', en: 'I don’t entirely agree, I think the one downtown is better.', correct: true, feedback: 'A clean, polite disagreement using penso che — exactly the pattern this unit teaches.' },
+              { it: 'Hai ragione, è la migliore del mondo.', en: 'You’re right, it’s the best in the world.', correct: false, feedback: 'Doesn’t reflect a real disagreement, and it’s a wild overstatement anyway.' },
+              { it: 'Non mi piace la pizza.', en: 'I don’t like pizza.', correct: false, feedback: 'Sidesteps the actual debate rather than engaging with it.' },
+            ],
+          },
+          {
+            speaker: 'Amico', it: 'Davvero? Perché pensi questo?', en: 'Really? Why do you think that?',
+            choices: [
+              { it: 'Perché credo che l’impasto sia più leggero.', en: 'Because I believe the dough is lighter.', correct: true, feedback: 'A concrete reason using credo che — makes your opinion land, not just assert it.' },
+              { it: 'Non lo so, dimenticalo.', en: 'I don’t know, forget it.', correct: false, feedback: 'Backs out of a conversation you just started — undercuts your own point.' },
+              { it: 'Perché è vicino a casa mia.', en: 'Because it’s close to my house.', correct: false, feedback: 'A real reason, but doesn’t address the quality question your friend asked.' },
+            ],
+          },
+          {
+            speaker: 'Amico', it: 'Forse hai ragione. Dovremmo provarla insieme un giorno.', en: 'Maybe you’re right. We should try it together sometime.',
+            choices: [
+              { it: 'Ottima idea, che ne dici di venerdì?', en: 'Great idea, how about Friday?', correct: true, feedback: 'Builds directly on the suggestion — natural, forward-moving conversation.' },
+              { it: 'Non ho tempo mai.', en: 'I never have time.', correct: false, feedback: 'Kills a friendly plan your friend just proposed.' },
+              { it: 'Preferisco mangiare da solo.', en: 'I’d rather eat alone.', correct: false, feedback: 'Rejects the whole point of the suggestion — awkward here.' },
+            ],
+          },
+          {
+            speaker: 'Amico', it: 'Perfetto, venerdì allora. Non vedo l’ora!', en: 'Perfect, Friday then. I can’t wait!',
+            choices: [
+              { it: 'Neanch’io! Ci vediamo venerdì.', en: 'Me neither! See you Friday.', correct: true, feedback: 'Matches the friend’s enthusiasm and confirms the plan cleanly.' },
+              { it: 'Forse vengo, forse no.', en: 'Maybe I’ll come, maybe not.', correct: false, feedback: 'Undermines the plan you just happily agreed to seconds ago.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'You’re not even at the restaurant yet — this is a plan for later.' },
+            ],
+          },
+        ],
+        ['share-opinion'],
+      ),
+
+      topicCall(
+        'u15l5',
+        'Talk to Volpe',
+        'Live chat: share an opinion',
+        'chat',
+        'sharing and discussing opinions on an everyday topic',
+        { it: 'Ciao! Cosa ne pensi della cucina italiana?', en: 'Hi! What do you think about Italian cuisine?' },
+        3,
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'c5',
+    title: 'Checkpoint Five',
+    subtitle: 'Review: Units 13–15',
+    icon: 'trophy',
+    color: '#D9A441',
+    checkpointUnit: true,
+    learn: ['A cumulative review of the imperfetto, polite requests, and sharing opinions.'],
+    lessons: [
+      checkpointLesson('c5l1', 'Memories, Requests & Opinions', 'The imperfetto, the condizionale, and the congiuntivo together', 'trophy', [
+        mcq('it-en', 'Da piccolo abitavo in campagna', 'As a kid I used to live in the countryside', ['As a kid I live in the countryside', 'As a kid I used to live in the countryside', 'As a kid I will live in the countryside', 'I live in the countryside now']),
+        typeEx('I would like a table for two', 'Vorrei un tavolo per due', ['vorrei un tavolo per due']),
+        mcq('en-it', 'Dovresti riposare di più', 'You should rest more', ['Dovresti riposare di più', 'Devi riposare di più', 'Riposi di più', 'Riposerai di più']),
+        build('I think it’s a great idea', 'Penso che sia un’ottima idea', ['è', 'pessima']),
+        mcq('it-en', 'C’era una volta un piccolo paese', 'Once upon a time there was a small town', ['Once upon a time there was a small town', 'There’s a small town now', 'There will be a small town', 'I visited a small town']),
+        typeEx('I hope you come to the party', 'Spero che tu venga alla festa', ['spero che tu venga alla festa']),
+        listen('Cosa ne pensi?', 'What do you think about it?', ['What do you think about it?', 'What did you do?', 'What will you think?', 'Do you like it?']),
+        match([
+          { it: 'Giocavo', en: 'I used to play' },
+          { it: 'Vorrei', en: 'I would like' },
+          { it: 'Dovresti', en: 'You should' },
+          { it: 'Penso che', en: 'I think that' },
+        ]),
+      ]),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u16',
+    title: 'Getting Things Done',
+    subtitle: 'Pronomi Diretti e Indiretti',
+    icon: 'basket',
+    color: '#3F7D6B',
+    learn: [
+      'Replace nouns with direct object pronouns (lo, la, li, le)',
+      'Use indirect object pronouns (mi, ti, gli, le) for "to/for someone"',
+      'Use ci and ne to avoid repeating places and quantities',
+      'Ask someone to run an errand or do you a favor',
+    ],
+    test: unitTest('u16', [
+      mcq('it-en', 'Lo vedo domani', 'I see him tomorrow', ['I see him tomorrow', 'I see her tomorrow', 'I saw him yesterday', 'I will see them']),
+      typeEx('I buy it (the bread)', 'Lo compro', ['lo compro']),
+      mcq('en-it', 'Le scrivo ogni settimana', 'I write to her every week', ['Le scrivo ogni settimana', 'La scrivo ogni settimana', 'Li scrivo ogni settimana', 'Ti scrivo ogni settimana']),
+      build('Are you going to the market? Yes, I’m going there', 'Vai al mercato? Sì, ci vado', ['vado', 'no']),
+      listen('Quanti ne vuoi?', 'How many do you want (of them)?', ['How many do you want (of them)?', 'How much does it cost?', 'Do you want it?', 'Where do you want it?']),
+      match([
+        { it: 'Lo / La', en: 'Him / Her / It (direct)' },
+        { it: 'Gli / Le', en: 'To him / To her (indirect)' },
+        { it: 'Ci', en: 'There / about it' },
+        { it: 'Ne', en: 'Of it / of them' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u16l1', 'Can You Get It For Me?', 'Direct object pronouns', 'basket', [
+        explain(
+          'Direct Object Pronouns',
+          'Direct object pronouns (lo, la, li, le) replace a noun that directly receives the action, and go right before the conjugated verb: "Compro il pane" becomes "Lo compro" (I buy it).',
+          [
+            { it: 'Lo compro', en: 'I buy it (masc.)' },
+            { it: 'La vedo domani', en: 'I see her/it tomorrow (fem.)' },
+          ],
+        ),
+        mcq('it-en', 'Lo vedo domani', 'I see him/it tomorrow', ['I see him/it tomorrow', 'I saw him yesterday', 'I will never see him', 'I see her tomorrow']),
+        typeEx('I buy it (the bread)', 'Lo compro', ['lo compro']),
+        mcq('en-it', 'La vedo ogni giorno', 'I see her every day', ['La vedo ogni giorno', 'Lo vedo ogni giorno', 'Li vedo ogni giorno', 'La vedi ogni giorno']),
+        build('Can you buy it for me? (the milk)', 'Puoi comprarlo per me?', ['comprarla', 'a te']),
+        listen('Li ho comprati ieri', 'I bought them yesterday', ['I bought them yesterday', 'I will buy them tomorrow', 'I buy them every day', 'I never buy them']),
+        match([
+          { it: 'Lo', en: 'Him / it (masc.)' },
+          { it: 'La', en: 'Her / it (fem.)' },
+          { it: 'Li', en: 'Them (masc. pl.)' },
+          { it: 'Le', en: 'Them (fem. pl.)' },
+        ]),
+        speak('Lo compro domani', 'Say it out loud: I buy it tomorrow'),
+      ]),
+
+      lesson('u16l2', 'Doing Someone a Favor', 'Indirect object pronouns', 'heart', [
+        explain(
+          'Indirect Object Pronouns',
+          'Indirect object pronouns (mi, ti, gli, le, ci, vi, gli) mean "to/for me, you, him, her..." and are used with verbs like dare (give), dire (tell), scrivere (write): "Do il libro a Marco" becomes "Gli do il libro" (I give it to him).',
+          [
+            { it: 'Le scrivo ogni settimana', en: 'I write to her every week' },
+            { it: 'Mi puoi aiutare?', en: 'Can you help me?' },
+          ],
+        ),
+        mcq('it-en', 'Gli telefono stasera', 'I call him tonight', ['I call him tonight', 'I call her tonight', 'I called him already', 'He calls me tonight']),
+        typeEx('I write to her every week', 'Le scrivo ogni settimana', ['le scrivo ogni settimana']),
+        mcq('en-it', 'Mi puoi fare un favore?', 'Can you do me a favor?', ['Mi puoi fare un favore?', 'Ti puoi fare un favore?', 'Puoi fare un favore?', 'Ci puoi fare un favore?']),
+        build('I’ll give you my number', 'Ti do il mio numero', ['dai', 'tuo']),
+        dictation('Mi dispiace, non posso', 'I’m sorry, I can’t', ['mi dispiace non posso', 'mi dispiace, non posso']),
+        listen('Ci scrive ogni mese', 'He writes to us every month', ['He writes to us every month', 'We write to him every month', 'He wrote to us once', 'He never writes']),
+        match([
+          { it: 'Mi', en: 'To/for me' },
+          { it: 'Ti', en: 'To/for you' },
+          { it: 'Gli', en: 'To/for him' },
+          { it: 'Le', en: 'To/for her' },
+        ]),
+      ]),
+
+      lesson('u16l2x', 'There, and Some of Them', 'Ci and ne, the two little words everywhere', 'compass', [
+        mcq('it-en', 'Ci vado ogni sabato', 'I go there every Saturday', ['I go there every Saturday', 'I went there once', 'I will go there', 'I never go there']),
+        typeEx('I want two of them', 'Ne voglio due', ['ne voglio due'], { objectiveIds: ['ask-favor'] }),
+        build('I’ll think about it', 'Ci penso', ['pensi', 'lo']),
+        reorder('Quanti ne hai?', 'How many of them do you have?'),
+        respond(
+          'Vai spesso al supermercato?', 'Do you often go to the supermarket?',
+          ['Sì, ci vado spesso', 'No, non ci vado mai', 'Ci vado una volta a settimana'],
+          'Yes, I go there often / No, I never go there / I go there once a week',
+          { objectiveIds: ['ask-favor'] },
+        ),
+        match([
+          { it: 'Ci vado', en: 'I go there' },
+          { it: 'Ci penso', en: 'I’ll think about it' },
+          { it: 'Ne voglio', en: 'I want some of it/them' },
+          { it: 'Quanti ne hai?', en: 'How many do you have (of them)?' },
+        ]),
+      ]),
+
+      lesson('u16l3', 'Running Errands', 'Asking for help before you go', 'basket', [
+        mcq('it-en', 'Mi puoi fare un favore?', 'Can you do me a favor?', ['Can you do me a favor?', 'Did you do me a favor?', 'I did you a favor', 'Will you need a favor?']),
+        typeEx('Could you pick it up for me? (the package)', 'Potresti ritirarlo per me?', ['potresti ritirarlo per me'], { objectiveIds: ['ask-favor'] }),
+        mcq('en-it', 'Devo andare alla posta', 'I need to go to the post office', ['Devo andare alla posta', 'Vado alla posta ogni giorno', 'Sono andato alla posta', 'Andrò alla posta domani']),
+        build('I’ll bring it to you tomorrow', 'Te lo porto domani', ['porti', 'oggi']),
+        listen('Puoi ritirare il pacco per me?', 'Can you pick up the package for me?', ['Can you pick up the package for me?', 'Did you pick up the package?', 'Where is the package?', 'I sent the package']),
+        match([
+          { it: 'Fare un favore', en: 'To do a favor' },
+          { it: 'Ritirare', en: 'To pick up' },
+          { it: 'La posta', en: 'The post office' },
+          { it: 'La lavanderia', en: 'The laundromat' },
+        ]),
+        speak('Mi puoi fare un favore?', 'Say it out loud: Can you do me a favor?'),
+      ]),
+
+      scenario(
+        'u16l4',
+        'A Favor Between Neighbors',
+        'Scenario: asking a neighbor to watch your place',
+        'basket',
+        'You’re leaving for a week and need to ask your neighbor, Sig.ra Bruni, a favor before you go.',
+        [
+          {
+            speaker: 'Vicina', it: 'Ciao! Tutto bene? Sembri di fretta.', en: 'Hi! Everything okay? You seem in a hurry.',
+            choices: [
+              { it: 'Sì, parto domani. Le posso chiedere un favore?', en: 'Yes, I’m leaving tomorrow. Can I ask you a favor?', correct: true, feedback: 'Clear and polite — sets up exactly the request you need to make.' },
+              { it: 'No, va tutto malissimo.', en: 'No, everything’s going terribly.', correct: false, feedback: 'Alarms your neighbor unnecessarily before you even ask your favor.' },
+              { it: 'Non ho tempo di parlare.', en: 'I don’t have time to talk.', correct: false, feedback: 'Awkward — you’re the one who needs something from her.' },
+            ],
+          },
+          {
+            speaker: 'Vicina', it: 'Certo, dimmi pure.', en: 'Of course, go ahead.',
+            choices: [
+              { it: 'Potrebbe annaffiare le piante mentre sono via?', en: 'Could you water the plants while I’m away?', correct: true, feedback: 'A clean condizionale request — exactly the polite phrasing this unit teaches.' },
+              { it: 'Deve annaffiare le piante.', en: 'You must water the plants.', correct: false, feedback: 'Too blunt and commanding for a favor you’re asking of a neighbor.' },
+              { it: 'Non mi piacciono le piante.', en: 'I don’t like plants.', correct: false, feedback: 'Doesn’t ask for anything at all.' },
+            ],
+          },
+          {
+            speaker: 'Vicina', it: 'Certo, nessun problema! Quante volte a settimana?', en: 'Sure, no problem! How many times a week?',
+            choices: [
+              { it: 'Due volte sarebbe perfetto, grazie mille.', en: 'Twice would be perfect, thank you so much.', correct: true, feedback: 'Answers the exact question and closes with real gratitude.' },
+              { it: 'Non lo so, mai.', en: 'I don’t know, never.', correct: false, feedback: 'Contradicts the favor you just asked for.' },
+              { it: 'Le piante sono morte già.', en: 'The plants are already dead.', correct: false, feedback: 'Undercuts the whole reason you’re asking — makes the favor pointless.' },
+            ],
+          },
+          {
+            speaker: 'Vicina', it: 'Figurati! Buon viaggio!', en: 'No trouble at all! Have a good trip!',
+            choices: [
+              { it: 'Grazie di cuore, a presto!', en: 'Thank you so much, see you soon!', correct: true, feedback: 'Warm, genuine thanks — a great close to a favor well asked.' },
+              { it: 'Non torno mai più.', en: 'I’m never coming back.', correct: false, feedback: 'An odd, unsettling thing to tell a neighbor holding your house key.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'A restaurant phrase, completely out of place here.' },
+            ],
+          },
+        ],
+        ['ask-favor'],
+      ),
+
+      topicCall(
+        'u16l5',
+        'Talk to Volpe',
+        'Live chat: ask a favor',
+        'chat',
+        'asking someone to do you a favor or run an errand',
+        { it: 'Ciao! Hai bisogno di un favore?', en: 'Hi! Do you need a favor?' },
+        3,
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u17',
+    title: 'Comparing Everything',
+    subtitle: 'Comparativi e Superlativi',
+    icon: 'search',
+    color: '#C77B3B',
+    learn: [
+      'Compare two things (più...di, meno...di)',
+      'Say two things are equal (tanto quanto, così come)',
+      'Form superlatives (il migliore, buonissimo)',
+      'Connect ideas with the relative pronoun che',
+    ],
+    test: unitTest('u17', [
+      mcq('it-en', 'Roma è più grande di Firenze', 'Rome is bigger than Florence', ['Rome is bigger than Florence', 'Rome is smaller than Florence', 'Rome is as big as Florence', 'Florence is bigger than Rome']),
+      typeEx('This apartment is more expensive than that one', 'Questo appartamento è più caro di quello', ['questo appartamento è più caro di quello']),
+      mcq('en-it', 'Questo è il miglior ristorante della città', 'This is the best restaurant in the city', ['Questo è il miglior ristorante della città', 'Questo è un ristorante buono', 'Questo ristorante è più buono', 'Questo è il ristorante peggiore']),
+      build('It’s very beautiful', 'È bellissimo', ['bella', 'molto']),
+      mcq('it-en', 'La casa che ho comprato è vecchia', 'The house that I bought is old', ['The house that I bought is old', 'The house I will buy is old', 'I bought an old house yesterday', 'I want to buy an old house']),
+      match([
+        { it: 'Più...di', en: 'More...than' },
+        { it: 'Meno...di', en: 'Less...than' },
+        { it: 'Tanto quanto', en: 'As much as' },
+        { it: 'Il migliore', en: 'The best' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u17l1', 'This or That?', 'Comparatives: più / meno', 'search', [
+        explain(
+          'Comparatives: più / meno',
+          'To compare two things, use più (more) or meno (less) before the adjective, and di before what you’re comparing to: "Roma è più grande di Firenze" (Rome is bigger than Florence). For equal things, use tanto...quanto or così...come.',
+          [
+            { it: 'Marco è più alto di Luca', en: 'Marco is taller than Luca' },
+            { it: 'Sono stanca quanto te', en: 'I’m as tired as you' },
+          ],
+        ),
+        mcq('it-en', 'Marco è più alto di Luca', 'Marco is taller than Luca', ['Marco is taller than Luca', 'Marco is shorter than Luca', 'Luca is taller than Marco', 'They are the same height']),
+        typeEx('This city is less expensive than Rome', 'Questa città è meno cara di Roma', ['questa città è meno cara di roma']),
+        mcq('en-it', 'Sono stanca quanto te', 'I’m as tired as you', ['Sono stanca quanto te', 'Sono più stanca di te', 'Sono meno stanca di te', 'Sei stanca quanto me']),
+        build('This coffee is stronger than that one', 'Questo caffè è più forte di quello', ['forte è', 'debole']),
+        listen('Questa camera è più grande dell’altra', 'This room is bigger than the other one', ['This room is bigger than the other one', 'This room is smaller than the other one', 'These rooms are the same size', 'The other room is empty']),
+        match([
+          { it: 'Più...di', en: 'More...than' },
+          { it: 'Meno...di', en: 'Less...than' },
+          { it: 'Tanto...quanto', en: 'As much as' },
+          { it: 'Così...come', en: 'As...as' },
+        ]),
+        speak('Marco è più alto di Luca', 'Say it out loud: Marco is taller than Luca'),
+      ]),
+
+      lesson('u17l2', 'The Very Best', 'Superlatives, regular and irregular', 'trophy', [
+        explain(
+          'Superlatives',
+          'Il più/la più + adjective + di makes a relative superlative ("the most... of"): "il ristorante più buono della città." Some adjectives have irregular forms — buono→migliore→il migliore (best), cattivo→peggiore→il peggiore (worst). Adding -issimo to an adjective makes an absolute superlative ("very"): bello→bellissimo.',
+          [
+            { it: 'Questo è il miglior ristorante della città', en: 'This is the best restaurant in the city' },
+            { it: 'È bellissimo', en: 'It’s very beautiful' },
+          ],
+        ),
+        mcq('it-en', 'Questo è il miglior ristorante della città', 'This is the best restaurant in the city', ['This is the best restaurant in the city', 'This is a good restaurant', 'This restaurant is bigger', 'This is the worst restaurant']),
+        typeEx('It’s very beautiful', 'È bellissimo', ['è bellissimo']),
+        mcq('en-it', 'Questo è il peggior film che abbia mai visto', 'This is the worst movie I’ve ever seen', ['Questo è il peggior film che abbia mai visto', 'Questo è un film cattivo', 'Questo film è peggio', 'Questo è il miglior film']),
+        build('The food was very good', 'Il cibo era buonissimo', ['buono', 'cattivo']),
+        dictation('È il giorno più bello dell’anno', 'It’s the most beautiful day of the year', ['è il giorno più bello dell’anno', 'e il giorno piu bello dell anno']),
+        listen('Qual è il migliore?', 'Which one is the best?', ['Which one is the best?', 'Which one is the worst?', 'Which one do you like?', 'Which one is cheaper?']),
+        match([
+          { it: 'Migliore', en: 'Better / best' },
+          { it: 'Peggiore', en: 'Worse / worst' },
+          { it: '-issimo', en: 'very (suffix)' },
+          { it: 'Il più...', en: 'The most...' },
+        ]),
+      ]),
+
+      lesson('u17l2x', 'The One That...', 'The relative pronoun che (and cui)', 'book', [
+        mcq('it-en', 'La casa che ho comprato è vecchia', 'The house that I bought is old', ['The house that I bought is old', 'The house I will buy is old', 'I bought an old house', 'I want an old house']),
+        typeEx('The person I spoke with is very kind', 'La persona con cui ho parlato è molto gentile', ['la persona con cui ho parlato è molto gentile'], { objectiveIds: ['compare-choose'] }),
+        build('The book that you gave me is fantastic', 'Il libro che mi hai dato è fantastico', ['dai', 'noioso']),
+        reorder('L’amico che conosco meglio', 'The friend I know best'),
+        respond(
+          'Qual è la città che preferisci?', 'Which city do you prefer?',
+          ['Preferisco la città che ho visitato l’estate scorsa', 'Preferisco Roma', 'La città che mi piace di più è Firenze'],
+          'I prefer the city I visited last summer / I prefer Rome / The city I like most is Florence',
+          { objectiveIds: ['compare-choose'] },
+        ),
+        match([
+          { it: 'Che', en: 'That / which / who' },
+          { it: 'Cui', en: 'Whom / which (after a preposition)' },
+          { it: 'Con cui', en: 'With whom' },
+          { it: 'A cui', en: 'To whom' },
+        ]),
+      ]),
+
+      lesson('u17l3', 'Making a Choice', 'Weighing options out loud', 'compass', [
+        mcq('it-en', 'Preferisco questo appartamento perché è più luminoso', 'I prefer this apartment because it’s brighter', ['I prefer this apartment because it’s brighter', 'I prefer this apartment because it’s cheaper', 'This apartment is darker', 'I don’t like this apartment']),
+        typeEx('Which one do you prefer?', 'Quale preferisci?', ['quale preferisci'], { objectiveIds: ['compare-choose'] }),
+        mcq('en-it', 'Entrambe le opzioni sono buone, ma preferisco la prima', 'Both options are good, but I prefer the first', ['Entrambe le opzioni sono buone, ma preferisco la prima', 'Le opzioni sono cattive', 'Non mi piace nessuna opzione', 'Preferisco la seconda opzione soltanto']),
+        build('In the end, I chose the cheaper one', 'Alla fine, ho scelto quello più economico', ['scelgo', 'caro']),
+        listen('Che differenza c’è tra questi due?', 'What’s the difference between these two?', ['What’s the difference between these two?', 'Are these two the same?', 'Which one do you want?', 'How much do they cost?']),
+        match([
+          { it: 'Preferisco', en: 'I prefer' },
+          { it: 'Alla fine', en: 'In the end' },
+          { it: 'Entrambe/i', en: 'Both' },
+          { it: 'La differenza', en: 'The difference' },
+        ]),
+        speak('Preferisco questo appartamento perché è più luminoso', 'Say it out loud: I prefer this apartment because it’s brighter'),
+      ]),
+
+      scenario(
+        'u17l4',
+        'Choosing an Apartment',
+        'Scenario: comparing two apartments with an agent',
+        'search',
+        'You’re apartment-hunting in Milan, and the agent shows you two options back to back.',
+        [
+          {
+            speaker: 'Agente', it: 'Allora, questo primo appartamento ha una cucina più grande.', en: 'So, this first apartment has a bigger kitchen.',
+            choices: [
+              { it: 'Interessante, e l’altro appartamento com’è?', en: 'Interesting, and what’s the other apartment like?', correct: true, feedback: 'A natural, curious follow-up — exactly how you’d keep the comparison going.' },
+              { it: 'Non mi interessano le cucine.', en: 'I’m not interested in kitchens.', correct: false, feedback: 'Dismissive of useful information the agent is offering.' },
+              { it: 'Prendo questo, grazie.', en: 'I’ll take this one, thanks.', correct: false, feedback: 'Jumping to a decision before seeing the second option makes little sense.' },
+            ],
+          },
+          {
+            speaker: 'Agente', it: 'Il secondo è più piccolo, ma è più economico e più vicino al centro.', en: 'The second is smaller, but it’s cheaper and closer to downtown.',
+            choices: [
+              { it: 'Il prezzo è importante per me. Quanto costa in meno?', en: 'Price matters to me. How much less does it cost?', correct: true, feedback: 'Uses "in meno" to zero in on the comparison that actually matters to you.' },
+              { it: 'Non mi importa niente del prezzo.', en: 'I don’t care about the price at all.', correct: false, feedback: 'Contradicts the very next thing you’d naturally want to know.' },
+              { it: 'Odio il centro città.', en: 'I hate the city center.', correct: false, feedback: 'An oddly strong reaction to information that was actually a selling point.' },
+            ],
+          },
+          {
+            speaker: 'Agente', it: 'Costa duecento euro in meno al mese.', en: 'It costs two hundred euros less per month.',
+            choices: [
+              { it: 'Allora penso che il secondo sia la scelta migliore per me.', en: 'Then I think the second one is the better choice for me.', correct: true, feedback: 'Uses il migliore naturally to state your conclusion — exactly this unit’s goal.' },
+              { it: 'Non ho ancora deciso niente.', en: 'I haven’t decided anything yet.', correct: false, feedback: 'Avoids answering when you’ve actually just been given enough to decide.' },
+              { it: 'Il primo è sicuramente peggiore.', en: 'The first one is definitely worse.', correct: false, feedback: 'Overstates it — the first apartment just had different tradeoffs, not that it was worse.' },
+            ],
+          },
+          {
+            speaker: 'Agente', it: 'Ottima scelta! Vuole vederlo di nuovo prima di firmare?', en: 'Great choice! Would you like to see it again before signing?',
+            choices: [
+              { it: 'Sì, mi piacerebbe vederlo un’altra volta, grazie.', en: 'Yes, I’d like to see it once more, thank you.', correct: true, feedback: 'A polite, sensible request before a big decision — condizionale used naturally.' },
+              { it: 'No, firmo senza guardarlo.', en: 'No, I’ll sign without looking at it.', correct: false, feedback: 'Unwisely rushed for a decision this size.' },
+              { it: 'Non voglio più un appartamento.', en: 'I don’t want an apartment anymore.', correct: false, feedback: 'Undoes the entire conversation you just had.' },
+            ],
+          },
+        ],
+        ['compare-choose'],
+      ),
+
+      topicCall(
+        'u17l5',
+        'Talk to Volpe',
+        'Live chat: compare two things',
+        'chat',
+        'comparing two options and explaining your choice',
+        { it: 'Ciao! Preferisci la città o la campagna?', en: 'Hi! Do you prefer the city or the countryside?' },
+        3,
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u18',
+    title: 'Health & Instructions',
+    subtitle: 'L’Imperativo',
+    icon: 'cross',
+    color: '#5C8A3F',
+    learn: [
+      'Give informal commands (tu/voi imperative)',
+      'Give formal commands (Lei imperative)',
+      'Use negative commands (non + infinitive for tu)',
+      'Follow instructions at the doctor or gym',
+    ],
+    test: unitTest('u18', [
+      mcq('it-en', 'Prenda questa medicina due volte al giorno', 'Take this medicine twice a day (formal)', ['Take this medicine twice a day (formal)', 'Took this medicine twice', 'Will take this medicine', 'Take this medicine once']),
+      typeEx('Sit down (formal)', 'Si sieda', ['si sieda']),
+      mcq('en-it', 'Apra la bocca', 'Open your mouth (formal)', ['Apra la bocca', 'Apri la bocca', 'Aprite la bocca', 'Aprirà la bocca']),
+      build('Don’t worry (informal)', 'Non ti preoccupare', ['preoccupati', 'sempre']),
+      listen('Respiri profondamente', 'Breathe deeply (formal)', ['Breathe deeply (formal)', 'Breathed deeply', 'Will breathe deeply', 'Don’t breathe']),
+      match([
+        { it: 'Prenda', en: 'Take (formal command)' },
+        { it: 'Si sieda', en: 'Sit down (formal)' },
+        { it: 'Non ti preoccupare', en: 'Don’t worry (informal)' },
+        { it: 'Respiri', en: 'Breathe (formal command)' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u18l1', 'Doctor’s Orders', 'Formal commands (Lei)', 'cross', [
+        explain(
+          'Formal Commands (Lei)',
+          'To give a formal command with Lei, -are verbs take -i (Parli! Speak!), while -ere/-ire verbs take -a (Prenda! Take!, Apra! Open!). This is the register a doctor, pharmacist, or anyone you address formally will use with you — and that you’ll need to understand fast.',
+          [
+            { it: 'Apra la bocca', en: 'Open your mouth (formal)' },
+            { it: 'Respiri profondamente', en: 'Breathe deeply (formal)' },
+          ],
+        ),
+        mcq('it-en', 'Apra la bocca, per favore', 'Open your mouth, please (formal)', ['Open your mouth, please (formal)', 'Close your mouth, please', 'I opened my mouth', 'You will open your mouth']),
+        typeEx('Breathe deeply (formal)', 'Respiri profondamente', ['respiri profondamente']),
+        mcq('en-it', 'Prenda questa medicina due volte al giorno', 'Take this medicine twice a day (formal)', ['Prenda questa medicina due volte al giorno', 'Prendi questa medicina due volte al giorno', 'Prende questa medicina', 'Prenderà questa medicina']),
+        build('Come back in a week (formal)', 'Torni tra una settimana', ['torna', 'un mese']),
+        listen('Si sdrai qui, per favore', 'Lie down here, please (formal)', ['Lie down here, please (formal)', 'Sit down here, please', 'Stand up, please', 'Leave, please']),
+        match([
+          { it: 'Apra', en: 'Open (formal)' },
+          { it: 'Respiri', en: 'Breathe (formal)' },
+          { it: 'Prenda', en: 'Take (formal)' },
+          { it: 'Torni', en: 'Come back (formal)' },
+        ]),
+        speak('Apra la bocca, per favore', 'Say it out loud: Open your mouth, please (formal)'),
+      ]),
+
+      lesson('u18l2', 'Everyday Instructions', 'Informal commands (tu) and voi', 'target', [
+        explain(
+          'Informal Commands (tu) & voi',
+          'With tu, -are verbs take -a (Parla! Speak!), -ere/-ire verbs take -i (Prendi!, Apri!). With voi (a group), just use the normal present-tense voi form: Parlate!, Prendete! Negative tu commands are special — they use non + infinitive instead: Non parlare! (Don’t speak!).',
+          [
+            { it: 'Aspetta un attimo', en: 'Wait a moment (informal)' },
+            { it: 'Non ti preoccupare', en: 'Don’t worry (informal)' },
+          ],
+        ),
+        mcq('it-en', 'Aspetta un attimo!', 'Wait a moment!', ['Wait a moment!', 'I waited a moment', 'You will wait a moment', 'Did you wait?']),
+        typeEx('Don’t worry (informal)', 'Non ti preoccupare', ['non ti preoccupare']),
+        mcq('en-it', 'Vieni qui!', 'Come here! (informal)', ['Vieni qui!', 'Vai qui!', 'Vengo qui!', 'Verrai qui!']),
+        build('Close the door, please (informal)', 'Chiudi la porta, per favore', ['chiudo', 'apri']),
+        dictation('Fai attenzione!', 'Pay attention!', ['fai attenzione']),
+        listen('Sedetevi, per favore', 'Sit down, please (to a group)', ['Sit down, please (to a group)', 'Stand up, please', 'Come in, please', 'Leave, please']),
+        match([
+          { it: 'Vieni!', en: 'Come! (informal)' },
+          { it: 'Aspetta!', en: 'Wait! (informal)' },
+          { it: 'Fai attenzione!', en: 'Pay attention!' },
+          { it: 'Non ti preoccupare', en: 'Don’t worry' },
+        ]),
+      ]),
+
+      lesson('u18l2x', 'Reflexive Commands', 'Get up, sit down, relax — with the pronoun attached', 'user', [
+        mcq('it-en', 'Alzati!', 'Get up! (informal)', ['Get up! (informal)', 'Sit down! (informal)', 'I got up', 'You will get up']),
+        typeEx('Sit down (formal)', 'Si sieda', ['si sieda'], { objectiveIds: ['follow-instructions'] }),
+        build('Relax! (informal)', 'Rilassati!', ['rilassa', 'ti']),
+        reorder('Si accomodi, prego', 'Please, make yourself comfortable (formal)'),
+        respond(
+          'Il medico dice: "Si sieda, per favore." Cosa fai?', 'The doctor says: "Please sit down." What do you do?',
+          ['Mi siedo', 'Mi alzo', 'Aspetto in piedi'],
+          'I sit down / I stand up / I wait standing',
+          { objectiveIds: ['follow-instructions'] },
+        ),
+        match([
+          { it: 'Alzati', en: 'Get up (informal)' },
+          { it: 'Si alzi', en: 'Get up (formal)' },
+          { it: 'Siediti', en: 'Sit down (informal)' },
+          { it: 'Si sieda', en: 'Sit down (formal)' },
+        ]),
+      ]),
+
+      lesson('u18l3', 'Taking Care of Yourself', 'Describing how you feel', 'heart', [
+        mcq('it-en', 'Mi fa male qui', 'It hurts here', ['It hurts here', 'It doesn’t hurt', 'It hurt yesterday', 'It will hurt']),
+        typeEx('How do you feel? (formal)', 'Come si sente?', ['come si sente'], { objectiveIds: ['follow-instructions'] }),
+        mcq('en-it', 'Ho mal di testa', 'I have a headache', ['Ho mal di testa', 'Ho mal di stomaco', 'Ho la febbre', 'Ho mal di schiena']),
+        build('Rest for a few days (formal)', 'Riposi per qualche giorno', ['riposa', 'un anno']),
+        listen('Da quanto tempo ha questo dolore?', 'How long have you had this pain?', ['How long have you had this pain?', 'Where does it hurt?', 'Does it hurt a lot?', 'When did the pain start yesterday?']),
+        match([
+          { it: 'Mi fa male', en: 'It hurts (to me)' },
+          { it: 'Mal di testa', en: 'Headache' },
+          { it: 'Mal di schiena', en: 'Backache' },
+          { it: 'Da quanto tempo?', en: 'For how long?' },
+        ]),
+        speak('Mi fa male qui', 'Say it out loud: It hurts here'),
+      ]),
+
+      scenario(
+        'u18l4',
+        'A Check-Up',
+        'Scenario: a routine doctor’s visit',
+        'cross',
+        'You’re at the doctor’s office for a routine check-up, and the doctor walks you through it.',
+        [
+          {
+            speaker: 'Dottore', it: 'Buongiorno, mi dica cosa non va.', en: 'Good morning, tell me what’s wrong.',
+            choices: [
+              { it: 'Buongiorno, ho mal di gola e un po’ di tosse da qualche giorno.', en: 'Good morning, I’ve had a sore throat and a bit of a cough for a few days.', correct: true, feedback: 'Specific and clear — exactly what a doctor needs to hear first.' },
+              { it: 'Buongiorno, sto benissimo!', en: 'Good morning, I’m doing great!', correct: false, feedback: 'If nothing’s wrong, there’s no reason to be at a check-up for a complaint.' },
+              { it: 'Non lo so.', en: 'I don’t know.', correct: false, feedback: 'Leaves the doctor with nothing to go on.' },
+            ],
+          },
+          {
+            speaker: 'Dottore', it: 'Capisco. Apra la bocca, per favore.', en: 'I see. Open your mouth, please.',
+            choices: [
+              { it: '(Apre la bocca) Ecco, dottore.', en: '(Opens mouth) Here you go, doctor.', correct: true, feedback: 'Following the formal command exactly — this is the whole point of the unit.' },
+              { it: 'Non voglio aprire la bocca.', en: 'I don’t want to open my mouth.', correct: false, feedback: 'Uncooperative in a routine, harmless part of a check-up.' },
+              { it: 'Ho già aperto la bocca ieri.', en: 'I already opened my mouth yesterday.', correct: false, feedback: 'Doesn’t make sense as a response to a present instruction.' },
+            ],
+          },
+          {
+            speaker: 'Dottore', it: 'Va tutto bene. Beva molta acqua e riposi un paio di giorni.', en: 'Everything looks fine. Drink plenty of water and rest for a couple of days.',
+            choices: [
+              { it: 'Va bene, dottore. Devo prendere qualche medicina?', en: 'Okay, doctor. Should I take any medicine?', correct: true, feedback: 'A sensible follow-up question that shows you’re actually listening to the advice.' },
+              { it: 'Non bevo mai acqua.', en: 'I never drink water.', correct: false, feedback: 'Openly rejects medical advice you just asked for.' },
+              { it: 'Vado a lavorare adesso, non ho tempo di riposare.', en: 'I’m going to work now, I don’t have time to rest.', correct: false, feedback: 'Dismisses the instruction right after receiving it.' },
+            ],
+          },
+          {
+            speaker: 'Dottore', it: 'No, solo riposo. Torni se non migliora entro una settimana.', en: 'No, just rest. Come back if it doesn’t improve within a week.',
+            choices: [
+              { it: 'Va bene, grazie mille dottore. Arrivederci.', en: 'Okay, thank you very much, doctor. Goodbye.', correct: true, feedback: 'A polite, grateful close — a great note to end a doctor’s visit on.' },
+              { it: 'Non tornerò mai più qui.', en: 'I’ll never come back here again.', correct: false, feedback: 'An oddly hostile reaction to a perfectly ordinary instruction.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'A restaurant phrase — not what you’d say leaving a doctor’s office.' },
+            ],
+          },
+        ],
+        ['follow-instructions'],
+      ),
+
+      topicCall(
+        'u18l5',
+        'Talk to Volpe',
+        'Live chat: give and follow instructions',
+        'chat',
+        'giving and following simple instructions, like at a doctor’s visit or gym',
+        { it: 'Ciao! Come ti senti oggi?', en: 'Hi! How are you feeling today?' },
+        3,
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'c6',
+    title: 'Checkpoint Six',
+    subtitle: 'Review: Units 16–18',
+    icon: 'trophy',
+    color: '#D9A441',
+    checkpointUnit: true,
+    learn: ['A cumulative review of object pronouns, comparisons, and giving instructions.'],
+    lessons: [
+      checkpointLesson('c6l1', 'Pronouns, Comparisons & Commands', 'Object pronouns, comparatives, and the imperative together', 'trophy', [
+        mcq('it-en', 'Lo compro domani', 'I buy it tomorrow', ['I buy it tomorrow', 'I bought it yesterday', 'I will never buy it', 'I buy them tomorrow']),
+        typeEx('Can you do me a favor?', 'Mi puoi fare un favore?', ['mi puoi fare un favore']),
+        mcq('en-it', 'Questo è il miglior ristorante della città', 'This is the best restaurant in the city', ['Questo è il miglior ristorante della città', 'Questo ristorante è buono', 'Questo è un ristorante', 'Questo è il peggior ristorante']),
+        build('Sit down, please (formal)', 'Si sieda, per favore', ['siediti', 'alzati']),
+        mcq('it-en', 'La casa che ho comprato è vecchia', 'The house that I bought is old', ['The house that I bought is old', 'I want to buy an old house', 'The house I will buy is old', 'I bought a new house']),
+        typeEx('Open your mouth (formal)', 'Apra la bocca', ['apra la bocca']),
+        listen('Ci vado ogni sabato', 'I go there every Saturday', ['I go there every Saturday', 'I never go there', 'I will go there', 'I went there once']),
+        match([
+          { it: 'Lo / La', en: 'Him / Her / It' },
+          { it: 'Il migliore', en: 'The best' },
+          { it: 'Si sieda', en: 'Sit down (formal)' },
+          { it: 'Ci vado', en: 'I go there' },
+        ]),
+      ]),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u19',
+    title: 'Work Life & Interviews',
+    subtitle: 'Italiano per il Lavoro',
+    icon: 'briefcase',
+    color: '#35607A',
+    learn: [
+      'Talk about your work experience and qualifications',
+      'Handle a formal job interview in Italian',
+      'Discuss career goals and future plans professionally',
+      'Use professional, formal vocabulary and register',
+    ],
+    test: unitTest('u19', [
+      mcq('it-en', 'Ho cinque anni di esperienza in questo settore', 'I have five years of experience in this field', ['I have five years of experience in this field', 'I want five years of experience', 'I had experience once', 'I will have experience someday']),
+      typeEx('What is your greatest strength? (formal)', 'Qual è il suo punto di forza principale?', ['qual è il suo punto di forza principale']),
+      mcq('en-it', 'Sono disponibile a iniziare subito', 'I am available to start immediately', ['Sono disponibile a iniziare subito', 'Sono disponibile domani', 'Ero disponibile ieri', 'Sarò disponibile forse']),
+      build('I worked as a graphic designer for three years', 'Ho lavorato come grafico per tre anni', ['lavoro', 'un mese']),
+      listen('Perché vuole lavorare per la nostra azienda?', 'Why do you want to work for our company? (formal)', ['Why do you want to work for our company? (formal)', 'Where do you work now?', 'Do you like our company?', 'Did you work here before?']),
+      match([
+        { it: 'Il colloquio', en: 'The interview' },
+        { it: 'Lo stipendio', en: 'The salary' },
+        { it: 'Candidarsi', en: 'To apply' },
+        { it: 'Assumere', en: 'To hire' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u19l1', 'My Experience', 'Talking about work experience', 'briefcase', [
+        explain(
+          'Talking About Work Experience',
+          'Use ho lavorato come + job title for past roles. For a finished past duration, use per: "Ho lavorato come cameriere per tre anni" (I worked as a waiter for three years) — different from da, which marks something still ongoing.',
+          [
+            { it: 'Ho lavorato come cameriere per tre anni', en: 'I worked as a waiter for three years' },
+            { it: 'Ho esperienza nel marketing', en: 'I have experience in marketing' },
+          ],
+        ),
+        mcq('it-en', 'Ho cinque anni di esperienza in questo settore', 'I have five years of experience in this field', ['I have five years of experience in this field', 'I want five years of experience', 'I had experience once', 'I will have experience someday']),
+        typeEx('I have a degree in economics', 'Ho una laurea in economia', ['ho una laurea in economia']),
+        mcq('en-it', 'Ho lavorato come grafico per tre anni', 'I worked as a graphic designer for three years', ['Ho lavorato come grafico per tre anni', 'Lavoro come grafico da tre anni', 'Lavorerò come grafico', 'Ho lavorato come grafico una volta']),
+        build('I am responsible for the team', 'Sono responsabile del team', ['siamo', 'il cliente']),
+        listen('Che tipo di lavoro cerca?', 'What kind of job are you looking for? (formal)', ['What kind of job are you looking for? (formal)', 'Where do you work?', 'Do you have a job?', 'Did you find a job?']),
+        match([
+          { it: 'La laurea', en: 'The degree' },
+          { it: 'L’esperienza', en: 'The experience' },
+          { it: 'Responsabile di', en: 'Responsible for' },
+          { it: 'Il settore', en: 'The field / sector' },
+        ]),
+        speak('Ho cinque anni di esperienza in questo settore', 'Say it out loud: I have five years of experience in this field'),
+      ]),
+
+      lesson('u19l2', 'The Interview', 'Formal register in a professional setting', 'chat', [
+        explain(
+          'Formal Register in a Professional Setting',
+          'Job interviews always use Lei, and lean on set professional phrases: parlare dei propri punti di forza (talk about your strengths), essere disponibile (to be available). Answering confidently in the formal register matters as much as the content.',
+          [
+            { it: 'Sono molto motivato/a', en: 'I am very motivated' },
+            { it: 'Sono disponibile a iniziare subito', en: 'I am available to start immediately' },
+          ],
+        ),
+        mcq('it-en', 'Qual è il suo punto di forza principale?', 'What is your greatest strength? (formal)', ['What is your greatest strength? (formal)', 'What is your weakness? (formal)', 'What did you study?', 'What is your salary?']),
+        typeEx('I am available to start immediately', 'Sono disponibile a iniziare subito', ['sono disponibile a iniziare subito']),
+        mcq('en-it', 'Il mio punto debole è che lavoro troppo', 'My biggest weakness is that I work too much', ['Il mio punto debole è che lavoro troppo', 'Il mio punto di forza è che lavoro troppo', 'Non ho punti deboli', 'Lavoro troppo poco']),
+        build('I would like to grow professionally', 'Vorrei crescere professionalmente', ['voglio', 'personalmente']),
+        dictation('Perché ha lasciato il suo ultimo lavoro?', 'Why did you leave your last job? (formal)', ['perché ha lasciato il suo ultimo lavoro']),
+        listen('Ha domande per noi?', 'Do you have any questions for us? (formal)', ['Do you have any questions for us? (formal)', 'Do we have questions for you?', 'Did you have questions?', 'Will you have questions?']),
+        match([
+          { it: 'Il punto di forza', en: 'The strength' },
+          { it: 'Il punto debole', en: 'The weakness' },
+          { it: 'Motivato/a', en: 'Motivated' },
+          { it: 'Crescere professionalmente', en: 'To grow professionally' },
+        ]),
+      ]),
+
+      lesson('u19l2x', 'Negotiating the Offer', 'Salary, contracts, and start dates', 'coin', [
+        mcq('it-en', 'Qual è lo stipendio previsto?', 'What is the expected salary?', ['What is the expected salary?', 'What is your current salary?', 'Did you get a raise?', 'Is the job paid?']),
+        typeEx('Is the contract full-time? (formal)', 'Il contratto è a tempo pieno?', ['il contratto è a tempo pieno'], { objectiveIds: ['job-interview'] }),
+        build('I’d like to discuss the salary', 'Vorrei discutere dello stipendio', ['discuto', 'del contratto']),
+        reorder('Quando potrei iniziare?', 'When could I start?'),
+        respond(
+          'Quali sono le sue disponibilità?', 'What is your availability? (formal)',
+          ['Sono disponibile subito', 'Potrei iniziare tra due settimane', 'Sono disponibile part-time'],
+          'I’m available immediately / I could start in two weeks / I’m available part-time',
+          { objectiveIds: ['job-interview'] },
+        ),
+        match([
+          { it: 'Lo stipendio', en: 'The salary' },
+          { it: 'Il contratto', en: 'The contract' },
+          { it: 'A tempo pieno', en: 'Full-time' },
+          { it: 'Part-time', en: 'Part-time' },
+        ]),
+      ]),
+
+      lesson('u19l3', 'Career Plans', 'Where you see yourself next', 'target', [
+        mcq('it-en', 'Tra cinque anni mi vedo come manager', 'In five years I see myself as a manager', ['In five years I see myself as a manager', 'Five years ago I was a manager', 'I will never be a manager', 'I am a manager now']),
+        typeEx('What are your career goals? (formal)', 'Quali sono i suoi obiettivi di carriera?', ['quali sono i suoi obiettivi di carriera'], { objectiveIds: ['job-interview'] }),
+        mcq('en-it', 'Voglio sviluppare nuove competenze', 'I want to develop new skills', ['Voglio sviluppare nuove competenze', 'Ho sviluppato nuove competenze', 'Svilupperò forse competenze', 'Non voglio nuove competenze']),
+        build('This position interests me a lot', 'Questa posizione mi interessa molto', ['interessi', 'poco']),
+        listen('Cosa la motiva di più nel lavoro?', 'What motivates you most at work? (formal)', ['What motivates you most at work? (formal)', 'What tires you most at work?', 'Do you like your work?', 'What is your job?']),
+        match([
+          { it: 'Le competenze', en: 'The skills' },
+          { it: 'L’obiettivo', en: 'The goal' },
+          { it: 'La posizione', en: 'The position' },
+          { it: 'Sviluppare', en: 'To develop' },
+        ]),
+        speak('Tra cinque anni mi vedo come manager', 'Say it out loud: In five years I see myself as a manager'),
+      ]),
+
+      scenario(
+        'u19l4',
+        'The Interview',
+        'Scenario: a formal job interview',
+        'briefcase',
+        'You’re at a job interview for a marketing position at a company in Milan.',
+        [
+          {
+            speaker: 'Selezionatore', it: 'Buongiorno, si accomodi. Mi parli un po’ di lei.', en: 'Good morning, please sit down. Tell me a bit about yourself.',
+            choices: [
+              { it: 'Buongiorno, grazie. Ho una laurea in marketing e tre anni di esperienza nel settore.', en: 'Good morning, thank you. I have a degree in marketing and three years of experience in the field.', correct: true, feedback: 'A confident, relevant summary — exactly what an interviewer wants to hear first.' },
+              { it: 'Buongiorno, non so cosa dire.', en: 'Good morning, I don’t know what to say.', correct: false, feedback: 'Undersells you badly at the most important moment to make an impression.' },
+              { it: 'Mi piace dormire fino a tardi.', en: 'I like sleeping in late.', correct: false, feedback: 'Wildly irrelevant, and not a great look for a job interview.' },
+            ],
+          },
+          {
+            speaker: 'Selezionatore', it: 'Interessante. Quali sono i suoi punti di forza?', en: 'Interesting. What are your strengths?',
+            choices: [
+              { it: 'Sono molto organizzato/a e lavoro bene in squadra.', en: 'I am very organized and work well in a team.', correct: true, feedback: 'Confident and specific — exactly the register and content this question calls for.' },
+              { it: 'Non ho punti di forza.', en: 'I don’t have any strengths.', correct: false, feedback: 'Badly undersells you in the moment that matters most.' },
+              { it: 'Mi piace mangiare la pizza.', en: 'I like eating pizza.', correct: false, feedback: 'A pleasant fact, but not an answer to a professional question about your strengths.' },
+            ],
+          },
+          {
+            speaker: 'Selezionatore', it: 'Ottimo. Quando potrebbe iniziare?', en: 'Great. When could you start?',
+            choices: [
+              { it: 'Sarei disponibile a iniziare tra due settimane.', en: 'I would be available to start in two weeks.', correct: true, feedback: 'A clean condizionale answer with a concrete, realistic timeline.' },
+              { it: 'Mai, non voglio questo lavoro.', en: 'Never, I don’t want this job.', correct: false, feedback: 'Strange thing to say after actively interviewing for it.' },
+              { it: 'Non lo so, forse tra dieci anni.', en: 'I don’t know, maybe in ten years.', correct: false, feedback: 'An absurdly long, unhelpful timeline for a hiring decision.' },
+            ],
+          },
+          {
+            speaker: 'Selezionatore', it: 'Perfetto. Le faremo sapere entro una settimana. Ha domande per noi?', en: 'Perfect. We’ll let you know within a week. Do you have any questions for us?',
+            choices: [
+              { it: 'Sì, qual è la struttura del team di marketing?', en: 'Yes, what is the structure of the marketing team?', correct: true, feedback: 'A smart, engaged question that shows genuine interest — exactly how to close an interview well.' },
+              { it: 'No, nessuna domanda.', en: 'No, no questions.', correct: false, feedback: 'A missed opportunity — interviewers usually expect at least one thoughtful question back.' },
+              { it: 'Quanto guadagna lei?', en: 'How much do you earn?', correct: false, feedback: 'An inappropriately personal question to ask the interviewer about themselves.' },
+            ],
+          },
+        ],
+        ['job-interview'],
+      ),
+
+      topicCall(
+        'u19l5',
+        'Talk to Volpe',
+        'Live chat: a job interview',
+        'chat',
+        'a formal job interview about work experience and career goals',
+        { it: 'Buongiorno, si accomodi. Mi parli un po’ di lei.', en: 'Good morning, please sit down. Tell me a bit about yourself.' },
+        3,
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'u20',
+    title: 'Culture, News & Opinions',
+    subtitle: 'Il Passivo',
+    icon: 'newspaper',
+    color: '#8C4A5E',
+    learn: [
+      'Form and recognize the passive voice (essere + past participle)',
+      'Read and understand simple news headlines',
+      'Recognize the passato remoto in writing (recognition only)',
+      'Discuss Italian culture, art, and current events',
+    ],
+    test: unitTest('u20', [
+      mcq('it-en', 'Il museo è stato costruito nel 1900', 'The museum was built in 1900', ['The museum was built in 1900', 'The museum will be built', 'The museum builds itself', 'The museum was destroyed in 1900']),
+      typeEx('The book was written by a famous author', 'Il libro è stato scritto da un autore famoso', ['il libro è stato scritto da un autore famoso']),
+      mcq('en-it', 'La città fu fondata dai Romani', 'The city was founded by the Romans', ['La città fu fondata dai Romani', 'La città è fondata dai Romani', 'I Romani fondano la città', 'La città fonderà i Romani']),
+      build('Pizza was invented in Naples', 'La pizza è stata inventata a Napoli', ['inventa', 'a Roma']),
+      mcq('it-en', 'Dante nacque a Firenze nel 1265', 'Dante was born in Florence in 1265', ['Dante was born in Florence in 1265', 'Dante lived in Florence', 'Dante died in Florence', 'Dante visited Florence once']),
+      match([
+        { it: 'È stato costruito', en: 'It was built' },
+        { it: 'È stata inventata', en: 'It was invented' },
+        { it: 'Fu fondata', en: 'It was founded (literary past)' },
+        { it: 'Nacque', en: 'He/She was born (literary past)' },
+      ]),
+    ]),
+    lessons: [
+      lesson('u20l1', 'What Was Built, Said, or Done', 'The passive voice', 'newspaper', [
+        explain(
+          'The Passive Voice',
+          'The passive voice shifts focus from who did something to what happened to it: essere (in any tense) + past participle, which agrees in gender and number like an adjective. "Il museo è stato costruito nel 1900" (The museum was built in 1900) — costruito would become costruita for a feminine subject.',
+          [
+            { it: 'Il museo è stato costruito nel 1900', en: 'The museum was built in 1900' },
+            { it: 'La pizza è stata inventata a Napoli', en: 'Pizza was invented in Naples' },
+          ],
+        ),
+        mcq('it-en', 'Il museo è stato costruito nel 1900', 'The museum was built in 1900', ['The museum was built in 1900', 'The museum will be built', 'The museum builds itself', 'The museum was destroyed in 1900']),
+        typeEx('The book was written by a famous author', 'Il libro è stato scritto da un autore famoso', ['il libro è stato scritto da un autore famoso']),
+        mcq('en-it', 'Il ponte è stato distrutto durante la guerra', 'The bridge was destroyed during the war', ['Il ponte è stato distrutto durante la guerra', 'Il ponte è stato costruito durante la guerra', 'Distruggono il ponte', 'Il ponte distruggerà la guerra']),
+        build('The letter was sent yesterday', 'La lettera è stata inviata ieri', ['invia', 'domani']),
+        listen('Questo quadro è stato dipinto da un artista famoso', 'This painting was painted by a famous artist', ['This painting was painted by a famous artist', 'This artist painted many paintings', 'I painted this painting', 'This painting will be painted']),
+        match([
+          { it: 'È stato costruito', en: 'It was built' },
+          { it: 'È stata inventata', en: 'It was invented' },
+          { it: 'È stato scritto', en: 'It was written' },
+          { it: 'È stato distrutto', en: 'It was destroyed' },
+        ]),
+        speak('Il museo è stato costruito nel 1900', 'Say it out loud: The museum was built in 1900'),
+      ]),
+
+      lesson('u20l2', 'Reading the News', 'A peek at the passato remoto', 'search', [
+        explain(
+          'A Peek at the Passato Remoto',
+          'In writing — history books, novels, formal news about the distant past — Italian often uses the passato remoto instead of the passato prossimo. You don’t need to produce it, but recognizing a handful of common forms (fu = was, nacque = was born, morì = died, scrisse = wrote) unlocks a lot of real Italian text.',
+          [
+            { it: 'Dante nacque a Firenze nel 1265', en: 'Dante was born in Florence in 1265' },
+            { it: 'La città fu fondata dai Romani', en: 'The city was founded by the Romans' },
+          ],
+        ),
+        mcq('it-en', 'Dante nacque a Firenze nel 1265', 'Dante was born in Florence in 1265', ['Dante was born in Florence in 1265', 'Dante lived in Florence', 'Dante died in Florence', 'Dante visited Florence once']),
+        typeEx('The city was founded by the Romans', 'La città fu fondata dai Romani', ['la città fu fondata dai romani'], { objectiveIds: ['discuss-culture'] }),
+        mcq('en-it', 'Morì nel 1321', 'He died in 1321', ['Morì nel 1321', 'Nacque nel 1321', 'Vive dal 1321', 'Morirà nel 1321']),
+        build('He wrote a famous novel', 'Scrisse un romanzo famoso', ['scrive', 'noioso']),
+        dictation('Fu un momento importante nella storia', 'It was an important moment in history', ['fu un momento importante nella storia']),
+        listen('Questo articolo parla di un evento storico', 'This article talks about a historical event', ['This article talks about a historical event', 'This article talks about food', 'I wrote this article', 'This event is happening now']),
+        match([
+          { it: 'Fu', en: 'He/She/It was (literary)' },
+          { it: 'Nacque', en: 'Was born (literary)' },
+          { it: 'Morì', en: 'Died (literary)' },
+          { it: 'Scrisse', en: 'Wrote (literary)' },
+        ]),
+      ]),
+
+      lesson('u20l2x', 'What’s Happening in Italy', 'Current events vocabulary', 'compass', [
+        mcq('it-en', 'Secondo il giornale, l’economia sta migliorando', 'According to the newspaper, the economy is improving', ['According to the newspaper, the economy is improving', 'The newspaper is closing down', 'The economy stopped improving', 'Nobody reads the newspaper']),
+        typeEx('What is happening in the news today?', 'Cosa succede nelle notizie oggi?', ['cosa succede nelle notizie oggi'], { objectiveIds: ['discuss-culture'] }),
+        build('It’s an important topic for everyone', 'È un argomento importante per tutti', ['sono', 'nessuno']),
+        reorder('Ho letto un articolo interessante', 'I read an interesting article'),
+        respond(
+          'Segui le notizie?', 'Do you follow the news?',
+          ['Sì, ogni giorno', 'No, non molto', 'Leggo le notizie una volta a settimana'],
+          'Yes, every day / No, not much / I read the news once a week',
+          { objectiveIds: ['discuss-culture'] },
+        ),
+        match([
+          { it: 'Il giornale', en: 'The newspaper' },
+          { it: 'Le notizie', en: 'The news' },
+          { it: 'L’articolo', en: 'The article' },
+          { it: 'L’evento', en: 'The event' },
+        ]),
+      ]),
+
+      lesson('u20l3', 'Art, Food & Tradition', 'Talking about Italian culture', 'plate', [
+        mcq('it-en', 'La cucina italiana varia molto da regione a regione', 'Italian cuisine varies a lot from region to region', ['Italian cuisine varies a lot from region to region', 'Italian cuisine is the same everywhere', 'Italian cuisine is not popular', 'Italian regions have no cuisine']),
+        typeEx('This tradition is very old', 'Questa tradizione è molto antica', ['questa tradizione è molto antica'], { objectiveIds: ['discuss-culture'] }),
+        mcq('en-it', 'L’Italia è famosa per la sua arte e architettura', 'Italy is famous for its art and architecture', ['L’Italia è famosa per la sua arte e architettura', 'L’Italia non ha arte', 'L’arte italiana è sconosciuta', 'L’Italia è famosa solo per il cibo']),
+        build('Every region has its own dialect', 'Ogni regione ha il proprio dialetto', ['hanno', 'nessuna']),
+        listen('Qual è la tradizione che preferisci?', 'Which tradition do you prefer?', ['Which tradition do you prefer?', 'Which traditions exist?', 'Do you have traditions?', 'Is this tradition old?']),
+        match([
+          { it: 'La tradizione', en: 'The tradition' },
+          { it: 'Il dialetto', en: 'The dialect' },
+          { it: 'L’arte', en: 'The art' },
+          { it: 'L’architettura', en: 'The architecture' },
+        ]),
+        speak('La cucina italiana varia molto da regione a regione', 'Say it out loud: Italian cuisine varies a lot from region to region'),
+      ]),
+
+      scenario(
+        'u20l4',
+        'A Conversation About Culture',
+        'Scenario: discussing Italian culture with a local friend',
+        'newspaper',
+        'A friend in Florence asks what surprised you most about Italian culture since you arrived.',
+        [
+          {
+            speaker: 'Amica', it: 'Cosa ti ha sorpreso di più della cultura italiana?', en: 'What surprised you most about Italian culture?',
+            choices: [
+              { it: 'Penso che il rispetto per il cibo sia sorprendente.', en: 'I think the respect for food is surprising.', correct: true, feedback: 'Uses penso che naturally to share a genuine opinion — exactly this course’s cumulative goal.' },
+              { it: 'Non mi è piaciuto niente.', en: 'I didn’t like anything.', correct: false, feedback: 'Overly negative and doesn’t actually answer what surprised you.' },
+              { it: 'Il conto, per favore.', en: 'The check, please.', correct: false, feedback: 'A restaurant phrase with nothing to do with the question.' },
+            ],
+          },
+          {
+            speaker: 'Amica', it: 'È vero, il cibo è quasi sacro qui! Hai visitato qualche museo?', en: 'That’s true, food is almost sacred here! Have you visited any museums?',
+            choices: [
+              { it: 'Sì, ho visitato gli Uffizi. È stato costruito secoli fa, incredibile.', en: 'Yes, I visited the Uffizi. It was built centuries ago, incredible.', correct: true, feedback: 'Uses the passive voice naturally to describe the building — right on theme.' },
+              { it: 'No, odio i musei.', en: 'No, I hate museums.', correct: false, feedback: 'A strong, somewhat abrupt reaction in a friendly cultural chat.' },
+              { it: 'Non so cosa sia un museo.', en: 'I don’t know what a museum is.', correct: false, feedback: 'Implausible and doesn’t engage with the question.' },
+            ],
+          },
+          {
+            speaker: 'Amica', it: 'Gli Uffizi sono bellissimi! Cosa ne pensi dell’arte rinascimentale?', en: 'The Uffizi are beautiful! What do you think of Renaissance art?',
+            choices: [
+              { it: 'Secondo me, è incredibilmente dettagliata.', en: 'In my opinion, it’s incredibly detailed.', correct: true, feedback: 'A clean, confident opinion — secondo me plus a real observation.' },
+              { it: 'Non ho un’opinione.', en: 'I don’t have an opinion.', correct: false, feedback: 'A flat non-answer to a question your friend is genuinely curious about.' },
+              { it: 'Preferisco i videogiochi.', en: 'I prefer video games.', correct: false, feedback: 'Doesn’t engage with the actual topic of Renaissance art at all.' },
+            ],
+          },
+          {
+            speaker: 'Amica', it: 'Sono d’accordo! Dovresti visitare anche Roma, se non l’hai già fatto.', en: 'I agree! You should visit Rome too, if you haven’t already.',
+            choices: [
+              { it: 'Buona idea, lo metterò in programma.', en: 'Good idea, I’ll put it on my schedule.', correct: true, feedback: 'A warm, forward-looking close that takes the friend’s advice seriously.' },
+              { it: 'Non ho intenzione di viaggiare mai più.', en: 'I have no intention of ever traveling again.', correct: false, feedback: 'A strangely final statement that shuts down a friendly suggestion.' },
+              { it: 'Roma non esiste.', en: 'Rome doesn’t exist.', correct: false, feedback: 'Simply false, and an odd note to end a warm conversation on.' },
+            ],
+          },
+        ],
+        ['discuss-culture'],
+      ),
+
+      topicCall(
+        'u20l5',
+        'Talk to Volpe',
+        'Live chat: culture & opinions',
+        'chat',
+        'discussing Italian culture, art, food traditions, and current events',
+        { it: 'Ciao! Cosa ne pensi della cultura italiana finora?', en: 'Hi! What do you think of Italian culture so far?' },
+        3,
+      ),
+    ],
+  },
+
+  // ────────────────────────────────────────────────────────────
+  {
+    id: 'c7',
+    title: 'Final Checkpoint',
+    subtitle: 'Review: The Whole Course',
+    icon: 'trophy',
+    color: '#D9A441',
+    checkpointUnit: true,
+    learn: ['The ultimate cumulative review — every tense, mood, and topic from the entire course, one last time.'],
+    lessons: [
+      checkpointLesson('c7l1', 'Complete Mastery', 'Every tense, every mood, everything — the whole course, together', 'trophy', [
+        mcq('it-en', 'Buonasera, come sta?', 'Good evening, how are you? (formal)', ['Good evening, how are you? (formal)', 'Good morning, how are you?', 'Good night', 'Goodbye']),
+        typeEx('I would like a coffee, please', 'Vorrei un caffè, per favore', ['vorrei un caffè, per favore']),
+        mcq('en-it', 'Sono andato a Roma l’anno scorso', 'I went to Rome last year', ['Sono andato a Roma l’anno scorso', 'Vado a Roma l’anno prossimo', 'Andrò a Roma', 'Vado a Roma ogni anno']),
+        build('When I was young, I used to play outside every day', 'Quando ero giovane, giocavo fuori ogni giorno', ['sono', 'dentro']),
+        mcq('it-en', 'Penso che sia una buona idea', 'I think it’s a good idea', ['I think it’s a good idea', 'I know it’s a good idea', 'It was a good idea', 'It’s not a good idea']),
+        typeEx('You should rest more', 'Dovresti riposare di più', ['dovresti riposare di più']),
+        mcq('en-it', 'Questo è il miglior ristorante della città', 'This is the best restaurant in the city', ['Questo è il miglior ristorante della città', 'Questo ristorante è buono', 'Questo è un ristorante', 'Questo è il peggior ristorante']),
+        build('Sit down, please (formal)', 'Si sieda, per favore', ['siediti', 'alzati']),
+        mcq('it-en', 'Il museo è stato costruito nel 1900', 'The museum was built in 1900', ['The museum was built in 1900', 'The museum will be built', 'The museum builds itself', 'The museum was destroyed']),
+        listen('Cosa farà domani?', 'What will you do tomorrow? (formal)', ['What will you do tomorrow? (formal)', 'What did you do yesterday?', 'What are you doing now?', 'What did you want to do?']),
+        match([
+          { it: 'Vorrei', en: 'I would like' },
+          { it: 'Penso che', en: 'I think that' },
+          { it: 'Dovresti', en: 'You should' },
+          { it: 'È stato costruito', en: 'It was built' },
         ]),
       ]),
     ],
@@ -2242,6 +3625,14 @@ export const OBJECTIVES = [
   { id: 'past-story', label: 'Tell a simple story about the past', unit: 'u10' },
   { id: 'work-future', label: 'Talk about your job and future plans', unit: 'u11' },
   { id: 'describe-people', label: 'Describe a person’s appearance and personality', unit: 'u12' },
+  { id: 'talk-childhood', label: 'Talk about your childhood and how things used to be', unit: 'u13' },
+  { id: 'give-advice', label: 'Ask for and give advice politely', unit: 'u14' },
+  { id: 'share-opinion', label: 'Share and discuss opinions on a topic', unit: 'u15' },
+  { id: 'ask-favor', label: 'Ask someone to do you a favor or run an errand', unit: 'u16' },
+  { id: 'compare-choose', label: 'Compare options and explain a choice', unit: 'u17' },
+  { id: 'follow-instructions', label: 'Understand and give simple instructions', unit: 'u18' },
+  { id: 'job-interview', label: 'Handle a simple job interview in Italian', unit: 'u19' },
+  { id: 'discuss-culture', label: 'Discuss culture, news, and current events', unit: 'u20' },
 ]
 
 // Flat lookup of every exercise/scenario id -> the objective ids it proves,

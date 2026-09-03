@@ -19,4 +19,7 @@ export const ACHIEVEMENTS = [
   { id: 'ready', label: 'Ready for Italy', desc: 'Reach 100% real-life ready', icon: 'compass', check: (p) => p.readinessPercent >= 100 },
   { id: 'streak-30', label: 'Unstoppable', desc: 'Reach a 30-day streak', icon: 'flame', check: (p) => p.streak >= 30 },
   { id: 'reviewer', label: 'Refresher', desc: 'Complete 5 Review sessions', icon: 'refresh', check: (p) => p.reviewSessionsCompleted >= 5 },
+  { id: 'level-20', label: 'Level 20', desc: 'Reach level 20', icon: 'trophy', check: (p) => p.level >= 20 },
+  { id: 'streak-60', label: 'Two Months Strong', desc: 'Reach a 60-day streak', icon: 'flame', check: (p) => p.streak >= 60 },
+  { id: 'course-complete', label: 'Padrone', desc: 'Complete every lesson in the course', icon: 'compass', check: (p) => p.totalLessons > 0 && p.completedCount >= p.totalLessons },
 ]

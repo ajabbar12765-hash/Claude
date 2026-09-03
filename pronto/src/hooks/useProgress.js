@@ -348,6 +348,7 @@ export function useProgress() {
   const achievementStatuses = useMemo(() => {
     const snapshot = {
       completedCount,
+      totalLessons,
       perfectLessons: state.perfectLessons,
       streak: state.streak.count,
       voiceCallCount: state.voiceCallCount,
@@ -357,7 +358,7 @@ export function useProgress() {
       readinessPercent,
     }
     return ACHIEVEMENTS.map((a) => ({ ...a, unlocked: a.check(snapshot) }))
-  }, [completedCount, state.perfectLessons, state.streak.count, state.voiceCallCount, state.dictionaryLookups, state.reviewSessionsCompleted, level, readinessPercent])
+  }, [completedCount, totalLessons, state.perfectLessons, state.streak.count, state.voiceCallCount, state.dictionaryLookups, state.reviewSessionsCompleted, level, readinessPercent])
 
   // Every {it, en} pair from lessons the learner has actually completed,
   // deduped by Italian phrase in curriculum order. Feeds both Volpe's

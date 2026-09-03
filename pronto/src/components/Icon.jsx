@@ -45,6 +45,8 @@ const PATHS = {
   search: 'M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3',
   book: 'M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zM19 19H6a2 2 0 000 4h13',
   clock: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 7v5l4 2',
+  briefcase: 'M4 8h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1zM8 8V6a2 2 0 012-2h4a2 2 0 012 2v2M3 13h18',
+  newspaper: 'M4 4h13a2 2 0 012 2v13a2 2 0 01-2 2H6a2 2 0 01-2-2V4zM4 20a2 2 0 002-2h13M7 8h7M7 12h7M7 16h4',
 }
 
 export default function Icon({ name, size = 24, strokeWidth = 1.8, className = '', ...rest }) {
