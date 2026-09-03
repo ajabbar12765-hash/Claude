@@ -23,18 +23,11 @@ function authHeaders() {
   return key ? { 'x-access-key': key } : {};
 }
 
-async function apiFetch(url, opts = {}) {
-  return fetch(url, { ...opts, headers: { ...(opts.headers || {}), ...authHeaders() } });
-}
-
-// A ?key=... in the URL is the most bulletproof way in: it works even if
-// something above is broken, since the server checks it directly too.
-const urlKey = new URLSearchParams(location.search).get('key');
-if (urlKey) localStorage.setItem(KEY_STORAGE, urlKey);
-
-// fetch() never times out on its own — a sleeping free-tier instance or a
-// dead connection would otherwise hang forever with zero visible feedback.
-async function fetchWithTimeout(url, opts = {}, timeoutMs = 20000) {
+// A hung request otherwise leaves the caller waiting forever with no way to
+// recover — every network call in this file goes through this.
+// Render's free tier warns cold starts can take 50+ seconds, so this needs
+// real headroom or it'll falsely report "timed out" during a normal wake-up.
+async function fetchWithTimeout(url, opts = {}, timeoutMs = 60000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -43,6 +36,15 @@ async function fetchWithTimeout(url, opts = {}, timeoutMs = 20000) {
     clearTimeout(timer);
   }
 }
+
+async function apiFetch(url, opts = {}, timeoutMs) {
+  return fetchWithTimeout(url, { ...opts, headers: { ...(opts.headers || {}), ...authHeaders() } }, timeoutMs);
+}
+
+// A ?key=... in the URL is the most bulletproof way in: it works even if
+// something above is broken, since the server checks it directly too.
+const urlKey = new URLSearchParams(location.search).get('key');
+if (urlKey) localStorage.setItem(KEY_STORAGE, urlKey);
 
 boot();
 
@@ -189,7 +191,9 @@ async function startDownload(btn, url, title, format) {
 
   try {
     const downloadUrl = `/api/download?url=${encodeURIComponent(url)}&format=${format}&title=${encodeURIComponent(title)}`;
-    const res = await apiFetch(downloadUrl);
+    // Actual video downloads can legitimately take minutes, unlike every
+    // other call in this file — give this one a much longer leash.
+    const res = await apiFetch(downloadUrl, {}, 10 * 60 * 1000);
     if (!res.ok) throw new Error(await res.text());
 
     const disposition = res.headers.get('Content-Disposition') || '';
