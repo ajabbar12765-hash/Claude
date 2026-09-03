@@ -1,4 +1,4 @@
-const CACHE = 'video-grabber-shell-v1';
+const CACHE = 'video-grabber-shell-v2';
 const SHELL_FILES = ['/', '/index.html', '/style.css', '/app.js', '/manifest.json', '/icon.png'];
 
 self.addEventListener('install', (event) => {
