@@ -100,16 +100,19 @@ function renderItem(li, url, data, format) {
     <div class="meta">
       <div class="title">${escapeHtml(data.title)}</div>
       <div class="duration">${data.duration || ''}</div>
+      <div class="dl-error"></div>
     </div>
     <button class="download">Download</button>
   `;
 
   const btn = li.querySelector('button.download');
-  btn.addEventListener('click', () => startDownload(btn, url, data.title, format));
+  const errEl = li.querySelector('.dl-error');
+  btn.addEventListener('click', () => startDownload(btn, errEl, url, data.title, format));
 }
 
-async function startDownload(btn, url, title, format) {
+async function startDownload(btn, errEl, url, title, format) {
   btn.disabled = true;
+  errEl.textContent = '';
   const started = Date.now();
   const tick = setInterval(() => {
     const secs = Math.round((Date.now() - started) / 1000);
@@ -121,7 +124,7 @@ async function startDownload(btn, url, title, format) {
     // Actual video downloads can legitimately take minutes, unlike every
     // other call in this file — give this one a much longer leash.
     const res = await apiFetch(downloadUrl, {}, 10 * 60 * 1000);
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) throw new Error((await res.text()) || `HTTP ${res.status}`);
 
     const disposition = res.headers.get('Content-Disposition') || '';
     const match = disposition.match(/filename="(.+)"/);
@@ -141,6 +144,9 @@ async function startDownload(btn, url, title, format) {
   } catch (err) {
     btn.textContent = 'Failed — retry';
     btn.disabled = false;
+    // Shown directly instead of only console.error'd — on a phone there's
+    // no way to open devtools to see what actually went wrong.
+    errEl.textContent = err.name === 'AbortError' ? 'Timed out.' : err.message;
     console.error(err);
   } finally {
     clearInterval(tick);

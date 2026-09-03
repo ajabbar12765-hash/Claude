@@ -110,6 +110,12 @@ select:disabled option:disabled { color: #666; }
   text-overflow: ellipsis;
 }
 .item .meta .duration { color: var(--muted); font-size: 0.8rem; }
+.item .meta .dl-error {
+  color: #ff8080;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  overflow-wrap: break-word;
+}
 
 .item.error { color: #ff8080; font-size: 0.85rem; }
 
