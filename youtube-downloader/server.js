@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { execFileSync } from 'child_process';
 import { create } from 'youtube-dl-exec';
 import bundledYoutubedl from 'youtube-dl-exec';
+import ffmpegStaticPath from 'ffmpeg-static';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -28,8 +29,17 @@ function which(bin, versionFlag = '--version') {
 // is deterministic and easy to keep updated independently of npm.
 const youtubedl = which('yt-dlp') ? create('yt-dlp') : bundledYoutubedl;
 
-// ffmpeg only understands single-dash flags (-version), unlike most other CLIs.
-let hasFfmpeg = which('ffmpeg', '-version');
+// ffmpeg-static ships a bundled binary that works with zero OS-level install —
+// required on Vercel, which has no apt/pip access — and doubles as a reliable
+// fallback everywhere else too, so it's tried first rather than only as backup.
+let ffmpegPath = null;
+if (ffmpegStaticPath && which(ffmpegStaticPath, '-version')) {
+  ffmpegPath = ffmpegStaticPath;
+} else if (which('ffmpeg', '-version')) {
+  // ffmpeg only understands single-dash flags (-version), unlike most other CLIs.
+  ffmpegPath = 'ffmpeg';
+}
+const hasFfmpeg = Boolean(ffmpegPath);
 if (!hasFfmpeg) {
   console.warn('ffmpeg not found — "Best" and "Audio" quality options will be unavailable. See README.');
 }
@@ -106,6 +116,7 @@ app.get('/api/info', async (req, res) => {
       noCheckCertificates: true,
       preferFreeFormats: true,
       addHeader: ['referer:youtube.com', 'user-agent:googlebot'],
+      ...(ffmpegPath ? { ffmpegLocation: ffmpegPath } : {}),
     });
     const info = typeof raw === 'string' ? JSON.parse(raw) : raw;
     res.json({
@@ -145,6 +156,7 @@ app.get('/api/download', async (req, res) => {
       noWarnings: true,
       noCheckCertificates: true,
       addHeader: ['referer:youtube.com', 'user-agent:googlebot'],
+      ...(ffmpegPath ? { ffmpegLocation: ffmpegPath } : {}),
     },
     { stdio: ['ignore', 'ignore', 'pipe'] }
   );
@@ -183,7 +195,14 @@ app.get('/api/download', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`\nYouTube downloader running at http://localhost:${PORT}\n`);
-  console.log(`ffmpeg detected: ${hasFfmpeg ? 'yes (Best/Audio available)' : 'no (only Standard quality available)'}\n`);
-});
+// On Vercel this file is imported as a serverless function handler (see
+// api/index.js) rather than run directly, so it must not also try to bind
+// a port itself.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\nYouTube downloader running at http://localhost:${PORT}\n`);
+    console.log(`ffmpeg detected: ${hasFfmpeg ? 'yes (Best/Audio available)' : 'no (only Standard quality available)'}\n`);
+  });
+}
+
+export default app;
