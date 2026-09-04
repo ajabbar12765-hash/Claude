@@ -1,9 +1,29 @@
+import { execSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url)))
+
+// Baked in at build time so the running app can always say exactly which
+// commit it was built from — a human-readable version number alone can be
+// forgotten to bump, but a commit hash can't drift from what's deployed.
+function commitHash() {
+  try {
+    return execSync('git rev-parse --short HEAD').toString().trim()
+  } catch {
+    return 'unknown'
+  }
+}
+
 export default defineConfig({
   base: '/',
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+    __COMMIT_HASH__: JSON.stringify(commitHash()),
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
   plugins: [
     react(),
     VitePWA({

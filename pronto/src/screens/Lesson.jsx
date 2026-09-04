@@ -9,19 +9,41 @@ import { vocabForExercise } from '../data/curriculum.js'
 
 let requeueCounter = 0
 
-// Which of one exercise's words the learner hasn't met yet this run and
-// doesn't already know from a prior lesson. Explain cards show their own
-// examples inline, so they never get a separate flashcard step.
-function newWordsForExercise(ex, taught) {
+// Splits an Italian phrase into individual word tokens for known/unknown
+// tracking — trims outer punctuation but keeps internal apostrophes intact
+// (elisions like "un'acqua" or "c'è" are one token, not two), and drops
+// anything with no letters in it (stray slashes, standalone punctuation).
+function tokenize(phrase) {
+  return phrase
+    .split(/\s+/)
+    .map((w) => w.toLowerCase().replace(/^[“‘'"(]+|[”’'".,!?)]+$/g, ''))
+    .filter((w) => /[a-zà-ÿ]/i.test(w))
+}
+
+// Which of one exercise's phrases the learner hasn't fully met yet, tracked
+// word by word rather than as one opaque phrase. A phrase built entirely
+// from words already taught elsewhere — even in a combination never seen
+// before — needs no teaching at all; it's recombination, not new material.
+// A phrase with only some new words still gets taught, but only the actual
+// new word(s) are worth flagging (see `newTokens` on the returned item), so
+// a 7-word sentence with one new word in it doesn't read as seven new words
+// dumped at once. Explain cards show their own examples inline, so they
+// never get a separate flashcard step.
+function newWordsForExercise(ex, taughtWords) {
   if (!ex || ex.type === 'explain') return []
   const seen = new Set()
-  return vocabForExercise(ex).filter((p) => {
-    if (!p.it || !p.en) return false
+  const result = []
+  for (const p of vocabForExercise(ex)) {
+    if (!p.it || !p.en) continue
     const key = p.it.toLowerCase()
-    if (taught.has(key) || seen.has(key)) return false
+    if (seen.has(key)) continue
     seen.add(key)
-    return true
-  })
+    const tokens = tokenize(p.it)
+    const newTokens = tokens.filter((t) => !taughtWords.has(t))
+    if (newTokens.length === 0) continue
+    result.push({ it: p.it, en: p.en, tokens, newTokens })
+  }
+  return result
 }
 
 // Turns a lesson's authored exercise list into a fixed run order that never
@@ -40,12 +62,12 @@ function newWordsForExercise(ex, taught) {
 // costs nothing. Anything still held when the lesson runs out is flushed at
 // the end, so nothing is ever skipped — only reordered.
 function scheduleLesson(exercises, knownWords) {
-  const taught = new Set(knownWords)
+  const taughtWords = new Set(knownWords)
   const steps = []
   let held = null
 
   for (const ex of exercises) {
-    const newWords = newWordsForExercise(ex, taught)
+    const newWords = newWordsForExercise(ex, taughtWords)
     if (newWords.length > 0) {
       // Teach this exercise's new word(s) first, THEN release whatever was
       // previously held — that ordering is what actually puts a different
@@ -54,7 +76,7 @@ function scheduleLesson(exercises, knownWords) {
       // own teach card again, with nothing new in between.
       for (const word of newWords) {
         steps.push({ type: 'teach', word })
-        taught.add(word.it.toLowerCase())
+        word.tokens.forEach((t) => taughtWords.add(t))
       }
       if (held) {
         steps.push({ type: 'exercise', exercise: held })
@@ -82,8 +104,19 @@ function freshState(lesson, knownWords) {
   }
 }
 
+// The learner's known-word set, built from every phrase in completed
+// lessons — not the phrases themselves, so a word already met inside one
+// sentence is recognized inside a completely different one too.
+function knownWordSeed(knownVocab) {
+  const words = new Set()
+  for (const pair of knownVocab || []) {
+    if (pair.it) tokenize(pair.it).forEach((t) => words.add(t))
+  }
+  return words
+}
+
 export default function Lesson({ lesson, progress, onExit, onFinished }) {
-  const [run, setRun] = useState(() => freshState(lesson, (progress.knownVocab || []).map((p) => p.it.toLowerCase())))
+  const [run, setRun] = useState(() => freshState(lesson, knownWordSeed(progress.knownVocab)))
   // A ref, not state: some exercises (Explain) call onAnswered and onContinue
   // back-to-back in the same event handler with no render in between, so
   // state wouldn't have committed yet by the time handleContinue reads it.
@@ -204,6 +237,11 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
 
   if (current?.step.type === 'teach') {
     const word = current.step.word
+    // Only some of a longer phrase's words might actually be new — display
+    // words are split the same simple way as tokenize() (so positions
+    // line up) but keep their original casing/punctuation for display.
+    const isPartial = word.newTokens.length < word.tokens.length
+    const displayWords = word.it.split(/\s+/)
     return (
       <div className="screen screen-lesson">
         <div className="lesson-header">
@@ -215,7 +253,11 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
 
         <div className="teach-zone">
           <Mascot expression="happy" size={72} />
-          <p className="onboarding-subtext">You’ll be asked about this again in a bit — no need to memorize it now</p>
+          <p className="onboarding-subtext">
+            {isPartial
+              ? 'You already know the rest of this — just the highlighted part is new'
+              : 'You’ll be asked about this again in a bit — no need to memorize it now'}
+          </p>
           <motion.div
             key={word.it}
             className="teach-word-card"
@@ -223,7 +265,20 @@ export default function Lesson({ lesson, progress, onExit, onFinished }) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <p className="onboarding-quiz-word">{word.it}</p>
+            <p className="onboarding-quiz-word">
+              {isPartial
+                ? displayWords.map((w, i) => {
+                    const key = w.toLowerCase().replace(/^[“‘'"(]+|[”’'".,!?)]+$/g, '')
+                    const isNew = word.newTokens.includes(key)
+                    return (
+                      <span key={i} className={isNew ? 'teach-word-new' : 'teach-word-known'}>
+                        {w}
+                        {i < displayWords.length - 1 ? ' ' : ''}
+                      </span>
+                    )
+                  })
+                : word.it}
+            </p>
             <p className="teach-word-meaning">{word.en}</p>
             {speechSupported && (
               <button type="button" className="dict-listen" onClick={() => speakItalian(word.it)} aria-label="Listen">

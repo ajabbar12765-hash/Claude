@@ -5,6 +5,7 @@ import Icon from '../components/Icon.jsx'
 import Mascot from '../components/Mascot.jsx'
 import { isSoundEnabled, setSoundEnabled } from '../lib/sound.js'
 import { LEVEL_LABELS } from '../data/placementQuiz.js'
+import { APP_VERSION, COMMIT_HASH, BUILD_TIME } from '../version.js'
 
 const container = {
   hidden: {},
@@ -229,6 +230,10 @@ export default function Profile({ progress, theme, notifications, onOpenLevelChe
         <motion.button variants={item} type="button" className="btn-reset" onClick={handleReset}>
           Reset progress
         </motion.button>
+        <motion.p variants={item} className="profile-version">
+          v{APP_VERSION} · {COMMIT_HASH} · built{' '}
+          {new Date(BUILD_TIME).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+        </motion.p>
       </div>
     </motion.div>
   )

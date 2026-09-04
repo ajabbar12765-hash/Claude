@@ -2004,8 +2004,15 @@ ul {
 
 .profile-footer-links {
   display: flex;
-  justify-content: center;
-  gap: 18px;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-version {
+  font-size: 0.72rem;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.01em;
 }
 
 /* ── Splash ──────────────────────────────────────────────────── */
@@ -2986,6 +2993,23 @@ ul {
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--color-ink-soft);
+}
+
+/* Word-level highlighting inside a partially-known phrase's teach card —
+   the already-known words fade back so the one or two actually-new words
+   are what the eye lands on, instead of the whole sentence reading as
+   equally unfamiliar. */
+.teach-word-known {
+  color: var(--color-ink-faint);
+  font-weight: 500;
+}
+
+.teach-word-new {
+  color: var(--color-terracotta-dark);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-terracotta) 45%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 /* ── Review: spaced-repetition flashcard deck ───────────────── */
