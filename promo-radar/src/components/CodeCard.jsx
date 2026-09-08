@@ -16,6 +16,7 @@ export default function CodeCard({ item, isUsed, onView, onCopy, onWorked, onDid
 
   return (
     <article className={`code-card accent-${accent} ${soon ? 'expiring' : ''}`} onClick={() => onView(item)}>
+      {item.priority && <span className="priority-flag" title="Pinned to the top by default">★ Priority</span>}
       <div className="code-card-head">
         <span className="store-avatar">{item.store.slice(0, 2).toUpperCase()}</span>
         <div className="code-card-store">

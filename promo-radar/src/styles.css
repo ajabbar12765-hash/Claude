@@ -440,6 +440,21 @@ button:active { transform: scale(0.97); }
 .code-card.accent-turquoise { --accent-local: var(--turquoise); }
 .code-card.expiring { border-color: var(--gold); }
 
+.priority-flag {
+  position: absolute;
+  top: -11px;
+  right: 16px;
+  background: var(--gold);
+  color: var(--avatar-ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+}
+
 .code-card-head { display: flex; align-items: flex-start; gap: 10px; }
 .store-avatar {
   width: 38px; height: 38px; border-radius: var(--radius-sm);

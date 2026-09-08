@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { discountLabel, CATEGORY_ACCENT } from '../lib/catalog.js'
+import { discountLabel, sortByPriority, CATEGORY_ACCENT } from '../lib/catalog.js'
 import { formatExpiry } from '../lib/format.js'
 
 // The headline interaction: type any place — a store, a brand, a city you're
@@ -12,10 +12,11 @@ export default function PlaceLookup({ items, usedMap, onCopy, onWorked, onDidntW
   const results = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return []
-    return items.filter((i) => {
-      const hay = `${i.store} ${i.country} ${i.category} ${i.title}`.toLowerCase()
+    const matches = items.filter((i) => {
+      const hay = `${i.store} ${i.country} ${i.category} ${i.title} ${i.description || ''}`.toLowerCase()
       return hay.includes(q)
     })
+    return sortByPriority(matches)
   }, [items, query])
 
   function submit(e) {
@@ -76,6 +77,7 @@ function LookupCard({ item, isUsed, onCopy, onWorked, onDidntWork }) {
   const accent = CATEGORY_ACCENT[item.category] || 'pink'
   return (
     <article className={`code-card accent-${accent}`}>
+      {item.priority && <span className="priority-flag" title="Pinned to the top by default">★ Priority</span>}
       <div className="code-card-head">
         <span className="store-avatar">{item.store.slice(0, 2).toUpperCase()}</span>
         <div className="code-card-store">

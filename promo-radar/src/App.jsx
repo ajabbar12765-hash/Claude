@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { CATALOG, CATEGORIES } from './lib/catalog.js'
+import { CATALOG, CATEGORIES, sortByPriority } from './lib/catalog.js'
 import * as storage from './lib/storage.js'
 import { scan, SCAN_INTERVAL_MS } from './lib/radar.js'
 import { fetchLiveCodes } from './lib/liveCodes.js'
@@ -129,20 +129,22 @@ export default function App() {
 
   function matchesQuery(item, q) {
     if (!q) return true
-    const hay = `${item.store} ${item.code} ${item.title} ${item.category}`.toLowerCase()
+    const hay = `${item.store} ${item.code} ${item.title} ${item.category} ${item.description || ''}`.toLowerCase()
     return hay.includes(q.toLowerCase())
   }
 
   const dealsFiltered = useMemo(() => {
-    return dealsPool
+    const filtered = dealsPool
       .filter((i) => category === 'all' || i.category === category)
       .filter((i) => matchesQuery(i, query))
+    return sortByPriority(filtered)
   }, [dealsPool, category, query])
 
   const travelFiltered = useMemo(() => {
     const byCountry = travelPool.filter((i) => i.country === travelCountry)
     const extras = giftcardsAnywhere.filter((i) => matchesQuery(i, query))
-    return [...byCountry.filter((i) => matchesQuery(i, query)), ...extras]
+    const combined = [...byCountry.filter((i) => matchesQuery(i, query)), ...extras]
+    return sortByPriority(combined)
   }, [travelPool, giftcardsAnywhere, travelCountry, query])
 
   const visibleItems = mode === 'deals' ? dealsFiltered : travelFiltered
