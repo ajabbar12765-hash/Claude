@@ -3,7 +3,8 @@
 A promo-code and gift-card tracker for popular Pakistani stores, with a
 travel mode that finds deals by destination country.
 
-**Live:** git-linked Vercel project `promo-radar-pk`, auto-deploys a preview on every push to this branch.
+**Live:** https://promo-radar-pk-git-claude-pa-1c98a0-ajabbar12765-hashs-projects.vercel.app
+(git-linked to this branch — every push here redeploys it automatically)
 
 ```bash
 cd promo-radar
@@ -99,12 +100,19 @@ checkout.
 
 ## Deploying to Vercel
 
-1. Go to [vercel.com/new](https://vercel.com/new) and import
-   `ajabbar12765-hash/Claude`.
-2. Set **Root Directory** to `promo-radar` — the repo holds several apps, so
-   this is the setting that matters.
-3. Deploy. `vercel.json` pins the framework, build command and output
-   directory, so leave those on auto-detect.
+Already set up: the Vercel project `promo-radar-pk` is git-linked to this
+repo with **Root Directory** set to `promo-radar` (the repo holds several
+apps, so that setting matters). Every push to this branch triggers a fresh
+deployment automatically — nothing to run by hand.
+
+To point it at production instead of a branch preview, either merge this
+branch to the repo's default branch, or change the project's **Production
+Branch** in Vercel → Settings → Git.
+
+Setting it up from scratch elsewhere: go to
+[vercel.com/new](https://vercel.com/new), import the repo, set **Root
+Directory** to `promo-radar`, and deploy — `vercel.json` pins the framework,
+build command and output directory, so leave those on auto-detect.
 
 ## Layout
 
