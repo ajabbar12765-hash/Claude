@@ -91,6 +91,23 @@ turned up codes like `Hiba10` for Daraz on exactly those sites, and they're
 widely known for auto-generating plausible-looking codes that don't actually
 work at checkout.
 
+**Also deliberately not scraping TikTok, YouTube or Instagram.** Tested this
+for real before deciding against it: a TikTok search actually run against
+`DarazPK` content mostly returned Daraz's **product-search codes**
+(`$cuvbj$`, `$3owcx$` — paste into Daraz's search bar to jump to one
+listing) sitting right next to the word "code," which is a different feature
+from a discount code and would have been the exact same class of
+false-positive as the `sellerId%3D14161` bug above. A real YouTube search for
+"Daraz Pakistan promo code today" came back mostly noise — drama-episode
+teasers, unrelated finance offers, and "How to Use Daraz Voucher Code —
+100% Working" videos that (per how that clickbait genre works) don't
+actually contain a code. Instagram's hashtag search returned zero results
+without a login. On top of that, no scraper can confirm a code still works
+at checkout without actually completing a purchase — that's a different,
+riskier kind of automation this app isn't going to do. So the live scan
+stays limited to official store pages, where "automatic discount, no code"
+is at least honestly checkable from the page itself.
+
 **Setup** (all server-side — once it's on, scans run on Vercel + Apify's
 compute with zero further Anthropic/Claude usage):
 
