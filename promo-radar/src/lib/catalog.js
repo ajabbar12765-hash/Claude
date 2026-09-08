@@ -229,20 +229,20 @@ const seed = [
 
   // ----------------------------------------------------------------- giftcard
   {
-    store: 'Google Play Pakistan', category: 'giftcard', code: 'GPLAY-BONUS10', title: '10% bonus credit on gift card top-up',
+    store: 'SteamShop.pk (Google Play)', category: 'giftcard', code: 'GPLAY-BONUS10', title: '10% bonus credit on gift card top-up',
     discountType: 'percent', discountValue: 10, minSpend: null, maxDiscount: null, country: 'ANY',
-    description: 'Authorized resellers occasionally add bonus credit when you buy a Google Play PK gift card.',
-    terms: ['Reseller-dependent, not a Google-issued discount', 'Verify the reseller is authorized before paying'],
+    description: 'Google Play doesn’t sell PKR cards directly — SteamShop.pk and CodesDukaan.pk are real local resellers that deliver a code by email; they occasionally run a bonus-credit promo on top-ups.',
+    terms: ['Reseller-dependent, not a Google-issued discount', 'Confirm the reseller is a legitimate, reviewed store before paying'],
     howTo: ['Check the reseller listing for an active bonus code at purchase'],
-    url: 'https://play.google.com/store', expiresIn: 10,
+    url: 'https://steamshop.pk/gift-cards/google-play-gift-card', expiresIn: 10,
   },
   {
-    store: 'PlayStation Store PK', category: 'giftcard', code: 'PSN-WELCOME', title: 'Welcome bonus on first gift card purchase',
+    store: 'SteamShop.pk (PSN)', category: 'giftcard', code: 'PSN-WELCOME', title: 'Welcome bonus on first gift card purchase',
     discountType: 'fixed', discountValue: 300, minSpend: 2000, maxDiscount: 300, country: 'ANY',
-    description: 'First-purchase bonus from select local resellers of PSN wallet top-ups.',
+    description: 'PSN wallet top-ups for Pakistan go through resellers like SteamShop.pk rather than Sony directly; some offer a first-purchase bonus.',
     terms: ['Reseller-dependent'],
     howTo: ['Apply the reseller’s code at their checkout'],
-    url: 'https://www.playstation.com/', expiresIn: 14,
+    url: 'https://steamshop.pk/gift-cards/playstation-network-card', expiresIn: 14,
   },
   {
     store: 'Careem', category: 'giftcard', code: 'CAREEMGIFT', title: 'Rs. 200 bonus on gift card redemption',

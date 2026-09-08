@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CATEGORIES, COUNTRIES } from '../lib/catalog.js'
 
 const empty = {
@@ -8,8 +8,14 @@ const empty = {
   url: '', expiresAt: '',
 }
 
-export default function AddCodeModal({ open, onClose, onSave }) {
+export default function AddCodeModal({ open, onClose, onSave, initialStore }) {
   const [form, setForm] = useState(empty)
+
+  useEffect(() => {
+    if (open) setForm((f) => ({ ...empty, store: initialStore || '' }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialStore])
+
   if (!open) return null
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })

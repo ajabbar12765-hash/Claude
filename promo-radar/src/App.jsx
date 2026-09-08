@@ -3,6 +3,7 @@ import { CATALOG, CATEGORIES } from './lib/catalog.js'
 import * as storage from './lib/storage.js'
 import { scan, SCAN_INTERVAL_MS } from './lib/radar.js'
 
+import Hero from './components/Hero.jsx'
 import TopBar from './components/TopBar.jsx'
 import CategoryTabs from './components/CategoryTabs.jsx'
 import SearchBar from './components/SearchBar.jsx'
@@ -24,8 +25,10 @@ export default function App() {
   const [viewing, setViewing] = useState(null)
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
+  const [addPrefill, setAddPrefill] = useState('')
   const [toasts, setToasts] = useState([])
   const stateRef = useRef(persisted)
+  const mainRef = useRef(null)
   stateRef.current = persisted
 
   useEffect(() => storage.save(persisted), [persisted])
@@ -159,18 +162,34 @@ export default function App() {
       .sort((a, b) => new Date(b.at) - new Date(a.at))
   }, [persisted.removed, allItems])
 
+  function openAddFor(placeName) {
+    setAddPrefill(placeName)
+    setAddOpen(true)
+  }
+
   return (
     <div className="app">
+      <Hero
+        radarStatus={{ activeCount: activeItems.length, expiringSoonCount, lastScanAt: persisted.lastScanAt }}
+        allItems={activeItems}
+        usedMap={persisted.used}
+        onCopy={handleCopy}
+        onWorked={handleWorked}
+        onDidntWork={handleDidntWork}
+        onAddPlace={openAddFor}
+        onScrollToApp={() => mainRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+      />
+
       <TopBar
         mode={mode}
         setMode={setMode}
         radarStatus={{ activeCount: activeItems.length, expiringSoonCount, lastScanAt: persisted.lastScanAt }}
-        onAddCode={() => setAddOpen(true)}
+        onAddCode={() => openAddFor('')}
         onOpenArchive={() => setArchiveOpen(true)}
         archiveCount={archiveList.length}
       />
 
-      <main>
+      <main ref={mainRef} id="app-main">
         <SearchBar value={query} onChange={setQuery} />
 
         {mode === 'deals' ? (
@@ -182,7 +201,7 @@ export default function App() {
         {visibleItems.length === 0 ? (
           <div className="empty-state">
             <p>No codes here yet.</p>
-            <button className="btn-primary" onClick={() => setAddOpen(true)}>+ Add one you found</button>
+            <button className="btn-primary" onClick={() => openAddFor('')}>+ Add one you found</button>
           </div>
         ) : (
           <div className="code-grid">
@@ -208,7 +227,7 @@ export default function App() {
         items={archiveList}
         onRestore={(id) => setPersisted((prev) => storage.restore(prev, id))}
       />
-      <AddCodeModal open={addOpen} onClose={() => setAddOpen(false)} onSave={handleAddCode} />
+      <AddCodeModal open={addOpen} onClose={() => setAddOpen(false)} onSave={handleAddCode} initialStore={addPrefill} />
       <Toasts toasts={toasts} onDismiss={dismissToast} />
     </div>
   )
