@@ -25,6 +25,8 @@ export default function CodeCard({ item, isUsed, onView, onCopy, onWorked, onDid
         </div>
         {item.sample ? (
           <span className="badge badge-sample" title="Starter data — verify before use">Unverified</span>
+        ) : item.source === 'Live scan (Apify)' ? (
+          <span className="badge badge-live" title="Found by a live scan of the store's own page just now">Live</span>
         ) : (
           <span className="badge badge-verified" title="Added or confirmed by you">Verified</span>
         )}
@@ -32,10 +34,14 @@ export default function CodeCard({ item, isUsed, onView, onCopy, onWorked, onDid
 
       <p className="code-card-title">{item.title}</p>
 
-      <div className="code-chip">
-        <code>{item.code}</code>
-        <button className="btn-copy" onClick={handleCopy}>{copied ? 'Copied!' : 'Copy'}</button>
-      </div>
+      {item.code ? (
+        <div className="code-chip">
+          <code>{item.code}</code>
+          <button className="btn-copy" onClick={handleCopy}>{copied ? 'Copied!' : 'Copy'}</button>
+        </div>
+      ) : (
+        <div className="code-chip no-code">No code needed — applies automatically</div>
+      )}
 
       <div className="code-card-foot">
         <span className={`expiry ${soon ? 'expiry-soon' : ''}`}>{formatExpiry(item.expiresAt)}</span>

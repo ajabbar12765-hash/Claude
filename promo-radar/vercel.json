@@ -4,6 +4,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/codes.js": { "maxDuration": 30 }
+    "api/codes.js": { "maxDuration": 60 }
   }
 }

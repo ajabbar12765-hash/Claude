@@ -16,10 +16,14 @@ export default function CodeDetailModal({ item, onClose, onCopy, onWorked, onDid
           </div>
         </div>
 
-        <div className="code-chip large">
-          <code>{item.code}</code>
-          <button className="btn-copy" onClick={() => onCopy(item)}>Copy code</button>
-        </div>
+        {item.code ? (
+          <div className="code-chip large">
+            <code>{item.code}</code>
+            <button className="btn-copy" onClick={() => onCopy(item)}>Copy code</button>
+          </div>
+        ) : (
+          <div className="code-chip large no-code">No code needed — applies automatically</div>
+        )}
 
         <p className="modal-desc">{item.description}</p>
 
@@ -60,6 +64,7 @@ export default function CodeDetailModal({ item, onClose, onCopy, onWorked, onDid
           <span>Added {formatDate(item.addedAt)}</span>
           <span>Source: {item.source || 'added by you'}</span>
           {item.sample && <span className="badge badge-sample">Unverified — confirm at checkout</span>}
+          {!item.sample && item.source === 'Live scan (Apify)' && <span className="badge badge-live">Live scan result</span>}
         </div>
 
         <div className="modal-actions">

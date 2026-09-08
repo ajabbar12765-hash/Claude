@@ -84,15 +84,19 @@ function LookupCard({ item, isUsed, onCopy, onWorked, onDidntWork }) {
           <strong>{item.store}</strong>
           <span className="discount-label">{discountLabel(item)}</span>
         </div>
-        <span className={`stamp ${item.sample ? 'stamp-unverified' : 'stamp-verified'}`}>
-          {item.sample ? 'Unverified' : 'Verified'}
+        <span className={`stamp ${item.sample ? 'stamp-unverified' : item.source === 'Live scan (Apify)' ? 'stamp-live' : 'stamp-verified'}`}>
+          {item.sample ? 'Unverified' : item.source === 'Live scan (Apify)' ? 'Live' : 'Verified'}
         </span>
       </div>
       <p className="code-card-title">{item.title}</p>
-      <div className="code-chip">
-        <code>{item.code}</code>
-        <button className="btn-copy" onClick={() => onCopy(item)}>Copy</button>
-      </div>
+      {item.code ? (
+        <div className="code-chip">
+          <code>{item.code}</code>
+          <button className="btn-copy" onClick={() => onCopy(item)}>Copy</button>
+        </div>
+      ) : (
+        <div className="code-chip no-code">No code needed — applies automatically</div>
+      )}
       <div className="code-card-foot">
         <span>{formatExpiry(item.expiresAt)}</span>
         {isUsed && <span className="used-tag">✓ You used this</span>}

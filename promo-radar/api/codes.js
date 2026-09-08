@@ -1,11 +1,19 @@
 // Serverless live-scan proxy (Vercel function) — the real thing "does the app
 // have live tracking" asks about.
 //
-// This calls Apify (apify/website-content-crawler) server-side, against a
-// curated list of OFFICIAL store pages (never third-party coupon-listicle
-// sites — see catalog.js for why those are unreliable), pulls back page
-// text, and regex-extracts code-shaped tokens near discount language. It
-// runs entirely on Vercel + Apify's compute: once APIFY_TOKEN is set below,
+// IMPORTANT, learned the hard way by actually running this against real
+// pages (see README): Daraz, SteamShop.pk and Outfitters — three real,
+// reachable, official Pakistani retail pages — all publish AUTOMATIC
+// discounts ("50% OFF", "Rs. 100 off orders over Rs. 1000"), never a typed
+// alphanumeric code. A regex hunting for "code-shaped tokens" on these pages
+// doesn't fail quietly — it matches URL query-string fragments like
+// `sellerId%3D14161` and reports `3D14161` as if it were a real code, which
+// is worse than finding nothing. So this scanner extracts what's actually
+// there: live percent/fixed-amount discounts, surfaced as "no code needed"
+// entries. If a store's own page ever does publish a literal code, it'll
+// still show up (the code chip just won't render for the auto-applied ones).
+//
+// Runs entirely on Vercel + Apify's compute: once APIFY_TOKEN is set below,
 // nobody's Claude usage is involved in any later scan — a page load just
 // hits this endpoint, which hits Apify directly over HTTPS.
 //
@@ -17,18 +25,23 @@
 //
 // GET /api/codes
 
-const CACHE_TTL_MS = 6 * 60 * 60 * 1000 // 6h — codes don't change by the minute
+const CACHE_TTL_MS = 6 * 60 * 60 * 1000 // 6h — deals don't change by the minute
 const FAILURE_CACHE_TTL_MS = 15 * 60 * 1000 // retry sooner after a failed scan
 const ACTOR = 'apify~website-content-crawler'
-const SCAN_TIMEOUT_MS = 25_000
+// A real timed run of these two targets took ~40s (playwright rendering is
+// slow) — give it real headroom rather than the 25s this used to be set to,
+// which would have failed on every single run in production.
+const SCAN_TIMEOUT_MS = 55_000
 
-// Official first-party pages only — see README for why we don't scrape
-// coupon-aggregator sites (Picodi, WorthEPenny, etc. are known to list
-// auto-generated codes that don't actually work at checkout).
+// Official first-party pages only, and only ones actually verified reachable
+// by running this crawler against them — see README. No third-party
+// coupon-aggregator sites (Picodi, WorthEPenny, etc. — known for listing
+// auto-generated codes that don't work at checkout), and no guessed URLs:
+// telemart.pk/promotions (404) and symbios.pk/pages/discounts (unreachable)
+// were both tried and dropped for exactly that reason.
 const TARGETS = [
   { store: 'Daraz', url: 'https://www.daraz.pk/vouchers-services/' },
-  { store: 'Telemart', url: 'https://telemart.pk/promotions' },
-  { store: 'Symbios.pk', url: 'https://symbios.pk/pages/discounts' },
+  { store: 'Outfitters', url: 'https://outfitters.com.pk/' },
 ]
 
 let cache = null // { at, items } | { at, error: true }
@@ -39,39 +52,37 @@ function isFresh(entry) {
   return Date.now() - entry.at < ttl
 }
 
-// Looks for CODE-shaped tokens (4-15 uppercase letters/digits, at least one
-// digit or at least 6 letters so we don't match random acronyms) within ~80
-// characters of a discount cue ("% off", "Rs", "flat", "discount", "code",
-// "voucher"). Heuristic, not perfect — see README.
-const CODE_RE = /\b[A-Z0-9]{4,15}\b/g
-const CUE_RE = /(%|off|flat|discount|voucher|coupon|code|rs\.?\s?\d)/i
-const STOPWORDS = new Set([
-  'DARAZ', 'PAKISTAN', 'PAY', 'BUY', 'GET', 'FREE', 'SHOP', 'NOW', 'NEW', 'SALE',
-  'HELP', 'HOME', 'LOGIN', 'SIGN', 'MENU', 'MORE', 'VIEW', 'SHOW', 'HIDE',
-])
+const PERCENT_OFF_RE = /(\d{1,3})\s?%\s?OFF\b/gi
+const FIXED_OFF_RE = /Rs\.?\s?([\d,]{2,7})\s+Off\b/gi
+const MAX_PER_STORE_PER_KIND = 3
 
-function extractCandidates(text, store, sourceUrl) {
+// Pulls real "N% off" / "Rs. X off" mentions out of a page's text and
+// de-dupes by value, capped per store so one page with dozens of
+// near-identical per-seller lines (Daraz does this) doesn't flood the list.
+function extractDeals(text, store, sourceUrl) {
   if (!text) return []
-  const found = new Map()
-  const lines = text.split(/\n+/)
-  for (const line of lines) {
-    if (!CUE_RE.test(line)) continue
-    let m
-    CODE_RE.lastIndex = 0
-    while ((m = CODE_RE.exec(line))) {
-      const token = m[0]
-      if (STOPWORDS.has(token)) continue
-      if (!/[0-9]/.test(token) && token.length < 6) continue
-      if (found.has(token)) continue
-      found.set(token, {
-        store,
-        code: token,
-        context: line.trim().slice(0, 160),
-        source: sourceUrl,
-      })
-    }
+  const seenPercent = new Set()
+  const seenFixed = new Set()
+  const found = []
+
+  let m
+  PERCENT_OFF_RE.lastIndex = 0
+  while ((m = PERCENT_OFF_RE.exec(text))) {
+    const value = Number(m[1])
+    if (!value || value > 90 || seenPercent.has(value) || seenPercent.size >= MAX_PER_STORE_PER_KIND) continue
+    seenPercent.add(value)
+    found.push({ store, discountType: 'percent', discountValue: value, source: sourceUrl })
   }
-  return [...found.values()]
+
+  FIXED_OFF_RE.lastIndex = 0
+  while ((m = FIXED_OFF_RE.exec(text))) {
+    const value = Number(m[1].replace(/,/g, ''))
+    if (!value || seenFixed.has(value) || seenFixed.size >= MAX_PER_STORE_PER_KIND) continue
+    seenFixed.add(value)
+    found.push({ store, discountType: 'fixed', discountValue: value, source: sourceUrl })
+  }
+
+  return found
 }
 
 async function runApifyCrawl(token) {
@@ -125,7 +136,7 @@ export default async function handler(req, res) {
     for (const page of pages || []) {
       const target = TARGETS.find((t) => page?.url?.includes(new URL(t.url).hostname))
       const store = target?.store || page?.metadata?.title || 'Unknown store'
-      items.push(...extractCandidates(page.markdown || page.text || '', store, page.url))
+      items.push(...extractDeals(page.markdown || page.text || '', store, page.url))
     }
     cache = { at: Date.now(), items }
     res.setHeader('X-Radar-Cache', 'miss')

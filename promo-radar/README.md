@@ -60,19 +60,36 @@ the app runs perfectly well on the starter catalogue alone.
 ### Turning on the live scan (Apify)
 
 When configured, `/api/codes` calls [Apify](https://apify.com)'s
-`website-content-crawler` actor server-side against a curated list of
-**official store pages** (currently Daraz's own vouchers page, Telemart's
-and Symbios.pk's promotions pages — see `TARGETS` in `api/codes.js`), pulls
-back page text, and regex-extracts code-shaped tokens that sit near discount
-language ("% off", "Rs", "flat", "voucher", …). Results are cached for 6
-hours and merged into the catalogue as unverified live finds.
+`website-content-crawler` actor server-side against official store pages
+(see `TARGETS` in `api/codes.js`), and extracts what's actually live on the
+page right now. Results are cached for 6 hours and merged into the
+catalogue.
+
+**Why this finds deals, not codes.** The first version of this hunted for
+alphanumeric "code-shaped" tokens near discount language. Before shipping
+it, it was actually run — for real, with a real Apify actor — against
+Daraz's own vouchers page, SteamShop.pk, and Outfitters. All three publish
+**automatic** discounts ("50% OFF" sitewide, "Rs. 100 off orders over Rs.
+1000") with nothing to type in at checkout — no store checked turned up a
+single literal code on its own page. Worse, the naive extractor didn't just
+fail quietly on that content: it found URL query-string fragments like
+`sellerId%3D14161` sitting next to the word "Off" and reported `3D14161` as
+if it were a real code. So the scanner now looks for what's genuinely
+there — live "N% off" / "Rs. X off" rates — and the app shows those as **"No
+code needed — applies automatically"** rather than inventing a code chip
+for them. If a store's page ever does carry a literal code, `extractDeals()`
+in `api/codes.js` is the place to add that pattern back for it.
+
+Also dropped two guessed target URLs that turned out not to exist:
+`telemart.pk/promotions` was a hard 404, and `symbios.pk/pages/discounts`
+never resolved at all. `TARGETS` now only lists pages actually confirmed
+reachable by running the crawler against them.
 
 Deliberately **not** scraping third-party coupon-listicle sites (Picodi,
 WorthEPenny, SimplyCodes, etc.) — a live web search while building this
 turned up codes like `Hiba10` for Daraz on exactly those sites, and they're
 widely known for auto-generating plausible-looking codes that don't actually
-work at checkout. Official first-party pages are the only source worth
-automating.
+work at checkout.
 
 **Setup** (all server-side — once it's on, scans run on Vercel + Apify's
 compute with zero further Anthropic/Claude usage):
@@ -80,23 +97,29 @@ compute with zero further Anthropic/Claude usage):
 1. Create a free account at [apify.com](https://apify.com) and copy your
    API token from **Settings → Integrations**.
 2. In the Vercel project → **Settings → Environment Variables**, add
-   `APIFY_TOKEN` with that value, then redeploy.
-3. Reload the app — the status pill switches from "Starter data only" to
-   "Live scan active" once a scan succeeds.
+   `APIFY_TOKEN` with that value. **Tick the "Preview" environment**, not
+   just Production — this project's Production Branch is `main`, which
+   doesn't have this app on it, so the live deployment is a Preview build
+   and only picks up variables scoped to Preview.
+3. Redeploy (env var changes need a fresh deployment — push a commit or hit
+   Redeploy in the Vercel dashboard) and reload the app. The status pill
+   switches from "Starter data only" to "Live scan active" once a scan
+   succeeds; individual live entries show a turquoise "Live" badge instead
+   of "Unverified"/"Verified".
 
-**Honest limits, so you know what you're getting:** this is real
-infrastructure, not a finished, perfectly-tuned scraper. Some store pages
-render their voucher list client-side after the initial load (Daraz's own
-vouchers page does), so the crawler's markdown extract can come back mostly
-navigation chrome rather than the voucher cards — the regex extractor then
-simply finds nothing on that pass and the app quietly keeps using the
-starter data. Getting each target page reliably parsed (waiting for the
-right selector, or finding the site's internal JSON endpoint) is exactly the
-kind of per-site tuning a production scraper needs over time; `TARGETS` and
-`extractCandidates()` in `api/codes.js` are where that tuning happens. Live
-finds are still badged "Unverified" like everything else until confirmed —
-this system finds candidates faster, it doesn't replace judgment at
-checkout.
+**Known cost, timing and honesty limits:**
+- A real timed run against the two current targets took **~40 seconds**
+  (Playwright rendering is slow) — `vercel.json` sets `maxDuration: 60` for
+  this function and `SCAN_TIMEOUT_MS` in `api/codes.js` is set well above
+  the measured time. If your Vercel plan caps function duration below that,
+  the scan will time out; the app still falls back to starter data cleanly
+  either way.
+- Apify's `website-content-crawler` run costs a small amount of Apify
+  platform credit per scan (well within the free tier for a 6-hourly cache,
+  occasional-use scan of two pages).
+- Live entries are still not "verified working" in the sense of someone
+  having redeemed them — they're a snapshot of what a page said at scan
+  time. Rates change; the radar's normal expiry/archive flow still applies.
 
 ## Deploying to Vercel
 

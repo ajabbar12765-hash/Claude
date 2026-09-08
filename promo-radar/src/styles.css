@@ -481,6 +481,7 @@ button:active { transform: scale(0.97); }
 }
 .badge-sample, .stamp-unverified { color: var(--gold-ink); background: oklch(78% 0.15 75 / 0.12); }
 .badge-verified, .stamp-verified { color: var(--success); background: oklch(72% 0.14 155 / 0.12); }
+.badge-live, .stamp-live { color: var(--turquoise-ink); background: oklch(72% 0.12 195 / 0.12); }
 
 .code-card-title { margin: 0; font-size: 0.87rem; color: var(--ink-dim); }
 
@@ -494,6 +495,13 @@ button:active { transform: scale(0.97); }
 .code-chip code { font-weight: 700; letter-spacing: 0.03em; }
 .code-chip.large { padding: 14px 18px; margin: 14px 0; border-radius: var(--radius-md); }
 .code-chip.large code { font-size: 1.1rem; }
+.code-chip.no-code {
+  justify-content: center;
+  border-style: dashed;
+  color: var(--turquoise-ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
 
 .btn-copy, .btn-worked, .btn-expired, .btn-ghost, .btn-primary {
   border-radius: var(--radius-sm);
