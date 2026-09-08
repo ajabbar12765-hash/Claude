@@ -3,6 +3,8 @@
 A promo-code and gift-card tracker for popular Pakistani stores, with a
 travel mode that finds deals by destination country.
 
+**Live:** https://promo-radar-ten.vercel.app
+
 ```bash
 cd promo-radar
 npm install
