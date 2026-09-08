@@ -1,0 +1,20 @@
+{
+  "name": "promo-radar",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Pakistan promo code & gift card radar — tracks, verifies and retires deals for popular local stores, plus a travel mode by destination country",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
+  }
+}
