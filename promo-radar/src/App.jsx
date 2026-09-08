@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { CATALOG, CATEGORIES } from './lib/catalog.js'
 import * as storage from './lib/storage.js'
 import { scan, SCAN_INTERVAL_MS } from './lib/radar.js'
+import { fetchLiveCodes } from './lib/liveCodes.js'
 
 import Hero from './components/Hero.jsx'
 import TopBar from './components/TopBar.jsx'
@@ -27,11 +28,33 @@ export default function App() {
   const [addOpen, setAddOpen] = useState(false)
   const [addPrefill, setAddPrefill] = useState('')
   const [toasts, setToasts] = useState([])
+  const [liveCodes, setLiveCodes] = useState([])
+  const [liveStatus, setLiveStatus] = useState('idle') // idle | scanning | live | off
   const stateRef = useRef(persisted)
   const mainRef = useRef(null)
   stateRef.current = persisted
 
   useEffect(() => storage.save(persisted), [persisted])
+
+  // Real live scanning: /api/codes runs an Apify crawl against official
+  // store pages server-side (see api/codes.js). Off by default until
+  // APIFY_TOKEN is configured in Vercel — see README. Fails silently (no
+  // /api routes in local `npm run dev`) and the app just runs on the
+  // starter catalogue.
+  useEffect(() => {
+    let cancelled = false
+    setLiveStatus('scanning')
+    fetchLiveCodes().then((result) => {
+      if (cancelled) return
+      if (result.live) {
+        setLiveCodes(result.items)
+        setLiveStatus('live')
+      } else {
+        setLiveStatus('off')
+      }
+    })
+    return () => { cancelled = true }
+  }, [])
 
   function toast(message, kind = 'info', action) {
     const id = ++toastSeq
@@ -42,7 +65,7 @@ export default function App() {
     setToasts((t) => t.filter((x) => x.id !== id))
   }
 
-  const allItems = useMemo(() => [...CATALOG, ...persisted.custom], [persisted.custom])
+  const allItems = useMemo(() => [...CATALOG, ...liveCodes, ...persisted.custom], [liveCodes, persisted.custom])
   const removedIds = useMemo(() => new Set(Object.keys(persisted.removed)), [persisted.removed])
   const activeItems = useMemo(() => allItems.filter((i) => !removedIds.has(i.id)), [allItems, removedIds])
 
@@ -170,7 +193,7 @@ export default function App() {
   return (
     <div className="app">
       <Hero
-        radarStatus={{ activeCount: activeItems.length, expiringSoonCount, lastScanAt: persisted.lastScanAt }}
+        radarStatus={{ activeCount: activeItems.length, expiringSoonCount, lastScanAt: persisted.lastScanAt, liveStatus }}
         allItems={activeItems}
         usedMap={persisted.used}
         onCopy={handleCopy}
@@ -183,7 +206,7 @@ export default function App() {
       <TopBar
         mode={mode}
         setMode={setMode}
-        radarStatus={{ activeCount: activeItems.length, expiringSoonCount, lastScanAt: persisted.lastScanAt }}
+        radarStatus={{ activeCount: activeItems.length, expiringSoonCount, lastScanAt: persisted.lastScanAt, liveStatus }}
         onAddCode={() => openAddFor('')}
         onOpenArchive={() => setArchiveOpen(true)}
         archiveCount={archiveList.length}

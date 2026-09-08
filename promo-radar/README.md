@@ -44,38 +44,58 @@ radar apps.
 newsletter, Instagram, a coupon site) into the same tracked list — the radar
 watches it, expiry and all, exactly like the starter catalogue.
 
-## Why this isn't a live scraper
+## Starter data vs. the live scan
 
-"Constantly looks for promo codes" sounds like it should mean a bot crawling
-Daraz, Foodpanda and every fashion site around the clock. That's not viable
-as the default, for the same reasons this repo's `hotel-radar` app landed on
-licensed APIs instead of scraping booking sites:
+The catalogue in `src/lib/catalog.js` ships as clearly-labeled **starter
+data** — realistic in shape, badged "Unverified" in the UI. What's genuinely
+automatic even without any setup is the radar loop: it continuously watches
+whatever is in your list (seed + anything you add) and retires it the
+instant it expires.
 
-- Retailers vary and mostly don't offer a public "current coupons" API, so
-  there's no legitimate source to poll.
-- Anything that did scrape store pages would break constantly (markup
-  changes with no notice), risk violating each site's terms of service, and
-  get treated as a bot by anti-abuse systems — a wall this repo's hotel
-  radar hit directly.
-- Promo codes churn fast and are highly personalized (first-order-only,
-  app-only, one-per-CNIC); a scraped code list would be stale within hours
-  regardless.
+On top of that, `api/codes.js` is a real, optional live scanner. It's off by
+default because it needs your own Apify account (see below) — without one
+the app runs perfectly well on the starter catalogue alone.
 
-So the catalogue in `src/lib/catalog.js` ships as clearly-labeled **starter
-data** — realistic in shape, badged "Unverified" in the UI, meant to be
-replaced with codes you actually confirm. What *is* real and automatic is
-the radar loop: it genuinely, continuously watches whatever is in your list
-(seed + anything you add) and retires it the instant it expires.
+### Turning on the live scan (Apify)
 
-### If you want real live data later
+When configured, `/api/codes` calls [Apify](https://apify.com)'s
+`website-content-crawler` actor server-side against a curated list of
+**official store pages** (currently Daraz's own vouchers page, Telemart's
+and Symbios.pk's promotions pages — see `TARGETS` in `api/codes.js`), pulls
+back page text, and regex-extracts code-shaped tokens that sit near discount
+language ("% off", "Rs", "flat", "voucher", …). Results are cached for 6
+hours and merged into the catalogue as unverified live finds.
 
-The cleanest path, same pattern as `hotel-radar/api/hotels.js`: add a small
-serverless function (`api/codes.js`) that calls an affiliate network with an
-actual coupon feed — Involve Asia and Admitad both operate in Pakistan and
-give merchants/affiliates a structured feed of live vouchers — and merge its
-response into `CATALOG` client-side. The data model (`store`, `code`,
-`discountType`, `expiresAt`, `terms`, `howTo`, …) is already shaped for that;
-nothing in the UI needs to change, only where the array comes from.
+Deliberately **not** scraping third-party coupon-listicle sites (Picodi,
+WorthEPenny, SimplyCodes, etc.) — a live web search while building this
+turned up codes like `Hiba10` for Daraz on exactly those sites, and they're
+widely known for auto-generating plausible-looking codes that don't actually
+work at checkout. Official first-party pages are the only source worth
+automating.
+
+**Setup** (all server-side — once it's on, scans run on Vercel + Apify's
+compute with zero further Anthropic/Claude usage):
+
+1. Create a free account at [apify.com](https://apify.com) and copy your
+   API token from **Settings → Integrations**.
+2. In the Vercel project → **Settings → Environment Variables**, add
+   `APIFY_TOKEN` with that value, then redeploy.
+3. Reload the app — the status pill switches from "Starter data only" to
+   "Live scan active" once a scan succeeds.
+
+**Honest limits, so you know what you're getting:** this is real
+infrastructure, not a finished, perfectly-tuned scraper. Some store pages
+render their voucher list client-side after the initial load (Daraz's own
+vouchers page does), so the crawler's markdown extract can come back mostly
+navigation chrome rather than the voucher cards — the regex extractor then
+simply finds nothing on that pass and the app quietly keeps using the
+starter data. Getting each target page reliably parsed (waiting for the
+right selector, or finding the site's internal JSON endpoint) is exactly the
+kind of per-site tuning a production scraper needs over time; `TARGETS` and
+`extractCandidates()` in `api/codes.js` are where that tuning happens. Live
+finds are still badged "Unverified" like everything else until confirmed —
+this system finds candidates faster, it doesn't replace judgment at
+checkout.
 
 ## Deploying to Vercel
 
@@ -89,14 +109,19 @@ nothing in the UI needs to change, only where the array comes from.
 ## Layout
 
 ```
+api/
+  codes.js                    Apify-backed live scan (optional, needs APIFY_TOKEN)
 src/
-  App.jsx                    top-level state, radar scan loop
+  App.jsx                     top-level state, radar scan loop, live-scan fetch
   lib/
-    catalog.js               starter codes: stores, categories, countries
-    storage.js                localStorage: used / removed / custom codes
-    radar.js                   scan loop: finds expired codes, flags soon-to-expire
-    format.js                  date/expiry/relative-time helpers
+    catalog.js                starter codes: stores, categories, countries, accents
+    storage.js                 localStorage: used / removed / custom codes
+    radar.js                    scan loop: finds expired codes, flags soon-to-expire
+    liveCodes.js                 fetches /api/codes, shapes results into catalog entries
+    format.js                    date/expiry/relative-time helpers
+    useReveal.js                  scroll-triggered reveal hook (IntersectionObserver)
   components/
+    Hero  PlaceLookup           scroll hero + "look up a place" search
     TopBar  StatusPill  CategoryTabs  SearchBar  TravelPanel
     CodeCard  CodeDetailModal  ArchiveDrawer  AddCodeModal  Toasts
 ```

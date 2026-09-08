@@ -22,6 +22,19 @@ export const CATEGORIES = [
   { id: 'travel', label: 'Travel', icon: '\u{2708}\u{FE0F}' },
 ]
 
+// Each category gets one of three jewel-tone accents, cycled so the grid
+// reads as deliberately colorful rather than randomly multi-colored.
+export const CATEGORY_ACCENT = {
+  ecommerce: 'turquoise',
+  fashion: 'pink',
+  food: 'gold',
+  grocery: 'turquoise',
+  electronics: 'pink',
+  telecom: 'gold',
+  giftcard: 'pink',
+  travel: 'turquoise',
+}
+
 export const COUNTRIES = [
   'Pakistan (domestic)',
   'UAE',

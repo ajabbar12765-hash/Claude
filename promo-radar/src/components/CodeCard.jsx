@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { discountLabel } from '../lib/catalog.js'
+import { discountLabel, CATEGORY_ACCENT } from '../lib/catalog.js'
 import { formatExpiry, daysUntil } from '../lib/format.js'
 
 export default function CodeCard({ item, isUsed, onView, onCopy, onWorked, onDidntWork }) {
   const [copied, setCopied] = useState(false)
   const soon = daysUntil(item.expiresAt) <= 3
+  const accent = CATEGORY_ACCENT[item.category] || 'pink'
 
   function handleCopy(e) {
     e.stopPropagation()
@@ -14,7 +15,7 @@ export default function CodeCard({ item, isUsed, onView, onCopy, onWorked, onDid
   }
 
   return (
-    <article className={`code-card ${soon ? 'expiring' : ''}`} onClick={() => onView(item)}>
+    <article className={`code-card accent-${accent} ${soon ? 'expiring' : ''}`} onClick={() => onView(item)}>
       <div className="code-card-head">
         <span className="store-avatar">{item.store.slice(0, 2).toUpperCase()}</span>
         <div className="code-card-store">

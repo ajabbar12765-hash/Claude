@@ -30,6 +30,7 @@ export default function Hero({ radarStatus, allItems, usedMap, onCopy, onWorked,
           <br />
           full price <em>in Pakistan.</em>
         </h1>
+        <div className="hero-stripe" aria-hidden="true"><span /><span /><span /></div>
         <p className="hero-sub">
           One radar for Daraz, Springs, Khaadi, Foodpanda, gift cards and flights to
           wherever you're headed next — it retires the dead ones so you never waste a trip to checkout.
@@ -55,6 +56,7 @@ export default function Hero({ radarStatus, allItems, usedMap, onCopy, onWorked,
           <Step key={s.n} step={s} />
         ))}
       </div>
+      <div className="hero-fringe" aria-hidden="true" />
     </section>
   )
 }

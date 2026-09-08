@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { discountLabel } from '../lib/catalog.js'
+import { discountLabel, CATEGORY_ACCENT } from '../lib/catalog.js'
 import { formatExpiry } from '../lib/format.js'
 
 // The headline interaction: type any place — a store, a brand, a city you're
@@ -73,8 +73,9 @@ export default function PlaceLookup({ items, usedMap, onCopy, onWorked, onDidntW
 }
 
 function LookupCard({ item, isUsed, onCopy, onWorked, onDidntWork }) {
+  const accent = CATEGORY_ACCENT[item.category] || 'pink'
   return (
-    <article className="code-card">
+    <article className={`code-card accent-${accent}`}>
       <div className="code-card-head">
         <span className="store-avatar">{item.store.slice(0, 2).toUpperCase()}</span>
         <div className="code-card-store">
