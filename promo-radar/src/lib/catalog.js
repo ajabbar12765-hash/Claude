@@ -250,22 +250,6 @@ const seed = [
     url: 'https://steamshop.pk/gift-cards/google-play-gift-card', expiresIn: 10,
   },
   {
-    store: 'SteamShop.pk (PlayStation Network — Pakistan)', category: 'giftcard', code: 'PSN-WELCOME', title: 'Welcome bonus on first gift card purchase',
-    discountType: 'fixed', discountValue: 300, minSpend: 2000, maxDiscount: 300, country: 'ANY',
-    description: 'PlayStation Network (PSN) wallet top-ups for Pakistan go through resellers like SteamShop.pk rather than Sony directly; some offer a first-purchase bonus. This is the PK-store card — for US-store access (different game pricing/catalog), see the priority PlayStation Network US entry below.',
-    terms: ['Reseller-dependent'],
-    howTo: ['Apply the reseller’s code at their checkout'],
-    url: 'https://steamshop.pk/gift-cards/playstation-network-card', expiresIn: 14,
-  },
-  {
-    store: 'SteamShop.pk (PlayStation Network — US)', category: 'giftcard', code: 'PSN-US-WELCOME', title: 'Welcome bonus on a US-store PlayStation card',
-    discountType: 'fixed', discountValue: 500, minSpend: 3000, maxDiscount: 500, country: 'ANY',
-    description: 'A US-region PlayStation Network (PSN) wallet top-up, not a PK one — needed for US PlayStation Store pricing, exclusives and release dates. Sony sells these only inside the US store itself; Pakistani buyers get the code through a reseller like SteamShop.pk. Pinned as the priority/default gift-card entry.',
-    terms: ['Reseller-dependent, not a Sony-issued discount', 'The PSN account redeeming it must have its region set to United States — redeeming a US code on a PK account fails'],
-    howTo: ['Buy the US-denomination card from the reseller', 'On a US-region PSN account: Settings → Redeem Codes → enter the 12-digit code'],
-    url: 'https://steamshop.pk/gift-cards/playstation-network-card', expiresIn: 14, priority: true,
-  },
-  {
     store: 'Careem', category: 'giftcard', code: 'CAREEMGIFT', title: 'Rs. 200 bonus on gift card redemption',
     discountType: 'fixed', discountValue: 200, minSpend: 1000, maxDiscount: 200, country: 'ANY',
     description: 'Bonus Careem credit when redeeming a Careem gift card for the first time.',
