@@ -6,7 +6,8 @@
 // discounts, not typed-in codes.
 
 function guessCategory(store) {
-  if (/outfitters|khaadi|springs|sapphire|gul ahmed|levi/i.test(store)) return 'fashion'
+  if (/springs/i.test(store)) return 'grocery' // springs.com.pk is a grocery store now, not the old lawn/fashion brand
+  if (/outfitters|khaadi|sapphire|gul ahmed|levi|bonanza/i.test(store)) return 'fashion'
   return 'ecommerce'
 }
 
@@ -44,16 +45,18 @@ function toCatalogEntry(raw, scannedAtIso, index) {
 export async function fetchLiveCodes() {
   try {
     const res = await fetch('/api/codes')
-    if (!res.ok) return { live: false, items: [] }
+    if (!res.ok) return { live: false, items: [], scanning: false }
     const data = await res.json()
-    if (!data.live || !Array.isArray(data.items)) return { live: false, items: [], reason: data.reason }
+    const scanning = !!data.scanning
+    if (!data.live || !Array.isArray(data.items)) return { live: false, items: [], scanning, reason: data.reason }
     const scannedAtIso = data.scannedAt ? new Date(data.scannedAt).toISOString() : null
     return {
       live: true,
       items: data.items.map((raw, i) => toCatalogEntry(raw, scannedAtIso, i)),
       scannedAt: scannedAtIso,
+      scanning,
     }
   } catch {
-    return { live: false, items: [] }
+    return { live: false, items: [], scanning: false }
   }
 }

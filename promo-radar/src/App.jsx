@@ -36,23 +36,41 @@ export default function App() {
 
   useEffect(() => storage.save(persisted), [persisted])
 
-  // Real live scanning: /api/codes runs an Apify crawl against official
-  // store pages server-side (see api/codes.js). Off by default until
-  // APIFY_TOKEN is configured in Vercel — see README. Fails silently (no
-  // /api routes in local `npm run dev`) and the app just runs on the
-  // starter catalogue.
+  // Real live scanning: /api/codes starts an Apify crawl against official
+  // store pages server-side and returns immediately — the crawl itself
+  // takes 60-80s for 5 targets, too long for one request to wait out on
+  // Vercel's Hobby plan (60s hard cap), so this polls back a few times
+  // until the crawl that was started finishes (see api/codes.js and the
+  // README). Off by default until APIFY_TOKEN is configured in Vercel.
+  // Fails silently (no /api routes in local `npm run dev`) and the app
+  // just runs on the starter catalogue.
   useEffect(() => {
     let cancelled = false
-    setLiveStatus('scanning')
-    fetchLiveCodes().then((result) => {
+    let pollCount = 0
+    const MAX_POLLS = 6
+    const POLL_DELAY_MS = 18_000
+
+    function apply(result) {
       if (cancelled) return
       if (result.live) {
         setLiveCodes(result.items)
         setLiveStatus('live')
+      } else if (result.scanning) {
+        setLiveStatus('crawling')
       } else {
         setLiveStatus('off')
       }
-    })
+      if (result.scanning && pollCount < MAX_POLLS) {
+        pollCount += 1
+        setTimeout(poll, POLL_DELAY_MS)
+      }
+    }
+    function poll() {
+      fetchLiveCodes().then(apply)
+    }
+
+    setLiveStatus('scanning')
+    poll()
     return () => { cancelled = true }
   }, [])
 

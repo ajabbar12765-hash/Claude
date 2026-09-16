@@ -85,6 +85,28 @@ Also dropped two guessed target URLs that turned out not to exist:
 never resolved at all. `TARGETS` now only lists pages actually confirmed
 reachable by running the crawler against them.
 
+**The target list, and what's actually on each page right now.** Every
+store in the starter catalogue was fetched for real and checked before
+deciding what belongs in `TARGETS`:
+- **Daraz**, **Outfitters**, **Gul Ahmed** ("DEFENCE DAY SALE — UP TO 50%
+  OFF"), **Bonanza Satrangi** ("FLAT 40% OFF" / "FLAT 30% OFF" sale
+  sections) and **Springs** ("Wall's FLAT 20% OFF") all had a real,
+  currently-live, cleanly-extractable discount banner — these five are
+  the live-scan targets.
+- **Khaadi** and **Sapphire** had no current discount of any kind — not
+  added.
+- **iShopping.pk** was tried and dropped: this same extractor found values
+  like `245% OFF` on its page, which is impossible and means it's picking
+  up noise from per-product markup, not a real sitewide rate. Adding a
+  source that's proven to produce fake numbers would be the same mistake
+  as the `sellerId%3D14161` bug, just with a different source.
+- **Foodpanda**, **Metro** and **Imtiaz** didn't render an extractable
+  sitewide offer via a plain page fetch (personalized/app-only pricing or
+  content this crawler doesn't see).
+- Springs' own site turned out to be a general grocery store now, not the
+  lawn/fashion brand the old starter catalogue entry described — that
+  fabricated `SPRINGS20` entry was removed rather than left wrong.
+
 Deliberately **not** scraping third-party coupon-listicle sites (Picodi,
 WorthEPenny, SimplyCodes, etc.) — a live web search while building this
 turned up codes like `Hiba10` for Daraz on exactly those sites, and they're
@@ -124,16 +146,28 @@ compute with zero further Anthropic/Claude usage):
    succeeds; individual live entries show a turquoise "Live" badge instead
    of "Unverified"/"Verified".
 
-**Known cost, timing and honesty limits:**
-- A real timed run against the two current targets took **~40 seconds**
-  (Playwright rendering is slow) — `vercel.json` sets `maxDuration: 60` for
-  this function and `SCAN_TIMEOUT_MS` in `api/codes.js` is set well above
-  the measured time. If your Vercel plan caps function duration below that,
-  the scan will time out; the app still falls back to starter data cleanly
-  either way.
+**Why this doesn't just "wait for the scan" in one request.** The first
+version called Apify synchronously — start the crawl, wait for it, return
+the result, all inside one request. That measured **~40s** for 2 targets,
+so `vercel.json` was set to `maxDuration: 60` with headroom. Then this
+target list grew to 5, and a real timed run against all 5 measured
+**~66-81s even after tuning crawler concurrency** — past Vercel's Hobby-plan
+function ceiling, which is a hard 60s cap, not a soft one: the function
+gets killed mid-crawl and the scan fails outright, for every store, not
+just a slow one. So `/api/codes` no longer waits for the crawl at all — a
+request either serves cached results, *starts* an Apify run and returns
+right away (starting a run is near-instant; the crawl runs on Apify's own
+infrastructure afterward), or checks on a run already in flight (also
+near-instant). The client (`src/lib/liveCodes.js`, `App.jsx`) polls back
+every ~18s, up to 6 times, until a run that was started resolves — the
+status pill shows **"Live scan running…"** in between. This also means the
+target list can grow further later without ever hitting this ceiling
+again, since no single request's duration is tied to the crawl's.
+
+**Known cost and honesty limits:**
 - Apify's `website-content-crawler` run costs a small amount of Apify
   platform credit per scan (well within the free tier for a 6-hourly cache,
-  occasional-use scan of two pages).
+  occasional-use scan of five pages).
 - Live entries are still not "verified working" in the sense of someone
   having redeemed them — they're a snapshot of what a page said at scan
   time. Rates change; the radar's normal expiry/archive flow still applies.

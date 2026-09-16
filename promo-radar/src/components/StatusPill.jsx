@@ -2,6 +2,7 @@ import { timeAgo } from '../lib/format.js'
 
 const LIVE_LABEL = {
   scanning: { text: 'Checking for a live scan…', title: 'Asking /api/codes whether a live Apify scan is configured' },
+  crawling: { text: 'Live scan running…', title: 'An Apify crawl of official store pages is running in the background — checking back automatically' },
   live: { text: 'Live scan active', title: 'A real scan of official store pages ran via Apify — see the README' },
   off: { text: 'Starter data only', title: 'No APIFY_TOKEN configured — showing the curated starter catalogue. See README to turn on live scanning.' },
 }
