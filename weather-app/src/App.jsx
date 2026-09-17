@@ -1,7 +1,24 @@
 import { useCallback, useEffect, useState } from 'react'
 import CitySearch from './components/CitySearch.jsx'
 import WeatherIcon from './components/WeatherIcon.jsx'
-import { describeCode, fetchForecast } from './lib/weather.js'
+import WeatherScene from './components/WeatherScene.jsx'
+import { describeCode, fetchForecast, iconFor, sceneCategory } from './lib/weather.js'
+
+const SCENE_THEME = {
+  clear: { day: ['#4a90d9', '#1c3f66'], night: ['#1a2138', '#05070f'] },
+  'partly-cloudy': { day: ['#5b98d6', '#274a72'], night: ['#1c2740', '#060911'] },
+  cloudy: { day: ['#7891a8', '#3c4f66'], night: ['#222a38', '#0a0d13'] },
+  fog: { day: ['#93a3ad', '#55636c'], night: ['#2b323a', '#0e1114'] },
+  rain: { day: ['#4c6580', '#22334a'], night: ['#18202e', '#05080d'] },
+  snow: { day: ['#a9c4dd', '#5f7c99'], night: ['#232d40', '#0a0e16'] },
+  storm: { day: ['#3a4658', '#161c28'], night: ['#14171f', '#030405'] },
+}
+
+function sceneTheme(category, isDay) {
+  const theme = SCENE_THEME[category] || SCENE_THEME.cloudy
+  const [top, bottom] = isDay ? theme.day : theme.night
+  return { '--bg-top': top, '--bg-bottom': bottom }
+}
 
 const DEFAULT_LOCATION = {
   name: 'New York',
@@ -100,10 +117,11 @@ export default function App() {
   const unitSymbol = unit === 'fahrenheit' ? '°F' : '°C'
   const current = data?.current
   const currentInfo = current ? describeCode(current.weather_code) : null
-  const isDay = current?.is_day === 1
+  const isDay = current ? current.is_day === 1 : true
+  const category = currentInfo ? sceneCategory(currentInfo.icon) : 'clear'
 
   return (
-    <div className={`app ${isDay === false ? 'is-night' : ''}`}>
+    <div className="app" style={current ? sceneTheme(category, isDay) : undefined}>
       <header className="topbar">
         <div className="brand">
           <WeatherIcon icon="sun" size={22} />
@@ -153,18 +171,24 @@ export default function App() {
         {data && current && (
           <>
             <section className="current-card">
-              <div className="current-location">
-                <h1>{location.name}</h1>
-                <p>{[location.admin1, location.country].filter(Boolean).join(', ')}</p>
-              </div>
-              <div className="current-main">
-                <WeatherIcon icon={currentInfo.icon} size={72} />
-                <div className="current-temp">
-                  {Math.round(current.temperature_2m)}
-                  <span>{unitSymbol}</span>
+              <div className="current-hero">
+                <WeatherScene category={category} isDay={isDay} />
+                <div className="current-card-scrim" />
+                <div className="current-hero-content">
+                  <div className="current-location">
+                    <h1>{location.name}</h1>
+                    <p>{[location.admin1, location.country].filter(Boolean).join(', ')}</p>
+                  </div>
+                  <div className="current-main">
+                    <WeatherIcon icon={iconFor(current.weather_code, isDay)} size={72} />
+                    <div className="current-temp">
+                      {Math.round(current.temperature_2m)}
+                      <span>{unitSymbol}</span>
+                    </div>
+                  </div>
+                  <p className="current-desc">{currentInfo.label}</p>
                 </div>
               </div>
-              <p className="current-desc">{currentInfo.label}</p>
               <div className="current-stats">
                 <div>
                   <span className="stat-label">Feels like</span>
@@ -199,13 +223,14 @@ export default function App() {
                     temp: data.hourly.temperature_2m[i],
                     code: data.hourly.weather_code[i],
                     pop: data.hourly.precipitation_probability[i],
+                    isDay: data.hourly.is_day[i] === 1,
                   }))
                   .filter((h) => new Date(h.time).getTime() >= Date.now() - 3600_000)
                   .slice(0, 24)
                   .map((h) => (
                     <div className="hour-item" key={h.time}>
                       <span className="hour-time">{hourLabel(h.time)}</span>
-                      <WeatherIcon icon={describeCode(h.code).icon} size={26} />
+                      <WeatherIcon icon={iconFor(h.code, h.isDay)} size={26} />
                       <span className="hour-pop">{h.pop}%</span>
                       <span className="hour-temp">
                         {Math.round(h.temp)}

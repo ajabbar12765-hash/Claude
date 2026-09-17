@@ -31,12 +31,7 @@ body {
   display: flex;
   flex-direction: column;
   background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
-  transition: background 0.4s ease;
-}
-
-.app.is-night {
-  --bg-top: #1a2138;
-  --bg-bottom: #05070f;
+  transition: background 0.6s ease;
 }
 
 .topbar {
@@ -211,12 +206,33 @@ body {
 }
 
 .current-card {
+  position: relative;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 20px;
-  padding: 28px 24px;
+  overflow: hidden;
   text-align: center;
   backdrop-filter: blur(10px);
+  isolation: isolate;
+}
+
+.current-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 24px 44px;
+}
+
+.current-card-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.08) 60%, rgba(0, 0, 0, 0.28) 100%);
+  pointer-events: none;
+}
+
+.current-hero-content {
+  position: relative;
+  z-index: 2;
 }
 
 .current-location h1 {
@@ -257,11 +273,12 @@ body {
 }
 
 .current-stats {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   border-top: 1px solid var(--card-border);
-  padding-top: 16px;
+  padding: 16px 24px 24px;
 }
 
 .current-stats > div {
@@ -392,5 +409,411 @@ body {
   }
   .current-stats {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Animated weather scene (current-conditions card backdrop)              */
+/* ---------------------------------------------------------------------- */
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.scene-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18%;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.18));
+}
+
+/* Sun / moon */
+
+.scene-sun {
+  position: absolute;
+  top: 10%;
+  right: 14%;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff3c4 0%, var(--accent) 55%, rgba(255, 209, 102, 0) 78%);
+  box-shadow: 0 0 40px 14px rgba(255, 209, 102, 0.35);
+}
+
+.scene-moon {
+  position: absolute;
+  top: 10%;
+  right: 16%;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #eef2ff;
+  box-shadow: inset -8px -4px 0 0 #c7cdea, 0 0 26px 6px rgba(238, 242, 255, 0.25);
+}
+
+.scene-stars {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.15;
+}
+
+/* Clouds */
+
+.scene-clouds {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-cloud {
+  position: absolute;
+  left: -30%;
+  width: 34%;
+  height: 22px;
+  border-radius: 999px;
+  background: #ffffff;
+  transform: scale(var(--scale, 1));
+  filter: blur(0.5px);
+}
+
+.scene-cloud::before,
+.scene-cloud::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.scene-cloud::before {
+  width: 55%;
+  height: 180%;
+  top: -70%;
+  left: 12%;
+}
+
+.scene-cloud::after {
+  width: 40%;
+  height: 140%;
+  top: -50%;
+  right: 14%;
+}
+
+/* Rain */
+
+.scene-rain {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-raindrop {
+  position: absolute;
+  top: -10%;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(180, 214, 255, 0), rgba(180, 214, 255, 0.85));
+}
+
+/* Snow */
+
+.scene-snow {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-snowflake {
+  position: absolute;
+  top: -6%;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.9;
+}
+
+/* Fog */
+
+.scene-fog {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-fog-band {
+  position: absolute;
+  left: -40%;
+  width: 180%;
+  height: 26%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+}
+
+/* Lightning */
+
+.scene-lightning {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-flash {
+  position: absolute;
+  inset: 0;
+  background: #eaf1ff;
+  opacity: 0;
+}
+
+/* Walker */
+
+.scene-walker-track {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 2px;
+  height: 44px;
+}
+
+.scene-walker {
+  position: absolute;
+  bottom: 0;
+  left: 42%;
+  color: #2b2b2b;
+}
+
+.scene-walker svg {
+  display: block;
+  overflow: visible;
+}
+
+.scene-walker svg * {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.walker-head {
+  fill: currentColor;
+  stroke: none;
+}
+
+.walker-arm-shade {
+  opacity: 0;
+  transform-origin: 12px 6px;
+}
+
+.walker-head-group {
+  transform-origin: 12px 10px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scene-cloud {
+    animation: cloud-drift var(--duration, 45s) linear var(--delay, 0s) infinite;
+  }
+
+  .scene-cloud.reverse {
+    animation-direction: reverse;
+  }
+
+  .scene-star {
+    animation: star-twinkle var(--duration, 3s) ease-in-out var(--delay, 0s) infinite;
+  }
+
+  .scene-raindrop {
+    animation: rain-fall var(--duration, 0.7s) linear var(--delay, 0s) infinite;
+  }
+
+  .scene-snowflake {
+    animation: snow-fall var(--duration, 9s) linear var(--delay, 0s) infinite;
+  }
+
+  .scene-fog-band {
+    animation: fog-drift var(--duration, 30s) ease-in-out var(--delay, 0s) infinite;
+  }
+
+  .scene-flash {
+    animation: lightning-flash 6.8s ease-out var(--delay, 0s) infinite;
+  }
+
+  .scene-sun {
+    animation: sun-glow 6s ease-in-out infinite;
+  }
+
+  .scene-walker {
+    animation: walker-path 22s ease-in-out infinite alternate;
+  }
+
+  .walker-leg-a {
+    animation: leg-swing-a 0.7s ease-in-out infinite;
+    transform-origin: 12px 24px;
+  }
+
+  .walker-leg-b {
+    animation: leg-swing-b 0.7s ease-in-out infinite;
+    transform-origin: 12px 24px;
+  }
+
+  .walker-arm-back {
+    animation: leg-swing-b 0.7s ease-in-out infinite;
+    transform-origin: 12px 13px;
+  }
+
+  .walker-head-group {
+    animation: walker-look-up 22s ease-in-out infinite alternate;
+  }
+
+  .walker-arm-shade {
+    animation: walker-arm-raise 22s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes cloud-drift {
+  0% {
+    transform: translateX(0) scale(var(--scale, 1));
+  }
+  100% {
+    transform: translateX(340%) scale(var(--scale, 1));
+  }
+}
+
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes rain-fall {
+  0% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(340px);
+    opacity: 0.4;
+  }
+}
+
+@keyframes snow-fall {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(var(--sway, 16px), 170px);
+  }
+  100% {
+    transform: translate(0, 340px);
+  }
+}
+
+@keyframes fog-drift {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(8%);
+    opacity: 0.9;
+  }
+}
+
+@keyframes lightning-flash {
+  0%,
+  92%,
+  100% {
+    opacity: 0;
+  }
+  93% {
+    opacity: 0.85;
+  }
+  94% {
+    opacity: 0.1;
+  }
+  95% {
+    opacity: 0.7;
+  }
+  97% {
+    opacity: 0;
+  }
+}
+
+@keyframes sun-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 40px 14px rgba(255, 209, 102, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 52px 20px rgba(255, 209, 102, 0.55);
+  }
+}
+
+@keyframes walker-path {
+  0% {
+    left: 2%;
+  }
+  45% {
+    left: 74%;
+  }
+  55% {
+    left: 76%;
+  }
+  100% {
+    left: 88%;
+  }
+}
+
+@keyframes leg-swing-a {
+  0%,
+  100% {
+    transform: rotate(-16deg);
+  }
+  50% {
+    transform: rotate(16deg);
+  }
+}
+
+@keyframes leg-swing-b {
+  0%,
+  100% {
+    transform: rotate(16deg);
+  }
+  50% {
+    transform: rotate(-16deg);
+  }
+}
+
+@keyframes walker-look-up {
+  0%,
+  38%,
+  62%,
+  100% {
+    transform: rotate(0deg);
+  }
+  47%,
+  53% {
+    transform: rotate(-22deg);
+  }
+}
+
+@keyframes walker-arm-raise {
+  0%,
+  38%,
+  62%,
+  100% {
+    opacity: 0;
+    transform: rotate(0deg);
+  }
+  47%,
+  53% {
+    opacity: 1;
+    transform: rotate(-30deg);
   }
 }

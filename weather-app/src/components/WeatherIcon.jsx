@@ -40,6 +40,9 @@ const PATHS = {
       <path d="M16 17v5M16 18.5l-2 1M16 18.5l2 1M16 20.5l-2-1M16 20.5l2-1" />
     </g>
   ),
+  moon: (
+    <path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.9A9 9 0 0 1 14.5 3.5Z" />
+  ),
   storm: (
     <g strokeLinecap="round" strokeLinejoin="round">
       <path d="M6.5 11a4.5 4.5 0 0 1-.6-8.96A6.5 6.5 0 0 1 18 4a4 4 0 0 1-1.5 7.9h-10Z" />

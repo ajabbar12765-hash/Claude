@@ -40,6 +40,27 @@ export function describeCode(code) {
   return WEATHER_CODES[code] || { label: 'Unknown', icon: 'cloud' }
 }
 
+const ICON_TO_SCENE = {
+  sun: 'clear',
+  'cloud-sun': 'partly-cloudy',
+  cloud: 'cloudy',
+  fog: 'fog',
+  drizzle: 'rain',
+  rain: 'rain',
+  snow: 'snow',
+  storm: 'storm',
+}
+
+export function sceneCategory(icon) {
+  return ICON_TO_SCENE[icon] || 'cloudy'
+}
+
+export function iconFor(code, isDay = true) {
+  const info = describeCode(code)
+  if (info.icon === 'sun' && !isDay) return 'moon'
+  return info.icon
+}
+
 export async function searchCity(query) {
   if (!query || query.trim().length < 2) return []
   const url = new URL(GEOCODE_URL)
@@ -85,7 +106,7 @@ export async function fetchForecast({ latitude, longitude, unit = 'celsius' }) {
   )
   url.searchParams.set(
     'hourly',
-    ['temperature_2m', 'weather_code', 'precipitation_probability'].join(',')
+    ['temperature_2m', 'weather_code', 'precipitation_probability', 'is_day'].join(',')
   )
   url.searchParams.set(
     'daily',
