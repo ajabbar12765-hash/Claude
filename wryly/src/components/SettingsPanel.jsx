@@ -1,4 +1,4 @@
-export function SettingsPanel({ settings, onChange, onClose, gmail, onConnectGmail, onDisconnectGmail }) {
+export function SettingsPanel({ settings, onChange, onClose, gmail, onConnectGmail, onDisconnectGmail, mcp }) {
   function set(patch) {
     onChange({ ...settings, ...patch })
   }
@@ -101,6 +101,35 @@ export function SettingsPanel({ settings, onChange, onClose, gmail, onConnectGma
             </div>
             <label className="switch">
               <input type="checkbox" checked={settings.gmail} onChange={(e) => set({ gmail: e.target.checked })} />
+              <span className="slider-track" />
+            </label>
+          </div>
+        )}
+
+        <div className="setting-row">
+          <div>
+            <div className="setting-label">Zapier tools</div>
+            <div className="setting-desc">
+              {!mcp?.configured
+                ? 'Not set up on this deployment yet.'
+                : mcp.connected
+                  ? `Connected — ${mcp.toolCount} tool${mcp.toolCount === 1 ? '' : 's'} available.`
+                  : `Configured but unreachable${mcp.error ? `: ${mcp.error}` : ''}.`}
+            </div>
+          </div>
+        </div>
+
+        {mcp?.connected && (
+          <div className="setting-row">
+            <div>
+              <div className="setting-label">Use Zapier tools</div>
+              <div className="setting-desc">
+                Wryly can act in your connected apps. Every single action is shown to you first — nothing runs
+                without you approving it.
+              </div>
+            </div>
+            <label className="switch">
+              <input type="checkbox" checked={settings.zapier} onChange={(e) => set({ zapier: e.target.checked })} />
               <span className="slider-track" />
             </label>
           </div>

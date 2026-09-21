@@ -3,8 +3,9 @@ import { parseThinking } from '../lib/thinking'
 import { ThinkingTrace } from './ThinkingTrace.jsx'
 import { voiceOutputSupported, speak } from '../lib/speech'
 import { AGENTS_BY_ID } from '../lib/agents'
+import { ToolApproval } from './ToolApproval.jsx'
 
-export function MessageBubble({ message }) {
+export function MessageBubble({ message, onToolDecide }) {
   const isUser = message.role === 'user'
 
   if (message.image) {
@@ -44,7 +45,13 @@ export function MessageBubble({ message }) {
       <div className="bubble">
         {agent && <div className="agent-label" style={{ color: agent.color }}>{agent.name}</div>}
         <ThinkingTrace thinking={thinking} thinkingDone={thinkingDone} />
-        {showEmpty ? (
+        {message.pendingApproval ? (
+          <ToolApproval
+            toolCalls={message.pendingApproval.toolCalls}
+            decisions={message.pendingApproval.decisions}
+            onDecide={(callId, decision) => onToolDecide(message.id, callId, decision)}
+          />
+        ) : showEmpty ? (
           <span className="typing-dots">
             <span />
             <span />

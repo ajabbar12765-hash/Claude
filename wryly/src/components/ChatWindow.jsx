@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { MessageBubble } from './MessageBubble.jsx'
 import { randomQuip } from '../lib/quips'
 
-export function ChatWindow({ messages }) {
+export function ChatWindow({ messages, onToolDecide }) {
   const endRef = useRef(null)
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function ChatWindow({ messages }) {
   return (
     <div className="chat-window">
       {messages.map((m) => (
-        <MessageBubble key={m.id} message={m} />
+        <MessageBubble key={m.id} message={m} onToolDecide={onToolDecide} />
       ))}
       <div ref={endRef} />
     </div>

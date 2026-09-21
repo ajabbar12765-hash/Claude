@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS = {
   voiceOut: false,
   agent: 'auto',
   gmail: false,
+  zapier: false,
 }
 
 function safeParse(raw, fallback) {

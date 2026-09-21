@@ -40,11 +40,18 @@ reasoning trace, multi-chat history, and slash-command shortcuts.
   The connection lives in an httpOnly cookie tied to whichever browser
   completed the OAuth flow, not shared globally by the app. See
   **Connecting Gmail** below to set it up.
+- **Zapier tools (optional, off by default)** — connects Wryly to whatever
+  apps you've set up in your Zapier account (Calendar, Sheets, Slack,
+  Notion, thousands more), through Zapier's hosted MCP server. Unlike
+  Gmail, this can include actions that change things, not just read them —
+  so **every single tool call is shown to you as an approval card in the
+  chat before it runs**; nothing executes on a "maybe." See **Connecting
+  Zapier** below.
 
-Wryly intentionally does **not** connect to calendars, banks, or
-e-commerce accounts — those involve money and actions taken on your
-behalf, which deserve their own explicit setup and an approval step before
-anything actually sends or spends, rather than being bundled in by default.
+Nothing above runs unattended by design: Gmail is read-only, and Zapier
+actions always wait for an explicit approve/deny click. That's a
+deliberate choice, not a current limitation — a bot that can act in your
+real accounts should never get to guess.
 
 ## Running locally
 
@@ -118,6 +125,42 @@ Cloud project you control, so I can't provision it for you.
 Only the browser that completes the Google consent screen gets the
 connection (it's stored in an httpOnly cookie, not a database) — visiting
 the site from another device or browser starts disconnected.
+
+## Connecting Zapier
+
+Optional, off by default, and **only works with the OpenAI-compatible
+provider** (`OPENAI_API_KEY` — OpenRouter, Gemini, etc.) — not with
+`ANTHROPIC_API_KEY`. Requires your own Zapier account; I can't create that
+for you.
+
+> **Honest caveat:** I built this against the general MCP spec plus the one
+> detail Zapier's own help pages confirm (their recommended auth method is
+> an **Authorization header**, not a token embedded in the URL) — I wasn't
+> able to reach Zapier's detailed docs from this deployment's sandbox to
+> verify every last detail. If `Settings → Zapier tools` shows "configured
+> but unreachable" after following the steps below, that's the first place
+> to compare notes with Zapier's current docs and adjust — it likely just
+> needs a small tweak to `api/_lib/mcp.js`, not a rebuild.
+
+1. In Zapier, set up **Zapier MCP** and connect whichever apps you want
+   Wryly to reach (Gmail, Calendar, Sheets, Slack, ...) — each action you
+   enable there becomes a tool Wryly can ask to use.
+2. Get your MCP server URL and a **connection token**, using
+   **Authorization header** as the auth method (Zapier's recommended
+   option over embedding the token in the URL).
+3. Set these as environment variables on the Vercel project:
+   ```
+   MCP_SERVER_URL=<your Zapier MCP server URL>
+   MCP_SERVER_TOKEN=<your connection token>
+   ```
+   Same advice as the Google credentials: add these directly in the Vercel
+   dashboard rather than pasting a token into chat, if you'd rather not.
+4. Redeploy. **Settings → Zapier tools** should show "Connected — N tools
+   available." Flip on **Use Zapier tools**.
+
+From then on, whenever Wryly wants to use one of those tools, it shows up
+in the chat as a card with the exact action and arguments — you approve or
+deny each one individually before anything actually happens.
 
 ## Deploying
 

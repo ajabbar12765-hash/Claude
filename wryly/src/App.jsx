@@ -19,7 +19,15 @@ import {
 } from './lib/storage'
 import { expandCommand, SLASH_COMMANDS } from './lib/commands'
 import { buildImageUrl } from './lib/image'
-import { streamChat, fetchSearch, fetchGmail, fetchGmailStatus, disconnectGmail } from './lib/api'
+import {
+  streamChat,
+  fetchSearch,
+  fetchGmail,
+  fetchGmailStatus,
+  disconnectGmail,
+  fetchMcpStatus,
+  runMcpChat,
+} from './lib/api'
 import { speak } from './lib/speech'
 import { AGENTS_BY_ID } from './lib/agents'
 import { routeAgent } from './lib/router'
@@ -41,6 +49,7 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [streaming, setStreaming] = useState(false)
   const [gmail, setGmail] = useState({ connected: false, configured: false })
+  const [mcp, setMcp] = useState({ configured: false, connected: false, toolCount: 0 })
   const abortRef = useRef(null)
 
   useEffect(() => saveChats(chats), [chats])
@@ -52,6 +61,7 @@ export default function App() {
 
   useEffect(() => {
     fetchGmailStatus().then(setGmail)
+    fetchMcpStatus().then(setMcp)
 
     const params = new URLSearchParams(window.location.search)
     const gmailResult = params.get('gmail')
@@ -146,6 +156,51 @@ export default function App() {
     setSettings((s) => ({ ...s, gmail: false }))
   }
 
+  // One round of the Zapier tool-calling loop. Reuses the same assistant
+  // message across rounds — a fresh call ends either in a final answer or a
+  // pending approval; approving/denying that resumes with the same
+  // messageId until the model is actually done.
+  async function runZapierLoop(chatId, messageId, payload) {
+    setStreaming(true)
+    const res = await runMcpChat(payload)
+
+    if (res.needsApproval) {
+      patchMessage(chatId, messageId, {
+        streaming: false,
+        pendingApproval: { toolCalls: res.toolCalls, assistantMessage: res.assistantMessage, decisions: {} },
+        zapierContext: { messages: payload.messages, settings: payload.settings, agentId: payload.agentId },
+      })
+    } else {
+      patchMessage(chatId, messageId, { content: res.content, streaming: false, pendingApproval: null })
+      if (settings.voiceOut && res.content?.trim()) speak(res.content.trim())
+    }
+    setStreaming(false)
+  }
+
+  function handleToolDecide(messageId, callId, decision) {
+    if (!activeChat) return
+    const chatId = activeChat.id
+    const message = activeChat.messages.find((m) => m.id === messageId)
+    if (!message?.pendingApproval) return
+
+    const decisions = { ...message.pendingApproval.decisions, [callId]: decision }
+    const allDecided = message.pendingApproval.toolCalls.every((c) => decisions[c.id])
+
+    patchMessage(chatId, messageId, {
+      pendingApproval: { ...message.pendingApproval, decisions },
+      streaming: allDecided,
+    })
+
+    if (allDecided) {
+      runZapierLoop(chatId, messageId, {
+        messages: message.zapierContext.messages,
+        settings: message.zapierContext.settings,
+        agentId: message.zapierContext.agentId,
+        pendingApproval: { assistantMessage: message.pendingApproval.assistantMessage, decisions },
+      })
+    }
+  }
+
   async function handleSend(raw) {
     const chat = ensureActiveChat()
     const chatId = chat.id
@@ -186,6 +241,18 @@ export default function App() {
 
     const agentId = settings.agent !== 'auto' ? settings.agent : routeAgent(parsed.text)
     const agent = agentId ? AGENTS_BY_ID[agentId] : null
+
+    if (settings.zapier) {
+      const assistantId = uid()
+      appendMessage(chatId, { id: assistantId, role: 'assistant', content: '', streaming: true, agentId })
+      const historyMessages = [...chat.messages, { role: 'user', content: parsed.text }].map((m) => ({
+        role: m.role,
+        content: m.image ? `[generated an image for: ${m.image.prompt}]` : m.content,
+      }))
+      await runZapierLoop(chatId, assistantId, { messages: historyMessages, settings, agentId })
+      return
+    }
+
     const effectiveSettings = {
       ...settings,
       search: settings.search || Boolean(agent?.forceSearch),
@@ -286,11 +353,12 @@ export default function App() {
             {settings.think && <span className="pill">Think</span>}
             {settings.search && <span className="pill">Search</span>}
             {gmail.connected && settings.gmail && <span className="pill">Gmail</span>}
+            {mcp.connected && settings.zapier && <span className="pill">Zap</span>}
             {settings.fun && <span className="pill">Fun</span>}
           </div>
         </div>
 
-        <ChatWindow messages={activeChat?.messages ?? []} />
+        <ChatWindow messages={activeChat?.messages ?? []} onToolDecide={handleToolDecide} />
 
         <Composer
           onSubmit={handleSend}
@@ -309,6 +377,7 @@ export default function App() {
           gmail={gmail}
           onConnectGmail={handleConnectGmail}
           onDisconnectGmail={handleDisconnectGmail}
+          mcp={mcp}
         />
       )}
     </div>

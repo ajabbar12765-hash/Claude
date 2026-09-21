@@ -81,3 +81,34 @@ export async function disconnectGmail() {
     // ignore — worst case the cookie lingers until it expires
   }
 }
+
+export async function fetchMcpStatus() {
+  try {
+    const res = await fetch('/api/mcp/status')
+    if (!res.ok) return { configured: false, connected: false, toolCount: 0 }
+    return await res.json()
+  } catch {
+    return { configured: false, connected: false, toolCount: 0 }
+  }
+}
+
+// One turn of the MCP tool-calling loop. Returns either a final answer
+// ({ done: true, content }) or a pending approval ({ done: false,
+// needsApproval: true, assistantMessage, toolCalls }) the caller must show
+// to the user before calling this again with `pendingApproval` filled in.
+export async function runMcpChat({ messages, settings, agentId, pendingApproval }) {
+  try {
+    const res = await fetch('/api/mcp/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ messages, settings, agentId, pendingApproval }),
+    })
+    if (!res.ok) {
+      const text = await res.text().catch(() => '')
+      return { done: true, content: `⚠️ ${text.slice(0, 300) || `Request failed (${res.status}).`}` }
+    }
+    return await res.json()
+  } catch (err) {
+    return { done: true, content: `⚠️ ${err.message || 'The Zapier tool request failed.'}` }
+  }
+}

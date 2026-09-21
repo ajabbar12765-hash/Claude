@@ -3,7 +3,8 @@
 // Keeps API keys server-side (anything shipped to the browser is public) and
 // normalizes two very different streaming formats — Anthropic's Messages API
 // and any OpenAI-compatible Chat Completions API (OpenRouter, Groq,
-// Together, Fireworks, ...) — into one simple SSE shape the client reads:
+// Gemini, Together, Fireworks, ...) — into one simple SSE shape the client
+// reads:
 //   data: {"delta":"text chunk"}\n\n
 //   data: [DONE]\n\n
 //
@@ -19,39 +20,10 @@
 // instead of a crash, so the UI is still explorable out of the box.
 
 import { AGENTS_BY_ID } from '../src/lib/agents.js'
+import { buildSystemPrompt } from './_lib/persona.js'
+import { resolveProvider, streamAnthropic, streamOpenAICompat, sse } from './_lib/provider.js'
 
 export const config = { runtime: 'edge' }
-
-const DEFAULT_ANTHROPIC_MODEL = 'claude-haiku-4-5-20251001'
-const DEFAULT_OPENAI_BASE_URL = 'https://openrouter.ai/api/v1'
-const DEFAULT_OPENAI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free'
-
-function buildSystemPrompt({ fun = true, snark = 60, think = false } = {}) {
-  const snarkLevel =
-    snark >= 80 ? 'Turn the snark way up — sharp, teasing, borderline savage, but never actually mean.'
-    : snark >= 50 ? 'Keep a confident, dry, sarcastic edge in most replies.'
-    : snark >= 20 ? 'Stay mostly straight, with the occasional dry aside.'
-    : 'Dial the humor back almost entirely — clear and professional, only a flicker of personality.'
-
-  const funLine = fun
-    ? 'Fun Mode is ON: feel free to joke, riff, use vivid analogies, and have an actual opinion.'
-    : 'Fun Mode is OFF: be direct, efficient, and mostly serious — still yourself, just buttoned-up.'
-
-  const thinkLine = think
-    ? "Think Mode is ON: before answering, reason through the problem step by step inside <thinking>...</thinking> tags (your scratch work — it's shown to the user in a collapsible panel, so it can be informal). Then write your real answer AFTER the closing </thinking> tag, on its own, with no tags around it. Always include both parts."
-    : "Answer directly. Do not use <thinking> tags."
-
-  return [
-    "You are Wryly — a witty, sharp-tongued AI assistant with your own personality, not a copy of any other product. ",
-    "You're confident, quick, a little irreverent, and genuinely helpful underneath the banter — style is never an excuse for a wrong or lazy answer. ",
-    "You have real opinions and aren't afraid to gently push back on a bad premise. Keep replies tight; don't pad them.",
-    `\n\n${funLine}\n${snarkLevel}\n${thinkLine}`,
-  ].join('')
-}
-
-function sse(obj) {
-  return `data: ${JSON.stringify(obj)}\n\n`
-}
 
 function setupMessage(reason) {
   const stream = new ReadableStream({
@@ -61,7 +33,7 @@ function setupMessage(reason) {
         enc.encode(
           sse({
             delta:
-              `⚠️ ${reason}\n\nAdd \`OPENAI_API_KEY\` (a free OpenRouter key works — openrouter.ai) ` +
+              `⚠️ ${reason}\n\nAdd \`OPENAI_API_KEY\` (a free OpenRouter or Gemini key works) ` +
               'or `ANTHROPIC_API_KEY` to this project\'s environment variables, then redeploy.',
           })
         )
@@ -71,109 +43,6 @@ function setupMessage(reason) {
     },
   })
   return new Response(stream, { headers: { 'Content-Type': 'text/event-stream' } })
-}
-
-// Re-frames a raw upstream SSE byte stream into a stream of parsed JSON
-// events, buffering partial lines across chunk boundaries.
-async function* sseEvents(body) {
-  const reader = body.getReader()
-  const decoder = new TextDecoder()
-  let buffer = ''
-  while (true) {
-    const { value, done } = await reader.read()
-    if (done) break
-    buffer += decoder.decode(value, { stream: true })
-    const lines = buffer.split('\n')
-    buffer = lines.pop() ?? ''
-    for (const line of lines) {
-      const trimmed = line.trim()
-      if (!trimmed.startsWith('data:')) continue
-      const payload = trimmed.slice(5).trim()
-      if (payload === '[DONE]') return
-      try {
-        yield JSON.parse(payload)
-      } catch {
-        // ignore partial/keep-alive lines
-      }
-    }
-  }
-}
-
-async function streamAnthropic({ apiKey, model, system, messages }) {
-  const upstream = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 2048,
-      system,
-      stream: true,
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
-    }),
-  })
-
-  if (!upstream.ok || !upstream.body) {
-    const text = await upstream.text().catch(() => '')
-    throw new Error(`Anthropic error ${upstream.status}: ${text.slice(0, 300)}`)
-  }
-
-  return new ReadableStream({
-    async start(controller) {
-      const enc = new TextEncoder()
-      try {
-        for await (const evt of sseEvents(upstream.body)) {
-          const text = evt?.delta?.type === 'text_delta' ? evt.delta.text : ''
-          if (text) controller.enqueue(enc.encode(sse({ delta: text })))
-        }
-      } catch (err) {
-        controller.enqueue(enc.encode(sse({ delta: `\n\n⚠️ ${err.message}` })))
-      }
-      controller.enqueue(enc.encode('data: [DONE]\n\n'))
-      controller.close()
-    },
-  })
-}
-
-async function streamOpenAICompat({ apiKey, baseUrl, model, system, messages }) {
-  const upstream = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      authorization: `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://wryly.app',
-      'X-Title': 'Wryly',
-    },
-    body: JSON.stringify({
-      model,
-      stream: true,
-      messages: [{ role: 'system', content: system }, ...messages.map((m) => ({ role: m.role, content: m.content }))],
-    }),
-  })
-
-  if (!upstream.ok || !upstream.body) {
-    const text = await upstream.text().catch(() => '')
-    throw new Error(`Provider error ${upstream.status}: ${text.slice(0, 300)}`)
-  }
-
-  return new ReadableStream({
-    async start(controller) {
-      const enc = new TextEncoder()
-      try {
-        for await (const evt of sseEvents(upstream.body)) {
-          const text = evt?.choices?.[0]?.delta?.content ?? ''
-          if (text) controller.enqueue(enc.encode(sse({ delta: text })))
-        }
-      } catch (err) {
-        controller.enqueue(enc.encode(sse({ delta: `\n\n⚠️ ${err.message}` })))
-      }
-      controller.enqueue(enc.encode('data: [DONE]\n\n'))
-      controller.close()
-    },
-  })
 }
 
 export default async function handler(req) {
@@ -205,25 +74,19 @@ export default async function handler(req) {
     system += `\n\nYou searched the user's real Gmail inbox (read-only) for their latest message. Here's what matched — treat it as private data, only surface what's relevant, and say plainly if nothing useful came up:\n\n${gmailContext}`
   }
 
-  const anthropicKey = process.env.ANTHROPIC_API_KEY
-  const openaiKey = process.env.OPENAI_API_KEY
+  const provider = resolveProvider()
 
   try {
-    if (anthropicKey) {
-      const stream = await streamAnthropic({
-        apiKey: anthropicKey,
-        model: process.env.ANTHROPIC_MODEL || DEFAULT_ANTHROPIC_MODEL,
-        system,
-        messages,
-      })
+    if (provider?.type === 'anthropic') {
+      const stream = await streamAnthropic({ apiKey: provider.apiKey, model: provider.model, system, messages })
       return new Response(stream, { headers: { 'Content-Type': 'text/event-stream' } })
     }
 
-    if (openaiKey) {
+    if (provider?.type === 'openai') {
       const stream = await streamOpenAICompat({
-        apiKey: openaiKey,
-        baseUrl: process.env.OPENAI_BASE_URL || DEFAULT_OPENAI_BASE_URL,
-        model: process.env.OPENAI_MODEL || DEFAULT_OPENAI_MODEL,
+        apiKey: provider.apiKey,
+        baseUrl: provider.baseUrl,
+        model: provider.model,
         system,
         messages,
       })
