@@ -188,7 +188,7 @@ export default async function handler(req) {
     return new Response('Invalid JSON', { status: 400 })
   }
 
-  const { messages, settings, searchContext, agentId } = body ?? {}
+  const { messages, settings, searchContext, gmailContext, agentId } = body ?? {}
   if (!Array.isArray(messages) || messages.length === 0) {
     return new Response('messages[] required', { status: 400 })
   }
@@ -200,6 +200,9 @@ export default async function handler(req) {
   }
   if (searchContext) {
     system += `\n\nYou ran a live web search for the user's latest message. Here are the results — use them when relevant, cite what you used in plain language, and say so if they don't actually help:\n\n${searchContext}`
+  }
+  if (gmailContext) {
+    system += `\n\nYou searched the user's real Gmail inbox (read-only) for their latest message. Here's what matched — treat it as private data, only surface what's relevant, and say plainly if nothing useful came up:\n\n${gmailContext}`
   }
 
   const anthropicKey = process.env.ANTHROPIC_API_KEY

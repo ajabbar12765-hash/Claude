@@ -1,4 +1,4 @@
-export function SettingsPanel({ settings, onChange, onClose }) {
+export function SettingsPanel({ settings, onChange, onClose, gmail, onConnectGmail, onDisconnectGmail }) {
   function set(patch) {
     onChange({ ...settings, ...patch })
   }
@@ -70,6 +70,41 @@ export function SettingsPanel({ settings, onChange, onClose }) {
             <span className="slider-track" />
           </label>
         </div>
+
+        <div className="setting-row">
+          <div>
+            <div className="setting-label">Gmail</div>
+            <div className="setting-desc">
+              {gmail?.connected
+                ? 'Connected — read-only, only in this browser.'
+                : gmail?.configured
+                  ? "Not connected. Read-only access, so Wryly can look things up in your inbox."
+                  : 'Not set up on this deployment yet.'}
+            </div>
+          </div>
+          {gmail?.connected ? (
+            <button className="gmail-btn disconnect" onClick={onDisconnectGmail}>
+              Disconnect
+            </button>
+          ) : (
+            <button className="gmail-btn" onClick={onConnectGmail} disabled={!gmail?.configured}>
+              Connect
+            </button>
+          )}
+        </div>
+
+        {gmail?.connected && (
+          <div className="setting-row">
+            <div>
+              <div className="setting-label">Use Gmail for context</div>
+              <div className="setting-desc">Looks up relevant emails before answering. Try /inbox anytime.</div>
+            </div>
+            <label className="switch">
+              <input type="checkbox" checked={settings.gmail} onChange={(e) => set({ gmail: e.target.checked })} />
+              <span className="slider-track" />
+            </label>
+          </div>
+        )}
 
         <div className="settings-footer">
           Running on whatever model your deployment is configured with — set <code>OPENAI_API_KEY</code> (a free

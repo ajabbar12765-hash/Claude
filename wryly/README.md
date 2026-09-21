@@ -32,12 +32,19 @@ reasoning trace, multi-chat history, and slash-command shortcuts.
   that lives in the sidebar and persists locally; `/tasks` lists what's
   open. Keeper points people at it instead of pretending to remember
   things it can't.
+- **Gmail (optional, off by default)** — read-only access to your real
+  inbox, connected via Google OAuth from Settings. Once connected, flip on
+  "Use Gmail for context" or just type `/inbox <what you're looking for>`
+  and Wryly searches your mail and answers from it. It only ever requests
+  the `gmail.readonly` scope — it cannot send, delete, or modify anything.
+  The connection lives in an httpOnly cookie tied to whichever browser
+  completed the OAuth flow, not shared globally by the app. See
+  **Connecting Gmail** below to set it up.
 
-Wryly intentionally does **not** connect to real email, calendars, banks,
-or e-commerce accounts — those integrations involve real money and real
-messages sent on your behalf, which deserves its own explicit setup (OAuth,
-scoped API keys, an approval step before anything actually sends) rather
-than being bundled in by default.
+Wryly intentionally does **not** connect to calendars, banks, or
+e-commerce accounts — those involve money and actions taken on your
+behalf, which deserve their own explicit setup and an approval step before
+anything actually sends or spends, rather than being bundled in by default.
 
 ## Running locally
 
@@ -75,8 +82,48 @@ ANTHROPIC_API_KEY=<your key>
 If both are set, `ANTHROPIC_API_KEY` wins. With neither set, the app still
 runs — it just replies with setup instructions instead of crashing.
 
+## Connecting Gmail
+
+Optional, read-only, off by default. There's no way around doing this part
+yourself once — Google requires the OAuth client to belong to a Google
+Cloud project you control, so I can't provision it for you.
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com) and
+   create a new project (any name — e.g. "Wryly").
+2. **APIs & Services → Library** → search for and enable the **Gmail API**.
+3. **APIs & Services → OAuth consent screen**:
+   - User type: **External**.
+   - App name: `Wryly` (or whatever you like), your email as support +
+     developer contact.
+   - **Scopes**: add `.../auth/gmail.readonly`.
+   - **Test users**: add your own Gmail address. (Leaving the app in
+     "Testing" mode is fine and avoids Google's verification review —
+     this app is just for you.)
+4. **APIs & Services → Credentials → Create Credentials → OAuth client ID**:
+   - Application type: **Web application**.
+   - **Authorized redirect URIs**: add exactly
+     `https://wryly.vercel.app/api/auth/google/callback` (swap in your own
+     domain if you deployed somewhere else).
+5. Copy the **Client ID** and **Client Secret** it gives you.
+6. Set them as environment variables on the Vercel project:
+   ```
+   GOOGLE_CLIENT_ID=<client id>
+   GOOGLE_CLIENT_SECRET=<client secret>
+   ```
+   You can add these directly in the Vercel dashboard
+   (Project → Settings → Environment Variables) instead of handing the
+   secret to anyone else, including in chat — that's the safer default.
+7. Redeploy. **Settings → Gmail → Connect** will now work.
+
+Only the browser that completes the Google consent screen gets the
+connection (it's stored in an httpOnly cookie, not a database) — visiting
+the site from another device or browser starts disconnected.
+
 ## Deploying
 
 This folder is a self-contained Vite app, same shape as the other projects
-in this repo. Point a Vercel project at the `wryly/` directory, add the
-env var above, and deploy.
+in this repo, deployed as its own Vercel project with **Root Directory**
+set to `wryly`. It's already live at **https://wryly.vercel.app** — push to
+the `claude/grok-bot-custom-features-4zrlyi` branch (or merge it to `main`
+and repoint the project) to update it, or add the model-provider env var
+above if you haven't yet.

@@ -19,7 +19,7 @@ import {
 } from './lib/storage'
 import { expandCommand, SLASH_COMMANDS } from './lib/commands'
 import { buildImageUrl } from './lib/image'
-import { streamChat, fetchSearch } from './lib/api'
+import { streamChat, fetchSearch, fetchGmail, fetchGmailStatus, disconnectGmail } from './lib/api'
 import { speak } from './lib/speech'
 import { AGENTS_BY_ID } from './lib/agents'
 import { routeAgent } from './lib/router'
@@ -40,6 +40,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [streaming, setStreaming] = useState(false)
+  const [gmail, setGmail] = useState({ connected: false, configured: false })
   const abortRef = useRef(null)
 
   useEffect(() => saveChats(chats), [chats])
@@ -48,6 +49,17 @@ export default function App() {
   useEffect(() => {
     if (activeChatId) saveActiveId(activeChatId)
   }, [activeChatId])
+
+  useEffect(() => {
+    fetchGmailStatus().then(setGmail)
+
+    const params = new URLSearchParams(window.location.search)
+    const gmailResult = params.get('gmail')
+    if (gmailResult) {
+      window.history.replaceState({}, '', window.location.pathname)
+      if (gmailResult === 'connected') setSettingsOpen(true)
+    }
+  }, [])
 
   const activeChat = useMemo(
     () => chats.find((c) => c.id === activeChatId) ?? null,
@@ -124,6 +136,16 @@ export default function App() {
     return ["Here's what's still open:", '', ...open.map((t, i) => `${i + 1}. ${t.text}`)].join('\n')
   }
 
+  function handleConnectGmail() {
+    window.location.href = '/api/auth/google/start'
+  }
+
+  async function handleDisconnectGmail() {
+    await disconnectGmail()
+    setGmail((g) => ({ ...g, connected: false }))
+    setSettings((s) => ({ ...s, gmail: false }))
+  }
+
   async function handleSend(raw) {
     const chat = ensureActiveChat()
     const chatId = chat.id
@@ -176,6 +198,12 @@ export default function App() {
       searchContext = text
     }
 
+    let gmailContext = ''
+    if (gmail.connected && (settings.gmail || parsed.forceGmail)) {
+      const { text } = await fetchGmail(parsed.text)
+      gmailContext = text
+    }
+
     const assistantId = uid()
     appendMessage(chatId, { id: assistantId, role: 'assistant', content: '', streaming: true, agentId })
     setStreaming(true)
@@ -194,6 +222,7 @@ export default function App() {
         messages: historyMessages,
         settings: effectiveSettings,
         searchContext,
+        gmailContext,
         agentId,
         signal: controller.signal,
         onDelta: (delta) => {
@@ -256,6 +285,7 @@ export default function App() {
           <div className="topbar-pills">
             {settings.think && <span className="pill">Think</span>}
             {settings.search && <span className="pill">Search</span>}
+            {gmail.connected && settings.gmail && <span className="pill">Gmail</span>}
             {settings.fun && <span className="pill">Fun</span>}
           </div>
         </div>
@@ -272,7 +302,14 @@ export default function App() {
       </main>
 
       {settingsOpen && (
-        <SettingsPanel settings={settings} onChange={setSettings} onClose={() => setSettingsOpen(false)} />
+        <SettingsPanel
+          settings={settings}
+          onChange={setSettings}
+          onClose={() => setSettingsOpen(false)}
+          gmail={gmail}
+          onConnectGmail={handleConnectGmail}
+          onDisconnectGmail={handleDisconnectGmail}
+        />
       )}
     </div>
   )

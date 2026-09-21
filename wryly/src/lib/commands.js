@@ -20,10 +20,11 @@ export const SLASH_COMMANDS = [
   { cmd: '/image', hint: 'generate an image' },
   { cmd: '/task', hint: 'add something to your task list' },
   { cmd: '/tasks', hint: 'show your task list' },
+  { cmd: '/inbox', hint: 'search your connected Gmail' },
   { cmd: '/help', hint: 'list commands' },
 ]
 
-// Returns { type: 'image'|'help'|'task-add'|'task-list', ... } | { type: 'chat', text, label? }
+// Returns { type: 'image'|'help'|'task-add'|'task-list', ... } | { type: 'chat', text, label?, forceGmail? }
 export function expandCommand(raw) {
   const trimmed = raw.trim()
   if (!trimmed.startsWith('/')) return { type: 'chat', text: raw }
@@ -36,6 +37,14 @@ export function expandCommand(raw) {
   if (cmd === 'help') return { type: 'help' }
   if (cmd === 'task' && arg) return { type: 'task-add', text: arg }
   if (cmd === 'tasks' || (cmd === 'task' && !arg)) return { type: 'task-list' }
+  if (cmd === 'inbox') {
+    return {
+      type: 'chat',
+      text: `Search my email for: ${arg || 'anything recent and important'}`,
+      label: raw,
+      forceGmail: true,
+    }
+  }
   if (EXPANSIONS[cmd]) return { type: 'chat', text: EXPANSIONS[cmd](arg), label: raw }
   return { type: 'chat', text: raw }
 }

@@ -1,11 +1,11 @@
 // Client-side helpers for talking to the /api/chat and /api/search edge
 // functions, including SSE parsing for streamed replies.
 
-export async function streamChat({ messages, settings, searchContext, agentId, onDelta, signal }) {
+export async function streamChat({ messages, settings, searchContext, gmailContext, agentId, onDelta, signal }) {
   const res = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ messages, settings, searchContext, agentId }),
+    body: JSON.stringify({ messages, settings, searchContext, gmailContext, agentId }),
     signal,
   })
 
@@ -51,5 +51,33 @@ export async function fetchSearch(query) {
     return await res.json()
   } catch {
     return { results: [], text: '' }
+  }
+}
+
+export async function fetchGmailStatus() {
+  try {
+    const res = await fetch('/api/auth/google/status')
+    if (!res.ok) return { connected: false, configured: false }
+    return await res.json()
+  } catch {
+    return { connected: false, configured: false }
+  }
+}
+
+export async function fetchGmail(query) {
+  try {
+    const res = await fetch(`/api/gmail/search?q=${encodeURIComponent(query)}`)
+    if (!res.ok) return { connected: false, results: [], text: '' }
+    return await res.json()
+  } catch {
+    return { connected: false, results: [], text: '' }
+  }
+}
+
+export async function disconnectGmail() {
+  try {
+    await fetch('/api/auth/google/disconnect', { method: 'POST' })
+  } catch {
+    // ignore — worst case the cookie lingers until it expires
   }
 }

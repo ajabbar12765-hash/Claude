@@ -10,6 +10,7 @@ export const DEFAULT_SETTINGS = {
   search: false,
   voiceOut: false,
   agent: 'auto',
+  gmail: false,
 }
 
 function safeParse(raw, fallback) {
