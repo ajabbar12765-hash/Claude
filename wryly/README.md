@@ -20,6 +20,24 @@ reasoning trace, multi-chat history, and slash-command shortcuts.
   to Markdown.
 - **Slash commands** — `/roast`, `/eli5`, `/debate`, `/fact`, `/joke`,
   `/help`.
+- **The Crew** — a squad of specialist agents you can send a message to:
+  Scout (research), Quill (writing/essays), Crunch (math/code, auto-enables
+  Think Mode), Ledger (budgeting), Herald (message/email drafts), Keeper
+  (planning), and Artisan (image prompts). Pick one from the chip next to
+  the composer, or leave it on **Auto** and Wryly routes each message to
+  the right specialist itself, instantly and for free (keyword matching,
+  no extra model call).
+- **Real task list** — the one thing worth actually letting a bot "control"
+  without real-world side effects. `/task <thing>` adds to a to-do list
+  that lives in the sidebar and persists locally; `/tasks` lists what's
+  open. Keeper points people at it instead of pretending to remember
+  things it can't.
+
+Wryly intentionally does **not** connect to real email, calendars, banks,
+or e-commerce accounts — those integrations involve real money and real
+messages sent on your behalf, which deserves its own explicit setup (OAuth,
+scoped API keys, an approval step before anything actually sends) rather
+than being bundled in by default.
 
 ## Running locally
 

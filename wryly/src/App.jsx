@@ -13,12 +13,16 @@ import {
   newChat,
   titleFromFirstMessage,
   chatToMarkdown,
+  loadTasks,
+  saveTasks,
   uid,
 } from './lib/storage'
 import { expandCommand, SLASH_COMMANDS } from './lib/commands'
 import { buildImageUrl } from './lib/image'
 import { streamChat, fetchSearch } from './lib/api'
 import { speak } from './lib/speech'
+import { AGENTS_BY_ID } from './lib/agents'
+import { routeAgent } from './lib/router'
 
 const HELP_TEXT = [
   "Here's what I can do beyond plain chat:",
@@ -32,6 +36,7 @@ export default function App() {
   const [chats, setChats] = useState(() => loadChats())
   const [activeChatId, setActiveChatId] = useState(() => loadActiveId())
   const [settings, setSettings] = useState(() => loadSettings())
+  const [tasks, setTasks] = useState(() => loadTasks())
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [streaming, setStreaming] = useState(false)
@@ -39,6 +44,7 @@ export default function App() {
 
   useEffect(() => saveChats(chats), [chats])
   useEffect(() => saveSettings(settings), [settings])
+  useEffect(() => saveTasks(tasks), [tasks])
   useEffect(() => {
     if (activeChatId) saveActiveId(activeChatId)
   }, [activeChatId])
@@ -100,6 +106,24 @@ export default function App() {
     }))
   }
 
+  function handleAddTask(text) {
+    setTasks((prev) => [...prev, { id: uid(), text, done: false, createdAt: Date.now() }])
+  }
+
+  function handleToggleTask(id) {
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)))
+  }
+
+  function handleDeleteTask(id) {
+    setTasks((prev) => prev.filter((t) => t.id !== id))
+  }
+
+  function tasksListText() {
+    const open = tasks.filter((t) => !t.done)
+    if (open.length === 0) return "Nothing on your list. Look at you, thriving."
+    return ["Here's what's still open:", '', ...open.map((t, i) => `${i + 1}. ${t.text}`)].join('\n')
+  }
+
   async function handleSend(raw) {
     const chat = ensureActiveChat()
     const chatId = chat.id
@@ -118,16 +142,42 @@ export default function App() {
       return
     }
 
+    if (parsed.type === 'task-add') {
+      appendMessage(chatId, { id: uid(), role: 'user', content: raw })
+      handleAddTask(parsed.text)
+      appendMessage(chatId, {
+        id: uid(),
+        role: 'assistant',
+        content: `Added to your list: "${parsed.text}". Now go do it.`,
+        agentId: 'keeper',
+      })
+      return
+    }
+
+    if (parsed.type === 'task-list') {
+      appendMessage(chatId, { id: uid(), role: 'user', content: raw })
+      appendMessage(chatId, { id: uid(), role: 'assistant', content: tasksListText(), agentId: 'keeper' })
+      return
+    }
+
     appendMessage(chatId, { id: uid(), role: 'user', content: raw })
 
+    const agentId = settings.agent !== 'auto' ? settings.agent : routeAgent(parsed.text)
+    const agent = agentId ? AGENTS_BY_ID[agentId] : null
+    const effectiveSettings = {
+      ...settings,
+      search: settings.search || Boolean(agent?.forceSearch),
+      think: settings.think || Boolean(agent?.forceThink),
+    }
+
     let searchContext = ''
-    if (settings.search) {
+    if (effectiveSettings.search) {
       const { text } = await fetchSearch(parsed.text)
       searchContext = text
     }
 
     const assistantId = uid()
-    appendMessage(chatId, { id: assistantId, role: 'assistant', content: '', streaming: true })
+    appendMessage(chatId, { id: assistantId, role: 'assistant', content: '', streaming: true, agentId })
     setStreaming(true)
 
     const historyMessages = [...chat.messages, { role: 'user', content: parsed.text }].map((m) => ({
@@ -142,8 +192,9 @@ export default function App() {
     try {
       await streamChat({
         messages: historyMessages,
-        settings,
+        settings: effectiveSettings,
         searchContext,
+        agentId,
         signal: controller.signal,
         onDelta: (delta) => {
           full += delta
@@ -190,6 +241,10 @@ export default function App() {
         onOpenSettings={() => setSettingsOpen(true)}
         open={sidebarOpen}
         onCloseMobile={() => setSidebarOpen(false)}
+        tasks={tasks}
+        onAddTask={handleAddTask}
+        onToggleTask={handleToggleTask}
+        onDeleteTask={handleDeleteTask}
       />
 
       <main className="main">
@@ -207,7 +262,13 @@ export default function App() {
 
         <ChatWindow messages={activeChat?.messages ?? []} />
 
-        <Composer onSubmit={handleSend} disabled={streaming} onStop={handleStop} />
+        <Composer
+          onSubmit={handleSend}
+          disabled={streaming}
+          onStop={handleStop}
+          agent={settings.agent}
+          onAgentChange={(agent) => setSettings((s) => ({ ...s, agent }))}
+        />
       </main>
 
       {settingsOpen && (

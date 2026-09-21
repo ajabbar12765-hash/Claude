@@ -1,6 +1,7 @@
 const CHATS_KEY = 'wryly:chats'
 const SETTINGS_KEY = 'wryly:settings'
 const ACTIVE_KEY = 'wryly:active'
+const TASKS_KEY = 'wryly:tasks'
 
 export const DEFAULT_SETTINGS = {
   fun: true,
@@ -8,6 +9,7 @@ export const DEFAULT_SETTINGS = {
   think: false,
   search: false,
   voiceOut: false,
+  agent: 'auto',
 }
 
 function safeParse(raw, fallback) {
@@ -68,6 +70,19 @@ export function newChat() {
 export function titleFromFirstMessage(text) {
   const clean = text.trim().replace(/\s+/g, ' ')
   return clean.length > 40 ? clean.slice(0, 40) + '…' : clean || 'New chat'
+}
+
+export function loadTasks() {
+  const tasks = safeParse(localStorage.getItem(TASKS_KEY), [])
+  return Array.isArray(tasks) ? tasks : []
+}
+
+export function saveTasks(tasks) {
+  try {
+    localStorage.setItem(TASKS_KEY, JSON.stringify(tasks))
+  } catch {
+    // ignore
+  }
 }
 
 export function chatToMarkdown(chat) {

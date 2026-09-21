@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react'
 import { SLASH_COMMANDS } from '../lib/commands'
 import { voiceInputSupported, listenOnce } from '../lib/speech'
+import { AgentPicker } from './AgentPicker.jsx'
 
-export function Composer({ onSubmit, disabled, onStop }) {
+export function Composer({ onSubmit, disabled, onStop, agent, onAgentChange }) {
   const [value, setValue] = useState('')
   const [listening, setListening] = useState(false)
   const stopListenRef = useRef(null)
@@ -55,6 +56,7 @@ export function Composer({ onSubmit, disabled, onStop }) {
         </div>
       )}
       <div className="composer-row">
+        <AgentPicker value={agent} onChange={onAgentChange} />
         <textarea
           ref={textareaRef}
           value={value}

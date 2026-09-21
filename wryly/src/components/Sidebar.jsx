@@ -1,4 +1,20 @@
-export function Sidebar({ chats, activeChatId, onSelect, onNew, onDelete, onExport, onOpenSettings, open, onCloseMobile }) {
+import { TasksPanel } from './TasksPanel.jsx'
+
+export function Sidebar({
+  chats,
+  activeChatId,
+  onSelect,
+  onNew,
+  onDelete,
+  onExport,
+  onOpenSettings,
+  open,
+  onCloseMobile,
+  tasks,
+  onAddTask,
+  onToggleTask,
+  onDeleteTask,
+}) {
   return (
     <>
       {open && <div className="sidebar-scrim" onClick={onCloseMobile} />}
@@ -33,6 +49,8 @@ export function Sidebar({ chats, activeChatId, onSelect, onNew, onDelete, onExpo
             </div>
           ))}
         </div>
+
+        <TasksPanel tasks={tasks} onAdd={onAddTask} onToggle={onToggleTask} onDelete={onDeleteTask} />
 
         <button className="settings-btn" onClick={onOpenSettings}>
           ⚙ Settings

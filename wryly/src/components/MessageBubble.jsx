@@ -2,6 +2,7 @@ import { FormattedText } from '../lib/format.jsx'
 import { parseThinking } from '../lib/thinking'
 import { ThinkingTrace } from './ThinkingTrace.jsx'
 import { voiceOutputSupported, speak } from '../lib/speech'
+import { AGENTS_BY_ID } from '../lib/agents'
 
 export function MessageBubble({ message }) {
   const isUser = message.role === 'user'
@@ -29,13 +30,19 @@ export function MessageBubble({ message }) {
 
   const { thinking, answer, thinkingDone } = parseThinking(message.content)
   const showEmpty = !thinking && !answer && message.streaming
+  const agent = message.agentId ? AGENTS_BY_ID[message.agentId] : null
 
   return (
     <div className="bubble-row assistant">
-      <div className="avatar" aria-hidden="true">
-        W
+      <div
+        className="avatar"
+        aria-hidden="true"
+        style={agent ? { background: agent.color, color: '#0b0c10' } : undefined}
+      >
+        {agent ? agent.name[0] : 'W'}
       </div>
       <div className="bubble">
+        {agent && <div className="agent-label" style={{ color: agent.color }}>{agent.name}</div>}
         <ThinkingTrace thinking={thinking} thinkingDone={thinkingDone} />
         {showEmpty ? (
           <span className="typing-dots">

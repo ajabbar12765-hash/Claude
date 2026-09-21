@@ -18,6 +18,8 @@
 // With no key configured at all, this returns a friendly setup message
 // instead of a crash, so the UI is still explorable out of the box.
 
+import { AGENTS_BY_ID } from '../src/lib/agents.js'
+
 export const config = { runtime: 'edge' }
 
 const DEFAULT_ANTHROPIC_MODEL = 'claude-haiku-4-5-20251001'
@@ -186,12 +188,16 @@ export default async function handler(req) {
     return new Response('Invalid JSON', { status: 400 })
   }
 
-  const { messages, settings, searchContext } = body ?? {}
+  const { messages, settings, searchContext, agentId } = body ?? {}
   if (!Array.isArray(messages) || messages.length === 0) {
     return new Response('messages[] required', { status: 400 })
   }
 
   let system = buildSystemPrompt(settings)
+  const agent = agentId ? AGENTS_BY_ID[agentId] : null
+  if (agent) {
+    system += `\n\n${agent.systemPrompt}`
+  }
   if (searchContext) {
     system += `\n\nYou ran a live web search for the user's latest message. Here are the results — use them when relevant, cite what you used in plain language, and say so if they don't actually help:\n\n${searchContext}`
   }

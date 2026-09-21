@@ -1,11 +1,11 @@
 // Client-side helpers for talking to the /api/chat and /api/search edge
 // functions, including SSE parsing for streamed replies.
 
-export async function streamChat({ messages, settings, searchContext, onDelta, signal }) {
+export async function streamChat({ messages, settings, searchContext, agentId, onDelta, signal }) {
   const res = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ messages, settings, searchContext }),
+    body: JSON.stringify({ messages, settings, searchContext, agentId }),
     signal,
   })
 
