@@ -1000,6 +1000,189 @@ button {
   border-radius: 4px;
 }
 
+/* --------------------------------------------------------- automations */
+
+.automations-modal {
+  max-width: 540px;
+}
+
+.automation-section {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.automation-section:last-child {
+  border-bottom: none;
+}
+
+.automation-section-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.automation-pending-card {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.automation-pending-source {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin-bottom: 6px;
+}
+
+.automation-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.automation-row:last-child {
+  border-bottom: none;
+}
+
+.automation-row-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.automation-row-name {
+  font-weight: 600;
+  font-size: 13.5px;
+}
+
+.automation-row-instruction {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 3px 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.automation-webhook {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.automation-row-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.automation-row-controls select {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.automation-delete {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 11.5px;
+}
+
+.automation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.automation-form input,
+.automation-form textarea {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.automation-form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.automation-form-row select {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.automation-form-row button {
+  flex: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0b0c10;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.automation-form-row button:disabled {
+  opacity: 0.5;
+}
+
+.automation-log {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.automation-log-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.automation-log-summary {
+  flex: 1;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.automation-log-summary strong {
+  color: var(--text);
+}
+
+.automation-log-time {
+  color: var(--muted);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
 /* -------------------------------------------------------------- mobile */
 
 @media (max-width: 768px) {

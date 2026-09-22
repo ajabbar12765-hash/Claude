@@ -25,37 +25,17 @@
 import { AGENTS_BY_ID } from '../../src/lib/agents.js'
 import { buildSystemPrompt } from '../_lib/persona.js'
 import { resolveProvider, callOpenAICompatWithTools } from '../_lib/provider.js'
-import { isConfigured as mcpConfigured, mcpInitialize, mcpListTools, mcpCallTool } from '../_lib/mcp.js'
+import {
+  isConfigured as mcpConfigured,
+  mcpInitialize,
+  mcpListTools,
+  mcpCallTool,
+  toOpenAITool,
+  formatMcpResult,
+  safeParseArgs,
+} from '../_lib/mcp.js'
 
 export const config = { runtime: 'edge' }
-
-function toOpenAITool(tool) {
-  return {
-    type: 'function',
-    function: {
-      name: tool.name,
-      description: tool.description || '',
-      parameters:
-        tool.inputSchema && Object.keys(tool.inputSchema).length > 0
-          ? tool.inputSchema
-          : { type: 'object', properties: {} },
-    },
-  }
-}
-
-function formatMcpResult(result) {
-  if (!result) return '(no result)'
-  const text = (result.content || []).map((c) => c.text || JSON.stringify(c)).join('\n') || '(empty result)'
-  return result.isError ? `Error: ${text}` : text
-}
-
-function safeParseArgs(argsText) {
-  try {
-    return JSON.parse(argsText || '{}')
-  } catch {
-    return {}
-  }
-}
 
 export default async function handler(req) {
   if (req.method !== 'POST') {

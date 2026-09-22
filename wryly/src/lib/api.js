@@ -112,3 +112,72 @@ export async function runMcpChat({ messages, settings, agentId, pendingApproval 
     return { done: true, content: `⚠️ ${err.message || 'The Zapier tool request failed.'}` }
   }
 }
+
+// Automations: standing rules triggered by an external webhook (a Zapier
+// "Webhooks by Zapier" step) instead of a live chat message.
+
+export async function fetchAutomations() {
+  try {
+    const res = await fetch('/api/automations')
+    if (!res.ok) return { configured: false, automations: [] }
+    return await res.json()
+  } catch {
+    return { configured: false, automations: [] }
+  }
+}
+
+export async function createAutomationRule({ name, instruction, approvalMode }) {
+  const res = await fetch('/api/automations', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name, instruction, approvalMode }),
+  })
+  if (!res.ok) throw new Error((await res.text().catch(() => '')) || `Request failed (${res.status}).`)
+  return res.json()
+}
+
+export async function deleteAutomationRule(id) {
+  await fetch(`/api/automations/${id}`, { method: 'DELETE' }).catch(() => {})
+}
+
+export async function setAutomationMode(id, approvalMode) {
+  await fetch(`/api/automations/${id}`, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ approvalMode }),
+  }).catch(() => {})
+}
+
+export async function fetchPendingAutomations() {
+  try {
+    const res = await fetch('/api/automations/pending')
+    if (!res.ok) return { pending: [] }
+    return await res.json()
+  } catch {
+    return { pending: [] }
+  }
+}
+
+export async function decidePendingAutomation(id, decisions) {
+  try {
+    const res = await fetch(`/api/automations/pending/${id}/decide`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ decisions }),
+    })
+    if (!res.ok) return { ok: false }
+    return await res.json()
+  } catch {
+    return { ok: false }
+  }
+}
+
+export async function fetchAutomationLog() {
+  try {
+    const res = await fetch('/api/automations/log')
+    if (!res.ok) return { activity: [] }
+    return await res.json()
+  } catch {
+    return { activity: [] }
+  }
+}

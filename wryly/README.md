@@ -47,11 +47,21 @@ reasoning trace, multi-chat history, and slash-command shortcuts.
   so **every single tool call is shown to you as an approval card in the
   chat before it runs**; nothing executes on a "maybe." See **Connecting
   Zapier** below.
+- **Automations (optional, off by default)** — standing rules that fire
+  from an external webhook instead of a live chat message, e.g. "when Baba
+  messages me on WhatsApp, draft a reply." Each rule has its own webhook
+  URL (paste it into a Zapier "Webhooks by Zapier" step) and its own
+  approval mode: **Ask first** queues the drafted action for you to
+  approve next time you open the app; **Auto-send** lets that specific
+  rule run without asking, if you've decided you trust it. Everything it
+  does is visible afterward in the activity log either way. See
+  **Automations** below.
 
-Nothing above runs unattended by design: Gmail is read-only, and Zapier
-actions always wait for an explicit approve/deny click. That's a
-deliberate choice, not a current limitation — a bot that can act in your
-real accounts should never get to guess.
+Nothing above runs unattended by default: Gmail is read-only, Zapier tool
+calls in live chat always wait for an explicit approve/deny click, and
+Automations default to "Ask first" too — Auto-send is something you opt
+into per rule, not a default. A bot that can act in your real accounts
+should never get to guess unless you've explicitly told it to.
 
 ## Running locally
 
@@ -161,6 +171,33 @@ for you.
 From then on, whenever Wryly wants to use one of those tools, it shows up
 in the chat as a card with the exact action and arguments — you approve or
 deny each one individually before anything actually happens.
+
+## Automations
+
+Optional, off by default, requires **Zapier already connected** (above)
+plus a Redis store — **Upstash for Redis**, added from the Vercel
+project's **Storage** tab and connected to the project. That's the only
+storage this app uses; everything else intentionally lives in the browser.
+Connecting it adds `KV_REST_API_URL` / `KV_REST_API_TOKEN` automatically —
+no secret to copy by hand.
+
+1. **Vercel dashboard → wryly project → Storage → Create Database →
+   Upstash for Redis**, connect it to the `wryly` project, redeploy.
+2. Open **Automations** from the sidebar, fill in a name and an
+   instruction (e.g. *"Draft a short, friendly reply on my behalf, and put
+   'AI generated:' before the message."*), pick **Ask first** or
+   **Auto-send**, and create it. Copy its webhook URL.
+3. In Zapier, build a Zap: your trigger (e.g. "New message in WhatsApp"),
+   then a **Webhooks by Zapier → POST** action pointed at that webhook
+   URL, with a JSON body mapping the trigger's fields to:
+   ```json
+   { "from": "{{sender}}", "message": "{{message text}}" }
+   ```
+4. Turn the Zap on. When it fires, Wryly runs the instruction — with
+   **Ask first**, the drafted action shows up next time you open
+   Automations, and you approve or deny it there (same "waiting on you"
+   list as live-chat Zapier tool calls); with **Auto-send**, it just runs,
+   and you can review what happened in the activity log at any time.
 
 ## Deploying
 

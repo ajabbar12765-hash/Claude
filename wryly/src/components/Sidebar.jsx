@@ -14,6 +14,8 @@ export function Sidebar({
   onAddTask,
   onToggleTask,
   onDeleteTask,
+  onOpenAutomations,
+  pendingAutomationCount,
 }) {
   return (
     <>
@@ -51,6 +53,10 @@ export function Sidebar({
         </div>
 
         <TasksPanel tasks={tasks} onAdd={onAddTask} onToggle={onToggleTask} onDelete={onDeleteTask} />
+
+        <button className="settings-btn" onClick={onOpenAutomations}>
+          🤖 Automations{pendingAutomationCount > 0 ? ` (${pendingAutomationCount})` : ''}
+        </button>
 
         <button className="settings-btn" onClick={onOpenSettings}>
           ⚙ Settings

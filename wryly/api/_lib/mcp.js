@@ -107,3 +107,35 @@ export async function mcpCallTool(sessionId, name, args) {
   const { result } = await rpcCall(sessionId, 'tools/call', { name, arguments: args || {} })
   return result
 }
+
+// Shared formatting between the live-chat MCP loop and the automations
+// webhook loop, so a change to one shape doesn't quietly drift from the
+// other.
+
+export function toOpenAITool(tool) {
+  return {
+    type: 'function',
+    function: {
+      name: tool.name,
+      description: tool.description || '',
+      parameters:
+        tool.inputSchema && Object.keys(tool.inputSchema).length > 0
+          ? tool.inputSchema
+          : { type: 'object', properties: {} },
+    },
+  }
+}
+
+export function formatMcpResult(result) {
+  if (!result) return '(no result)'
+  const text = (result.content || []).map((c) => c.text || JSON.stringify(c)).join('\n') || '(empty result)'
+  return result.isError ? `Error: ${text}` : text
+}
+
+export function safeParseArgs(argsText) {
+  try {
+    return JSON.parse(argsText || '{}')
+  } catch {
+    return {}
+  }
+}

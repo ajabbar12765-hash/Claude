@@ -1,4 +1,4 @@
-import { AGENTS } from './agents'
+import { AGENTS } from './agents.js'
 
 // Free, instant, keyword-based routing — no extra model call. Picks the
 // agent whose keyword list scores highest against the message; returns null

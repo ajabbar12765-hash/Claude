@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar.jsx'
 import { ChatWindow } from './components/ChatWindow.jsx'
 import { Composer } from './components/Composer.jsx'
 import { SettingsPanel } from './components/SettingsPanel.jsx'
+import { AutomationsPanel } from './components/AutomationsPanel.jsx'
 import {
   loadChats,
   saveChats,
@@ -27,6 +28,7 @@ import {
   disconnectGmail,
   fetchMcpStatus,
   runMcpChat,
+  fetchPendingAutomations,
 } from './lib/api'
 import { speak } from './lib/speech'
 import { AGENTS_BY_ID } from './lib/agents'
@@ -46,6 +48,8 @@ export default function App() {
   const [settings, setSettings] = useState(() => loadSettings())
   const [tasks, setTasks] = useState(() => loadTasks())
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [automationsOpen, setAutomationsOpen] = useState(false)
+  const [pendingAutomationCount, setPendingAutomationCount] = useState(0)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [streaming, setStreaming] = useState(false)
   const [gmail, setGmail] = useState({ connected: false, configured: false })
@@ -69,6 +73,15 @@ export default function App() {
       window.history.replaceState({}, '', window.location.pathname)
       if (gmailResult === 'connected') setSettingsOpen(true)
     }
+  }, [])
+
+  useEffect(() => {
+    function refreshPendingCount() {
+      fetchPendingAutomations().then((r) => setPendingAutomationCount((r.pending || []).length))
+    }
+    refreshPendingCount()
+    const interval = setInterval(refreshPendingCount, 30000)
+    return () => clearInterval(interval)
   }, [])
 
   const activeChat = useMemo(
@@ -341,6 +354,8 @@ export default function App() {
         onAddTask={handleAddTask}
         onToggleTask={handleToggleTask}
         onDeleteTask={handleDeleteTask}
+        onOpenAutomations={() => setAutomationsOpen(true)}
+        pendingAutomationCount={pendingAutomationCount}
       />
 
       <main className="main">
@@ -378,6 +393,13 @@ export default function App() {
           onConnectGmail={handleConnectGmail}
           onDisconnectGmail={handleDisconnectGmail}
           mcp={mcp}
+        />
+      )}
+
+      {automationsOpen && (
+        <AutomationsPanel
+          onClose={() => setAutomationsOpen(false)}
+          onPendingCountChange={setPendingAutomationCount}
         />
       )}
     </div>
