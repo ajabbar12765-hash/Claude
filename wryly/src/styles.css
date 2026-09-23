@@ -1,26 +1,29 @@
 :root {
-  --bg: #0a0b10;
-  --panel: #12141c;
-  --panel-2: #191c27;
-  --panel-3: #212430;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --text: #edeef3;
-  --muted: #8992a8;
-  --accent: #6ee7a0;
-  --accent-dim: rgba(110, 231, 160, 0.14);
-  --accent-2: #a98cff;
-  --accent-2-dim: rgba(169, 140, 255, 0.14);
-  --accent-gradient: linear-gradient(135deg, var(--accent), var(--accent-2));
-  --danger: #ff6b6b;
-  --danger-dim: rgba(255, 107, 107, 0.14);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --bg: #fafafc;
+  --panel: #ffffff;
+  --panel-2: #f2effa;
+  --panel-3: #e9e3f8;
+  --border: rgba(23, 21, 31, 0.09);
+  --border-strong: rgba(23, 21, 31, 0.18);
+  --text: #18151f;
+  --muted: #6f6980;
+  --accent: #ff5c7a;
+  --accent-dim: rgba(255, 92, 122, 0.12);
+  --accent-ink: #ffffff;
+  --accent-2: #6c4cf1;
+  --accent-2-dim: rgba(108, 76, 241, 0.1);
+  --accent-3: #17b978;
+  --accent-3-dim: rgba(23, 185, 120, 0.12);
+  --danger: #ff4757;
+  --danger-dim: rgba(255, 71, 87, 0.1);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 26px;
+  --shadow-sm: 0 2px 8px rgba(23, 21, 31, 0.06);
+  --shadow-md: 0 14px 32px rgba(23, 21, 31, 0.1);
+  --shadow-lg: 0 28px 64px rgba(23, 21, 31, 0.16);
+  --shadow-accent: 0 10px 24px rgba(255, 92, 122, 0.32);
   font-family: 'Inter', system-ui, sans-serif;
 }
 
@@ -43,7 +46,7 @@ body {
 }
 
 ::selection {
-  background: rgba(110, 231, 160, 0.32);
+  background: rgba(255, 92, 122, 0.28);
   color: var(--text);
 }
 
@@ -57,12 +60,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
+  background: rgba(23, 21, 31, 0.16);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.26);
+  background: rgba(23, 21, 31, 0.28);
 }
 
 h1,
@@ -70,7 +73,7 @@ h2,
 .brand-name,
 .empty-mark,
 .avatar {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 button {
@@ -91,8 +94,9 @@ select:focus-visible {
   height: 100vh;
   overflow: hidden;
   background:
-    radial-gradient(900px 500px at 12% -8%, rgba(110, 231, 160, 0.05), transparent 60%),
-    radial-gradient(700px 400px at 100% 0%, rgba(169, 140, 255, 0.04), transparent 55%),
+    radial-gradient(700px 520px at 6% -6%, rgba(255, 92, 122, 0.12), transparent 60%),
+    radial-gradient(650px 520px at 100% 4%, rgba(108, 76, 241, 0.1), transparent 55%),
+    radial-gradient(560px 460px at 45% 105%, rgba(23, 185, 120, 0.08), transparent 60%),
     var(--bg);
 }
 
@@ -101,7 +105,7 @@ select:focus-visible {
 .sidebar {
   width: 280px;
   flex-shrink: 0;
-  background: var(--panel);
+  background: var(--panel-2);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -124,9 +128,9 @@ select:focus-visible {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
-  background: var(--accent-gradient);
-  box-shadow: 0 6px 18px rgba(110, 231, 160, 0.22);
-  color: #07080b;
+  background: var(--accent);
+  box-shadow: var(--shadow-accent);
+  color: var(--accent-ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -147,20 +151,21 @@ select:focus-visible {
 }
 
 .new-chat-btn {
-  background: var(--panel-2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
+  background: var(--accent);
+  border: none;
+  color: var(--accent-ink);
+  border-radius: 999px;
+  padding: 11px 14px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   text-align: left;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  box-shadow: var(--shadow-accent);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .new-chat-btn:hover {
-  border-color: var(--accent-2);
-  background: var(--panel-3);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(255, 92, 122, 0.4);
 }
 
 .chat-list {
@@ -189,7 +194,7 @@ select:focus-visible {
 
 .chat-item:hover,
 .chat-item.active {
-  background: var(--panel-2);
+  background: var(--panel-3);
 }
 
 .chat-item.active::before {
@@ -200,7 +205,7 @@ select:focus-visible {
   bottom: 7px;
   width: 3px;
   border-radius: 3px;
-  background: var(--accent-gradient);
+  background: var(--accent-2);
 }
 
 .chat-item-title {
@@ -273,7 +278,7 @@ select:focus-visible {
 
 .task-add input {
   flex: 1;
-  background: var(--panel-2);
+  background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text);
@@ -289,7 +294,7 @@ select:focus-visible {
 }
 
 .task-add button {
-  background: var(--panel-2);
+  background: var(--panel);
   border: 1px solid var(--border);
   color: var(--accent);
   border-radius: var(--radius-sm);
@@ -299,7 +304,7 @@ select:focus-visible {
 }
 
 .task-add button:hover:not(:disabled) {
-  background: var(--panel-3);
+  background: var(--accent-dim);
   border-color: var(--accent);
 }
 
@@ -329,11 +334,11 @@ select:focus-visible {
 }
 
 .task-item:hover {
-  background: var(--panel-2);
+  background: var(--panel-3);
 }
 
 .task-item input[type='checkbox'] {
-  accent-color: var(--accent);
+  accent-color: var(--accent-3);
   flex-shrink: 0;
 }
 
@@ -370,7 +375,7 @@ select:focus-visible {
 }
 
 .settings-btn {
-  background: transparent;
+  background: var(--panel);
   border: 1px solid var(--border);
   color: var(--muted);
   border-radius: var(--radius-md);
@@ -383,7 +388,7 @@ select:focus-visible {
 .settings-btn:hover {
   color: var(--text);
   border-color: var(--accent-2);
-  background: var(--panel-2);
+  background: var(--accent-2-dim);
 }
 
 /* ------------------------------------------------------------------ main */
@@ -423,8 +428,8 @@ select:focus-visible {
   letter-spacing: 0.02em;
   padding: 4px 10px;
   border-radius: 999px;
-  background: var(--accent-dim);
-  color: var(--accent);
+  background: var(--accent-2-dim);
+  color: var(--accent-2);
 }
 
 .hamburger {
@@ -458,9 +463,9 @@ select:focus-visible {
   height: 56px;
   margin: 0 auto 14px;
   border-radius: var(--radius-lg);
-  background: var(--accent-gradient);
-  box-shadow: 0 10px 28px rgba(110, 231, 160, 0.22);
-  color: #07080b;
+  background: var(--accent);
+  box-shadow: var(--shadow-accent);
+  color: var(--accent-ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -515,8 +520,10 @@ select:focus-visible {
 }
 
 .bubble-row.user .bubble {
-  background: var(--accent-2-dim);
-  border-color: rgba(169, 140, 255, 0.3);
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: transparent;
+  box-shadow: var(--shadow-accent);
 }
 
 .agent-label {
@@ -542,6 +549,11 @@ select:focus-visible {
   padding: 1px 5px;
   font-size: 0.9em;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.bubble-row.user .inline-code {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .speak-btn {
@@ -686,13 +698,13 @@ select:focus-visible {
 
 .tool-call-card {
   background: var(--panel-2);
-  border: 1px solid rgba(255, 209, 102, 0.35);
+  border: 1px solid rgba(255, 176, 32, 0.4);
   border-radius: var(--radius-md);
   padding: 10px 12px;
 }
 
 .tool-call-card.approve {
-  border-color: rgba(110, 231, 160, 0.4);
+  border-color: rgba(23, 185, 120, 0.4);
 }
 
 .tool-call-card.deny {
@@ -741,28 +753,28 @@ select:focus-visible {
 
 .tool-call-actions button {
   flex: 1;
-  border-radius: var(--radius-sm);
-  padding: 6px 0;
+  border-radius: 999px;
+  padding: 7px 0;
   font-size: 12.5px;
-  font-weight: 600;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  color: var(--text);
-  transition: border-color 0.15s ease, background 0.15s ease;
+  font-weight: 700;
+  border: 1px solid transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .tool-call-actions .approve {
-  color: var(--accent);
-  border-color: rgba(110, 231, 160, 0.45);
+  color: #ffffff;
+  background: var(--accent-3);
+  box-shadow: 0 6px 16px rgba(23, 185, 120, 0.3);
 }
 
 .tool-call-actions .approve:hover {
-  background: var(--accent-dim);
+  transform: translateY(-1px);
 }
 
 .tool-call-actions .deny {
   color: var(--danger);
-  border-color: rgba(255, 107, 107, 0.4);
+  background: var(--panel);
+  border-color: rgba(255, 71, 87, 0.35);
 }
 
 .tool-call-actions .deny:hover {
@@ -810,7 +822,7 @@ select:focus-visible {
 
 .suggestions .cmd {
   color: var(--accent);
-  font-weight: 600;
+  font-weight: 700;
   min-width: 70px;
 }
 
@@ -828,11 +840,13 @@ select:focus-visible {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: 8px;
-  transition: border-color 0.15s ease;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .composer-row:focus-within {
-  border-color: var(--border-strong);
+  border-color: var(--accent-2);
+  box-shadow: var(--shadow-md);
 }
 
 .composer-row textarea {
@@ -861,8 +875,8 @@ select:focus-visible {
   background: var(--panel-2);
   border: 1px solid var(--border);
   color: var(--text);
-  border-radius: var(--radius-md);
-  padding: 0 10px;
+  border-radius: 999px;
+  padding: 0 12px;
   font-size: 12.5px;
   font-weight: 600;
   white-space: nowrap;
@@ -870,7 +884,7 @@ select:focus-visible {
 }
 
 .agent-chip:hover {
-  border-color: var(--border-strong);
+  border-color: var(--accent-2);
 }
 
 .agent-dot {
@@ -885,7 +899,7 @@ select:focus-visible {
   bottom: calc(100% + 8px);
   left: 0;
   width: 240px;
-  background: var(--panel-2);
+  background: var(--panel);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   padding: 6px;
@@ -915,7 +929,7 @@ select:focus-visible {
 
 .agent-option:hover,
 .agent-option.selected {
-  background: var(--panel-3);
+  background: var(--panel-2);
 }
 
 .agent-option-name {
@@ -934,13 +948,13 @@ select:focus-visible {
   color: var(--text);
   width: 38px;
   height: 38px;
-  border-radius: var(--radius-md);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 15px;
   flex-shrink: 0;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
 .icon-btn:hover {
@@ -953,10 +967,14 @@ select:focus-visible {
 }
 
 .icon-btn.send {
-  background: var(--accent-gradient);
-  color: #07080b;
+  background: var(--accent);
+  color: var(--accent-ink);
   border: none;
-  box-shadow: 0 6px 16px rgba(110, 231, 160, 0.22);
+  box-shadow: var(--shadow-accent);
+}
+
+.icon-btn.send:hover:not(:disabled) {
+  transform: scale(1.06) translateY(-1px);
 }
 
 .icon-btn.send:disabled {
@@ -978,8 +996,8 @@ select:focus-visible {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(6, 7, 10, 0.65);
-  backdrop-filter: blur(2px);
+  background: rgba(24, 21, 31, 0.45);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -989,7 +1007,7 @@ select:focus-visible {
 
 .modal {
   background: var(--panel);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   padding: 22px;
@@ -1029,7 +1047,7 @@ select:focus-visible {
 
 .setting-row.column input[type='range'] {
   width: 100%;
-  accent-color: var(--accent-2);
+  accent-color: var(--accent);
 }
 
 .setting-label {
@@ -1059,7 +1077,7 @@ select:focus-visible {
 .slider-track {
   position: absolute;
   inset: 0;
-  background: var(--panel-2);
+  background: var(--panel-3);
   border: 1px solid var(--border);
   border-radius: 999px;
   transition: 0.15s;
@@ -1072,35 +1090,35 @@ select:focus-visible {
   height: 18px;
   left: 2px;
   top: 2px;
-  background: var(--muted);
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(23, 21, 31, 0.3);
   border-radius: 50%;
   transition: 0.15s;
 }
 
 .switch input:checked + .slider-track {
-  background: var(--accent-dim);
-  border-color: var(--accent);
+  background: var(--accent-3);
+  border-color: var(--accent-3);
 }
 
 .switch input:checked + .slider-track::before {
   transform: translateX(18px);
-  background: var(--accent);
 }
 
 .gmail-btn {
   background: var(--panel-2);
   border: 1px solid var(--border);
-  color: var(--accent);
-  border-radius: var(--radius-sm);
+  color: var(--accent-2);
+  border-radius: 999px;
   padding: 7px 14px;
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 700;
   flex-shrink: 0;
   transition: border-color 0.15s ease;
 }
 
 .gmail-btn:hover:not(:disabled) {
-  border-color: var(--accent);
+  border-color: var(--accent-2);
 }
 
 .gmail-btn:disabled {
@@ -1202,9 +1220,9 @@ select:focus-visible {
 }
 
 .automation-webhook {
-  background: var(--panel-2);
+  background: var(--panel-3);
   border: 1px solid var(--border);
-  color: var(--accent);
+  color: var(--accent-2);
   border-radius: 6px;
   padding: 3px 8px;
   font-size: 11px;
@@ -1220,7 +1238,7 @@ select:focus-visible {
 }
 
 .automation-row-controls select {
-  background: var(--panel-2);
+  background: var(--panel);
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: 6px;
@@ -1243,7 +1261,7 @@ select:focus-visible {
 
 .automation-form input,
 .automation-form textarea {
-  background: var(--panel-2);
+  background: var(--panel);
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: var(--radius-sm);
@@ -1265,7 +1283,7 @@ select:focus-visible {
 }
 
 .automation-form-row select {
-  background: var(--panel-2);
+  background: var(--panel);
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: var(--radius-sm);
@@ -1274,16 +1292,23 @@ select:focus-visible {
 
 .automation-form-row button {
   flex: 1;
-  background: var(--accent-gradient);
-  color: #07080b;
+  background: var(--accent);
+  color: var(--accent-ink);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   font-weight: 700;
   font-size: 13px;
+  box-shadow: var(--shadow-accent);
+  transition: transform 0.15s ease;
+}
+
+.automation-form-row button:hover:not(:disabled) {
+  transform: translateY(-1px);
 }
 
 .automation-form-row button:disabled {
   opacity: 0.5;
+  box-shadow: none;
 }
 
 .automation-log {
@@ -1339,7 +1364,7 @@ select:focus-visible {
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(24, 21, 31, 0.4);
     z-index: 25;
   }
 
