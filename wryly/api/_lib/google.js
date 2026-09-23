@@ -26,6 +26,7 @@ export async function refreshAccessToken(refreshToken) {
       refresh_token: refreshToken,
       grant_type: 'refresh_token',
     }),
+    signal: AbortSignal.timeout(10000),
   })
   if (!res.ok) {
     const text = await res.text().catch(() => '')

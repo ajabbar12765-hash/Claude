@@ -76,7 +76,8 @@ export default async function handler(req) {
   const agent = agentId ? AGENTS_BY_ID[agentId] : null
   if (agent) system += `\n\n${agent.systemPrompt}`
   system +=
-    '\n\nYou have access to real external tools through a connected Zapier account, which can search or act in the user\'s connected apps. Use them when they genuinely help. Every tool call you make is shown to the user for approval before it runs, so just call the tool when it\'s the right move — you don\'t need to ask permission in words first.'
+    '\n\nYou have access to real external tools through a connected Zapier account, which can search or act in the user\'s connected apps. Use them when they genuinely help. Every tool call you make is shown to the user for approval before it runs, so just call the tool when it\'s the right move — you don\'t need to ask permission in words first.' +
+    '\n\nImportant limit: this is a single live turn — you cannot set up anything ongoing or recurring. If the user describes a standing rule ("whenever X emails me...", "every time Y happens...", "automatically do Z when..."), do NOT attempt it as a tool call — there is no tool that creates a recurring watch, and trying will just fail or hang. Instead, tell them plainly that this needs to be set up as an Automation (the 🤖 Automations panel in the sidebar), which is built specifically for standing rules triggered by an external event.'
 
   const workingMessages = messages.map((m) => ({ role: m.role, content: m.content }))
 

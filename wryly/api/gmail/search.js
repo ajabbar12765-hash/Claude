@@ -38,7 +38,7 @@ export default async function handler(req) {
         q,
         maxResults: String(limit),
       })}`,
-      { headers: authHeaders }
+      { headers: authHeaders, signal: AbortSignal.timeout(10000) }
     )
     if (!listRes.ok) throw new Error(`Gmail list failed (${listRes.status})`)
     const list = await listRes.json()
@@ -52,7 +52,7 @@ export default async function handler(req) {
         params.append('metadataHeaders', 'Date')
         const res = await fetch(
           `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?${params.toString()}`,
-          { headers: authHeaders }
+          { headers: authHeaders, signal: AbortSignal.timeout(10000) }
         )
         if (!res.ok) return null
         const msg = await res.json()

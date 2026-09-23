@@ -58,6 +58,7 @@ export default async function handler(req) {
         'user-agent': 'Mozilla/5.0 (compatible; WrylyBot/1.0)',
       },
       body: new URLSearchParams({ q }).toString(),
+      signal: AbortSignal.timeout(10000),
     })
 
     if (!upstream.ok) {

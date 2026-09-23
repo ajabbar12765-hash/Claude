@@ -20,6 +20,7 @@ export default async function handler(req) {
         method: 'POST',
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ token: refreshToken }),
+        signal: AbortSignal.timeout(10000),
       })
     } catch {
       // best-effort — clearing the local cookie is what actually matters

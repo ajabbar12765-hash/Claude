@@ -42,6 +42,7 @@ export default async function handler(req) {
         grant_type: 'authorization_code',
         redirect_uri: redirectUri(req),
       }),
+      signal: AbortSignal.timeout(10000),
     })
 
     if (!res.ok) throw new Error(`token exchange failed (${res.status})`)

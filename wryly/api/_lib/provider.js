@@ -6,6 +6,19 @@ export const DEFAULT_ANTHROPIC_MODEL = 'claude-haiku-4-5-20251001'
 export const DEFAULT_OPENAI_BASE_URL = 'https://openrouter.ai/api/v1'
 export const DEFAULT_OPENAI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free'
 
+// Without a timeout, a slow/unresponsive provider hangs the request until
+// Vercel force-kills the function — bypassing our own error handling and
+// showing the user a raw platform error instead of a normal "⚠️ ..."
+// message. Streaming calls get longer since a real response takes time to
+// fully arrive; the non-streaming tool-call completion is capped tighter
+// since it has no partial output to show while it's running.
+const STREAM_TIMEOUT_MS = 45000
+const COMPLETION_TIMEOUT_MS = 25000
+
+function timeoutSignal(ms) {
+  return AbortSignal.timeout(ms)
+}
+
 export function resolveProvider() {
   const anthropicKey = process.env.ANTHROPIC_API_KEY
   const openaiKey = process.env.OPENAI_API_KEY
@@ -55,21 +68,30 @@ export async function* sseEvents(body) {
 }
 
 export async function streamAnthropic({ apiKey, model, system, messages }) {
-  const upstream = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 2048,
-      system,
-      stream: true,
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
-    }),
-  })
+  let upstream
+  try {
+    upstream = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 2048,
+        system,
+        stream: true,
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      }),
+      signal: timeoutSignal(STREAM_TIMEOUT_MS),
+    })
+  } catch (err) {
+    if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+      throw new Error(`Anthropic didn't respond within ${STREAM_TIMEOUT_MS / 1000}s.`)
+    }
+    throw err
+  }
 
   if (!upstream.ok || !upstream.body) {
     const text = await upstream.text().catch(() => '')
@@ -94,20 +116,29 @@ export async function streamAnthropic({ apiKey, model, system, messages }) {
 }
 
 export async function streamOpenAICompat({ apiKey, baseUrl, model, system, messages }) {
-  const upstream = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      authorization: `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://wryly.app',
-      'X-Title': 'Wryly',
-    },
-    body: JSON.stringify({
-      model,
-      stream: true,
-      messages: [{ role: 'system', content: system }, ...messages.map((m) => ({ role: m.role, content: m.content }))],
-    }),
-  })
+  let upstream
+  try {
+    upstream = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${apiKey}`,
+        'HTTP-Referer': 'https://wryly.app',
+        'X-Title': 'Wryly',
+      },
+      body: JSON.stringify({
+        model,
+        stream: true,
+        messages: [{ role: 'system', content: system }, ...messages.map((m) => ({ role: m.role, content: m.content }))],
+      }),
+      signal: timeoutSignal(STREAM_TIMEOUT_MS),
+    })
+  } catch (err) {
+    if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+      throw new Error(`Provider didn't respond within ${STREAM_TIMEOUT_MS / 1000}s.`)
+    }
+    throw err
+  }
 
   if (!upstream.ok || !upstream.body) {
     const text = await upstream.text().catch(() => '')
@@ -137,20 +168,29 @@ export async function streamOpenAICompat({ apiKey, baseUrl, model, system, messa
 // OpenRouter, Groq, ...); the MCP agent endpoint isn't offered when only
 // ANTHROPIC_API_KEY is configured.
 export async function callOpenAICompatWithTools({ apiKey, baseUrl, model, system, messages, tools }) {
-  const res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      authorization: `Bearer ${apiKey}`,
-      'HTTP-Referer': 'https://wryly.app',
-      'X-Title': 'Wryly',
-    },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: 'system', content: system }, ...messages],
-      tools: tools && tools.length > 0 ? tools : undefined,
-    }),
-  })
+  let res
+  try {
+    res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${apiKey}`,
+        'HTTP-Referer': 'https://wryly.app',
+        'X-Title': 'Wryly',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'system', content: system }, ...messages],
+        tools: tools && tools.length > 0 ? tools : undefined,
+      }),
+      signal: timeoutSignal(COMPLETION_TIMEOUT_MS),
+    })
+  } catch (err) {
+    if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+      throw new Error(`Provider didn't respond within ${COMPLETION_TIMEOUT_MS / 1000}s.`)
+    }
+    throw err
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => '')

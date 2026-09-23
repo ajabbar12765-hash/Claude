@@ -12,6 +12,30 @@ export function isConfigured() {
   return Boolean(process.env.MCP_SERVER_URL)
 }
 
+// Every MCP call is a real network round-trip to a third-party server we
+// don't control. Without a timeout, a slow/unresponsive server hangs the
+// whole request until Vercel force-kills the function — which bypasses our
+// own error handling entirely and shows the user a raw platform error
+// instead of a normal "⚠️ ..." message. This turns that into a catchable
+// error well before the platform limit.
+const MCP_TIMEOUT_MS = 20000
+
+async function mcpFetch(body) {
+  try {
+    return await fetch(process.env.MCP_SERVER_URL, {
+      method: 'POST',
+      headers: body.headers,
+      body: body.body,
+      signal: AbortSignal.timeout(MCP_TIMEOUT_MS),
+    })
+  } catch (err) {
+    if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+      throw new Error(`MCP server didn't respond within ${MCP_TIMEOUT_MS / 1000}s.`)
+    }
+    throw err
+  }
+}
+
 function authHeaders() {
   const headers = { 'content-type': 'application/json', accept: 'application/json, text/event-stream' }
   if (process.env.MCP_SERVER_TOKEN) {
@@ -54,8 +78,7 @@ async function rpcCall(sessionId, method, params) {
   const headers = authHeaders()
   if (sessionId) headers['mcp-session-id'] = sessionId
 
-  const res = await fetch(process.env.MCP_SERVER_URL, {
-    method: 'POST',
+  const res = await mcpFetch({
     headers,
     body: JSON.stringify({ jsonrpc: '2.0', id, method, params }),
   })
@@ -77,8 +100,7 @@ async function rpcCall(sessionId, method, params) {
 async function rpcNotify(sessionId, method, params) {
   const headers = authHeaders()
   if (sessionId) headers['mcp-session-id'] = sessionId
-  await fetch(process.env.MCP_SERVER_URL, {
-    method: 'POST',
+  await mcpFetch({
     headers,
     body: JSON.stringify({ jsonrpc: '2.0', method, params }),
   }).catch(() => {
