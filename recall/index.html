@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recall — Write the quiz. Then learn the answers.</title>
+<meta name="description" content="Paste your syllabus and the names of your textbooks. Recall teaches every topic, writes practice exams, marks them, and drills you on what you keep getting wrong.">
+<meta name="theme-color" content="#f3f2f2">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="brand" href="./"><span class="mark" aria-hidden="true"></span>Recall</a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#inside">Inside a lesson</a>
+      <a href="#sample">Sample quiz</a>
+      <a href="#why">Why it works</a>
+      <a class="btn btn-ink btn-sm" href="app.html">Open the app <span aria-hidden="true">→</span></a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <h1>Write the quiz. Then learn the answers.</h1>
+    <hr class="hr rule">
+    <p class="lede">Paste your syllabus and the names of your textbooks. Recall teaches every topic, writes practice exams that match your course, marks them, and keeps testing you until the weak ones stop being weak.</p>
+    <div class="btn-row hero-cta">
+      <a class="btn btn-primary" href="app.html#/new">Paste your syllabus <span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn-secondary" href="app.html#/c/demo">Try the sample course</a>
+    </div>
+
+    <div class="showcase">
+      <figure>
+        <img class="grayscale" src="assets/hero.jpg" alt="A concrete modernist house with cantilevered terraces among bare trees, in black and white" width="725" height="665">
+      </figure>
+      <div class="sample" id="sample-q" aria-live="polite">
+        <!-- filled by landing.js -->
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap" id="how">
+    <h2 class="section-title section-head">Three steps</h2>
+    <ol class="steps">
+      <li><span class="num">01</span><h3>Paste the syllabus</h3><p>Drop in your syllabus — text or PDF — and the books you're using. Recall maps every unit and topic, weighted by what gets examined.</p></li>
+      <li><span class="num">02</span><h3>Learn it properly</h3><p>Each topic becomes a clear lesson with worked examples, common traps and quick checks. Too hard? Ask for it simpler. Bored? Go deeper.</p></li>
+      <li><span class="num">03</span><h3>Get tested</h3><p>Practice exams mark you, explain every miss, and aim the next exam at the topics you're struggling with. Mistakes turn into flashcards automatically.</p></li>
+    </ol>
+  </section>
+
+  <section id="inside" aria-label="Inside a lesson: scroll to open the study guide">
+    <div class="book-track" id="book-track">
+      <div class="book-stage">
+        <div class="book-bar"><span>Study Guide / Unit 04</span><span id="book-step">01 — Cover</span></div>
+        <div class="book-hint" id="book-hint">Scroll to open ↓</div>
+        <div class="book-progress" id="book-progress"></div>
+
+        <div class="book" id="book">
+          <div class="book-shadow" id="book-shadow"></div>
+          <div class="board board-l" id="board-l"></div>
+          <div class="board board-r"></div>
+
+          <div class="page book-quiz" id="quiz-page" style="padding:36px 36px 28px 40px;border-left:2px solid var(--color-divider);pointer-events:none">
+            <!-- filled by landing.js -->
+          </div>
+
+          <div class="leaf" id="leaf2">
+            <div class="face" style="padding:36px 36px 28px 40px;border-left:2px solid var(--color-divider)">
+              <div class="pg-head"><span>Contents</span></div>
+              <div style="display:flex;flex-direction:column;margin-top:8px">
+                <div style="display:grid;grid-template-columns:44px 1fr auto;padding:16px 0;border-bottom:2px solid var(--color-divider);font-family:var(--font-heading);font-size:18px;font-weight:700"><span style="color:var(--color-accent)">01</span><span>Learn the material</span><span>p.2</span></div>
+                <div style="display:grid;grid-template-columns:44px 1fr auto;padding:16px 0;border-bottom:2px solid var(--color-divider);font-family:var(--font-heading);font-size:18px;font-weight:700"><span style="color:var(--color-accent)">02</span><span>Practice test</span><span>p.3</span></div>
+                <div style="display:grid;grid-template-columns:44px 1fr auto;padding:16px 0;border-bottom:2px solid var(--color-divider);font-family:var(--font-heading);font-size:18px;font-weight:700"><span style="color:var(--color-accent)">03</span><span>Fix the weak spots</span><span>p.4</span></div>
+              </div>
+              <div style="margin-top:auto;font-size:14px;line-height:1.5">Read the left page, then answer four questions on the right. Feedback shows after every answer — this is how every Recall lesson works.</div>
+            </div>
+            <div class="face back" style="padding:36px 40px 28px 36px;border-right:2px solid var(--color-divider);gap:12px">
+              <div class="pg-head"><span style="color:var(--color-accent-700)">Learning Material</span><span>02</span></div>
+              <div style="font-family:var(--font-heading);font-size:30px;font-weight:800;line-height:1;margin-top:4px">Photosynthesis</div>
+              <div style="font-size:14px;line-height:1.5">Plants convert light energy into chemical energy stored in glucose. It happens inside chloroplasts, in two linked stages.</div>
+              <div style="font-family:var(--font-heading);font-size:15px;font-weight:700;padding:10px 0;border-top:2px solid var(--color-divider);border-bottom:2px solid var(--color-divider);color:var(--color-accent-700)">6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--color-divider);font-size:13px;line-height:1.4">
+                <div style="padding:10px;border-right:2px solid var(--color-divider)"><b style="font-family:var(--font-heading)">Light reactions</b><br>In the thylakoids. Light splits water, releasing O₂ and making ATP and NADPH.</div>
+                <div style="padding:10px"><b style="font-family:var(--font-heading)">Calvin cycle</b><br>In the stroma. ATP and NADPH power CO₂ fixation into glucose.</div>
+              </div>
+              <div style="margin-top:auto;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700">Key term — Chlorophyll absorbs red and blue light.</div>
+            </div>
+          </div>
+
+          <div class="leaf" id="leaf1">
+            <div class="face" style="inset:-8px -8px -8px 0;background:var(--color-accent);color:#fff;padding:44px 40px;justify-content:space-between;border-left:6px solid var(--color-accent-700)">
+              <div style="font-family:var(--font-heading);font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-bottom:2px solid #fff;padding-bottom:12px;display:flex;justify-content:space-between"><span>Biology</span><span>Unit 04</span></div>
+              <div style="font-family:var(--font-heading);font-size:68px;font-weight:800;line-height:.92;letter-spacing:-.02em">Study<br>Guide</div>
+              <div style="font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border-top:2px solid #fff;padding-top:12px">Learn · Practice · Test</div>
+            </div>
+            <div class="face back" style="padding:40px;border-right:2px solid var(--color-divider);justify-content:flex-end">
+              <div style="font-family:var(--font-heading);font-size:160px;font-weight:800;line-height:.8;color:var(--color-accent)">04</div>
+              <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-top:2px solid var(--color-divider);margin-top:20px;padding-top:12px">Cell energy</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap" id="sample">
+    <p class="kicker">Sample quiz</p>
+    <h2 class="section-title">Cell biology — Year 10</h2>
+    <ol class="quizlist">
+      <li><span class="num">01</span><div><h4>Which organelle makes most of a cell’s ATP?</h4><div class="opts">A Ribosome · <b>B Mitochondrion</b> · C Golgi apparatus · D Lysosome</div></div></li>
+      <li><span class="num">02</span><div><h4>What is the function of the cell membrane?</h4><div class="opts">A Store DNA · B Make proteins · <b>C Control what enters and leaves</b> · D Digest waste</div></div></li>
+      <li><span class="num">03</span><div><h4>Where does photosynthesis occur?</h4><div class="opts">A Nucleus · <b>B Chloroplast</b> · C Vacuole · D Cytoplasm</div></div></li>
+      <li><span class="num">04</span><div><h4>Which structure contains the genetic material?</h4><div class="opts"><b>A Nucleus</b> · B Ribosome · C Cell wall · D Vacuole</div></div></li>
+    </ol>
+    <div class="btn-row" style="margin-top:24px">
+      <a class="btn btn-ink" href="app.html#/c/demo">Take the full sample exam <span class="arrow" aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <section class="section wrap" id="why" style="padding-top:0">
+    <h2 class="section-title">Study less, remember more.</h2>
+    <div class="grid2">
+      <div class="cell"><span class="mark"></span><h3>Retrieval beats rereading</h3><p>Trying to recall an answer strengthens memory more than reading it again.</p></div>
+      <div class="cell"><span class="mark"></span><h3>Spacing</h3><p>Short sessions across several days outlast one long night. Flashcards come back right before you'd forget them.</p></div>
+      <div class="cell"><span class="mark"></span><h3>Wrong answers are data</h3><p>Every miss is shown with the correct option and why, so you see exactly what to fix.</p></div>
+      <div class="cell"><span class="mark"></span><h3>It caters to you</h3><p>Recall tracks mastery topic by topic and aims lessons, exams and drills at what you're struggling with.</p></div>
+    </div>
+  </section>
+
+  <section class="section wrap" style="padding-top:0" aria-labelledby="everything">
+    <h2 class="section-title" id="everything">Everything in one desk.</h2>
+    <div class="grid3">
+      <div class="cell"><span class="mark"></span><h3>Course map</h3><p>Every unit and topic from your syllabus, colour-coded by how well you know it.</p></div>
+      <div class="cell"><span class="mark"></span><h3>Lessons on demand</h3><p>Explained, worked examples, common mistakes, key terms — simpler or deeper in one click.</p></div>
+      <div class="cell"><span class="mark"></span><h3>Practice exams</h3><p>Multiple choice, true/false and written answers. Timed or untimed. Written answers are marked against a rubric.</p></div>
+      <div class="cell"><span class="mark"></span><h3>Double-checked keys</h3><p>A second, independent pass re-solves every question before you see it. Disagree with a mark? Dispute it.</p></div>
+      <div class="cell"><span class="mark"></span><h3>Tutor chat</h3><p>Ask anything about the course. It knows your syllabus, your books and your weak spots.</p></div>
+      <div class="cell"><span class="mark"></span><h3>Study plan</h3><p>Set your exam date and get a day-by-day plan that puts the hardest topics first.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-bottom:var(--space-8)">
+    <div class="banner">
+      <h2>Test tomorrow?<br>Start tonight.</h2>
+      <a class="btn btn-white" href="app.html#/new">Paste your syllabus <span class="arrow" aria-hidden="true">→</span></a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap footer">
+  <span><span class="mark" style="width:10px;height:10px;margin-right:8px"></span>Recall — a study desk for students.</span>
+  <span>Your courses are saved in this browser. Lessons and exams are written by Claude.</span>
+</footer>
+
+<script src="landing.js"></script>
+</body>
+</html>

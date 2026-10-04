@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recall — Study desk</title>
+<meta name="description" content="Your Recall study desk: course map, lessons, practice exams, flashcards, tutor and study plan.">
+<meta name="theme-color" content="#f3f2f2">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
+<link rel="stylesheet" href="styles.css">
+<script defer src="vendor/marked.min.js"></script>
+<script defer src="vendor/purify.min.js"></script>
+<script defer src="vendor/katex/katex.min.js"></script>
+<script defer src="vendor/katex/contrib/auto-render.min.js"></script>
+</head>
+<body>
+<header class="app-header">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="#/"><span class="mark" aria-hidden="true"></span>Recall</a>
+      <span class="crumb" id="crumb"></span>
+      <div class="header-tools">
+        <button class="btn btn-secondary btn-sm timer" id="timer" title="Focus timer (Pomodoro)" aria-live="off"></button>
+        <a class="btn btn-ghost btn-sm hide-sm" href="./">About</a>
+        <a class="btn btn-ghost btn-sm" href="#/settings" aria-label="Settings">Settings</a>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="Course" hidden></nav>
+  </div>
+</header>
+<main class="view wrap" id="view" tabindex="-1"></main>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
