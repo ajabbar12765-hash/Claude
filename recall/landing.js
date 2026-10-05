@@ -71,7 +71,8 @@
   // ── The book ──────────────────────────────────────────────────────
   // Reaching the book snaps it into view and plays the whole opening by itself
   // (one swipe is plenty; extra swipes are absorbed while it plays). Once open,
-  // scrolling on carries the book away to the corner (C follows the scroll).
+  // the page is free: the next scroll moves straight on, the book scrolls away
+  // with it, and the little follower book (C) fades in to keep you company.
   // Scrolling back up past it closes the book so it can open again.
   const track = $('book-track');
   const els = { book: $('book'), leaf1: $('leaf1'), leaf2: $('leaf2'), boardL: $('board-l'), shadow: $('book-shadow'), bar: $('book-progress'), step: $('book-step'), quiz: $('quiz-page') };
@@ -80,7 +81,7 @@
   const ease = (t) => 0.5 - Math.cos(Math.PI * clamp(t)) / 2;
   const easeIO = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const OPEN_MS = 3000, SNAP_MS = 500, CARRY_START = 0.12;
+  const OPEN_MS = 2600, SNAP_MS = 500;
 
   let P = 0, C = 0, cTarget = 0, raf = 0, lastStep = '';
   let phase = 'closed';           // closed | playing | open
@@ -97,15 +98,10 @@
     const f = narrow ? Math.min(vw * 0.94 / W, (vh - 90) / H) : Math.min(vw * 0.97 / (W * 2), (vh - 70) / H);
     const s = b + (f - b) * z;
     const tx = -(W / 2) * s * (1 - f1) - (narrow ? (W / 2) * s * z : 0);
-    // Carry: shrink the open book and send it to the bottom-right corner,
-    // where the little follower book takes over.
-    const ce = ease(c);
-    const k = 1 - ce * (1 - Math.min(0.2, 90 / (W * 2 * s)));
-    const dx = ce * (vw / 2 - 52), dy = ce * (vh / 2 - 62);
-    els.book.style.transform = `translate(${dx}px, ${dy}px) scale(${k}) translateX(${tx}px) rotateX(${22 * (1 - z)}deg) rotateZ(${-4 * (1 - f1)}deg) scale(${s})`;
-    els.book.style.opacity = 1 - clamp((c - 0.55) / 0.4);
-    follower.classList.toggle('on', c > 0.6);
-    follower.style.opacity = c > 0.6 ? clamp((c - 0.7) / 0.3) : '';
+    els.book.style.transform = `translateX(${tx}px) rotateX(${22 * (1 - z)}deg) rotateZ(${-4 * (1 - f1)}deg) scale(${s})`;
+    // The follower book appears as the open book scrolls off the top.
+    follower.classList.toggle('on', c > 0.05);
+    follower.style.opacity = c > 0.05 ? c : '';
     // translateZ after the turn, so a turned leaf ends up beneath the next one.
     els.leaf1.style.transform = `rotateY(${-180 * f1}deg) translateZ(3px)`;
     els.leaf2.style.transform = `rotateY(${-180 * f2}deg) translateZ(2px)`;
@@ -114,7 +110,7 @@
     els.bar.style.width = p * 100 + '%';
     const step = p < 0.05 ? '01 — Cover' : p < 0.4 ? '02 — Contents' : p < 0.8 ? '03 — Learn' : '04 — Practice';
     if (step !== lastStep) { els.step.textContent = step; lastStep = step; }
-    els.quiz.style.pointerEvents = p > 0.95 && c < 0.05 ? 'auto' : 'none';
+    els.quiz.style.pointerEvents = p > 0.95 ? 'auto' : 'none';
   }
 
   function frame(now) {
@@ -163,14 +159,12 @@
   function onScroll() {
     const r = track.getBoundingClientRect();
     const vh = innerHeight;
-    const range = track.offsetHeight - vh;
-    const local = range > 0 ? clamp(-r.top / range) : 0;
-    cTarget = phase === 'open' ? clamp((local - CARRY_START) / (1 - CARRY_START)) : 0;
+    cTarget = phase === 'open' ? clamp((vh * 0.7 - r.bottom) / (vh * 0.4)) : 0;
     const down = scrollY >= lastY;
     lastY = scrollY;
 
     if (phase === 'closed' && !anim) {
-      if (r.top < -vh * 0.3) { P = 1; phase = 'open'; cTarget = clamp((local - CARRY_START) / (1 - CARRY_START)); }   // landed past it (reload, anchor)
+      if (r.top < -vh * 0.3) { P = 1; phase = 'open'; cTarget = clamp((vh * 0.7 - r.bottom) / (vh * 0.4)); }   // landed past it (reload, anchor)
       else if (r.top <= vh * 0.45 && down && r.bottom > vh * 0.5) play();
     } else if (phase === 'open' && r.top > vh * 0.7) close();
     wake();

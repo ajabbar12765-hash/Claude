@@ -208,7 +208,7 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .footer { padding: var(--space-8) 0 var(--space-12); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-4); font-size: 14px; color: var(--color-muted); }
 
 /* — scroll-driven book — */
-.book-track { position: relative; height: 190vh; border-top: var(--rule); border-bottom: var(--rule); }
+.book-track { position: relative; height: 100vh; height: 100svh; border-top: var(--rule); border-bottom: var(--rule); }
 .book-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; perspective: 2400px; perspective-origin: 50% 40%; display: flex; align-items: center; justify-content: center; background: var(--color-bg); }
 .book-bar { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px clamp(16px, 3vw, 32px); border-bottom: var(--rule); font-family: var(--font-heading); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; z-index: 5; background: var(--color-bg); }
 .follow-book { position: fixed; right: clamp(12px, 2vw, 24px); bottom: clamp(12px, 2vw, 24px); z-index: 40; display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--color-text); opacity: 0; pointer-events: none; transition: opacity .25s; }
