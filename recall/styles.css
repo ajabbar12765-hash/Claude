@@ -208,7 +208,7 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .footer { padding: var(--space-8) 0 var(--space-12); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-4); font-size: 14px; color: var(--color-muted); }
 
 /* — scroll-driven book — */
-.book-track { position: relative; height: 300vh; border-top: var(--rule); border-bottom: var(--rule); }
+.book-track { position: relative; height: 190vh; border-top: var(--rule); border-bottom: var(--rule); }
 .book-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; perspective: 2400px; perspective-origin: 50% 40%; display: flex; align-items: center; justify-content: center; background: var(--color-bg); }
 .book-bar { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px clamp(16px, 3vw, 32px); border-bottom: var(--rule); font-family: var(--font-heading); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; z-index: 5; background: var(--color-bg); }
 .follow-book { position: fixed; right: clamp(12px, 2vw, 24px); bottom: clamp(12px, 2vw, 24px); z-index: 40; display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--color-text); opacity: 0; pointer-events: none; transition: opacity .25s; }
@@ -220,7 +220,6 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .follow-cover::before { content: ""; height: 2px; background: #fff; }
 .follow-cover::after { content: ""; height: 2px; background: #fff; }
 @keyframes bob { 50% { transform: translateY(-5px) rotate(-2deg); } }
-.book-hint { position: absolute; bottom: 28px; left: clamp(16px, 3vw, 32px); font-family: var(--font-heading); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; z-index: 5; }
 .book-progress { position: absolute; bottom: 0; left: 0; height: 6px; width: 0; background: var(--color-accent); z-index: 5; }
 .book { position: relative; width: 840px; height: 560px; flex: none; transform-style: preserve-3d; }
 .book-shadow { position: absolute; left: 420px; top: 40px; width: 420px; height: 560px; background: rgba(32,30,29,.28); filter: blur(36px); transform: translateZ(-30px); }

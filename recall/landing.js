@@ -68,19 +68,24 @@
       </div>`,
   });
 
-  // ── Scroll-driven book ────────────────────────────────────────────
-  // Progress comes from how far the sticky track has scrolled, eased toward
-  // its target every frame so the pages turn smoothly instead of jumping.
+  // ── The book ──────────────────────────────────────────────────────
+  // Reaching the book snaps it into view and plays the whole opening by itself
+  // (one swipe is plenty; extra swipes are absorbed while it plays). Once open,
+  // scrolling on carries the book away to the corner (C follows the scroll).
+  // Scrolling back up past it closes the book so it can open again.
   const track = $('book-track');
-  const els = { book: $('book'), leaf1: $('leaf1'), leaf2: $('leaf2'), boardL: $('board-l'), shadow: $('book-shadow'), hint: $('book-hint'), bar: $('book-progress'), step: $('book-step'), quiz: $('quiz-page') };
+  const els = { book: $('book'), leaf1: $('leaf1'), leaf2: $('leaf2'), boardL: $('board-l'), shadow: $('book-shadow'), bar: $('book-progress'), step: $('book-step'), quiz: $('quiz-page') };
+  const follower = $('follow-book');
   const clamp = (x) => Math.max(0, Math.min(1, x));
   const ease = (t) => 0.5 - Math.cos(Math.PI * clamp(t)) / 2;
+  const easeIO = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const follower = $('follow-book');
-  // Opening takes the first part of the track; the last part carries the book
-  // away to the corner (C), so the page never sits still on one screen.
-  const OPEN_END = 0.72, CARRY_START = 0.82;
-  let P = 0, C = 0, target = 0, cTarget = 0, raf = 0, lastStep = '';
+  const OPEN_MS = 3000, SNAP_MS = 500, CARRY_START = 0.12;
+
+  let P = 0, C = 0, cTarget = 0, raf = 0, lastStep = '';
+  let phase = 'closed';           // closed | playing | open
+  let anim = null, snap = null;   // time-driven tweens
+  let locked = false, lockY = 0, lastY = scrollY;
 
   function draw(p, c) {
     const f1 = ease(p / 0.5), f2 = ease((p - 0.25) / 0.5), z = ease((p - 0.5) / 0.5);
@@ -106,38 +111,84 @@
     els.leaf2.style.transform = `rotateY(${-180 * f2}deg) translateZ(2px)`;
     els.boardL.style.opacity = f1;
     els.shadow.style.opacity = 1 - z;
-    els.hint.style.opacity = 1 - clamp(p / 0.08);
     els.bar.style.width = p * 100 + '%';
     const step = p < 0.05 ? '01 — Cover' : p < 0.4 ? '02 — Contents' : p < 0.8 ? '03 — Learn' : '04 — Practice';
     if (step !== lastStep) { els.step.textContent = step; lastStep = step; }
     els.quiz.style.pointerEvents = p > 0.95 && c < 0.05 ? 'auto' : 'none';
   }
 
-  function measure() {
-    const r = track.getBoundingClientRect();
-    const range = track.offsetHeight - innerHeight;
-    const local = range > 0 ? -r.top / range : 0;
-    target = clamp(local / OPEN_END);
-    cTarget = clamp((local - CARRY_START) / (1 - CARRY_START));
-  }
-
-  function loop() {
-    const d = target - P, dc = cTarget - C;
-    P = reduced || Math.abs(d) < 0.0005 ? target : P + d * 0.12;
+  function frame(now) {
+    raf = 0;
+    let busy = false;
+    if (snap) {
+      const u = clamp((now - snap.t0) / SNAP_MS);
+      window.scrollTo(0, snap.y0 + (snap.y1 - snap.y0) * ease(u));
+      if (u >= 1) snap = null; else busy = true;
+    } else if (locked) {
+      if (Math.abs(scrollY - lockY) > 1) window.scrollTo(0, lockY);
+      busy = true;
+    }
+    if (anim) {
+      const u = clamp((now - anim.t0) / anim.ms);
+      P = anim.from + (anim.to - anim.from) * easeIO(u);
+      if (u >= 1) { P = anim.to; const done = anim.done; anim = null; done?.(); } else busy = true;
+    }
+    const dc = cTarget - C;
     C = reduced || Math.abs(dc) < 0.0005 ? cTarget : C + dc * 0.18;
+    if (C !== cTarget) busy = true;
     draw(P, C);
-    raf = P !== target || C !== cTarget ? requestAnimationFrame(loop) : 0;
+    if (busy) raf = requestAnimationFrame(frame);
   }
-  const kick = () => { measure(); if (!raf) raf = requestAnimationFrame(loop); };
+  const wake = () => { if (!raf) raf = requestAnimationFrame(frame); };
 
-  addEventListener('scroll', kick, { passive: true });
-  addEventListener('resize', () => { measure(); draw(P, C); });
+  const trackTop = () => track.getBoundingClientRect().top + scrollY;
+
+  function play() {
+    if (reduced) { P = 1; phase = 'open'; wake(); return; }
+    phase = 'playing';
+    locked = true;
+    lockY = trackTop();
+    snap = { y0: scrollY, y1: lockY, t0: performance.now() };
+    anim = { from: P, to: 1, ms: OPEN_MS * (1 - P) + 400, t0: performance.now(), done: () => { phase = 'open'; locked = false; } };
+    wake();
+  }
+
+  function close() {
+    phase = 'closed';
+    locked = false; snap = null;
+    anim = { from: P, to: 0, ms: 900 * Math.max(P, 0.2), t0: performance.now() };
+    wake();
+  }
+
+  function onScroll() {
+    const r = track.getBoundingClientRect();
+    const vh = innerHeight;
+    const range = track.offsetHeight - vh;
+    const local = range > 0 ? clamp(-r.top / range) : 0;
+    cTarget = phase === 'open' ? clamp((local - CARRY_START) / (1 - CARRY_START)) : 0;
+    const down = scrollY >= lastY;
+    lastY = scrollY;
+
+    if (phase === 'closed' && !anim) {
+      if (r.top < -vh * 0.3) { P = 1; phase = 'open'; cTarget = clamp((local - CARRY_START) / (1 - CARRY_START)); }   // landed past it (reload, anchor)
+      else if (r.top <= vh * 0.45 && down && r.bottom > vh * 0.5) play();
+    } else if (phase === 'open' && r.top > vh * 0.7) close();
+    wake();
+  }
+
+  // While the book plays, absorb swipes, wheel and keys so nothing scrolls past it.
+  const stop = (e) => { if (locked) e.preventDefault(); };
+  addEventListener('wheel', stop, { passive: false });
+  addEventListener('touchmove', stop, { passive: false });
+  addEventListener('keydown', (e) => { if (locked && [' ', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'End', 'Home'].includes(e.key)) e.preventDefault(); });
+
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', () => { draw(P, C); onScroll(); });
   // Hide the follower while the closing banner (which has its own button) is on screen.
   const banner = document.querySelector('.banner');
   if (banner && 'IntersectionObserver' in window) {
     new IntersectionObserver(([e]) => follower.classList.toggle('off', e.isIntersecting), { threshold: 0.2 }).observe(banner);
   }
-  measure();
-  P = target; C = cTarget;
   draw(P, C);
+  onScroll();
 })();
