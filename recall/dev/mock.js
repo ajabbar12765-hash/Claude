@@ -1,4 +1,4 @@
-// Canned Claude answers for local UI testing: `MOCK=1 node dev-server.mjs`.
+// Canned AI answers for local UI testing: `MOCK=1 node dev-server.mjs`.
 // Never deployed (see .vercelignore).
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

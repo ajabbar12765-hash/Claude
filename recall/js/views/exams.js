@@ -321,7 +321,7 @@ function takeView(ctx, exam) {
 function selfMarkDialog(q, answer) {
   return dialog({
     title: 'Mark this one yourself',
-    body: `<p class="hint">Claude isn’t available to mark written answers right now, so compare your answer with the model answer.</p>
+    body: `<p class="hint">The AI isn’t available to mark written answers right now, so compare your answer with the model answer.</p>
       <div class="answer-line"><span class="k">Question</span><span>${mdInline(q.prompt)}</span></div>
       <div class="answer-line"><span class="k">Your answer</span><span>${esc(answer)}</span></div>
       <div class="answer-line"><span class="k">Model answer</span><span>${mdInline(q.modelAnswer)}</span></div>
@@ -445,7 +445,7 @@ async function dispute(ctx, exam, qid) {
   const q = exam.questions.find((x) => x.id === qid);
   const res = await dialog({
     title: 'Re-check this question',
-    body: `<p class="hint">Claude re-solves the question from scratch and looks at your answer again. If the key or the marking was wrong, your score is fixed.</p>
+    body: `<p class="hint">The AI re-solves the question from scratch and looks at your answer again. If the key or the marking was wrong, your score is fixed.</p>
       <div class="field"><label for="arg">Why do you think you were right? (optional)</label><textarea class="input" id="arg" name="arg" placeholder="e.g. My textbook defines it as…"></textarea></div>`,
     actions: [{ label: 'Re-check', cls: 'btn-primary', value: true }, { label: 'Cancel', value: false }],
   });

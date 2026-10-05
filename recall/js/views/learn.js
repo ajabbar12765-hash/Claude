@@ -131,7 +131,7 @@ export function learnView(ctx, topicId) {
       btn.disabled = false; btn.textContent = 'Quick check · 5 questions';
       const fromBank = bankExam(course, cfg, plan);
       if (fromBank.length) {
-        toast('Claude isn’t available — using saved questions for this topic.');
+        toast('The AI isn’t available — using saved questions for this topic.');
         const exam = createExam(course, cfg, fromBank, `${cfg.title} (from bank)`);
         go(`#/c/${course.id}/exam/${exam.id}`);
       } else {

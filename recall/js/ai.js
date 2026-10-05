@@ -1,4 +1,4 @@
-// Talks to /api/claude, which streams newline-delimited JSON events back.
+// Talks to /api/ai, which streams newline-delimited JSON events back.
 import { state } from './store.js';
 
 export class AIError extends Error {
@@ -11,7 +11,7 @@ export async function run(task, input, { onStatus, onDelta, onProgress, onReset,
 
   let res;
   try {
-    res = await fetch('api/claude', { method: 'POST', headers, body: JSON.stringify({ task, input }), signal });
+    res = await fetch('api/ai', { method: 'POST', headers, body: JSON.stringify({ task, input }), signal });
   } catch (err) {
     if (err.name === 'AbortError') throw err;
     throw new AIError('network', 'Could not reach the Recall server. Check your connection and try again.');
@@ -55,7 +55,7 @@ export async function run(task, input, { onStatus, onDelta, onProgress, onReset,
     }
   }
   handle(buf);
-  if (!done && result === undefined) throw new AIError('cut_off', 'The connection closed before Claude finished. Please try again.');
+  if (!done && result === undefined) throw new AIError('cut_off', 'The connection closed before the AI finished. Please try again.');
   return result !== undefined ? result : text;
 }
 

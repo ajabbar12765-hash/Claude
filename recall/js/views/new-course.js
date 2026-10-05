@@ -177,7 +177,7 @@ export function newCourseView({ view, onLeave, go }) {
   const generate = async () => {
     ctrl = new AbortController();
     view.innerHTML = `<div class="page-head"><div><p class="kicker">New course</p><h1 class="page-title">${esc(draft.title || 'Building your course')}</h1></div></div>
-      ${working('Reading your syllabus', 'Claude is mapping every unit and topic. This usually takes 20–60 seconds.')}
+      ${working('Reading your syllabus', 'The AI is mapping every unit and topic. This usually takes 20–60 seconds.')}
       <div class="btn-row" style="margin-top:16px"><button class="btn btn-secondary" id="cancel">Cancel</button></div>`;
     $('#cancel').onclick = () => { ctrl.abort(); form(); };
     const w = $('#work');

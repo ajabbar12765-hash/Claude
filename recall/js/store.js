@@ -91,7 +91,7 @@ export function allTopics(course) {
 }
 export const findTopic = (course, tid) => allTopics(course).find((t) => t.id === tid);
 
-// Text outline sent to Claude so every answer stays inside the syllabus.
+// Text outline sent to the AI so every answer stays inside the syllabus.
 export function outline(course) {
   return course.units.map((u, i) => `Unit ${i + 1}: ${u.title}\n${u.topics.map((t) => `  - ${t.title}`).join('\n')}`).join('\n');
 }

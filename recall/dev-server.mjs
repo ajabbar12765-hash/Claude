@@ -1,10 +1,10 @@
-// Local dev server: static files + /api/claude. Set ANTHROPIC_API_KEY to use
-// Claude, or MOCK=1 for canned answers. Not used on Vercel.
+// Local dev server: static files + /api/ai. Set GEMINI_API_KEY (or ANTHROPIC_API_KEY)
+// to use a real model, or MOCK=1 for canned answers. Not used on Vercel.
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import handler from './api/claude.js';
+import handler from './api/ai.js';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const PORT = +process.env.PORT || 3000;
@@ -12,7 +12,7 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
-  if (url.pathname === '/api/claude') {
+  if (url.pathname === '/api/ai') {
     if (process.env.MOCK) {
       let raw = '';
       for await (const c of req) raw += c;

@@ -47,7 +47,7 @@ export function planExam(course, cfg) {
     .map((t) => ({ topicId: t.id, title: t.title, unit: t.unit, objectives: t.objectives || [], count: counts.get(t.id), difficulty: diffFor(t) }));
 }
 
-// ── Writing with Claude: parallel chunks, then an independent check ──
+// ── Writing with the AI: parallel chunks, then an independent check ──
 function chunkPlan(plan, size = 8) {
   const chunks = [];
   let cur = [], n = 0;
@@ -210,7 +210,7 @@ export function localResult(q, a) {
   return { score: ok ? 1 : 0, verdict: ok ? 'correct' : 'incorrect', feedback: '', missing: [] };
 }
 
-// Marks written answers with Claude. Returns ids it could not mark.
+// Marks written answers with the AI. Returns ids it could not mark.
 export async function markShort(course, exam, qs, { signal } = {}) {
   const items = qs.map((q) => ({ id: q.id, question: q.prompt, modelAnswer: q.modelAnswer, rubric: q.rubric, answer: exam.answers[q.id]?.text || '' }));
   const groups = [];

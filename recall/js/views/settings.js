@@ -11,11 +11,11 @@ export function settingsView({ view }) {
     <div class="cols">
       <div class="stack-lg">
         <section class="panel panel-pad stack">
-          <h2 style="font-size:22px;margin:0">Claude</h2>
-          <p style="margin:0">Lessons, exams, marking and the tutor are written by Claude. If whoever deployed Recall set up a server key, you don’t need to do anything. Otherwise, paste your own key from the <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">Claude Console</a>.</p>
+          <h2 style="font-size:22px;margin:0">AI key</h2>
+          <p style="margin:0">Lessons, exams, marking and the tutor are written by AI (Gemini or Claude). If whoever deployed Recall set up a server key, you don’t need to do anything. Otherwise, paste your own key from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> (Gemini) or the <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">Claude Console</a>.</p>
           <div class="field"><label for="key">Your API key (optional)</label>
-            <input class="input" id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…" value="${esc(s.apiKey)}">
-            <span class="hint">Stored only in this browser and sent only to this site’s server, which passes it to Claude for your requests.</span></div>
+            <input class="input" id="key" type="password" autocomplete="off" spellcheck="false" placeholder="AIza… (Gemini) or sk-ant-… (Claude)" value="${esc(s.apiKey)}">
+            <span class="hint">Stored only in this browser and sent only to this site’s server, which passes it to the AI provider for your requests.</span></div>
           <div class="btn-row"><button class="btn btn-primary" id="save-key">Save key</button><button class="btn btn-secondary" id="test">Test connection</button><span id="test-out" class="hint"></span></div>
           <label class="check"><input type="checkbox" id="verify" ${s.verify ? 'checked' : ''}>Double-check every exam’s answer key with an independent second pass (slower, more accurate)</label>
           <label class="check"><input type="checkbox" id="autocards" ${s.autoCards ? 'checked' : ''}>Turn exam mistakes into flashcards automatically</label>
@@ -53,7 +53,7 @@ export function settingsView({ view }) {
 
   $('#save-key').onclick = () => {
     const k = $('#key').value.trim();
-    if (k && !k.startsWith('sk-')) { toast('That doesn’t look like an API key — they start with “sk-”.'); return; }
+    if (k && !/^(AIza|sk-)/.test(k)) { toast('That doesn’t look like an API key — Gemini keys start with “AIza”, Claude keys with “sk-”.'); return; }
     s.apiKey = k;
     save(true);
     toast(k ? 'Key saved in this browser.' : 'Key removed.');
@@ -65,7 +65,7 @@ export function settingsView({ view }) {
     out.textContent = 'Testing…';
     try {
       await run('tutor', { course: { title: 'Connection test' }, history: [{ role: 'user', content: 'Reply with just the word OK.' }] });
-      out.textContent = 'Connected ✓ — Claude is ready.';
+      out.textContent = 'Connected ✓ — the AI is ready.';
     } catch (err) {
       out.textContent = explainError(err)?.msg || 'Failed.';
     }
