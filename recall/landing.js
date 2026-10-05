@@ -76,9 +76,13 @@
   const clamp = (x) => Math.max(0, Math.min(1, x));
   const ease = (t) => 0.5 - Math.cos(Math.PI * clamp(t)) / 2;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let P = 0, target = 0, raf = 0, lastStep = '';
+  const follower = $('follow-book');
+  // Opening takes the first part of the track; the last part carries the book
+  // away to the corner (C), so the page never sits still on one screen.
+  const OPEN_END = 0.72, CARRY_START = 0.82;
+  let P = 0, C = 0, target = 0, cTarget = 0, raf = 0, lastStep = '';
 
-  function draw(p) {
+  function draw(p, c) {
     const f1 = ease(p / 0.5), f2 = ease((p - 0.25) / 0.5), z = ease((p - 0.5) / 0.5);
     const W = 420, H = 560, vw = innerWidth, vh = innerHeight;
     const narrow = vw < 760;
@@ -88,7 +92,15 @@
     const f = narrow ? Math.min(vw * 0.94 / W, (vh - 90) / H) : Math.min(vw * 0.97 / (W * 2), (vh - 70) / H);
     const s = b + (f - b) * z;
     const tx = -(W / 2) * s * (1 - f1) - (narrow ? (W / 2) * s * z : 0);
-    els.book.style.transform = `translateX(${tx}px) rotateX(${22 * (1 - z)}deg) rotateZ(${-4 * (1 - f1)}deg) scale(${s})`;
+    // Carry: shrink the open book and send it to the bottom-right corner,
+    // where the little follower book takes over.
+    const ce = ease(c);
+    const k = 1 - ce * (1 - Math.min(0.2, 90 / (W * 2 * s)));
+    const dx = ce * (vw / 2 - 52), dy = ce * (vh / 2 - 62);
+    els.book.style.transform = `translate(${dx}px, ${dy}px) scale(${k}) translateX(${tx}px) rotateX(${22 * (1 - z)}deg) rotateZ(${-4 * (1 - f1)}deg) scale(${s})`;
+    els.book.style.opacity = 1 - clamp((c - 0.55) / 0.4);
+    follower.classList.toggle('on', c > 0.6);
+    follower.style.opacity = c > 0.6 ? clamp((c - 0.7) / 0.3) : '';
     // translateZ after the turn, so a turned leaf ends up beneath the next one.
     els.leaf1.style.transform = `rotateY(${-180 * f1}deg) translateZ(3px)`;
     els.leaf2.style.transform = `rotateY(${-180 * f2}deg) translateZ(2px)`;
@@ -98,27 +110,34 @@
     els.bar.style.width = p * 100 + '%';
     const step = p < 0.05 ? '01 — Cover' : p < 0.4 ? '02 — Contents' : p < 0.8 ? '03 — Learn' : '04 — Practice';
     if (step !== lastStep) { els.step.textContent = step; lastStep = step; }
-    els.quiz.style.pointerEvents = p > 0.95 ? 'auto' : 'none';
+    els.quiz.style.pointerEvents = p > 0.95 && c < 0.05 ? 'auto' : 'none';
   }
 
   function measure() {
     const r = track.getBoundingClientRect();
     const range = track.offsetHeight - innerHeight;
-    // Finish opening at 85% of the track so the quiz holds still for a while.
-    target = range > 0 ? clamp(-r.top / (range * 0.85)) : 0;
+    const local = range > 0 ? -r.top / range : 0;
+    target = clamp(local / OPEN_END);
+    cTarget = clamp((local - CARRY_START) / (1 - CARRY_START));
   }
 
   function loop() {
-    const d = target - P;
+    const d = target - P, dc = cTarget - C;
     P = reduced || Math.abs(d) < 0.0005 ? target : P + d * 0.12;
-    draw(P);
-    raf = P !== target ? requestAnimationFrame(loop) : 0;
+    C = reduced || Math.abs(dc) < 0.0005 ? cTarget : C + dc * 0.18;
+    draw(P, C);
+    raf = P !== target || C !== cTarget ? requestAnimationFrame(loop) : 0;
   }
   const kick = () => { measure(); if (!raf) raf = requestAnimationFrame(loop); };
 
   addEventListener('scroll', kick, { passive: true });
-  addEventListener('resize', () => { measure(); draw(P); });
+  addEventListener('resize', () => { measure(); draw(P, C); });
+  // Hide the follower while the closing banner (which has its own button) is on screen.
+  const banner = document.querySelector('.banner');
+  if (banner && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => follower.classList.toggle('off', e.isIntersecting), { threshold: 0.2 }).observe(banner);
+  }
   measure();
-  P = target;
-  draw(P);
+  P = target; C = cTarget;
+  draw(P, C);
 })();
