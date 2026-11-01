@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>FreshLeaf — Nature's Essence (9:16)</title>
+<!--
+  HyperFrames composition · FreshLeaf "Nature's Essence" · 1080x1920 · 16s · 30fps
+  Scenes (clips): hook 0–3 · essence 3–5.6 · scents 5.6–10.6 · benefits 10.6–13 · endcard 13–16
+  The paused GSAP timeline is registered on window.__timelines["main"]; the renderer seeks it frame by frame.
+-->
+<style>
+  @font-face { font-family: 'Cormorant Garamond'; font-weight: 500; font-style: normal; src: url(fonts/cormorant-garamond-latin-500-normal.woff2) format('woff2'); }
+  @font-face { font-family: 'Cormorant Garamond'; font-weight: 600; font-style: normal; src: url(fonts/cormorant-garamond-latin-600-normal.woff2) format('woff2'); }
+  @font-face { font-family: 'Cormorant Garamond'; font-weight: 500; font-style: italic; src: url(fonts/cormorant-garamond-latin-500-italic.woff2) format('woff2'); }
+  @font-face { font-family: 'Cormorant Garamond'; font-weight: 600; font-style: italic; src: url(fonts/cormorant-garamond-latin-600-italic.woff2) format('woff2'); }
+
+  :root {
+    --forest-900: #0f2419;
+    --forest-800: #163021;
+    --forest-700: #1f3d2b;   /* brand green-dark */
+    --forest-600: #2e5c40;   /* brand green */
+    --leaf: #b9cf7e;         /* logo leaf green */
+    --leaf-soft: #d6e3a8;
+    --cream: #faf7f0;        /* brand cream */
+    --cream-dim: rgba(250,247,240,.72);
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--forest-700); }
+  body { font-variant-numeric: lining-nums; font-feature-settings: 'lnum' 1; font-family: var(--sans); color: var(--cream); -webkit-font-smoothing: antialiased; }
+
+  #root { position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    background: radial-gradient(120% 80% at 50% 38%, #2a5039 0%, var(--forest-700) 45%, var(--forest-900) 100%); }
+  /* subtle paper grain like the logo board */
+  #grain { position: absolute; inset: 0; opacity: .10; mix-blend-mode: overlay; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+  #vignette { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(90% 70% at 50% 45%, transparent 55%, rgba(5,15,9,.55) 100%); }
+
+  .clip { position: absolute; inset: 0; visibility: hidden; }
+  .center { position: absolute; left: 0; right: 0; text-align: center; }
+
+  /* ambient layers */
+  .glow { position: absolute; width: 900px; height: 900px; left: 90px; top: 420px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(185,207,126,.30), rgba(185,207,126,0) 65%); filter: blur(20px); }
+  .mist { position: absolute; border-radius: 50%; filter: blur(60px); background: rgba(232,240,214,.13); }
+  .leaf { position: absolute; width: 120px; height: 120px; }
+  .leaf svg { width: 100%; height: 100%; overflow: visible; }
+
+  /* type */
+  .eyebrow { font: 600 26px/1 var(--sans); letter-spacing: .42em; text-transform: uppercase; color: var(--leaf); }
+  .display { font: 500 112px/1.02 var(--serif); letter-spacing: -.01em; }
+  .display em { font-style: italic; color: var(--leaf); }
+  .rule { width: 0; height: 2px; margin: 0 auto; background: linear-gradient(90deg, transparent, var(--leaf), transparent); }
+
+  /* S1 hook */
+  #s1 .lines { top: 700px; }
+  #s1 .line { display: block; overflow: hidden; padding: 6px 0; }
+  #s1 .line > span { display: inline-block; }
+
+  /* S2 essence */
+  #s2 .num { top: 590px; font: 200 300px/1 'Inter Display', var(--sans); color: var(--cream); letter-spacing: -.04em; }
+  #s2 .num sup { font-size: 120px; font-weight: 300; vertical-align: 130px; color: var(--leaf); margin-left: 8px; }
+  #s2 .label { top: 920px; font: italic 500 92px/1 var(--serif); color: var(--leaf-soft); }
+  #s2 .chips { top: 1090px; display: flex; justify-content: center; gap: 22px; }
+  .chip { font: 500 30px/1 var(--sans); padding: 20px 30px; border-radius: 999px;
+    border: 1.5px solid rgba(185,207,126,.55); color: var(--cream); background: rgba(15,36,25,.35); }
+  .chip b { color: var(--leaf); font-weight: 600; }
+
+  /* S3 scents */
+  #s3 .eyebrow { position: absolute; top: 300px; left: 0; right: 0; text-align: center; }
+  .scent { position: absolute; inset: 0; }
+  .scent .halo { position: absolute; width: 760px; height: 760px; left: 160px; top: 430px; border-radius: 50%; filter: blur(30px); }
+  .scent img { position: absolute; left: 50%; top: 400px; height: 900px;
+    filter: drop-shadow(0 40px 40px rgba(0,0,0,.45)); }
+  .scent .name { position: absolute; top: 1330px; left: 0; right: 0; text-align: center; font: 600 100px/1 var(--serif); }
+  .scent .notes { position: absolute; top: 1460px; left: 120px; right: 120px; text-align: center;
+    font: 500 32px/1.4 var(--sans); color: var(--cream-dim); letter-spacing: .02em; }
+  .scent .notes b { color: var(--leaf); font-weight: 600; }
+  #s3 .dots { position: absolute; top: 1580px; left: 0; right: 0; display: flex; justify-content: center; gap: 14px; }
+  #s3 .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(250,247,240,.25); }
+
+  /* S4 benefits */
+  #s4 .hero { position: absolute; right: 40px; top: 420px; height: 1180px; filter: drop-shadow(0 50px 50px rgba(0,0,0,.5)); }
+  #s4 .title { position: absolute; left: 90px; top: 360px; width: 600px; font: 500 96px/1.02 var(--serif); }
+  #s4 .title em { font-style: italic; color: var(--leaf); }
+  #s4 ul { position: absolute; left: 80px; top: 760px; width: 640px; list-style: none; }
+  #s4 li { display: flex; align-items: center; gap: 26px; padding: 34px 0; border-bottom: 1px solid rgba(185,207,126,.25);
+    font: 500 38px/1.15 var(--sans); white-space: nowrap; }
+  #s4 li small { display: block; font: 400 27px/1.3 var(--sans); color: var(--cream-dim); margin-top: 6px; }
+  #s4 li .ic { flex: none; width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(185,207,126,.14); border: 1.5px solid rgba(185,207,126,.5); }
+  #s4 li .ic svg { width: 36px; height: 36px; stroke: var(--leaf); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* S5 end card */
+  #s5 .logo { position: absolute; left: 50%; top: 300px; width: 760px; }
+  #s5 .tag { top: 650px; font: italic 500 52px/1.3 var(--serif); color: var(--cream); }
+  #s5 .shelf { position: absolute; left: 0; right: 0; top: 820px; height: 560px; }
+  #s5 .shelf img { position: absolute; bottom: 0; filter: drop-shadow(0 26px 24px rgba(0,0,0,.5)); }
+  #s5 .floor { position: absolute; left: 80px; right: 80px; top: 1378px; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(185,207,126,.6), transparent); }
+  #s5 .price { top: 1430px; font: 500 34px/1 var(--sans); color: var(--cream-dim); letter-spacing: .04em; }
+  #s5 .price b { font: 600 46px/1 var(--sans); color: var(--cream); letter-spacing: 0; margin-left: 8px; }
+  #s5 .cta { position: absolute; left: 50%; top: 1520px; white-space: nowrap;
+    padding: 30px 60px; border-radius: 999px; background: var(--leaf); color: var(--forest-800);
+    font: 600 38px/1 var(--sans); letter-spacing: .02em; box-shadow: 0 18px 40px rgba(0,0,0,.35); }
+  #s5 .meta { top: 1650px; font: 500 26px/1 var(--sans); letter-spacing: .28em; text-transform: uppercase; color: var(--leaf); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="16" data-width="1080" data-height="1920" data-fps="30">
+
+  <!-- ambient: glow, mist, drifting botanicals (persistent track 0) -->
+  <div id="ambient" class="clip" data-start="0" data-duration="16" data-track-index="0" style="visibility:visible">
+    <div class="glow" id="glow"></div>
+    <div class="mist" id="m1" style="width:700px;height:420px;left:-200px;top:1280px"></div>
+    <div class="mist" id="m2" style="width:640px;height:380px;left:620px;top:260px"></div>
+    <div class="mist" id="m3" style="width:820px;height:460px;left:200px;top:1500px"></div>
+    <div id="leaves"></div>
+  </div>
+
+  <!-- S1 · Hook -->
+  <section id="s1" class="clip" data-start="0" data-duration="3" data-track-index="1">
+    <div class="center eyebrow" style="top:600px" id="s1eb">Room &amp; Linen Sprays</div>
+    <div class="center lines display">
+      <span class="line"><span>Your home should</span></span>
+      <span class="line"><span>smell like <em>nature</em></span></span>
+      <span class="line"><span><em>&mdash;</em> not a lab.</span></span>
+    </div>
+  </section>
+
+  <!-- S2 · 100% essential oils -->
+  <section id="s2" class="clip" data-start="3" data-duration="2.6" data-track-index="1">
+    <div class="center num"><span id="count">0</span><sup>%</sup></div>
+    <div class="center label">essential oils</div>
+    <div class="center"><div class="rule" id="s2rule" style="position:absolute;left:0;right:0;top:1040px"></div></div>
+    <div class="center chips">
+      <span class="chip"><b>✕</b>&nbsp; No synthetic fragrance</span>
+      <span class="chip"><b>✕</b>&nbsp; No harsh chemicals</span>
+    </div>
+  </section>
+
+  <!-- S3 · Six botanical blends -->
+  <section id="s3" class="clip" data-start="5.6" data-duration="5" data-track-index="1">
+    <div class="eyebrow" id="s3eb">Six blends &middot; pure botanicals</div>
+    <div id="scents"></div>
+    <div class="dots" id="dots"></div>
+  </section>
+
+  <!-- S4 · Benefits -->
+  <section id="s4" class="clip" data-start="10.6" data-duration="2.4" data-track-index="1">
+    <div class="title">Naturally<br><em>crafted.</em></div>
+    <ul>
+      <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3c4 3.5 6 6.5 6 9.5a6 6 0 0 1-12 0C6 9.5 8 6.5 12 3z"/></svg></span>
+        <span>100% essential oils<small>Pure plant extracts, nothing synthetic</small></span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></span>
+        <span>Home &middot; Car &middot; Workspace<small>Rooms, linens, cushions &amp; curtains</small></span></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.5a5.5 5.5 0 0 0 0-7.9z"/></svg></span>
+        <span>Handcrafted with care<small>Thoughtfully made in small batches</small></span></li>
+    </ul>
+    <img class="hero" src="assets/fresh-linen.png" alt="">
+  </section>
+
+  <!-- S5 · End card -->
+  <section id="s5" class="clip" data-start="13" data-duration="3" data-track-index="1">
+    <img class="logo" src="assets/logo.webp" alt="freshleaf">
+    <div class="center tag">Naturally crafted. Beautifully scented.<br>Thoughtfully made.</div>
+    <div class="shelf" id="shelf"></div>
+    <div class="floor" id="floor"></div>
+    <div class="center price">Six scents &middot; from <b>Rs. 1,180</b></div>
+    <div class="cta">Shop now &rarr; freshleafpk.com</div>
+    <div class="center meta">Cash on delivery &middot; Pakistan</div>
+  </section>
+
+  <div id="grain"></div>
+  <div id="vignette"></div>
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script>
+(function () {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+  // ---------- data (from the FreshLeaf site) ----------
+  const SCENTS = [
+    { id: 'citrus-fresh',   name: 'Citrus Fresh',   notes: 'Orange · Lemon · Bergamot · Peppermint',     halo: '#f2c94c' },
+    { id: 'morning-zest',   name: 'Morning Zest',   notes: 'Peppermint · Eucalyptus · Lemon',            halo: '#9fc79a' },
+    { id: 'fresh-linen',    name: 'Fresh Linen',    notes: 'Lavender · Bergamot · Eucalyptus · Lemon',   halo: '#a993d6' },
+    { id: 'floral-fantasy', name: 'Floral Fantasy', notes: 'Ylang Ylang · Rose · Jasmine · Geranium',    halo: '#e58aa0' },
+    { id: 'pure',           name: 'Pure',           notes: 'Tea Tree · Eucalyptus · Peppermint · Lemon', halo: '#5fae74' },
+    { id: 'spiced-orange',  name: 'Spiced Orange',  notes: 'Orange · Clove · Cinnamon · Ginger',         halo: '#e0874a' },
+  ];
+
+  // ---------- build botanicals ----------
+  const LEAF = (c1, c2) => `<svg viewBox="-60 -60 120 120"><path d="M0,-55 C34,-34 36,26 0,55 C-36,26 -34,-34 0,-55Z" fill="${c1}"/>
+    <path d="M0,-48 L0,52" stroke="${c2}" stroke-width="2.5" fill="none"/>
+    <path d="M0,-18 L16,-30 M0,2 L20,-10 M0,22 L18,10 M0,-18 L-16,-30 M0,2 L-20,-10 M0,22 L-18,10" stroke="${c2}" stroke-width="1.6" fill="none" opacity=".7"/></svg>`;
+  const leafSpecs = [
+    [ 90, 260, 130, -30, '#b9cf7e'], [860, 190, 100,  40, '#8fae5e'], [930, 900, 150,  20, '#b9cf7e'],
+    [ 30,1290, 110, -60, '#8fae5e'], [780,1600, 140,  70, '#c9da95'], [180,1700, 100, -20, '#9dbb69'],
+    [520, 120,  80,  10, '#c9da95'], [960,1350,  90, -45, '#9dbb69'],
+  ];
+  const leaves = $('#leaves');
+  leafSpecs.forEach(([x, y, s, r, c], i) => {
+    const d = document.createElement('div');
+    d.className = 'leaf'; d.id = 'leaf' + i;
+    Object.assign(d.style, { left: x + 'px', top: y + 'px', width: s + 'px', height: s + 'px' });
+    d.innerHTML = LEAF(c, 'rgba(31,61,43,.55)');
+    d.dataset.r = r;
+    leaves.appendChild(d);
+  });
+
+  // ---------- build scent slides ----------
+  const scentsEl = $('#scents'), dotsEl = $('#dots');
+  SCENTS.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'scent'; el.id = 'sc' + i;
+    el.innerHTML = `<div class="halo" style="background:radial-gradient(circle, ${s.halo}66, ${s.halo}00 62%)"></div>
+      <img src="assets/${s.id}.png" alt="">
+      <div class="name">${s.name}</div>
+      <div class="notes"><b>100% essential oils of</b><br>${s.notes}</div>`;
+    scentsEl.appendChild(el);
+    const dot = document.createElement('span'); dot.className = 'dot'; dot.id = 'dot' + i; dotsEl.appendChild(dot);
+  });
+
+  // ---------- end-card shelf ----------
+  const shelf = $('#shelf');
+  const order = ['floral-fantasy', 'morning-zest', 'citrus-fresh', 'fresh-linen', 'pure', 'spiced-orange'];
+  const heights = [440, 480, 540, 580, 480, 440];
+  const xs = [70, 225, 375, 490, 645, 805];
+  order.forEach((id, i) => {
+    const im = document.createElement('img');
+    im.src = `assets/${id}.png`; im.id = 'sh' + i;
+    im.style.height = heights[i] + 'px';
+    im.style.left = (xs[i] + (id === 'fresh-linen' ? 25 : 0)) + 'px';
+    im.style.zIndex = id === 'fresh-linen' || id === 'citrus-fresh' ? 3 : (i === 1 || i === 4 ? 2 : 1);
+    shelf.appendChild(im);
+  });
+
+  // ---------- timeline ----------
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  gsap.set(['.scent img', '#s5 .logo', '#s5 .cta'], { xPercent: -50 });
+  const show = (sel, at) => tl.set(sel, { visibility: 'visible' }, at);
+  const hide = (sel, at) => tl.set(sel, { visibility: 'hidden' }, at);
+
+  // ambient loops across the whole spot
+  tl.fromTo('#glow', { scale: .85, opacity: .6 }, { scale: 1.12, opacity: 1, duration: 8, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 0);
+  tl.to('#m1', { x: 260, y: -120, duration: 16, ease: 'none' }, 0);
+  tl.to('#m2', { x: -300, y: 140, duration: 16, ease: 'none' }, 0);
+  tl.to('#m3', { x: -180, y: -260, duration: 16, ease: 'none' }, 0);
+  leafSpecs.forEach((sp, i) => {
+    const dir = i % 2 ? 1 : -1;
+    tl.fromTo('#leaf' + i,
+      { opacity: 0, scale: .6, rotation: sp[3] - 25 * dir, y: 60 },
+      { opacity: .9, scale: 1, rotation: sp[3], y: 0, duration: 1.4, ease: 'power2.out' }, .1 + i * .08);
+    tl.to('#leaf' + i, { y: -90 - (i % 3) * 40, x: dir * (30 + i * 6), rotation: sp[3] + dir * 35, duration: 14, ease: 'sine.inOut' }, 1.5);
+  });
+  // botanicals pull back during the product carousel, return for the finish
+  tl.to('#leaves', { opacity: .35, duration: .6 }, 5.4);
+  tl.to('#leaves', { opacity: 1, duration: .8 }, 12.8);
+
+  // S1 · Hook (0 – 3)
+  show('#s1', 0);
+  tl.from('#s1eb', { opacity: 0, letterSpacing: '.8em', duration: 1.1 }, .15);
+  tl.from('#s1 .line > span', { yPercent: 110, duration: .9, stagger: .28, ease: 'power4.out' }, .35);
+  tl.to('#s1 .lines, #s1eb', { opacity: 0, y: -60, filter: 'blur(10px)', duration: .45, ease: 'power2.in' }, 2.6);
+  hide('#s1', 3.05);
+
+  // S2 · 100% essential oils (3 – 5.6)
+  show('#s2', 3);
+  const counter = { v: 0 };
+  tl.from('#s2 .num', { opacity: 0, scale: .82, duration: .6 }, 3.0);
+  tl.to(counter, { v: 100, duration: 1.1, ease: 'power2.out', onUpdate: () => { $('#count').textContent = Math.round(counter.v); } }, 3.0);
+  tl.from('#s2 .label', { opacity: 0, y: 40, duration: .6 }, 3.45);
+  tl.to('#s2rule', { width: 520, duration: .7, ease: 'power2.inOut' }, 3.7);
+  tl.from('#s2 .chip', { opacity: 0, y: 30, scale: .92, duration: .5, stagger: .14 }, 3.95);
+  tl.to('#s2 > *', { opacity: 0, scale: 1.06, filter: 'blur(8px)', duration: .4, ease: 'power2.in' }, 5.2);
+  hide('#s2', 5.62);
+
+  // S3 · Scent carousel (5.6 – 10.6) — 6 × ~0.8s
+  show('#s3', 5.6);
+  tl.from('#s3eb', { opacity: 0, y: -20, duration: .5 }, 5.6);
+  tl.from('#dots', { opacity: 0, duration: .4 }, 5.7);
+  const per = .8, start = 5.7;
+  SCENTS.forEach((s, i) => {
+    const t0 = start + i * per, el = '#sc' + i;
+    tl.set(el, { visibility: 'visible' }, 0).set(el, { opacity: 0 }, 0);
+    tl.fromTo(el + ' img', { x: 260, rotation: 6, opacity: 0 }, { x: 0, rotation: 0, opacity: 1, duration: .5, ease: 'power3.out' }, t0);
+    tl.to(el, { opacity: 1, duration: .01 }, t0);
+    tl.fromTo(el + ' .halo', { scale: .5, opacity: 0 }, { scale: 1, opacity: 1, duration: .6 }, t0);
+    tl.fromTo(el + ' .name', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: .45 }, t0 + .08);
+    tl.fromTo(el + ' .notes', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: .45 }, t0 + .16);
+    tl.to('#dot' + i, { backgroundColor: '#b9cf7e', scale: 1.4, duration: .25 }, t0);
+    if (i < SCENTS.length - 1) {
+      tl.to(el + ' img', { x: -260, rotation: -6, opacity: 0, duration: .32, ease: 'power2.in' }, t0 + per - .3);
+      tl.to([el + ' .name', el + ' .notes', el + ' .halo'], { opacity: 0, duration: .25, ease: 'power1.in' }, t0 + per - .27);
+      tl.to('#dot' + i, { backgroundColor: 'rgba(250,247,240,.25)', scale: 1, duration: .2 }, t0 + per - .1);
+    }
+  });
+  tl.to('#s3 > *', { opacity: 0, duration: .35, ease: 'power2.in' }, 10.3);
+  hide('#s3', 10.65);
+
+  // S4 · Benefits (10.6 – 13)
+  show('#s4', 10.6);
+  tl.from('#s4 .hero', { x: 380, rotation: 8, opacity: 0, duration: .9, ease: 'power3.out' }, 10.6);
+  tl.from('#s4 .title', { opacity: 0, x: -50, duration: .6 }, 10.7);
+  tl.from('#s4 li', { opacity: 0, x: -50, duration: .5, stagger: .2 }, 11.0);
+  tl.from('#s4 li .ic', { scale: 0, duration: .45, stagger: .2, ease: 'back.out(2)' }, 11.05);
+  tl.to('#s4 .hero', { y: -24, duration: 2.2, ease: 'sine.inOut' }, 10.9);
+  tl.to('#s4 > *', { opacity: 0, y: -30, duration: .35, ease: 'power2.in' }, 12.65);
+  hide('#s4', 13.02);
+
+  // S5 · End card (13 – 16)
+  show('#s5', 13);
+  tl.from('#s5 .logo', { opacity: 0, scale: .9, filter: 'blur(12px)', duration: .9, ease: 'power2.out' }, 13.0);
+  tl.from('#s5 .tag', { opacity: 0, y: 24, duration: .6 }, 13.35);
+  tl.from('#floor', { scaleX: 0, duration: .7, ease: 'power2.inOut' }, 13.3);
+  tl.from('#shelf img', { y: 140, opacity: 0, duration: .7, stagger: { each: .07, from: 'center' }, ease: 'back.out(1.4)' }, 13.4);
+  tl.from('#s5 .price', { opacity: 0, y: 20, duration: .5 }, 14.0);
+  tl.from('#s5 .cta', { opacity: 0, y: 30, scale: .9, duration: .55, ease: 'back.out(1.8)' }, 14.2);
+  tl.to('#s5 .cta', { scale: 1.05, duration: .5, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 14.9);
+  tl.from('#s5 .meta', { opacity: 0, duration: .5 }, 14.5);
+  tl.to({}, { duration: .01 }, 15.99); // pin total length to 16s
+
+  window.__timelines = window.__timelines || {};
+  window.__timelines['main'] = tl;
+  // preview mode: autoplay when opened directly in a browser
+  if (!/[?&]render/.test(location.search)) document.fonts.ready.then(() => tl.repeat(-1).play(0));
+})();
+</script>
+</body>
+</html>
