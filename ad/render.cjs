@@ -2,7 +2,7 @@
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
 const path = require('path');
-const FPS = 30, DUR = 16, W = 1080, H = 1920;
+const FPS = 30, W = 1080, H = 1920; let DUR = 16;
 const out = process.argv[2] || 'freshleaf-ad-9x16.mp4';
 const only = process.argv[3] ? process.argv[3].split(',').map(Number) : null; // stills mode: list of seconds
 (async () => {
@@ -12,6 +12,7 @@ const only = process.argv[3] ? process.argv[3].split(',').map(Number) : null; //
   await page.evaluate(() => document.fonts.ready);
   await page.waitForFunction(() => window.__timelines && window.__timelines.main && [...document.images].every(i => i.complete));
   const seek = t => page.evaluate(t => { window.__timelines.main.seek(t, false); }, t);
+  DUR = await page.evaluate(() => +document.getElementById('root').dataset.duration || 16);
   if (only) {
     for (const t of only) { await seek(t); await page.screenshot({ path: `${out}-${t}.png` }); }
     await browser.close(); return;
