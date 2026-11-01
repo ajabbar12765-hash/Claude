@@ -1,17 +1,23 @@
-# FreshLeaf — motion-graphic ad v3 (9:16, 17s)
+# FreshLeaf — HyperFrames ad v4 (9:16, 17s)
 
-`index.html` → `freshleaf-ad-9x16.mp4` is the current cut. Earlier cuts are kept: `index-v2-motion.html` / `freshleaf-ad-9x16-v2-motion.mp4` and `index-v1-photo.html` / `freshleaf-ad-9x16-v1-photo.mp4`.
+`index.html` is a HyperFrames composition (root `data-composition-id="main"`, timed `.clip` scenes, one paused GSAP timeline on `window.__timelines["main"]`, music as an `<audio>` clip). It passes `hyperframes check` (0 errors, 73/73 WCAG AA text checks) and is rendered with `hyperframes render`.
 
-HyperFrames-style composition: scene clips carry `data-start` / `data-duration`; one paused GSAP timeline is registered at `window.__timelines["main"]`. Everything sits on a 144 BPM grid (beat = 0.4167s) so cuts land on the music.
+```bash
+npm i -D hyperframes                     # official CLI (HeyGen)
+npx hyperframes check .                  # lint + runtime + layout + contrast
+npx hyperframes snapshot . --at 4,8,12   # still frames
+npx hyperframes render . -o freshleaf-ad-9x16.mp4 --quality delivery
+```
+(In this container the CLI needs `HYPERFRAMES_BROWSER_PATH` pointing at a chrome-headless-shell binary.)
 
-| Movement | Time | Background system |
+| Movement | Time | Scene |
 |---|---|---|
-| 01 The promise | 0–3.33 | forest gradient mesh, rotating topographic contours, blurred foreground leaves |
-| 02 The essence | 3.33–5.83 | cream sunburst rays, endless ripple rings from the droplet |
-| 03 The blends | 5.83–10.83 | six panels, six patterns: sunburst + citrus wheel, stripes, fabric waves, petal mandala, dot grid, spiral; each enters with a different wipe |
-| 04 The ritual | 10.83–13.33 | night perspective grid, aurora glow, horizon light |
-| 05 Freshleaf | 13.33–17 | spotlight beams, rotating leaf crown, reflective shelf |
+| 01 The promise | 0–3.33 | forest canopy frame at three depths, light shafts, drawn leaf, kinetic type |
+| 02 The essence | 3.33–5.83 | cream eucalyptus/lavender frame, droplet splash + ripples, 100% counter, struck-out synthetics |
+| 03 The blends | 5.83–10.83 | six arched product sets: bottle on a podium, its own ingredients floating and piled at the foot; each wipes in with a different shape |
+| 04 The ritual | 10.83–13.33 | dusk room, arched window, plants; Fresh Linen sprays to the right from its nozzle (the side it faces) toward Home / Car / Workspace |
+| 05 Freshleaf | 13.33–17 | spotlight beams, canopy, all six bottles on one podium, price + CTA |
 
-- Preview: open `index.html` (loops). Render: `node render.cjs out.mp4` (`COMP=<file>.html` to render another cut).
-- Music: `python3 make_music.py` → `assets/music.wav` (original 144 BPM track + synced SFX, ~-14 LUFS).
-- Bottle cutouts: `python3 cutout.py <photo> <out.png>` (flood fill + rebuilt cylinder silhouette, no white fringe).
+- Music: `python3 make_music.py` → `assets/music.wav` (original 144 BPM track, SFX synced to cuts, ~-14 LUFS).
+- Bottle cutouts: `python3 cutout.py <photo> <out.png>`.
+- Earlier cuts live in `archive/` (HTML kept as `.html.txt` so HyperFrames sees a single root composition).

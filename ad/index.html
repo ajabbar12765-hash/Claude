@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-resolution="portrait">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=1080, initial-scale=1">
-<title>FreshLeaf — Motion Graphic v3 (9:16)</title>
+<meta name="viewport" content="width=1080, height=1920">
+<title>FreshLeaf — Motion Graphic v4 (9:16)</title>
 <!--
-  HyperFrames composition · FreshLeaf motion graphic v3 · 1080x1920 · 17s · 30fps · 144 BPM grid (beat = 0.4167s)
-  Movements, each with its own background system:
-    01 Promise  0–3.33    forest gradient mesh + rotating topographic contours + bokeh leaves
-    02 Essence  3.33–5.83 cream sunburst + endless ripple rings
-    03 Blends   5.83–10.83 six panels, six patterns (sunburst+slice, stripes, fabric waves, mandala, dot grid, spiral)
-    04 Ritual   10.83–13.33 night perspective grid + aurora
-    05 Brand    13.33–17  spotlight beams + rotating leaf crown + reflective shelf
+  HyperFrames composition · FreshLeaf v4 · 1080x1920 · 17s · 30fps · 144 BPM grid (beat = 0.4167s)
+  01 Promise  0–3.33     forest canopy frame, light shafts, drawn leaf, kinetic type
+  02 Essence  3.33–5.83  cream eucalyptus frame, droplet + ripples, 100% counter
+  03 Blends   5.83–10.83 six arched product sets on a podium, each with its own ingredients
+  04 Ritual   10.83–13.33 dusk room with arched window + plant; Fresh Linen sprays to the right (nozzle side)
+  05 Brand    13.33–17   spotlight, canopy, all six bottles on one podium, CTA
+  All randomness is seeded and resolved at build time (deterministic across render workers).
 -->
 <style>
   @font-face { font-family: 'Cormorant Garamond'; font-weight: 500; src: url(fonts/cormorant-garamond-latin-500-normal.woff2) format('woff2'); }
@@ -20,69 +20,73 @@
   @font-face { font-family: 'Cormorant Garamond'; font-weight: 600; font-style: italic; src: url(fonts/cormorant-garamond-latin-600-italic.woff2) format('woff2'); }
   :root {
     --forest-900: #0b1d13; --forest-800: #143022; --forest-700: #1f3d2b; --forest-600: #2e5c40;
-    --leaf: #b9cf7e; --leaf-soft: #d6e3a8; --cream: #faf7f0; --cream-2: #efe8d6;
+    --leaf: #b9cf7e; --leaf-soft: #d6e3a8; --cream: #faf7f0;
     --serif: 'Cormorant Garamond', Georgia, serif; --sans: 'Inter', system-ui, sans-serif; --num: 'Inter Display', 'Inter', sans-serif;
-    --hud: rgba(250,247,240,.85);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--forest-900); }
   body { font-family: var(--sans); color: var(--cream); -webkit-font-smoothing: antialiased; }
   #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--forest-900); }
-  .clip { position: absolute; inset: 0; visibility: hidden; overflow: hidden; }
-  .layer { position: absolute; inset: 0; }
+  .clip { position: absolute; inset: 0; overflow: hidden; }
   .center { position: absolute; left: 0; right: 0; text-align: center; }
   .c { display: inline-block; }
   svg { overflow: visible; }
+  #defs { position: absolute; width: 0; height: 0; }
 
-  /* ---------- global finishing ---------- */
-  #grain { position: absolute; inset: -50%; opacity: .085; mix-blend-mode: overlay; pointer-events: none; z-index: 20;
+  /* botanicals */
+  .bot { position: absolute; }
+  .bot svg { width: 100%; height: 100%; display: block; }
+  .d-back  { filter: blur(5px) brightness(.72) saturate(.9); }
+  .d-mid   { filter: drop-shadow(0 12px 14px rgba(0,0,0,.28)); }
+  .d-front { filter: blur(10px) brightness(.9); }
+
+  /* finishing */
+  #grain { position: absolute; inset: -50%; opacity: .08; mix-blend-mode: overlay; pointer-events: none; z-index: 20;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
-  #vignette { position: absolute; inset: 0; pointer-events: none; z-index: 19; background: radial-gradient(95% 70% at 50% 45%, transparent 55%, rgba(0,0,0,.45) 100%); }
+  #vignette { position: absolute; inset: 0; pointer-events: none; z-index: 19; background: radial-gradient(95% 72% at 50% 45%, transparent 58%, rgba(0,0,0,.42) 100%); }
   #leak { position: absolute; width: 1400px; height: 1400px; left: -700px; top: -500px; border-radius: 50%; z-index: 18; pointer-events: none;
     background: radial-gradient(circle, rgba(255,214,150,.30), rgba(255,180,120,0) 60%); mix-blend-mode: screen; opacity: 0; }
   #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 21; pointer-events: none; }
 
-  /* HUD frame */
-  #hud { position: absolute; inset: 0; z-index: 17; pointer-events: none; color: var(--hud); }
+  /* HUD */
+  #hud { position: absolute; inset: 0; z-index: 17; pointer-events: none; color: rgba(250,247,240,.9); }
   #hud .frame { position: absolute; inset: 44px; border: 1.5px solid currentColor; opacity: .28; border-radius: 6px; }
-  #hud .tick { position: absolute; width: 26px; height: 26px; border: 0 solid currentColor; opacity: .9; }
+  #hud .tick { position: absolute; width: 26px; height: 26px; border: 0 solid currentColor; }
   #hud .tl { left: 34px; top: 34px; border-left-width: 3px; border-top-width: 3px; }
   #hud .tr { right: 34px; top: 34px; border-right-width: 3px; border-top-width: 3px; }
   #hud .bl { left: 34px; bottom: 34px; border-left-width: 3px; border-bottom-width: 3px; }
   #hud .br { right: 34px; bottom: 34px; border-right-width: 3px; border-bottom-width: 3px; }
   #hud .lbl { position: absolute; top: 84px; font: 600 22px/1 var(--sans); letter-spacing: .32em; text-transform: uppercase; }
   #hud .lft { left: 84px; } #hud .rgt { right: 84px; text-align: right; }
-  #hud .lbl b { font-weight: 700; }
-  #hud .bot { top: auto; bottom: 84px; font-weight: 500; letter-spacing: .26em; opacity: .8; }
-  #hud .bar { position: absolute; left: 84px; right: 84px; top: 124px; height: 2px; background: currentColor; opacity: .2; }
-  #hud .bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: currentColor; opacity: 1; }
-  #hud .mv { display: inline-block; min-width: 290px; }
+  #hud .bot2 { top: auto; bottom: 84px; font-weight: 600; letter-spacing: .26em; }
+  #hud .mv { position: absolute; right: 0; top: 0; white-space: nowrap; opacity: 0; }
+  #hud .bar { position: absolute; left: 84px; right: 84px; top: 124px; height: 2px; background: currentColor; opacity: .25; }
+  #hud .bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: currentColor; transform-origin: 0 50%; }
 
-  /* ---------- 01 PROMISE ---------- */
-  #m1 { background: radial-gradient(120% 85% at 50% 40%, #234a33 0%, #163021 50%, #0b1d13 100%); }
-  .blob { position: absolute; border-radius: 50%; filter: blur(70px); }
-  #topo { position: absolute; left: 540px; top: 900px; width: 0; height: 0; }
+  /* 01 PROMISE */
+  #m1 { background: radial-gradient(110% 75% at 50% 42%, #2b5a3d 0%, #173524 48%, #08170e 100%); }
+  .shaft { position: absolute; left: 540px; top: -200px; width: 260px; height: 2600px; margin-left: -130px; transform-origin: 50% 0;
+    background: linear-gradient(180deg, rgba(220,236,180,.16), rgba(220,236,180,0) 80%); filter: blur(14px); }
   #m1 .bigleaf { position: absolute; left: 400px; top: 300px; width: 280px; height: 280px; }
-  #m1 .t1 { top: 640px; font: 500 100px/1.05 var(--serif); }
+  #m1 .t1 { top: 640px; font: 500 100px/1.05 var(--serif); text-shadow: 0 6px 30px rgba(0,0,0,.45); }
   #m1 .t1b { top: 750px; }
-  #m1 .t2 { top: 860px; font: italic 600 260px/1 var(--serif); color: var(--leaf); }
-  #m1 .t2 .c { background: linear-gradient(180deg, #e3eeb8 0%, #b9cf7e 45%, #7fa55a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 4px; }
-  #m1 .t3 { top: 1160px; font: 500 72px/1 var(--serif); }
+  #m1 .t2 { top: 860px; font: italic 600 260px/1 var(--serif); filter: drop-shadow(0 10px 30px rgba(0,0,0,.45)); }
+  #m1 .t2 .c { background: linear-gradient(180deg, #eef5c8 0%, #b9cf7e 45%, #7fa55a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 4px; }
+  #m1 .t3 { top: 1160px; font: 500 72px/1 var(--serif); text-shadow: 0 6px 30px rgba(0,0,0,.45); }
   #m1 .flask { position: absolute; left: 470px; top: 1265px; width: 140px; height: 160px; }
-  .bokeh { position: absolute; filter: blur(14px); opacity: .55; z-index: 5; }
 
-  /* ---------- 02 ESSENCE ---------- */
-  #m2 { background: radial-gradient(90% 60% at 50% 30%, #fffdf6 0%, var(--cream) 40%, #e9e1cc 100%); color: var(--forest-700); }
-  #rays { position: absolute; left: 540px; top: 520px; width: 3200px; height: 3200px; margin: -1600px 0 0 -1600px; border-radius: 50%;
-    background: repeating-conic-gradient(from 0deg, rgba(46,92,64,.055) 0deg 6deg, rgba(46,92,64,0) 6deg 15deg);
-    -webkit-mask: radial-gradient(circle, #000 0%, #000 25%, transparent 60%); mask: radial-gradient(circle, #000 0%, #000 25%, transparent 60%); }
+  /* 02 ESSENCE */
+  #m2 { background: radial-gradient(90% 62% at 50% 34%, #fffdf6 0%, #f7f2e6 45%, #e2d8bf 100%); color: var(--forest-700); }
+  #rays { position: absolute; left: 540px; top: 560px; width: 3000px; height: 3000px; margin: -1500px 0 0 -1500px; border-radius: 50%;
+    background: repeating-conic-gradient(from 0deg, rgba(46,92,64,.05) 0deg 6deg, rgba(46,92,64,0) 6deg 15deg);
+    -webkit-mask: radial-gradient(circle, #000 0%, #000 22%, transparent 55%); }
   .ring { position: absolute; left: 540px; top: 520px; border-radius: 50%; border: 2px solid rgba(46,92,64,.35); transform: translate(-50%,-50%); }
-  #m2 .drop { position: absolute; left: 470px; top: 330px; width: 140px; height: 190px; z-index: 2; }
+  #m2 .drop { position: absolute; left: 470px; top: 330px; width: 140px; height: 190px; z-index: 2; filter: drop-shadow(0 14px 18px rgba(46,92,64,.35)); }
   #m2 .num { top: 570px; font: 200 300px/1 var(--num); letter-spacing: -.045em; color: var(--forest-700); z-index: 2; }
   #m2 .num sup { font-size: 110px; font-weight: 300; vertical-align: 135px; color: var(--forest-600); margin-left: 8px; }
   #m2 .label { top: 900px; font: italic 500 92px/1 var(--serif); color: var(--forest-600); }
   #m2 .nots { position: absolute; left: 0; right: 0; top: 1090px; display: flex; flex-direction: column; align-items: center; gap: 30px; }
-  #m2 .not { position: relative; font: 500 54px/1 var(--sans); color: #4f5d53; }
+  #m2 .not { position: relative; font: 500 54px/1 var(--sans); color: #3f4d43; padding: 14px 30px; border-radius: 999px; background: rgba(255,253,246,.75); box-shadow: 0 10px 30px rgba(60,50,20,.12); }
   #m2 .not .txt { position: relative; }
   #m2 .not .strike { position: absolute; left: -6px; right: -6px; top: 52%; height: 6px; border-radius: 3px; background: #c4553f; transform-origin: left center; }
   #m2 .not .x { display: inline-block; width: 50px; height: 50px; margin-right: 20px; vertical-align: -4px; border-radius: 50%; background: #c4553f; color: #fff; font: 700 26px/50px var(--sans); text-align: center; }
@@ -90,79 +94,113 @@
   #bars { position: absolute; inset: 0; display: flex; z-index: 9; pointer-events: none; }
   #bars i { flex: 1; height: 100%; }
 
-  /* ---------- 03 BLENDS ---------- */
+  /* 03 BLENDS */
   .panel { position: absolute; inset: 0; overflow: hidden; }
-  .panel .art { position: absolute; inset: 0; }
-  .panel .outline { position: absolute; top: 690px; left: 0; white-space: nowrap; font: italic 600 300px/1 var(--serif); color: transparent; -webkit-text-stroke: 2.5px currentColor; opacity: .35; }
-  .panel .idx { position: absolute; left: 84px; top: 190px; font: 200 150px/1 var(--num); letter-spacing: -.04em; }
-  .panel .idx small { font: 500 30px/1 var(--sans); letter-spacing: .1em; opacity: .65; margin-left: 10px; }
-  .panel .floor { position: absolute; left: 290px; top: 1135px; width: 500px; height: 70px; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,.42), rgba(0,0,0,0) 70%); }
-  .panel .bottle { position: absolute; left: 540px; top: 400px; height: 760px; filter: drop-shadow(0 30px 30px rgba(0,0,0,.35));
-    -webkit-box-reflect: below 4px linear-gradient(transparent, transparent 80%, rgba(255,255,255,.28)); }
-  .panel .badge { position: absolute; width: 156px; height: 156px; margin: -78px 0 0 -78px; border-radius: 50%; background: var(--cream);
-    box-shadow: 0 16px 34px rgba(0,0,0,.22), inset 0 -6px 0 rgba(0,0,0,.06); display: grid; place-items: center; }
-  .panel .badge svg { width: 98px; height: 98px; }
-  .panel .name { position: absolute; top: 1270px; left: 0; right: 0; text-align: center; font: 600 108px/1 var(--serif); }
-  .panel .notes { position: absolute; top: 1400px; left: 90px; right: 90px; text-align: center; font: 500 34px/1.45 var(--sans); }
+  .panel .arch { position: absolute; left: 170px; top: 300px; width: 740px; height: 1010px; border-radius: 370px 370px 0 0;
+    box-shadow: inset 0 30px 80px rgba(0,0,0,.10), 0 40px 80px rgba(0,0,0,.18); }
+  .panel .archline { position: absolute; left: 140px; top: 270px; width: 800px; height: 1040px; border-radius: 400px 400px 0 0; border: 2px solid currentColor; border-bottom: 0; opacity: .25; }
+  .panel .idx { position: absolute; left: 84px; top: 170px; font: 200 120px/1 var(--num); letter-spacing: -.04em; }
+  .panel .idx small { font: 500 28px/1 var(--sans); letter-spacing: .1em; opacity: .65; margin-left: 10px; }
+  .podium { position: absolute; left: 290px; top: 1180px; width: 500px; height: 130px; }
+  .podium .body { position: absolute; left: 0; right: 0; top: 0; bottom: 0; border-radius: 0 0 250px 250px / 0 0 46px 46px;
+    background: linear-gradient(90deg, #cfc6b2 0%, #f3eee3 38%, #fffdf8 52%, #ded5c2 85%, #c3b9a3 100%); }
+  .podium .top { position: absolute; left: 0; right: 0; top: -46px; height: 92px; border-radius: 50%;
+    background: radial-gradient(70% 70% at 45% 40%, #ffffff, #efe8da 70%, #ddd3c0 100%); box-shadow: inset 0 -3px 0 rgba(0,0,0,.06); }
+  .podium .shadow { position: absolute; left: 150px; top: -14px; width: 200px; height: 30px; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,.45), transparent 70%); }
+  .panel .bottle { position: absolute; left: 540px; top: 425px; height: 760px; filter: drop-shadow(-14px 24px 22px rgba(0,0,0,.30)); }
+  .panel .name { position: absolute; top: 1345px; left: 0; right: 0; text-align: center; font: 600 108px/1 var(--serif); }
+  .panel .notes { position: absolute; top: 1470px; left: 90px; right: 90px; text-align: center; font: 500 34px/1.45 var(--sans); }
   .panel .notes b { font-weight: 700; letter-spacing: .16em; font-size: 24px; text-transform: uppercase; opacity: .8; }
-  #dots { position: absolute; top: 1540px; left: 0; right: 0; display: flex; justify-content: center; gap: 14px; z-index: 3; }
-  #dots span { height: 12px; width: 12px; border-radius: 6px; }
+  #dots { position: absolute; top: 1610px; left: 0; right: 0; display: flex; justify-content: center; gap: 14px; z-index: 3; }
+  #dots span { height: 12px; width: 12px; border-radius: 6px; transform-origin: 50% 50%; }
 
-  /* ---------- 04 RITUAL ---------- */
-  #m4 { background: radial-gradient(120% 70% at 50% 20%, #17402c 0%, #0b1d13 60%, #050e09 100%); }
-  .aurora { position: absolute; border-radius: 50%; filter: blur(90px); mix-blend-mode: screen; }
-  #gridwrap { position: absolute; left: -900px; right: -900px; top: 1050px; height: 1400px; perspective: 700px; perspective-origin: 50% 0; }
-  #grid { position: absolute; inset: 0; transform: rotateX(68deg); transform-origin: 50% 0;
-    background-image: linear-gradient(rgba(185,207,126,.35) 2px, transparent 2px), linear-gradient(90deg, rgba(185,207,126,.35) 2px, transparent 2px);
-    background-size: 120px 120px; -webkit-mask: linear-gradient(to bottom, transparent 0%, #000 25%, #000 70%, transparent 100%); }
-  #horizon { position: absolute; left: 0; right: 0; top: 1046px; height: 3px; background: linear-gradient(90deg, transparent, rgba(214,227,168,.9), transparent); box-shadow: 0 0 40px 10px rgba(185,207,126,.35); }
-  #m4 .h1 { top: 290px; font: 500 116px/1 var(--serif); }
-  #m4 .h2 { top: 410px; font: italic 600 130px/1 var(--serif); }
-  #m4 .h2 .c { background: linear-gradient(180deg, #e3eeb8, #9fc06a); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 3px; }
-  #m4 .icon { position: absolute; top: 640px; width: 220px; height: 220px; margin-left: -110px; }
-  #m4 .ilbl { position: absolute; top: 880px; width: 260px; margin-left: -130px; text-align: center; font: 600 38px/1 var(--sans); }
-  #m4 .sub { top: 975px; font: 500 28px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--leaf); }
-  #m4 .bottle { position: absolute; left: 690px; top: 1150px; height: 680px; transform-origin: 50% 0; filter: drop-shadow(0 30px 34px rgba(0,0,0,.6)); }
-  .mist { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(240,246,226,.95), rgba(240,246,226,0) 70%); }
+  /* 04 RITUAL */
+  #m4 { background: linear-gradient(180deg, #10291c 0%, #183a29 45%, #1f4430 62%, #0c1f15 100%); }
+  #window { position: absolute; left: 740px; top: 160px; width: 280px; height: 470px; border-radius: 140px 140px 0 0; overflow: hidden;
+    background: linear-gradient(180deg, #f7e7c4 0%, #e9d6a8 40%, #b9c98e 100%); box-shadow: 0 0 120px 30px rgba(247,231,196,.18); opacity: .9; }
+  #window .mul { position: absolute; background: rgba(16,41,28,.75); }
+  #window .sun { position: absolute; left: 30px; top: 170px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, #fff6dc, rgba(255,246,220,0) 70%); }
+  .ray { position: absolute; left: 760px; top: 420px; width: 300px; height: 1500px; transform-origin: 50% 0; background: linear-gradient(180deg, rgba(247,231,196,.14), rgba(247,231,196,0) 80%); filter: blur(16px); }
+  #floor4 { position: absolute; left: 0; right: 0; top: 1500px; bottom: 0; background: linear-gradient(180deg, #0f251a, #08150e); }
+  #floor4::before { content: ''; position: absolute; left: 380px; top: -2px; width: 820px; height: 360px; background: linear-gradient(180deg, rgba(247,231,196,.18), transparent); transform: skewX(-30deg); filter: blur(10px); }
+  #m4 .h1 { top: 270px; left: 84px; right: auto; text-align: left; font: 500 104px/1 var(--serif); text-shadow: 0 6px 30px rgba(0,0,0,.5); }
+  #m4 .h2 { top: 385px; left: 84px; right: auto; text-align: left; font: italic 600 116px/1 var(--serif); }
+  #m4 .h2 .c { background: linear-gradient(180deg, #eef5c8, #9fc06a); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 3px; }
+  .space { position: absolute; left: 640px; width: 360px; height: 150px; }
+  .space .disc { position: absolute; right: 0; top: 0; width: 150px; height: 150px; border-radius: 50%; background: rgba(12,31,21,.55);
+    border: 2px solid rgba(185,207,126,.7); box-shadow: 0 0 40px rgba(185,207,126,.25), inset 0 0 30px rgba(185,207,126,.15); }
+  .space svg { position: absolute; right: 0; top: 0; width: 150px; height: 150px; }
+  .space .sl { position: absolute; right: 175px; top: 52px; font: 600 40px/1 var(--sans); white-space: nowrap; text-shadow: 0 4px 20px rgba(0,0,0,.6); }
+  #m4 .sub { top: 1720px; font: 500 26px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; color: var(--leaf); }
+  #sprayer { position: absolute; left: 130px; top: 930px; width: 182px; height: 700px; transform-origin: 50% 100%; z-index: 4; }
+  #sprayer img { position: absolute; left: 0; top: 0; height: 700px; filter: drop-shadow(18px 30px 30px rgba(0,0,0,.6)); }
+  #nozzle { position: absolute; left: 134px; top: 12px; width: 0; height: 0; }
+  #plume { position: absolute; left: 0; top: -110px; width: 760px; height: 220px; transform-origin: 0 50%;
+    background: radial-gradient(60% 50% at 0% 50%, rgba(248,252,238,.75), rgba(248,252,238,0) 100%); filter: blur(6px); }
+  .mist { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(248,252,238,.95), rgba(248,252,238,0) 70%); }
+  #shadow4 { position: absolute; left: 90px; top: 1610px; width: 320px; height: 50px; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,0,0,.6), transparent 70%); }
 
-  /* ---------- 05 BRAND ---------- */
-  #m5 { background: radial-gradient(80% 55% at 50% 30%, #2f6145 0%, #183826 45%, #0a1a11 100%); }
+  /* 05 BRAND */
+  #m5 { background: radial-gradient(85% 60% at 50% 30%, #336a4b 0%, #183826 45%, #08160e 100%); }
   .beam { position: absolute; left: 540px; top: -120px; width: 240px; height: 2300px; margin-left: -120px; transform-origin: 50% 0;
     background: linear-gradient(180deg, rgba(230,240,200,.20), rgba(230,240,200,0) 85%); filter: blur(10px); }
-  #crown { position: absolute; left: 540px; top: 470px; width: 0; height: 0; }
-  #crown .cl { position: absolute; width: 90px; height: 90px; margin: -45px 0 0 -45px; }
-  #m5 .logo { position: absolute; left: 540px; top: 300px; width: 760px; filter: drop-shadow(0 10px 30px rgba(0,0,0,.4)); }
-  #m5 .tag { top: 650px; font: italic 500 52px/1.3 var(--serif); }
-  #m5 .shelf { position: absolute; left: 0; right: 0; top: 820px; height: 560px; }
-  #m5 .shelf img { position: absolute; bottom: 0; filter: drop-shadow(0 20px 20px rgba(0,0,0,.45));
-    -webkit-box-reflect: below 2px linear-gradient(transparent, transparent 84%, rgba(255,255,255,.22)); }
-  #m5 .floorline { position: absolute; left: 60px; right: 60px; top: 1380px; height: 2px; background: linear-gradient(90deg, transparent, rgba(214,227,168,.85), transparent); box-shadow: 0 0 30px 6px rgba(185,207,126,.25); }
-  #m5 .price { top: 1462px; font: 500 34px/1 var(--sans); color: rgba(250,247,240,.78); }
+  #m5 .logo { position: absolute; left: 540px; top: 280px; width: 760px; filter: drop-shadow(0 10px 30px rgba(0,0,0,.5)); }
+  #m5 .tag { top: 630px; font: italic 500 52px/1.3 var(--serif); text-shadow: 0 6px 24px rgba(0,0,0,.5); }
+  #shelf { position: absolute; left: 60px; right: 60px; top: 860px; height: 515px; display: flex; justify-content: center; align-items: flex-end; gap: 8px; z-index: 3; }
+  #shelf img { display: block; filter: drop-shadow(-8px 18px 16px rgba(0,0,0,.45)); }
+  .podium5 { position: absolute; left: 70px; width: 940px; top: 1372px; height: 80px; z-index: 2; }
+  .podium5 .body { position: absolute; inset: 0; border-radius: 0 0 470px 470px / 0 0 34px 34px; background: linear-gradient(90deg, #b9b09b 0%, #ece6d8 35%, #fffdf8 52%, #d8cfbc 82%, #aea48f 100%); }
+  .podium5 .top { position: absolute; left: 0; right: 0; top: -34px; height: 68px; border-radius: 50%; background: radial-gradient(70% 70% at 45% 40%, #ffffff, #ece5d6 70%, #d6ccb8 100%); }
+  #m5 .price { top: 1488px; font: 500 34px/1 var(--sans); color: rgba(250,247,240,.8); }
   #m5 .price b { font: 600 46px/1 var(--sans); color: var(--cream); margin-left: 8px; }
-  #m5 .cta { position: absolute; left: 540px; top: 1545px; white-space: nowrap; overflow: hidden; padding: 30px 62px; border-radius: 999px;
-    background: linear-gradient(180deg, #d0e195, #a9c26a); color: var(--forest-800); font: 700 38px/1 var(--sans); box-shadow: 0 18px 44px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.5); }
+  #m5 .cta { position: absolute; left: 540px; top: 1560px; white-space: nowrap; overflow: hidden; padding: 30px 62px; border-radius: 999px;
+    background: linear-gradient(180deg, #d0e195, #a9c26a); color: var(--forest-800); font: 700 38px/1 var(--sans); box-shadow: 0 18px 44px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.5); }
   #m5 .cta .shine { position: absolute; top: -20px; bottom: -20px; left: 0; width: 90px; transform: skewX(-20deg); background: linear-gradient(90deg, transparent, rgba(255,255,255,.8), transparent); }
-  #m5 .meta { top: 1675px; font: 500 25px/1 var(--sans); letter-spacing: .28em; text-transform: uppercase; color: var(--leaf); }
+  #m5 .meta { top: 1690px; font: 500 25px/1 var(--sans); letter-spacing: .28em; text-transform: uppercase; color: var(--leaf); }
 </style>
 </head>
 <body>
+<svg id="defs" aria-hidden="true"><defs>
+  <linearGradient id="gLeafDark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a8552"/><stop offset="1" stop-color="#0e3b22"/></linearGradient>
+  <linearGradient id="gLeafMid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#78b562"/><stop offset="1" stop-color="#245a33"/></linearGradient>
+  <linearGradient id="gLeafLight" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c3df86"/><stop offset="1" stop-color="#5d9a48"/></linearGradient>
+  <linearGradient id="gMint" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9adf92"/><stop offset="1" stop-color="#2b8448"/></linearGradient>
+  <linearGradient id="gSage" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9dcc2"/><stop offset="1" stop-color="#6f9384"/></linearGradient>
+  <radialGradient id="gEuc" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#d5e6cf"/><stop offset="1" stop-color="#6b8f80"/></radialGradient>
+  <linearGradient id="gLav" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d4c0f7"/><stop offset="1" stop-color="#6a4bb3"/></linearGradient>
+  <radialGradient id="gRindL" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#fff29e"/><stop offset="1" stop-color="#eeb000"/></radialGradient>
+  <radialGradient id="gFleshL" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#fff7c0"/><stop offset="1" stop-color="#f6c722"/></radialGradient>
+  <radialGradient id="gRindO" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#ffc77a"/><stop offset="1" stop-color="#dd5c0a"/></radialGradient>
+  <radialGradient id="gFleshO" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#ffd09a"/><stop offset="1" stop-color="#f07a1a"/></radialGradient>
+  <radialGradient id="gWholeL" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff8b8"/><stop offset=".5" stop-color="#f7d23a"/><stop offset="1" stop-color="#c99200"/></radialGradient>
+  <radialGradient id="gWholeO" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffd8a6"/><stop offset=".5" stop-color="#f5901f"/><stop offset="1" stop-color="#b8500a"/></radialGradient>
+  <radialGradient id="gRose" cx=".45" cy=".4" r=".8"><stop offset="0" stop-color="#ff9fb6"/><stop offset="1" stop-color="#b8123f"/></radialGradient>
+  <radialGradient id="gRose2" cx=".45" cy=".4" r=".8"><stop offset="0" stop-color="#ffc2d0"/><stop offset="1" stop-color="#df3d65"/></radialGradient>
+  <radialGradient id="gPetalW" cx=".5" cy=".9" r="1"><stop offset="0" stop-color="#fff3d6"/><stop offset=".5" stop-color="#ffffff"/><stop offset="1" stop-color="#ece0d0"/></radialGradient>
+  <radialGradient id="gPetalP" cx=".5" cy=".9" r="1"><stop offset="0" stop-color="#d0306a"/><stop offset=".45" stop-color="#f58fb0"/><stop offset="1" stop-color="#ffd3df"/></radialGradient>
+  <linearGradient id="gCin" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6a3210"/><stop offset=".45" stop-color="#c47a3e"/><stop offset="1" stop-color="#7a3a14"/></linearGradient>
+  <linearGradient id="gAnise" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2410"/><stop offset="1" stop-color="#a5622f"/></linearGradient>
+  <linearGradient id="gGinger" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4dfb0"/><stop offset="1" stop-color="#c3904f"/></linearGradient>
+  <radialGradient id="gCotton" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dcd3c3"/></radialGradient>
+  <linearGradient id="gMonstera" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#245a38"/><stop offset="1" stop-color="#07170e"/></linearGradient>
+</defs></svg>
+
 <div id="root" data-composition-id="main" data-start="0" data-duration="17" data-width="1080" data-height="1920" data-fps="30">
+
+  <audio id="music" class="clip" src="assets/music.wav" data-start="0" data-duration="17" data-track-index="9" data-volume="1"></audio>
 
   <!-- 01 PROMISE -->
   <section id="m1" class="clip" data-start="0" data-duration="3.4" data-track-index="1">
-    <div class="layer" id="m1bg">
-      <div class="blob" id="b1" style="width:760px;height:760px;left:-200px;top:200px;background:#3c7a52;opacity:.55"></div>
-      <div class="blob" id="b2" style="width:680px;height:680px;left:600px;top:900px;background:#6f9a4e;opacity:.35"></div>
-      <div class="blob" id="b3" style="width:600px;height:600px;left:300px;top:1400px;background:#1b5a3c;opacity:.6"></div>
-      <svg id="topo"></svg>
-    </div>
+    <div id="shafts"></div>
+    <div id="f1back"></div>
     <svg class="bigleaf" id="bigleaf" viewBox="-60 -60 120 120">
-      <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3eeb8"/><stop offset="1" stop-color="#7fa55a"/></linearGradient></defs>
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef5c8"/><stop offset="1" stop-color="#7fa55a"/></linearGradient></defs>
       <path id="bl-fill" d="M0,-55 C34,-34 36,26 0,55 C-36,26 -34,-34 0,-55Z" fill="url(#lg)" opacity="0"/>
-      <path class="draw" d="M0,-55 C34,-34 36,26 0,55 C-36,26 -34,-34 0,-55Z" fill="none" stroke="#d6e3a8" stroke-width="2.2"/>
-      <path class="draw" d="M0,-46 L0,58" fill="none" stroke="#d6e3a8" stroke-width="1.8"/>
-      <path class="draw" d="M0,-20 L15,-32 M0,0 L19,-12 M0,20 L17,8 M0,-20 L-15,-32 M0,0 L-19,-12 M0,20 L-17,8" fill="none" stroke="#d6e3a8" stroke-width="1.4"/>
+      <path class="draw" d="M0,-55 C34,-34 36,26 0,55 C-36,26 -34,-34 0,-55Z" fill="none" stroke="#e3eeb8" stroke-width="2.2"/>
+      <path class="draw" d="M0,-46 L0,58" fill="none" stroke="#e3eeb8" stroke-width="1.8"/>
+      <path class="draw" d="M0,-20 L15,-32 M0,0 L19,-12 M0,20 L17,8 M0,-20 L-15,-32 M0,0 L-19,-12 M0,20 L-17,8" fill="none" stroke="#e3eeb8" stroke-width="1.4"/>
     </svg>
+    <div id="f1mid"></div>
     <div class="center t1 split">Your home should</div>
     <div class="center t1 t1b split">smell like</div>
     <div class="center t2 split">nature</div>
@@ -172,15 +210,16 @@
       <path class="draw" d="M-34,30 L34,30" fill="none" stroke="#faf7f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
       <path class="draw2" d="M-62,-70 L62,70" fill="none" stroke="#e8735e" stroke-width="9" stroke-linecap="round"/>
     </svg>
-    <div id="bokeh1"></div>
+    <div id="f1front"></div>
   </section>
 
   <!-- 02 ESSENCE -->
   <section id="m2" class="clip" data-start="2.92" data-duration="3.3" data-track-index="2">
     <div id="rays"></div>
+    <div id="f2back"></div>
     <div id="rings"></div>
     <svg class="drop" id="drop" viewBox="-70 -95 140 190">
-      <defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3eeb8"/><stop offset="1" stop-color="#5f8f44"/></linearGradient></defs>
+      <defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef5c8"/><stop offset="1" stop-color="#5f8f44"/></linearGradient></defs>
       <path d="M0,-90 C30,-40 60,-5 60,30 A60,60 0 0 1 -60,30 C-60,-5 -30,-40 0,-90Z" fill="url(#dg)"/>
       <ellipse cx="-22" cy="22" rx="10" ry="20" fill="#fff" opacity=".6" transform="rotate(20 -22 22)"/>
     </svg>
@@ -190,50 +229,62 @@
       <div class="not"><span class="x">✕</span><span class="txt">Synthetic fragrance<span class="strike"></span></span></div>
       <div class="not"><span class="x">✕</span><span class="txt">Harsh chemicals<span class="strike"></span></span></div>
     </div>
+    <div id="f2mid"></div>
   </section>
 
   <!-- 03 BLENDS -->
-  <section id="m3" class="clip" data-start="5.83" data-duration="5" data-track-index="3">
+  <section id="m3" class="clip" data-start="5.83" data-duration="5.06" data-track-index="3">
     <div id="panels"></div>
     <div id="dots"></div>
   </section>
 
   <!-- 04 RITUAL -->
   <section id="m4" class="clip" data-start="10.42" data-duration="2.95" data-track-index="4">
-    <div class="aurora" id="a1" style="width:900px;height:500px;left:-200px;top:520px;background:#2f8a5a;opacity:.5"></div>
-    <div class="aurora" id="a2" style="width:800px;height:420px;left:500px;top:380px;background:#7fae5a;opacity:.35"></div>
-    <div id="gridwrap"><div id="grid"></div></div>
-    <div id="horizon"></div>
+    <div id="window">
+      <div class="sun"></div>
+      <div class="mul" style="left:135px;top:0;width:10px;height:470px"></div>
+      <div class="mul" style="left:0;top:200px;width:280px;height:9px"></div>
+      <div class="mul" style="left:0;top:340px;width:280px;height:9px"></div>
+    </div>
+    <div class="ray" id="ray1" style="transform:rotate(18deg)"></div>
+    <div class="ray" id="ray2" style="transform:rotate(34deg);left:820px"></div>
+    <div id="floor4"></div>
+    <div id="f4back"></div>
     <div class="center h1 split">One spritz.</div>
     <div class="center h2 split">Every space.</div>
-    <div id="icons"></div>
+    <div id="spaces"></div>
+    <div id="shadow4"></div>
+    <div id="sprayer">
+      <img src="assets/fresh-linen.png" alt="Fresh Linen">
+      <div id="nozzle"><div id="plume"></div><div id="mist"></div></div>
+    </div>
+    <div id="f4front"></div>
     <div class="center sub">100% essential oils · handcrafted</div>
-    <div id="mist"></div>
-    <img class="bottle" src="assets/fresh-linen.png" alt="">
   </section>
 
   <!-- 05 BRAND -->
   <section id="m5" class="clip" data-start="12.92" data-duration="4.08" data-track-index="5">
     <div id="beams"></div>
-    <div id="crown"></div>
+    <div id="f5back"></div>
     <img class="logo" src="assets/logo.webp" alt="freshleaf">
     <div class="center tag" id="tag"><span class="w">Naturally</span> <span class="w">crafted.</span> <span class="w">Beautifully</span> <span class="w">scented.</span><br><span class="w">Thoughtfully</span> <span class="w">made.</span></div>
-    <div class="shelf" id="shelf"></div>
-    <div class="floorline" id="floorline"></div>
+    <div class="podium5"><div class="body"></div><div class="top"></div></div>
+    <div id="shelf"></div>
+    <div id="f5mid"></div>
     <div class="center price">Six scents &middot; from <b>Rs. 1,180</b></div>
     <div class="cta">Shop now &rarr; freshleafpk.com<span class="shine"></span></div>
     <div class="center meta">Cash on delivery &middot; Pakistan</div>
-    <div id="bokeh5"></div>
+    <div id="f5front"></div>
   </section>
 
   <div id="bars"></div>
-  <div id="hud">
+  <div id="hud" data-layout-ignore>
     <div class="frame"></div><i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
     <div class="lbl lft"><b>Freshleaf</b></div>
-    <div class="lbl rgt"><span class="mv" id="mv">01 — The promise</span></div>
+    <div class="lbl rgt" id="mvs"></div>
     <div class="bar"><i id="prog"></i></div>
-    <div class="lbl bot lft">Room &amp; linen spray</div>
-    <div class="lbl bot rgt">freshleafpk.com</div>
+    <div class="lbl bot2 lft">Room &amp; linen spray</div>
+    <div class="lbl bot2 rgt">freshleafpk.com</div>
   </div>
   <div id="leak"></div>
   <div id="vignette"></div>
@@ -246,199 +297,219 @@
 (function () {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-  const B = 60 / 144; // beat
+  const B = 60 / 144;
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const NS = 'http://www.w3.org/2000/svg';
-  const splitText = el => { el.innerHTML = el.textContent.trim().split(' ').map(w =>
-      `<span style="display:inline-block;white-space:nowrap">${[...w].map(ch => `<span class="c">${ch}</span>`).join('')}</span>`).join(' '); };
+  const f = n => n.toFixed(1);
 
-  // ---------- icon stickers ----------
-  const I = {
-    slice: c => `<svg viewBox="-50 -50 100 100"><circle r="44" fill="${c}"/><circle r="36" fill="#fff8dc"/><circle r="32" fill="${c}" opacity=".85"/>${[0,45,90,135].map(a=>{const x=32*Math.cos(a*Math.PI/180),y=32*Math.sin(a*Math.PI/180);return `<path d="M${-x},${-y} L${x},${y}" stroke="#fff8dc" stroke-width="3"/>`}).join('')}<circle r="5" fill="#fff8dc"/></svg>`,
-    leaf: c => `<svg viewBox="-50 -50 100 100"><g transform="rotate(35)"><path d="M0,-44 C28,-26 28,22 0,44 C-28,22 -28,-26 0,-44Z" fill="${c}"/><path d="M0,-38 L0,44" stroke="#fff" stroke-width="2.5" opacity=".7"/></g></svg>`,
-    round: c => `<svg viewBox="-50 -50 100 100"><path d="M0,46 L0,-40" stroke="#6b8f76" stroke-width="3"/>${[[-14,-26],[14,-8],[-14,10],[14,28]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="14" fill="${c}"/>`).join('')}</svg>`,
-    lavender: c => `<svg viewBox="-50 -50 100 100"><path d="M0,46 L0,-30" stroke="#6b8f76" stroke-width="3.5"/>${[-40,-28,-16,-4,8].map(y=>`<ellipse cx="-7" cy="${y}" rx="7" ry="10" fill="${c}" transform="rotate(-20 -7 ${y})"/><ellipse cx="7" cy="${y+5}" rx="7" ry="10" fill="${c}" transform="rotate(20 7 ${y+5})"/>`).join('')}</svg>`,
-    flower: (c, k='#f6d36b') => `<svg viewBox="-50 -50 100 100">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-22" rx="16" ry="24" fill="${c}" transform="rotate(${a})"/>`).join('')}<circle r="12" fill="${k}"/></svg>`,
-    star: c => `<svg viewBox="-50 -50 100 100"><path d="${[...Array(16)].map((_,i)=>{const r=i%2?16:44,a=i*Math.PI/8-Math.PI/2;return (i?'L':'M')+(r*Math.cos(a)).toFixed(1)+','+(r*Math.sin(a)).toFixed(1)}).join('')}Z" fill="${c}"/><circle r="9" fill="#5a2e14"/></svg>`,
-    stick: c => `<svg viewBox="-50 -50 100 100"><g transform="rotate(-35)"><rect x="-14" y="-46" width="28" height="92" rx="7" fill="${c}"/><path d="M-6,-40 L-6,40 M6,-40 L6,40" stroke="#5a2e14" stroke-width="3" opacity=".5"/></g></svg>`,
-    needle: c => `<svg viewBox="-50 -50 100 100"><path d="M0,46 L0,-44" stroke="#4b6b3a" stroke-width="3"/>${[-36,-24,-12,0,12,24].map(y=>`<path d="M0,${y} L-22,${y-14} M0,${y} L22,${y-14}" stroke="${c}" stroke-width="5" stroke-linecap="round"/>`).join('')}</svg>`,
-    drop: c => `<svg viewBox="-50 -50 100 100"><path d="M0,-44 C16,-18 32,0 32,18 A32,32 0 0 1 -32,18 C-32,0 -16,-18 0,-44Z" fill="${c}"/></svg>`,
+  // ================= botanical illustration library =================
+  const leafPath = 'M0,-56 C30,-34 32,24 0,56 C-32,24 -30,-34 0,-56Z';
+  const veins = [-30, -14, 2, 18, 34].map(y => `M0,${y} Q11,${y - 7} 21,${y - 18} M0,${y} Q-11,${y - 7} -21,${y - 18}`).join(' ');
+  const BOT = {
+    leaf: (g = 'gLeafMid') => `<svg viewBox="-60 -60 120 120"><path d="${leafPath}" fill="url(#${g})"/><path d="M0,-56 C-30,-34 -32,24 0,56Z" fill="#000" opacity=".12"/>
+      <path d="M0,-50 Q3,0 0,58" stroke="rgba(255,255,255,.5)" stroke-width="1.6" fill="none"/><path d="${veins}" stroke="rgba(255,255,255,.22)" stroke-width="1" fill="none"/></svg>`,
+    long: (g = 'gLeafDark') => `<svg viewBox="-60 -60 120 120"><path d="M0,-60 C15,-30 16,30 0,60 C-16,30 -15,-30 0,-60Z" fill="url(#${g})"/><path d="M0,-60 C-15,-30 -16,30 0,60Z" fill="#000" opacity=".12"/><path d="M0,-54 L0,60" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/></svg>`,
+    euc: () => { const P = [[2,-50,11],[-11,-36,12],[12,-22,12],[-12,-6,13],[13,9,13],[-11,25,12],[11,40,11]];
+      return `<svg viewBox="-60 -60 120 120"><path d="M-3,60 C1,20 6,-20 2,-60" stroke="#6d806a" stroke-width="2.6" fill="none"/>${P.map(([x,y,r]) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * .9}" fill="url(#gEuc)" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>`).join('')}</svg>`; },
+    lavender: () => `<svg viewBox="-60 -60 120 120"><path d="M0,60 Q3,10 0,-28" stroke="#5c7a52" stroke-width="2.4" fill="none"/>
+      <path d="M0,58 C-14,30 -16,10 -12,-4 C-6,14 -2,34 0,58Z M0,58 C14,32 16,14 12,0 C6,16 2,36 0,58Z" fill="url(#gSage)" opacity=".9"/>
+      ${[...Array(15)].map((_, i) => { const y = -58 + i * 5.6, s = i % 2 ? 1 : -1; return `<ellipse cx="${s * 4.2}" cy="${y}" rx="4.6" ry="6.6" fill="url(#gLav)" transform="rotate(${s * 24} ${s * 4.2} ${y})"/>`; }).join('')}</svg>`,
+    needle: () => `<svg viewBox="-60 -60 120 120"><path d="M0,60 C2,20 -2,-20 0,-60" stroke="#3f6a3a" stroke-width="2.4" fill="none"/>${[...Array(13)].map((_, i) => { const y = -54 + i * 8.5;
+      return `<path d="M0,${y} L-20,${y - 12} M0,${y} L20,${y - 12}" stroke="${i % 2 ? '#5aa864' : '#2f7a45'}" stroke-width="3.2" stroke-linecap="round"/>`; }).join('')}</svg>`,
+    slice: (k = 'L') => { const w = [...Array(10)].map((_, i) => { const a0 = (i * 36 + 4) * Math.PI / 180, a1 = ((i + 1) * 36 - 4) * Math.PI / 180;
+        return `<path d="M${f(5 * Math.cos((a0 + a1) / 2))},${f(5 * Math.sin((a0 + a1) / 2))} L${f(42 * Math.cos(a0))},${f(42 * Math.sin(a0))} A42,42 0 0 1 ${f(42 * Math.cos(a1))},${f(42 * Math.sin(a1))}Z" fill="url(#gFlesh${k})"/>`; }).join('');
+      return `<svg viewBox="-60 -60 120 120"><circle r="53" fill="url(#gRind${k})"/><circle r="47" fill="#fff6dc"/>${w}<circle r="4" fill="#fff6dc"/><ellipse cx="-20" cy="-22" rx="16" ry="6" fill="#fff" opacity=".35" transform="rotate(-40 -20 -22)"/></svg>`; },
+    whole: (k = 'O') => `<svg viewBox="-60 -60 120 120"><circle r="48" cy="4" fill="url(#gWhole${k})"/>${[...Array(26)].map((_, i) => { const a = i * 2.4, r = 10 + (i * 7) % 34; return `<circle cx="${f(r * Math.cos(a))}" cy="${f(4 + r * Math.sin(a))}" r="1" fill="#000" opacity=".08"/>`; }).join('')}
+      <ellipse cx="-16" cy="-14" rx="14" ry="9" fill="#fff" opacity=".35" transform="rotate(-35 -16 -14)"/><path d="M2,-44 C12,-64 34,-62 40,-52 C26,-46 14,-44 2,-44Z" fill="url(#gLeafMid)"/><circle cx="0" cy="-43" r="3" fill="#5a4a20"/></svg>`,
+    rose: () => `<svg viewBox="-60 -60 120 120"><circle r="50" fill="url(#gRose)"/>${[0,72,144,216,288].map(a => `<ellipse cx="0" cy="-24" rx="30" ry="22" fill="url(#gRose)" stroke="rgba(90,0,30,.18)" stroke-width="1" transform="rotate(${a})"/>`).join('')}
+      ${[36,126,216,306].map(a => `<ellipse cx="0" cy="-12" rx="20" ry="15" fill="url(#gRose2)" stroke="rgba(90,0,30,.2)" stroke-width="1" transform="rotate(${a})"/>`).join('')}
+      <path d="M0,0 m-3,0 a3,3 0 1,1 6,0 a6,6 0 1,1 -12,0 a9,9 0 1,1 18,0" fill="none" stroke="rgba(90,0,30,.45)" stroke-width="2.2"/></svg>`,
+    flower: (g = 'gPetalW') => `<svg viewBox="-60 -60 120 120">${[0,72,144,216,288].map(a => `<path d="M0,0 C-16,-18 -14,-48 0,-54 C14,-48 16,-18 0,0Z" fill="url(#${g})" stroke="rgba(0,0,0,.06)" transform="rotate(${a})"/>`).join('')}<circle r="8" fill="#f2c230"/>${[0,60,120,180,240,300].map(a => `<circle cx="${f(12 * Math.cos(a * Math.PI / 180))}" cy="${f(12 * Math.sin(a * Math.PI / 180))}" r="2" fill="#c98a1a"/>`).join('')}</svg>`,
+    cinnamon: () => `<svg viewBox="-60 -60 120 120"><g transform="rotate(-28)">${[[-10,0],[12,4]].map(([x,r]) => `<g transform="translate(${x} 0) rotate(${r})"><rect x="-11" y="-56" width="22" height="112" rx="6" fill="url(#gCin)"/><path d="M-4,-50 L-4,50 M5,-50 L5,50" stroke="#4a2008" stroke-width="1.6" opacity=".5"/><ellipse cx="0" cy="-56" rx="11" ry="4.5" fill="#5a2a10"/><path d="M-6,-56 a6,3 0 1,1 12,0" fill="none" stroke="#c47a3e" stroke-width="1.5"/></g>`).join('')}</g></svg>`,
+    anise: () => `<svg viewBox="-60 -60 120 120">${[...Array(8)].map((_, i) => `<g transform="rotate(${i * 45})"><path d="M0,0 C-10,-10 -9,-40 0,-50 C9,-40 10,-10 0,0Z" fill="url(#gAnise)"/><ellipse cx="0" cy="-28" rx="4.5" ry="7" fill="#d9a066"/></g>`).join('')}<circle r="7" fill="#3a1a08"/></svg>`,
+    ginger: () => `<svg viewBox="-60 -60 120 120"><path d="M-48,10 C-50,-14 -30,-22 -14,-14 C-10,-34 10,-40 18,-24 C30,-36 52,-26 46,-6 C56,10 40,28 22,22 C10,36 -14,34 -18,20 C-34,30 -50,26 -48,10Z" fill="url(#gGinger)"/>
+      <path d="M-30,0 Q-26,6 -30,12 M0,-16 Q4,-10 0,-4 M24,-8 Q28,-2 24,4" stroke="#a0703a" stroke-width="1.5" fill="none"/></svg>`,
+    cotton: () => `<svg viewBox="-60 -60 120 120"><path d="M0,20 L-26,44 M0,20 L26,44 M0,20 L0,52" stroke="#6b4a2a" stroke-width="4" stroke-linecap="round"/>${[[-20,-6,24],[20,-6,24],[0,-26,26],[-10,14,20],[12,14,20]].map(([x,y,r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#gCotton)"/>`).join('')}</svg>`,
+    monstera: () => `<svg viewBox="-60 -60 120 120"><path d="M0,58 C-2,30 -2,0 0,-20" stroke="#0a2214" stroke-width="3" fill="none"/>
+      <path d="M0,-20 C-40,-22 -58,-48 -40,-58 C-20,-64 0,-50 0,-50 C0,-50 20,-64 40,-58 C58,-48 40,-22 0,-20Z" fill="url(#gMonstera)"/>
+      <path d="M-30,-40 L-12,-34 M-38,-50 L-16,-44 M30,-40 L12,-34 M38,-50 L16,-44" stroke="#163a24" stroke-width="3"/></svg>`,
   };
-  const LEAF = (c, s = 'rgba(31,61,43,.45)') => `<svg viewBox="-60 -60 120 120" width="100%" height="100%"><path d="M0,-55 C34,-34 36,26 0,55 C-36,26 -34,-34 0,-55Z" fill="${c}"/><path d="M0,-46 L0,52" stroke="${s}" stroke-width="2.5"/></svg>`;
+  const KIND = s => { const [k, a] = s.split(':'); return BOT[k](a); };
 
-  // ---------- pattern art for each scent ----------
-  const ART = {
-    sunburst: (fg) => `<div style="position:absolute;left:540px;top:780px;width:3000px;height:3000px;margin:-1500px;border-radius:50%;background:repeating-conic-gradient(${fg} 0 7deg, transparent 7deg 18deg);opacity:.16" class="spin"></div>
-      <svg class="spin2" style="position:absolute;left:540px;top:780px;width:1200px;height:1200px;margin:-600px;opacity:.22" viewBox="-50 -50 100 100"><circle r="46" fill="none" stroke="#fff" stroke-width="2.2"/><circle r="40" fill="none" stroke="#fff" stroke-width="1"/>${[...Array(10)].map((_,i)=>{const a=i*36*Math.PI/180;return `<path d="M0,0 L${(38*Math.cos(a)).toFixed(1)},${(38*Math.sin(a)).toFixed(1)}" stroke="#fff" stroke-width="1"/>`}).join('')}</svg>`,
-    stripes: (fg) => `<div class="slide" style="position:absolute;left:-600px;top:-600px;width:2400px;height:3200px;background:repeating-linear-gradient(45deg, ${fg} 0 34px, transparent 34px 110px);opacity:.10"></div>
-      ${[[120,1500,380,-30],[820,240,300,40],[880,1350,240,15]].map(([x,y,s,r])=>`<div class="drift" style="position:absolute;left:${x-s/2}px;top:${y-s/2}px;width:${s}px;height:${s}px;transform:rotate(${r}deg);opacity:.35"><svg viewBox="-60 -60 120 120" width="100%" height="100%"><path d="M0,-55 C34,-34 36,26 0,55 C-36,26 -34,-34 0,-55Z" fill="none" stroke="${fg}" stroke-width="2"/><path d="M0,-46 L0,52" stroke="${fg}" stroke-width="1.5"/></svg></div>`).join('')}`,
-    waves: (fg) => `<svg class="flow" style="position:absolute;left:-1100px;top:0;width:3300px;height:1920px;opacity:.28" viewBox="0 0 3300 1920">${[...Array(22)].map((_,i)=>{let d='M0,'+(i*92);for(let x=0;x<=3300;x+=30){d+=' L'+x+','+(i*92+46*Math.sin(x/170+i*.45)+20*Math.sin(x/61+i)).toFixed(1)}return `<path d="${d}" fill="none" stroke="${fg}" stroke-width="${i%3?1.4:2.6}"/>`}).join('')}</svg>`,
-    mandala: (fg) => `<svg class="spin" style="position:absolute;left:540px;top:780px;width:1500px;height:1500px;margin:-750px;opacity:.25" viewBox="-100 -100 200 200">${[[30,10,9,16],[55,16,12,22],[80,24,13,26],[98,32,10,18]].map(([r,n,rx,ry])=>[...Array(n)].map((_,i)=>`<ellipse cx="0" cy="${-r}" rx="${rx/2.2}" ry="${ry/2}" fill="none" stroke="${fg}" stroke-width=".7" transform="rotate(${i*360/n})"/>`).join('')).join('')}<circle r="14" fill="none" stroke="${fg}" stroke-width=".8"/></svg>`,
-    dots: (fg) => `<div class="slide" style="position:absolute;left:-400px;top:-400px;width:2000px;height:2800px;background-image:radial-gradient(${fg} 2.6px, transparent 3px);background-size:46px 46px;opacity:.20"></div>
-      <div style="position:absolute;left:540px;top:760px;width:1300px;height:1300px;margin:-650px;border-radius:50%;background:radial-gradient(circle, rgba(220,255,200,.35), transparent 60%)"></div>`,
-    spiral: (fg) => { let d = ''; for (let a = 0; a < Math.PI * 14; a += .06) { const r = 4 + a * 2.1; d += (a ? ' L' : 'M') + (r * Math.cos(a)).toFixed(1) + ',' + (r * Math.sin(a)).toFixed(1); }
-      return `<svg class="spin" style="position:absolute;left:540px;top:780px;width:2000px;height:2000px;margin:-1000px;opacity:.20" viewBox="-100 -100 200 200"><path d="${d}" fill="none" stroke="${fg}" stroke-width="3.2"/></svg>`
-        + [[150,300,120],[930,560,90],[120,1180,80],[940,1250,130]].map(([x,y,s])=>`<div class="drift" style="position:absolute;left:${x-s/2}px;top:${y-s/2}px;width:${s}px;height:${s}px;opacity:.35">${I.star(fg)}</div>`).join(''); },
-  };
-
-  const SCENTS = [
-    { id: 'citrus-fresh',   name: 'Citrus Fresh',   notes: 'Orange · Lemon · Bergamot · Peppermint',     bg: ['#ffd84a','#f2b81e','#c98a0c'], fg: '#2a2405', art: 'sunburst',
-      icons: [I.slice('#f08a24'), I.slice('#f5d433'), I.leaf('#5f9d4a'), I.drop('#8cbf5a')], wipe: ['inset(0% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'] },
-    { id: 'morning-zest',   name: 'Morning Zest',   notes: 'Peppermint · Eucalyptus · Lemon',            bg: ['#c4e6c4','#93c49d','#5d9a73'], fg: '#0f2c1c', art: 'stripes',
-      icons: [I.leaf('#3f8f5a'), I.round('#7fb3a0'), I.slice('#f5d433'), I.drop('#3f8f5a')], wipe: ['inset(0% 0% 0% 100%)', 'inset(0% 0% 0% 0%)'] },
-    { id: 'fresh-linen',    name: 'Fresh Linen',    notes: 'Lavender · Bergamot · Eucalyptus · Lemon',   bg: ['#ddd3fa','#b3a1e6','#7d68c2'], fg: '#21184a', art: 'waves',
-      icons: [I.lavender('#7c5cc4'), I.round('#7fb3a0'), I.slice('#f5d433'), I.lavender('#9a7fd8')], wipe: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'] },
-    { id: 'floral-fantasy', name: 'Floral Fantasy', notes: 'Ylang Ylang · Rose · Jasmine · Geranium',    bg: ['#ffd0db','#f0a0b5','#c96784'], fg: '#4a0f22', art: 'mandala',
-      icons: [I.flower('#d6335a'), I.flower('#ffffff', '#f2c230'), I.flower('#f28fb0'), I.leaf('#5f9d4a')], wipe: ['circle(0% at 50% 45%)', 'circle(80% at 50% 45%)'] },
-    { id: 'pure',           name: 'Pure',           notes: 'Tea Tree · Eucalyptus · Peppermint · Lemon', bg: ['#4fa673','#2d7a4c','#12432a'], fg: '#f4fbef', art: 'dots',
-      icons: [I.needle('#4f9d5a'), I.round('#7fb3a0'), I.leaf('#3f8f5a'), I.slice('#f5d433')], wipe: ['polygon(0% 0%, 0% 0%, 0% 0%)', 'polygon(0% 0%, 240% 0%, 0% 240%)'] },
-    { id: 'spiced-orange',  name: 'Spiced Orange',  notes: 'Orange · Clove · Cinnamon · Ginger',         bg: ['#f3a25c','#d9702f','#8c3a12'], fg: '#fff1e2', art: 'spiral',
-      icons: [I.slice('#f08a24'), I.star('#7a3d18'), I.stick('#9c5524'), I.drop('#e0b062')], wipe: ['inset(50% 50% 50% 50% round 80px)', 'inset(0% 0% 0% 0% round 0px)'] },
-  ];
-  const BADGE = [[215, 530], [865, 495], [195, 1010], [880, 1035]];
-
-  // ---------- build 01 ----------
-  const topo = $('#topo');
-  for (let i = 0; i < 18; i++) {
-    let d = ''; const r0 = 70 + i * 52;
-    for (let k = 0; k <= 160; k++) { const a = k / 160 * Math.PI * 2;
-      const r = r0 * (1 + .09 * Math.sin(3 * a + i * .55) + .05 * Math.sin(5 * a - i * .8) + .03 * Math.sin(9 * a + i));
-      d += (k ? ' L' : 'M') + (r * Math.cos(a)).toFixed(1) + ',' + (r * Math.sin(a)).toFixed(1); }
-    const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d + 'Z'); p.setAttribute('fill', 'none');
-    p.setAttribute('stroke', i % 4 === 0 ? 'rgba(214,227,168,.30)' : 'rgba(185,207,126,.14)'); p.setAttribute('stroke-width', i % 4 === 0 ? 2.4 : 1.4);
-    p.setAttribute('class', 'topo'); topo.appendChild(p);
+  // scatter botanicals into a host; values are resolved now (deterministic)
+  function scatter(host, specs) {
+    const h = $(host), made = [];
+    specs.forEach(([cx, cy, spread, n, kinds, smin, smax, depth]) => {
+      for (let i = 0; i < n; i++) {
+        const a = rnd() * Math.PI * 2, r = spread * Math.sqrt(rnd()), s = smin + rnd() * (smax - smin);
+        const d = document.createElement('div'); d.className = 'bot d-' + depth;
+        const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a), rot = rnd() * 360;
+        Object.assign(d.style, { left: f(x - s / 2) + 'px', top: f(y - s / 2) + 'px', width: f(s) + 'px', height: f(s) + 'px', transform: `rotate(${f(rot)}deg)` });
+        d.dataset.sw = f((rnd() - .5) * 24); d.dataset.dy = f(-10 - rnd() * 26); d.dataset.dx = f((rnd() - .5) * 30);
+        d.innerHTML = KIND(kinds[Math.floor(rnd() * kinds.length)]);
+        h.appendChild(d); made.push(d);
+      }
+    });
+    return made;
   }
-  const bokeh = (host, specs) => specs.forEach(([x, y, s, r, c], i) => { const d = document.createElement('div'); d.className = 'bokeh';
-    Object.assign(d.style, { left: x + 'px', top: y + 'px', width: s + 'px', height: s + 'px', transform: `rotate(${r}deg)` }); d.innerHTML = LEAF(c); $(host).appendChild(d); });
-  bokeh('#bokeh1', [[-120, 1500, 420, 30, '#3f7a4f'], [820, -80, 360, -40, '#4f8a5a'], [880, 1650, 300, 60, '#2f6a45']]);
-  bokeh('#bokeh5', [[-140, 1550, 400, 20, '#3f7a4f'], [850, 1500, 340, -50, '#4f8a5a']]);
+  const splitText = el => { el.innerHTML = el.textContent.trim().split(' ').map(w =>
+      `<span style="display:inline-block;white-space:nowrap">${[...w].map(ch => `<span class="c" data-r="${f((rnd() - .5) * 50)}">${ch}</span>`).join('')}</span>`).join(' '); };
 
-  // ---------- build 02 ----------
+  const FOREST = ['leaf:gLeafDark', 'leaf:gLeafMid', 'long:gLeafDark', 'long:gLeafMid', 'leaf:gLeafLight', 'euc', 'needle', 'monstera'];
+  const FOREST_BACK = ['leaf:gLeafDark', 'long:gLeafDark', 'monstera', 'leaf:gLeafMid'];
+
+  // ---------- 01 PROMISE ----------
+  for (let i = 0; i < 6; i++) { const s = document.createElement('div'); s.className = 'shaft'; s.id = 'sh1' + i; s.style.transform = `rotate(${(i - 2.5) * 11}deg)`; $('#shafts').appendChild(s); }
+  scatter('#f1back', [[60, 160, 300, 16, FOREST_BACK, 160, 300, 'back'], [1030, 200, 280, 14, FOREST_BACK, 160, 300, 'back'],
+                      [60, 1780, 380, 22, FOREST_BACK, 180, 320, 'back'], [1030, 1760, 360, 20, FOREST_BACK, 180, 320, 'back'], [540, 1900, 260, 10, FOREST_BACK, 200, 320, 'back']]);
+  const f1mid = scatter('#f1mid', [[-20, 60, 230, 12, FOREST, 150, 260, 'mid'], [1100, 120, 220, 11, FOREST, 150, 260, 'mid'],
+                      [-10, 1880, 270, 14, FOREST, 160, 290, 'mid'], [1090, 1860, 260, 13, FOREST, 160, 290, 'mid'],
+                      [-40, 1000, 120, 4, FOREST, 140, 220, 'mid'], [1120, 940, 120, 4, FOREST, 140, 220, 'mid']]);
+  const f1front = scatter('#f1front', [[-60, 1700, 120, 2, ['leaf:gLeafDark', 'monstera'], 420, 520, 'front'], [1140, 200, 100, 2, ['leaf:gLeafMid', 'long:gLeafDark'], 380, 480, 'front']]);
+
+  // ---------- 02 ESSENCE ----------
+  const PALE = ['euc', 'euc', 'leaf:gSage', 'long:gSage', 'leaf:gLeafLight', 'lavender'];
+  scatter('#f2back', [[40, 180, 260, 12, PALE, 150, 260, 'back'], [1040, 160, 240, 11, PALE, 150, 260, 'back'], [40, 1800, 300, 14, PALE, 160, 280, 'back'], [1040, 1820, 300, 14, PALE, 160, 280, 'back']]);
+  const f2mid = scatter('#f2mid', [[-10, 80, 200, 9, PALE, 150, 240, 'mid'], [1090, 100, 190, 8, PALE, 150, 240, 'mid'], [-10, 1880, 230, 10, PALE, 160, 260, 'mid'], [1090, 1880, 230, 10, PALE, 160, 260, 'mid']]);
   for (let i = 0; i < 6; i++) { const r = document.createElement('div'); r.className = 'ring'; r.id = 'rg' + i; $('#rings').appendChild(r); }
 
-  // ---------- build 03 ----------
+  // ---------- 03 BLENDS ----------
+  const SCENTS = [
+    { id: 'citrus-fresh', name: 'Citrus Fresh', notes: 'Orange · Lemon · Bergamot · Peppermint', bg: ['#ffe27a', '#f4b62c', '#b77a08'], arch: ['#fff3c4', '#ffd96b'], fg: '#2a2003',
+      ing: ['slice:O', 'slice:L', 'whole:O', 'whole:L', 'leaf:gMint'], float: ['slice:O', 'slice:L', 'leaf:gMint', 'slice:L'], wipe: null },
+    { id: 'morning-zest', name: 'Morning Zest', notes: 'Peppermint · Eucalyptus · Lemon', bg: ['#d3eed6', '#97c9a3', '#3f7f58'], arch: ['#f1fbf1', '#c3e5c8'], fg: '#0d2a1a',
+      ing: ['leaf:gMint', 'euc', 'slice:L', 'leaf:gMint', 'whole:L'], float: ['leaf:gMint', 'euc', 'slice:L', 'leaf:gMint'], wipe: ['inset(0% 0% 0% 100%)', 'inset(0% 0% 0% 0%)'] },
+    { id: 'fresh-linen', name: 'Fresh Linen', notes: 'Lavender · Bergamot · Eucalyptus · Lemon', bg: ['#e4dcfb', '#b6a5ea', '#6650b0'], arch: ['#f7f4ff', '#d9cff7'], fg: '#1e1546',
+      ing: ['lavender', 'cotton', 'euc', 'slice:L', 'lavender'], float: ['lavender', 'cotton', 'euc', 'lavender'], wipe: ['inset(100% 0% 0% 0%)', 'inset(0% 0% 0% 0%)'] },
+    { id: 'floral-fantasy', name: 'Floral Fantasy', notes: 'Ylang Ylang · Rose · Jasmine · Geranium', bg: ['#ffdbe4', '#f2a2b7', '#b44f72'], arch: ['#fff4f6', '#ffd0dc'], fg: '#470d21',
+      ing: ['rose', 'flower:gPetalW', 'flower:gPetalP', 'rose', 'leaf:gLeafMid'], float: ['rose', 'flower:gPetalW', 'flower:gPetalP', 'rose'], wipe: ['circle(0% at 50% 45%)', 'circle(80% at 50% 45%)'] },
+    { id: 'pure', name: 'Pure', notes: 'Tea Tree · Eucalyptus · Peppermint · Lemon', bg: ['#5fb27f', '#2c7a4b', '#0d3420'], arch: ['#7cc597', '#3f925f'], fg: '#f4fbef',
+      ing: ['needle', 'euc', 'leaf:gMint', 'slice:L', 'needle'], float: ['needle', 'euc', 'leaf:gMint', 'slice:L'], wipe: ['polygon(0% 0%, 0% 0%, 0% 0%)', 'polygon(0% 0%, 240% 0%, 0% 240%)'] },
+    { id: 'spiced-orange', name: 'Spiced Orange', notes: 'Orange · Clove · Cinnamon · Ginger', bg: ['#f7b072', '#db7232', '#7a300c'], arch: ['#ffe2c6', '#f6b07a'], fg: '#2e1205',
+      ing: ['slice:O', 'anise', 'cinnamon', 'ginger', 'whole:O'], float: ['slice:O', 'anise', 'cinnamon', 'anise'], wipe: ['inset(50% 50% 50% 50% round 80px)', 'inset(0% 0% 0% 0% round 0px)'] },
+  ];
+  const FLOATPOS = [[205, 560, 170], [880, 520, 160], [190, 960, 150], [895, 990, 165]];
   SCENTS.forEach((s, i) => {
     const p = document.createElement('div'); p.className = 'panel'; p.id = 'p' + i;
-    p.style.background = `radial-gradient(110% 70% at 50% 40%, ${s.bg[0]} 0%, ${s.bg[1]} 48%, ${s.bg[2]} 100%)`; p.style.color = s.fg;
-    p.innerHTML = `<div class="art">${ART[s.art](s.fg)}</div>
-      <div class="outline">${(s.name + ' · ').repeat(4)}</div>
+    p.style.background = `radial-gradient(120% 80% at 50% 42%, ${s.bg[0]} 0%, ${s.bg[1]} 55%, ${s.bg[2]} 100%)`; p.style.color = s.fg;
+    p.innerHTML = `<div class="pb" id="pb${i}"></div>
+      <div class="archline"></div>
+      <div class="arch" style="background:linear-gradient(180deg, ${s.arch[0]} 0%, ${s.arch[1]} 100%)"></div>
       <div class="idx">0${i + 1}<small>/ 06</small></div>
-      <div class="floor"></div>
-      <img class="bottle" src="assets/${s.id}.png" alt="">
-      ${s.icons.map((ic, k) => `<div class="badge" style="left:${BADGE[k][0]}px;top:${BADGE[k][1]}px">${ic}</div>`).join('')}
+      <div class="pm" id="pm${i}"></div>
+      <div class="podium"><div class="body"></div><div class="top"></div><div class="shadow"></div></div>
+      <img class="bottle" src="assets/${s.id}.png" alt="${s.name}">
+      <div class="pf" id="pf${i}"></div>
       <div class="name split">${s.name}</div>
       <div class="notes"><b>100% essential oils of</b><br>${s.notes}</div>`;
     $('#panels').appendChild(p);
+    scatter('#pb' + i, [[40, 260, 220, 9, s.ing, 130, 230, 'back'], [1040, 300, 220, 9, s.ing, 130, 230, 'back'], [-20, 1820, 220, 10, s.ing, 140, 240, 'back'], [1100, 1830, 220, 10, s.ing, 140, 240, 'back']]);
+    // floating hero ingredients around the bottle
+    FLOATPOS.forEach(([x, y, sz], k) => { const d = document.createElement('div'); d.className = 'bot d-mid fl';
+      Object.assign(d.style, { left: (x - sz / 2) + 'px', top: (y - sz / 2) + 'px', width: sz + 'px', height: sz + 'px', transform: `rotate(${f(rnd() * 360)}deg)` });
+      d.dataset.r = f((rnd() - .5) * 140); d.innerHTML = KIND(s.float[k]); $('#pm' + i).appendChild(d); });
+    // ingredients piled at the podium foot
+    scatter('#pf' + i, [[240, 1195, 40, 4, s.ing, 100, 135, 'mid'], [840, 1195, 40, 4, s.ing, 100, 135, 'mid']]);
     const d = document.createElement('span'); d.id = 'd' + i; $('#dots').appendChild(d);
   });
-  ['#ffd84a', '#93c49d', '#b3a1e6', '#f0a0b5', '#2d7a4c', '#ffd84a'].forEach(c => { const b = document.createElement('i'); b.style.background = c; $('#bars').appendChild(b); });
+  ['#ffe27a', '#97c9a3', '#b6a5ea', '#f2a2b7', '#2c7a4b', '#ffe27a'].forEach(c => { const b = document.createElement('i'); b.style.background = c; $('#bars').appendChild(b); });
 
-  // ---------- build 04 ----------
-  const ICONS4 = [
-    { x: 230, label: 'Home', d: 'M-44,4 L0,-36 L44,4 M-32,-6 L-32,40 L32,40 L32,-6 M-10,40 L-10,14 L10,14 L10,40' },
-    { x: 540, label: 'Car', d: 'M-50,16 L-50,0 L-38,-6 L-26,-28 L24,-28 L38,-6 L50,0 L50,16 L38,16 M-18,16 L18,16 M-38,16 L-50,16 M-36,18 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0 M16,18 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0 M-22,-8 L22,-8' },
-    { x: 850, label: 'Workspace', d: 'M-36,-28 L36,-28 L36,14 L-36,14 Z M-50,24 L50,24 L44,32 L-44,32 Z M-8,0 L8,0' },
+  // ---------- 04 RITUAL ----------
+  scatter('#f4back', [[1010, 1560, 200, 8, ['monstera', 'leaf:gLeafDark', 'long:gLeafDark'], 220, 340, 'back'], [60, 200, 160, 6, ['monstera', 'long:gLeafDark'], 200, 300, 'back']]);
+  const f4front = scatter('#f4front', [[1040, 1760, 190, 9, ['monstera', 'leaf:gLeafDark', 'long:gLeafDark', 'leaf:gLeafMid'], 240, 380, 'mid'], [1110, 1430, 90, 3, ['monstera', 'long:gLeafDark'], 280, 360, 'mid'], [-40, 1860, 120, 4, ['leaf:gLeafDark', 'long:gLeafDark'], 220, 320, 'mid']]);
+  const SPACES = [
+    { y: 700, label: 'Home', d: 'M-44,4 L0,-36 L44,4 M-32,-6 L-32,40 L32,40 L32,-6 M-10,40 L-10,14 L10,14 L10,40' },
+    { y: 930, label: 'Car', d: 'M-50,16 L-50,0 L-38,-6 L-26,-28 L24,-28 L38,-6 L50,0 L50,16 L38,16 M-18,16 L18,16 M-38,16 L-50,16 M-36,18 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0 M16,18 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0 M-22,-8 L22,-8' },
+    { y: 1160, label: 'Workspace', d: 'M-36,-28 L36,-28 L36,14 L-36,14 Z M-50,24 L50,24 L44,32 L-44,32 Z M-8,0 L8,0' },
   ];
-  ICONS4.forEach((ic, i) => {
-    const w = document.createElement('div');
-    w.innerHTML = `<svg class="icon" id="ic${i}" style="left:${ic.x}px" viewBox="-110 -110 220 220">
-        <circle id="icf${i}" r="96" fill="rgba(185,207,126,.12)" opacity="0"/>
-        <circle class="draw" r="96" fill="none" stroke="#b9cf7e" stroke-width="3"/>
-        <path class="draw" d="${ic.d}" fill="none" stroke="#faf7f0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="scale(1.15)"/></svg>
-      <div class="ilbl" id="lb${i}" style="left:${ic.x}px">${ic.label}</div>`;
-    while (w.firstChild) $('#icons').appendChild(w.firstChild);
-  });
+  SPACES.forEach((sp, i) => { const w = document.createElement('div'); w.className = 'space'; w.id = 'sp' + i; w.style.top = sp.y + 'px';
+    w.innerHTML = `<div class="disc"></div><svg viewBox="-75 -75 150 150"><path class="draw" d="${sp.d}" fill="none" stroke="#faf7f0" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" transform="scale(.95)"/></svg><div class="sl">${sp.label}</div>`;
+    $('#spaces').appendChild(w); });
+  // mist particles live inside the rotated sprayer, starting at the nozzle and travelling +x (the way the nozzle faces)
   const MIST = [];
-  for (let i = 0; i < 60; i++) { const m = document.createElement('div'); m.className = 'mist'; const s = 14 + rnd() * 46;
-    Object.assign(m.style, { width: s + 'px', height: s + 'px', left: (704 - s / 2) + 'px', top: (1190 - s / 2) + 'px' }); m.id = 'mi' + i; $('#mist').appendChild(m);
-    MIST.push({ dx: -(160 + rnd() * 520), dy: -120 + (rnd() - .5) * 340, delay: rnd() * .55 }); }
+  for (let i = 0; i < 70; i++) { const m = document.createElement('div'); m.className = 'mist'; const s = 16 + rnd() * 54;
+    Object.assign(m.style, { width: f(s) + 'px', height: f(s) + 'px', left: f(-s / 2) + 'px', top: f(-s / 2) + 'px' }); m.id = 'mi' + i; $('#mist').appendChild(m);
+    const dx = 140 + rnd() * 720; MIST.push({ dx, dy: (rnd() - .5) * dx * .42, delay: rnd() * .6 }); }
 
-  // ---------- build 05 ----------
+  // ---------- 05 BRAND ----------
   for (let i = 0; i < 7; i++) { const b = document.createElement('div'); b.className = 'beam'; b.id = 'bm' + i; b.style.transform = `rotate(${(i - 3) * 13}deg)`; $('#beams').appendChild(b); }
-  for (let i = 0; i < 16; i++) { const d = document.createElement('div'); d.className = 'cl'; const a = i / 16 * Math.PI * 2;
-    Object.assign(d.style, { left: (Math.cos(a) * 470) + 'px', top: (Math.sin(a) * 470) + 'px', transform: `rotate(${a * 180 / Math.PI + 90}deg)`, opacity: .3 });
-    d.innerHTML = LEAF(i % 2 ? '#b9cf7e' : '#8fae5e'); $('#crown').appendChild(d); }
+  scatter('#f5back', [[40, 170, 260, 13, FOREST_BACK, 160, 280, 'back'], [1040, 170, 260, 13, FOREST_BACK, 160, 280, 'back'], [60, 1840, 260, 10, FOREST_BACK, 160, 260, 'back'], [1020, 1840, 260, 10, FOREST_BACK, 160, 260, 'back']]);
+  const f5mid = scatter('#f5mid', [[-10, 70, 200, 9, FOREST, 140, 240, 'mid'], [1090, 70, 200, 9, FOREST, 140, 240, 'mid'],
+    [120, 1420, 60, 3, ['slice:O', 'lavender', 'rose'], 120, 150, 'mid'], [960, 1420, 60, 3, ['slice:L', 'anise', 'euc'], 120, 150, 'mid']]);
   const order = ['floral-fantasy', 'morning-zest', 'citrus-fresh', 'fresh-linen', 'pure', 'spiced-orange'];
-  const H = [440, 480, 540, 580, 480, 440], X = [70, 225, 375, 490, 645, 805];
-  order.forEach((id, i) => { const im = document.createElement('img'); im.src = `assets/${id}.png`; im.id = 'sh' + i;
-    Object.assign(im.style, { height: H[i] + 'px', left: (X[i] + (id === 'fresh-linen' ? 25 : 0)) + 'px', zIndex: (i === 2 || i === 3) ? 3 : (i === 1 || i === 4 ? 2 : 1) }); $('#shelf').appendChild(im); });
+  const HS = [430, 450, 500, 500, 450, 430];
+  order.forEach((id, i) => { const im = document.createElement('img'); im.src = `assets/${id}.png`; im.id = 'sh' + i; im.style.height = HS[i] + 'px'; $('#shelf').appendChild(im); });
+  const f5front = scatter('#f5front', [[-80, 1780, 100, 2, ['leaf:gLeafDark', 'monstera'], 380, 480, 'front'], [1160, 1700, 100, 2, ['long:gLeafDark', 'leaf:gLeafMid'], 380, 480, 'front']]);
+
+  // HUD movement labels
+  const MV = [[0, '01 — The promise'], [8 * B, '02 — The essence'], [14 * B, '03 — The blends'], [26 * B, '04 — The ritual'], [32 * B, '05 — Freshleaf']];
+  MV.forEach(([t, txt], i) => { const s = document.createElement('span'); s.className = 'mv'; s.id = 'mv' + i; s.textContent = txt; $('#mvs').appendChild(s); });
 
   $$('.split').forEach(splitText);
   $$('.draw, .draw2').forEach(p => { const L = Math.ceil(p.getTotalLength()) + 2; p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
 
   // ======================================================================
   const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
-  const show = (s, t) => tl.set(s, { visibility: 'visible' }, t), hide = (s, t) => tl.set(s, { visibility: 'hidden' }, t);
   const draw = (sel, t, d = .8, st = .1) => tl.to(sel, { strokeDashoffset: 0, duration: d, ease: 'power2.inOut', stagger: st }, t);
+  const sway = (els, t, d) => tl.fromTo(els, { rotation: '+=0' }, { rotation: (i, el) => '+=' + el.dataset.sw, y: (i, el) => +el.dataset.dy, x: (i, el) => +el.dataset.dx, duration: d, ease: 'sine.inOut' }, t);
   gsap.set(['#m5 .logo', '#m5 .cta', '.panel .bottle'], { xPercent: -50 });
   gsap.set('#bars i', { yPercent: -101 });
+  gsap.set(['#m2', '#m3', '#m4', '#m5'], { visibility: 'hidden' });
+  const show = (s, t) => tl.set(s, { visibility: 'visible' }, t), hide = (s, t) => tl.set(s, { visibility: 'hidden' }, t);
 
-  // HUD: movement labels, progress bar, colour per background
-  const MV = [[0, '01 — The promise', 'rgba(250,247,240,.85)'], [3.333, '02 — The essence', 'rgba(31,61,43,.85)'], [5.833, '03 — The blends', SCENTS[0].fg],
-              [10.833, '04 — The ritual', 'rgba(250,247,240,.85)'], [13.333, '05 — Freshleaf', 'rgba(250,247,240,.85)']];
-  MV.forEach(([t, txt, col], i) => {
-    if (i) tl.to('#mv', { opacity: 0, y: -14, duration: .12, ease: 'power2.in' }, t - .12);
-    tl.call(() => { $('#mv').textContent = txt; }, null, t);
-    tl.call(() => { $('#mv').textContent = i ? MV[i - 1][1] : txt; }, null, t - .001);
-    tl.fromTo('#mv', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .25, immediateRender: false }, t);
-    tl.to('#hud', { color: col, duration: .2 }, t);
+  // HUD
+  MV.forEach(([t], i) => {
+    tl.fromTo('#mv' + i, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .25, immediateRender: i === 0 ? false : true }, t);
+    if (i < MV.length - 1) tl.to('#mv' + i, { opacity: 0, y: -14, duration: .15, ease: 'power2.in' }, MV[i + 1][0] - .15);
   });
-  SCENTS.forEach((s, i) => tl.to('#hud', { color: s.fg, duration: .2 }, 5.833 + i * 2 * B));
-  tl.fromTo('#prog', { width: '0%' }, { width: '100%', duration: 17, ease: 'none' }, 0);
+  [[0, 'rgba(250,247,240,.9)'], [8 * B, '#16301f'], [26 * B, 'rgba(250,247,240,.9)'], [32 * B, 'rgba(250,247,240,.9)']].forEach(([t, c]) => tl.to('#hud', { color: c, duration: .2 }, t));
+  SCENTS.forEach((s, i) => tl.to('#hud', { color: s.fg, duration: .2 }, 14 * B + i * 2 * B));
+  tl.fromTo('#prog', { scaleX: 0 }, { scaleX: 1, duration: 17, ease: 'none' }, 0);
   tl.from('#hud', { opacity: 0, duration: .6 }, .1);
-  tl.from('#hud .frame', { scale: 1.06, duration: 1.2, ease: 'power2.out' }, .1);
-
-  // light leaks on big moments
   [[3.2, .9], [13.2, 1.1]].forEach(([t, d]) => {
     tl.fromTo('#leak', { opacity: 0, x: 0, y: 0 }, { opacity: 1, x: 900, y: 500, duration: d, ease: 'power1.inOut', immediateRender: false }, t);
     tl.to('#leak', { opacity: 0, duration: .5 }, t + d - .3);
   });
-  // white flash on the drop + logo
-  [[3.333, .45], [13.333, .22]].forEach(([t, o]) => tl.fromTo('#flash', { opacity: o }, { opacity: 0, duration: .3, ease: 'power2.out', immediateRender: false }, t));
+  [[8 * B, .4], [32 * B, .2]].forEach(([t, o]) => tl.fromTo('#flash', { opacity: o }, { opacity: 0, duration: .3, ease: 'power2.out', immediateRender: false }, t));
 
   // ---------------- 01 PROMISE ----------------
-  show('#m1', 0);
-  tl.fromTo('#m1', { scale: 1 }, { scale: 1.06, duration: 3.4, ease: 'none' }, 0);
-  tl.fromTo('#topo', { rotation: -10, scale: .9 }, { rotation: 25, scale: 1.15, duration: 3.4, ease: 'none' }, 0);
-  tl.from('.topo', { opacity: 0, scale: .6, transformOrigin: '0 0', duration: 1.2, stagger: .03, ease: 'power2.out' }, 0);
-  tl.to('#b1', { x: 260, y: 160, duration: 3.4, ease: 'sine.inOut' }, 0);
-  tl.to('#b2', { x: -280, y: -240, duration: 3.4, ease: 'sine.inOut' }, 0);
-  tl.to('#b3', { x: 160, y: -300, duration: 3.4, ease: 'sine.inOut' }, 0);
-  $$('#bokeh1 .bokeh').forEach((b, i) => tl.fromTo(b, { x: i % 2 ? 200 : -200, y: 120 }, { x: i % 2 ? -160 : 160, y: -160, rotation: '+=40', duration: 3.4, ease: 'none' }, 0));
+  tl.fromTo('#m1', { scale: 1 }, { scale: 1.05, duration: 7 * B, ease: 'none' }, 0);
+  $$('#shafts .shaft').forEach((s, i) => tl.fromTo(s, { opacity: .3, rotation: (i - 2.5) * 11 - 4 }, { opacity: 1, rotation: (i - 2.5) * 11 + 4, duration: 3.4, ease: 'sine.inOut' }, 0));
+  tl.from('#f1mid .bot', { scale: .4, opacity: 0, duration: .9, stagger: .012, ease: 'back.out(1.4)' }, 0);
+  sway('#f1mid .bot', .8, 2.6); sway('#f1back .bot', 0, 3.4);
+  f1front.forEach((el, i) => tl.fromTo(el, { x: i % 2 ? 160 : -160, y: 80 }, { x: i % 2 ? -120 : 120, y: -120, duration: 3.4, ease: 'none' }, 0));
   draw('#bigleaf .draw', .05, .9, .16);
   tl.to('#bl-fill', { opacity: 1, duration: .4 }, .8);
   tl.to('#bigleaf', { rotation: 360, scale: .62, y: -40, duration: 1.4, ease: 'power3.inOut' }, .85);
   tl.from('#m1 .t1 .c', { y: 90, opacity: 0, rotationX: -90, duration: .5, stagger: .022 }, .35);
-  tl.from('#m1 .t2 .c', { scale: 0, y: 70, rotation: () => (rnd() - .5) * 50, duration: .6, stagger: .055, ease: 'back.out(2.4)' }, 5 * B);
+  tl.from('#m1 .t2 .c', { scale: 0, y: 70, rotation: (i, el) => +el.dataset.r, duration: .6, stagger: .055, ease: 'back.out(2.4)' }, 5 * B);
   tl.to('#m1 .t2', { scale: 1.07, duration: .42, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.55);
   tl.from('#m1 .t3 .c', { x: 40, opacity: 0, duration: .35, stagger: .03 }, 4 * B);
   draw('#m1 .flask .draw', 1.75, .45, .1);
   tl.to('#m1 .flask .draw2', { strokeDashoffset: 0, duration: .25, ease: 'power2.in' }, 6 * B - .25);
   tl.to('#m1 .flask', { x: 10, duration: .045, yoyo: true, repeat: 5, ease: 'none' }, 6 * B);
 
-  // wipe → 02 (circle from the leaf)
   show('#m2', 7 * B);
   tl.fromTo('#m2', { clipPath: 'circle(0% at 50% 18%)' }, { clipPath: 'circle(135% at 50% 18%)', duration: B, ease: 'power3.in' }, 7 * B);
   tl.to('#m1', { scale: 1.25, filter: 'blur(6px)', duration: B, ease: 'power3.in' }, 7 * B);
   hide('#m1', 8 * B + .05);
 
   // ---------------- 02 ESSENCE ----------------
-  const T2 = 8 * B;
   tl.fromTo('#rays', { rotation: 0, scale: .8 }, { rotation: 40, scale: 1.1, duration: 3.4, ease: 'none' }, 7 * B);
-  tl.fromTo('#drop', { y: -560, scaleY: 1.3, scaleX: .8 }, { y: 0, scaleY: 1, scaleX: 1, duration: B, ease: 'power2.in' }, T2);
+  tl.from('#f2mid .bot', { scale: .3, opacity: 0, duration: .7, stagger: .01, ease: 'back.out(1.5)' }, 8 * B);
+  sway('#f2mid .bot', 8 * B, 2.6); sway('#f2back .bot', 7 * B, 3.2);
+  tl.fromTo('#drop', { y: -560, scaleY: 1.3, scaleX: .8 }, { y: 0, scaleY: 1, scaleX: 1, duration: B, ease: 'power2.in' }, 8 * B);
   tl.to('#drop', { scaleY: .5, scaleX: 1.45, transformOrigin: '50% 100%', duration: .08 }, 9 * B);
   tl.to('#drop', { scale: 0, opacity: 0, duration: .16, ease: 'power2.in' }, 9 * B + .08);
   for (let i = 0; i < 6; i++) tl.fromTo('#rg' + i, { width: 20, height: 20, opacity: .9 }, { width: 700 + i * 380, height: 700 + i * 380, opacity: 0, duration: 1.6, ease: 'power2.out' }, 9 * B + i * B / 2);
-  const counter = { v: 0 };
   tl.from('#m2 .num', { opacity: 0, scale: .55, duration: .5, ease: 'back.out(1.7)' }, 9 * B);
-  tl.to(counter, { v: 100, duration: 2 * B, ease: 'power2.out', onUpdate: () => { $('#count').textContent = Math.round(counter.v); } }, 9 * B);
+  tl.fromTo('#count', { textContent: 0 }, { textContent: 100, snap: { textContent: 1 }, duration: 2 * B, ease: 'power2.out' }, 9 * B);
   tl.from('#m2 .label .c', { y: 50, opacity: 0, duration: .4, stagger: .02 }, 9.6 * B);
   tl.from('#m2 .not', { x: i => i ? 140 : -140, opacity: 0, duration: .45, stagger: .12 }, 10.5 * B);
   tl.from('#m2 .not .x', { scale: 0, rotation: -180, duration: .4, stagger: .12, ease: 'back.out(2)' }, 11.3 * B);
   tl.from('#m2 .not .strike', { scaleX: 0, duration: .32, stagger: .12, ease: 'power2.inOut' }, 11.4 * B);
-  tl.fromTo('#m2', { scale: 1 }, { scale: 1.04, duration: 2.5, ease: 'none', immediateRender: false }, T2);
+  tl.fromTo('#m2', { scale: 1 }, { scale: 1.04, duration: 2.5, ease: 'none', immediateRender: false }, 8 * B);
 
-  // bars → 03
   tl.to('#bars i', { yPercent: 0, duration: B * .9, stagger: .03, ease: 'power3.in' }, 13 * B - .1);
   show('#m3', 14 * B); hide('#m2', 14 * B);
   tl.to('#bars i', { yPercent: 101, duration: B, stagger: .03, ease: 'power3.in' }, 14 * B);
@@ -447,47 +518,49 @@
   SCENTS.forEach((s, i) => {
     const t0 = 14 * B + i * 2 * B, P = '#p' + i;
     if (i) tl.fromTo(P, { clipPath: s.wipe[0] }, { clipPath: s.wipe[1], duration: .34, ease: 'power3.inOut' }, t0 - .2);
-    tl.fromTo(P + ' .spin', { rotation: 0 }, { rotation: 50, duration: 1.4, ease: 'none' }, t0 - .2);
-    tl.fromTo(P + ' .spin2', { rotation: 0, scale: .9 }, { rotation: -60, scale: 1.05, duration: 1.4, ease: 'none' }, t0 - .2);
-    tl.fromTo(P + ' .slide', { x: 0, y: 0 }, { x: -110, y: -110, duration: 1.4, ease: 'none' }, t0 - .2);
-    tl.fromTo(P + ' .flow', { x: 0 }, { x: 420, duration: 1.4, ease: 'none' }, t0 - .2);
-    tl.fromTo(P + ' .drift', { y: 40, rotation: '-=15' }, { y: -40, rotation: '+=30', duration: 1.4, ease: 'none' }, t0 - .2);
-    tl.fromTo(P + ' .outline', { x: i % 2 ? -900 : 0 }, { x: i % 2 ? -300 : -600, duration: 1.4, ease: 'none' }, t0 - .2);
+    tl.fromTo(P + ' .arch', { scaleY: .85, transformOrigin: '50% 100%' }, { scaleY: 1, duration: .5 }, t0 - .1);
+    tl.fromTo(P + ' .archline', { scale: .9, opacity: 0 }, { scale: 1, opacity: .25, duration: .6 }, t0);
+    sway(P + ' .pb .bot', t0 - .2, 1.4);
     tl.from(P + ' .idx', { y: -40, opacity: 0, duration: .35 }, t0);
-    tl.from(P + ' .bottle', { y: 180, scale: .7, rotation: i % 2 ? 10 : -10, opacity: 0, duration: .5, ease: 'back.out(1.6)' }, t0 + (i ? 0 : .12));
-    tl.from(P + ' .floor', { scale: .3, opacity: 0, duration: .4 }, t0 + .05);
-    tl.from(P + ' .badge', { scale: 0, rotation: () => (rnd() - .5) * 140, duration: .38, stagger: .055, ease: 'back.out(2.6)' }, t0 + .12);
-    tl.to(P + ' .badge', { y: k => (k % 2 ? -18 : 18), rotation: k => (k % 2 ? 9 : -9), duration: .9, ease: 'sine.inOut' }, t0 + .45);
+    tl.from(P + ' .podium', { y: 120, opacity: 0, duration: .45 }, t0 - .05);
+    tl.from(P + ' .bottle', { y: -220, opacity: 0, duration: .42, ease: 'bounce.out' }, t0 + (i ? .02 : .12));
+    tl.from(P + ' .fl', { scale: 0, rotation: (k, el) => +el.dataset.r, duration: .42, stagger: .05, ease: 'back.out(2.2)' }, t0 + .1);
+    tl.to(P + ' .fl', { y: k => (k % 2 ? -22 : 22), rotation: k => (k % 2 ? '+=14' : '-=14'), duration: 1, ease: 'sine.inOut' }, t0 + .45);
+    tl.from(P + ' .pf .bot', { y: 60, opacity: 0, duration: .35, stagger: .03 }, t0 + .08);
     tl.from(P + ' .name .c', { y: 80, opacity: 0, rotationX: -80, duration: .35, stagger: .018 }, t0 + .06);
     tl.from(P + ' .notes', { y: 26, opacity: 0, duration: .35 }, t0 + .18);
-    tl.to('#dots span', { backgroundColor: s.fg, opacity: k => k === i ? 1 : .3, width: k => k === i ? 36 : 12, duration: .2 }, t0);
+    if (i) tl.set('#p' + (i - 1), { visibility: 'hidden' }, t0 + .2);
+    tl.to('#dots span', { backgroundColor: s.fg, opacity: k => k === i ? 1 : .3, scaleX: k => k === i ? 3 : 1, duration: .2 }, t0);
   });
 
-  // diagonal wipe → 04
   show('#m4', 25 * B);
   tl.fromTo('#m4', { clipPath: 'polygon(100% 100%, 100% 100%, 100% 100%)' }, { clipPath: 'polygon(100% 100%, -140% 100%, 100% -140%)', duration: B, ease: 'power3.in' }, 25 * B);
   hide('#m3', 26 * B + .05);
 
   // ---------------- 04 RITUAL ----------------
   const T4 = 26 * B;
-  tl.fromTo('#grid', { backgroundPosition: '0px 0px' }, { backgroundPosition: '0px 480px', duration: 3, ease: 'none' }, 25 * B);
-  tl.fromTo('#a1', { x: 0 }, { x: 300, y: -60, duration: 3, ease: 'sine.inOut' }, 25 * B);
-  tl.fromTo('#a2', { x: 0 }, { x: -320, y: 80, duration: 3, ease: 'sine.inOut' }, 25 * B);
-  tl.from('#horizon', { scaleX: 0, duration: .6, ease: 'power2.out' }, T4 - .1);
+  tl.fromTo('#window', { opacity: 0, y: 40 }, { opacity: .9, y: 0, duration: .8 }, 25 * B);
+  tl.fromTo(['#ray1', '#ray2'], { opacity: 0 }, { opacity: 1, rotation: '+=6', duration: 2.6, ease: 'sine.inOut' }, 25 * B);
+  sway('#f4back .bot', 25 * B, 3); sway(f4front, 25 * B, 3);
   tl.from('#m4 .h1 .c', { y: 90, opacity: 0, rotationX: -90, duration: .45, stagger: .03 }, T4 - .15);
   tl.from('#m4 .h2 .c', { scale: 0, y: 40, duration: .45, stagger: .03, ease: 'back.out(2)' }, T4 + .15);
-  [0, 1, 2].forEach(i => { const t = 27 * B + i * B / 2;
-    draw(`#ic${i} .draw`, t, .5, .1); tl.to('#icf' + i, { opacity: 1, duration: .3 }, t + .3);
-    tl.from('#lb' + i, { y: 30, opacity: 0, duration: .3 }, t + .15); });
-  tl.from('#m4 .sub', { opacity: 0, y: 20, duration: .4 }, 29.5 * B);
-  tl.from('#m4 .bottle', { x: 320, rotation: 22, opacity: 0, duration: .55, ease: 'back.out(1.3)' }, T4);
-  tl.to('#m4 .bottle', { rotation: -14, duration: .25, ease: 'power2.out' }, 28 * B - .25);
-  tl.to('#m4 .bottle', { y: 8, duration: .07, yoyo: true, repeat: 3, ease: 'none' }, 28 * B);
+  tl.from('#sprayer', { x: -300, rotation: -30, opacity: 0, duration: .55, ease: 'back.out(1.3)' }, T4);
+  tl.from('#shadow4', { opacity: 0, scale: .4, duration: .5 }, T4);
+  tl.to('#sprayer', { rotation: -12, duration: .25, ease: 'power2.out' }, 28 * B - .25);
+  tl.to('#sprayer img', { y: 6, duration: .07, yoyo: true, repeat: 3, ease: 'none' }, 28 * B);
+  tl.fromTo('#plume', { scaleX: 0, opacity: 0 }, { keyframes: [{ scaleX: .8, opacity: 1, duration: .18, ease: 'power2.out' }, { scaleX: 1.2, opacity: 0, duration: .9, ease: 'power1.out' }], immediateRender: false }, 28 * B);
+  tl.set('#plume', { scaleX: 0, opacity: 0 }, 0);
   MIST.forEach((m, i) => tl.fromTo('#mi' + i, { x: 0, y: 0, opacity: 0, scale: .2 },
-    { keyframes: [{ opacity: .85, scale: 1, duration: .07 }, { x: m.dx, y: m.dy, opacity: 0, scale: 2.6, duration: 1.15, ease: 'power2.out' }], immediateRender: false }, 28 * B + m.delay));
-  tl.fromTo('#m4', { scale: 1.05 }, { scale: 1, duration: 2.8, ease: 'power1.out', immediateRender: false }, 25 * B);
+    { keyframes: [{ opacity: .9, scale: 1, duration: .07 }, { x: m.dx, y: m.dy - 40, opacity: 0, scale: 2.8, duration: 1.2, ease: 'power2.out' }], immediateRender: false }, 28 * B + m.delay));
+  $$('#mist .mist').forEach(el => gsap.set(el, { opacity: 0 }));
+  SPACES.forEach((sp, i) => { const t = 28 * B + .12 + i * .16;
+    tl.from('#sp' + i + ' .disc', { scale: 0, duration: .4, ease: 'back.out(2)' }, t);
+    draw('#sp' + i + ' .draw', t + .1, .45, 0);
+    tl.from('#sp' + i + ' .sl', { x: 40, opacity: 0, duration: .35 }, t + .15);
+    tl.to('#sp' + i + ' .disc', { boxShadow: '0 0 70px rgba(214,227,168,.6), inset 0 0 40px rgba(185,207,126,.35)', duration: .25, yoyo: true, repeat: 1 }, t + .3); });
+  tl.from('#m4 .sub', { opacity: 0, y: 20, duration: .4 }, 29.5 * B);
+  tl.fromTo('#m4', { scale: 1.05 }, { scale: 1, duration: 6 * B, ease: 'power1.out', immediateRender: false }, 25 * B);
 
-  // iris → 05
   show('#m5', 31 * B);
   tl.fromTo('#m5', { clipPath: 'circle(0% at 50% 24%)' }, { clipPath: 'circle(140% at 50% 24%)', duration: B, ease: 'power3.in' }, 31 * B);
   tl.to('#m4', { scale: .9, filter: 'blur(8px)', duration: B, ease: 'power3.in' }, 31 * B);
@@ -496,12 +569,13 @@
   // ---------------- 05 BRAND ----------------
   const T5 = 32 * B;
   $$('#beams .beam').forEach((b, i) => tl.fromTo(b, { opacity: 0, rotation: (i - 3) * 13 - 6 }, { opacity: 1, rotation: (i - 3) * 13 + 6, duration: 3.6, ease: 'sine.inOut' }, 31 * B));
-  tl.fromTo('#crown', { rotation: -30, scale: .6, opacity: 0 }, { rotation: 30, scale: 1, opacity: 1, duration: 3.8, ease: 'power2.out' }, 31 * B);
-  $$('#bokeh5 .bokeh').forEach((b, i) => tl.fromTo(b, { x: i ? 220 : -220, y: 160 }, { x: i ? -120 : 120, y: -140, rotation: '+=30', duration: 3.8, ease: 'none' }, 31 * B));
+  sway('#f5back .bot', 31 * B, 4); sway(f5mid, 31 * B + .4, 3.6);
+  tl.from(f5mid, { scale: .3, opacity: 0, duration: .7, stagger: .012, ease: 'back.out(1.4)' }, T5);
+  f5front.forEach((el, i) => tl.fromTo(el, { x: i ? 200 : -200, y: 140 }, { x: i ? -100 : 100, y: -120, duration: 4, ease: 'none' }, 31 * B));
   tl.from('#m5 .logo', { opacity: 0, scale: 1.4, filter: 'blur(16px)', duration: .7, ease: 'power3.out' }, T5 - .05);
   tl.from('#tag .w', { y: 30, opacity: 0, duration: .4, stagger: .07 }, T5 + .3);
-  tl.from('#floorline', { scaleX: 0, duration: .6, ease: 'power2.inOut' }, T5 + .3);
-  tl.from('#shelf img', { y: 280, opacity: 0, rotation: i => (i - 2.5) * 7, duration: .6, stagger: { each: B / 4, from: 'center' }, ease: 'back.out(1.7)' }, 33 * B);
+  tl.from('.podium5', { y: 80, opacity: 0, duration: .5 }, T5 + .2);
+  tl.from('#shelf img', { y: -260, opacity: 0, duration: .55, stagger: { each: B / 4, from: 'center' }, ease: 'bounce.out' }, 33 * B);
   tl.from('#m5 .price', { opacity: 0, y: 20, duration: .4 }, 34.5 * B);
   tl.from('#m5 .cta', { opacity: 0, scale: .4, duration: .5, ease: 'back.out(2.2)' }, 35 * B);
   tl.fromTo('#m5 .cta .shine', { x: -150 }, { x: 760, duration: .7, ease: 'power2.inOut' }, 36.3 * B);
@@ -512,7 +586,7 @@
 
   window.__timelines = window.__timelines || {};
   window.__timelines['main'] = tl;
-  if (!/[?&]render/.test(location.search)) document.fonts.ready.then(() => tl.repeat(-1).play(0));
+  tl.seek(0);
 })();
 </script>
 </body>
