@@ -8,7 +8,7 @@ const only = process.argv[3] ? process.argv[3].split(',').map(Number) : null; //
 (async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: W, height: H } });
-  await page.goto('file://' + path.resolve(__dirname, 'index.html') + '?render');
+  await page.goto('file://' + path.resolve(__dirname, process.env.COMP || 'index.html') + '?render');
   await page.evaluate(() => document.fonts.ready);
   await page.waitForFunction(() => window.__timelines && window.__timelines.main && [...document.images].every(i => i.complete));
   const seek = t => page.evaluate(t => { window.__timelines.main.seek(t, false); }, t);

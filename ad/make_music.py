@@ -17,7 +17,7 @@ for i,ch in enumerate(chords):
         pad += env*np.sin(2*np.pi*f*2*t)*0.006
 # soft chimes (bell-like) on scene changes
 chime = np.zeros_like(t)
-for st,n in [(0.4,84),(3.0,79),(5.6,81),(6.4,84),(7.2,86),(8.0,88),(8.8,86),(9.6,84),(10.6,79),(13.0,84),(13.4,88),(13.8,91)]:
+for st,n in [(0.4,84),(3.0,79),(5.6,81),(6.43,84),(7.26,86),(8.09,88),(8.92,86),(9.75,84),(10.45,79),(11.3,84),(11.6,86),(11.9,88),(13.0,84),(13.4,88),(13.8,91)]:
     m = t>=st; tt=t[m]-st; f=hz(n)
     chime[m] += (np.sin(2*np.pi*f*tt)+0.3*np.sin(2*np.pi*f*2.76*tt))*np.exp(-tt*2.2)*0.06
 # airy noise "mist" swell
