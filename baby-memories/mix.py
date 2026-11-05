@@ -168,7 +168,7 @@ mus = mus * (1 - (1 - db(-8)) * dk)[:, None]
 def rms(x): return float(np.sqrt(np.mean(x[np.abs(x).max(1) > 1e-4] ** 2))) if np.any(np.abs(x) > 1e-4) else 1.
 vo_r, mu_r, fo_r = rms(vo), rms(mus), rms(fol)
 mix = vo + mus * (vo_r / mu_r) * db(-9) + fol * (vo_r / fo_r) * db(-13) + room * db(0)
-mix = np.stack([limit(mix[:, c], .95) for c in range(2)], 1)
+mix = np.stack([limit(mix[:, c], .85) for c in range(2)], 1)
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
 sf.write(os.path.join(HERE, 'out/mix.wav'), mix[:int(DUR * SR)].astype(np.float32), SR)
 print('rms vo/music/foley', round(20 * np.log10(vo_r), 1), round(20 * np.log10(mu_r), 1), round(20 * np.log10(fo_r), 1), 'peak', float(np.abs(mix).max()))
