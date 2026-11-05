@@ -1,6 +1,6 @@
 #!/bin/sh
 # "Why can't you remember being a baby?" — rebuild the whole film:  sh build.sh [--vo]
-#   --vo  re-synthesise the narration (Kokoro, offline) and re-estimate word timings
+#   --vo  re-synthesise the expressive narration (Kokoro, offline, moods from script/lines_el.json) and re-estimate word timings
 set -e
 LIB=${LIB:-/root/lemo-opuscar}
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -9,7 +9,7 @@ export LIB
 PY="$LIB/.venv/bin/python"
 cd "$LIB"
 if [ "$1" = "--vo" ]; then
-  $PY core/tts/tts.py "$HERE/script/lines_kokoro.json" "$HERE/voices"
+  LIB="$LIB" $PY "$HERE/tools/expressive_tts.py"
   $PY "$HERE/tools/align.py"
   $PY "$HERE/tools/envelope.py"
 fi
