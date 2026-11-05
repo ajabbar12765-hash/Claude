@@ -1,4 +1,4 @@
-"""Expressive narration with the offline Kokoro voice (no ElevenLabs).
+"""Natural, expressive narration with the offline Kokoro voice (no ElevenLabs): one continuous take per line.
 Reads script/lines_el.json (the script with emotion cues like [excited], [whispering]), splits each line at its cues,
 voices every piece separately with its own speed, then shifts its pitch and loudness (ffmpeg rubberband) and joins the
 pieces with pauses that fit the mood. Writes voices/<id>.wav (24 kHz mono) and voices/dur.json.
@@ -49,31 +49,31 @@ def whisper(y):                                   # breathier: lose some low end
     return hp * .9 + air
 
 SCRIPT = json.load(open(os.path.join(P, 'script/lines_el.json')))
-dur = {}
+# one continuous take per line (natural flow): the cues only shape the punctuation the voice reads,
+# plus one gentle pitch/speed colour for the whole line (changes only between lines, never mid-sentence)
+LINE = {'s01_hook': (.84, .4), 's02_title': (.86, 1.2), 's03_babies': (.86, .5), 's04_name': (.8, -.4), 's05_hippo': (.84, -.3),
+        's06_words': (.86, .2), 's07_me': (.82, -.4), 's08_seven': (.85, .4), 's09_locked': (.83, -.2), 's10_fake': (.85, .1), 's11_end': (.84, .3)}
+EXCL = {'excited', 'amazed', 'playful', 'impressed', 'happy', 'surprised', 'frustrated'}
+dur = {}; SAY = {}
 for lid, text in SCRIPT.items():
-    parts = re.split(r'\[([^\]]+)\]', text)          # ['', tag, text, tag, text, ...]
-    mood = 'neutral'; segs = []; extra = 0
-    if parts[0].strip(): segs.append(('neutral', parts[0].strip(), 0))
+    parts = re.split(r'\[([^\]]+)\]', text)
+    say = parts[0].strip(); mood = 'neutral'
     for i in range(1, len(parts), 2):
-        m = mood_of(parts[i]); say = parts[i + 1].strip()
-        if m == 'pause': extra += .45; continue
-        if m == 'laugh': m = mood                     # keep the previous mood; no fake laugh
+        m = mood_of(parts[i]); seg = parts[i + 1].strip()
+        if m == 'laugh': m = mood
+        if m == 'pause': say += ' ...'; m = mood
         mood = m
-        if say: segs.append((m, say, extra)); extra = 0
-    out = []
-    for k, (m, say, ex) in enumerate(segs):
-        sp, st, g, pre, excl = MOOD[m]
-        t = say
-        if excl: t = re.sub(r'\.(\s|$)', r'!\1', t)  # exclamation changes the voice's intonation
-        a, sr = K.create(t, voice=VOICE, speed=sp, lang='en-us')
-        a = trim(a)
-        if m == 'whispering': a = whisper(a)
-        a = pitch(a, st, g)
-        gap = (pre if k else 0) + ex + (.12 if k else 0)
-        out.append(np.zeros(int(gap * SR), np.float32)); out.append(a.astype(np.float32))
-    y = np.concatenate(out)
-    y = y / (np.abs(y).max() + 1e-9) * .9
+        if not seg: continue
+        if m in EXCL: seg = re.sub(r'\.(\s|$)', r'!\1', seg)
+        if m in ('dramatic', 'whispering', 'slowly') and say: say = say.rstrip() + ' ...'
+        say = (say + ' ' + seg).strip()
+    say = re.sub(r'\.\.\.\s*\.\.\.', '...', say).replace('... ...', '...')
+    sp, st = LINE[lid]; sp -= .04
+    a, sr = K.create(say, voice=VOICE, speed=sp, lang='en-us')
+    a = pitch(trim(a), st, 1.0)
+    y = a / (np.abs(a).max() + 1e-9) * .9
     sf.write(os.path.join(P, 'voices', lid + '.wav'), y, SR); dur[lid] = round(len(y) / SR, 3)
-    print(lid, dur[lid], [s[0] for s in segs])
+    print(lid, dur[lid], say[:90]); SAY[lid] = say
 json.dump(dur, open(os.path.join(P, 'voices/dur.json'), 'w'), indent=1)
 print('total', round(sum(dur.values()), 1))
+json.dump(SAY, open(os.path.join(P, 'voices/say.json'), 'w'), indent=1)
