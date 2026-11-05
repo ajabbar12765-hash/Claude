@@ -364,6 +364,7 @@ export async function build() {
     }
     return 0;
   };
+  const talkAt = t => { let m = 0; for (let k = -6; k <= 6; k++) m += mouthAt(t + k * .05); return clamp(m / 13 * 2.2); };
   board.objs.push({
     draw: (ctx, t, c) => {
       if (t < HOST_IN - .4) return;
@@ -373,7 +374,7 @@ export async function build() {
       const sc = Math.max(.55, c.z) * .95;               // keep the host readable on wide shots
       const bl = (() => { const p = (t + 1.3) % 4.1; return p < .14 ? Math.sin(p / .14 * Math.PI) : 0; })();
       const m = mouthAt(t);
-      drawHost(ctx, sx, sy, sc, { mouth: m, blink: bl, ang: hostState(POSE, t), lift: Math.max(h.lift, dl), look: .7, bob: m * 3 + Math.sin(t * 1.7) * 2, tilt: Math.sin(t * .9) * .015 + (h.lift ? .04 * h.lift : 0) });
+      drawHost(ctx, sx, sy, sc, { mouth: m, blink: bl, ang: hostState(POSE, t, talkAt(t)), lift: Math.max(h.lift, dl), look: .7, bob: m * 3 + Math.sin(t * 1.7) * 2, tilt: Math.sin(t * .9) * .015 + (h.lift ? .04 * h.lift : 0) });
     }
   });
   // floating markers
@@ -396,6 +397,16 @@ export async function build() {
     }
   }
   for (let i = 0; i < subs.length - 1; i++) subs[i].t1 = Math.min(Math.max(subs[i].t1, subs[i].t0 + 1.8), subs[i + 1].t0 - .04);
+  // the host talks with his hands: a gesture on each new phrase unless a scripted pose is near
+  const GEST = ['open', 'beat', 'openL', 'open2', 'chest', 'open', 'beat', 'openL'];
+  const manual = POSE.slice(); let gi = 0;
+  for (const sb of subs) {
+    const t0 = sb.t0 + .1;
+    if (manual.some(([tm]) => Math.abs(tm - t0) < 1.6 || (tm < t0 && tm > t0 - 2.6))) continue;
+    if (t0 > END - 3) continue;
+    POSE.push([t0, GEST[gi++ % GEST.length]], [Math.min(sb.t1, t0 + 2.2), 'idle']);
+  }
+  POSE.sort((a, b) => a[0] - b[0]);
   const noSubs = new URLSearchParams(location.search).has('nosubs');
   if (!noSubs) board.overlays.push({
     draw: (ctx, t) => {

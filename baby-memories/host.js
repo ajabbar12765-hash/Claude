@@ -16,27 +16,38 @@ function arm(g, sx, sy, a1, a2, side, sleeveOnly) {
   // forearm skin
   g.strokeStyle = SKIN; g.lineWidth = 30; g.beginPath(); g.moveTo(ex, ey); g.lineTo(hx, hy); g.stroke();
   g.fillStyle = SKIN; g.beginPath(); g.arc(hx, hy, 17, 0, TAU); g.fill();
+  g.strokeStyle = LINE; g.lineWidth = 4; g.beginPath(); g.arc(hx, hy, 19, 0, TAU); g.stroke();
   // sleeve (upper arm)
   g.strokeStyle = TEE; g.lineWidth = 32; g.beginPath(); g.moveTo(sx, sy); g.lineTo(lerp(sx, ex, .78), lerp(sy, ey, .78)); g.stroke();
   return [hx, hy];
 }
 
-const POSES = {      // [left a1, left a2, right a1, right a2]  (a1: 0 = down, + = outward/up)
-  idle: [.18, .25, .18, .25],
-  point: [.18, .25, 2.05, -.35],
+const POSES = {      // [left a1, left a2, right a1, right a2]  (a1: 0 = down, + = outward/up; a2 bends the elbow)
+  idle: [.2, -1.15, .2, -1.15],
+  point: [.2, -1.15, 2.05, -.35],
   shrug: [1.25, -1.9, 1.25, -1.9],
-  wave: [.18, .25, 2.7, .5],
-  think: [.18, .25, .5, 2.5],
+  wave: [.2, -1.15, 2.7, .5],
+  think: [.2, -1.15, .5, 2.5],
   both: [1.9, -.3, 1.9, -.3],
+  open: [.2, -1.15, .55, 2.15],
+  openL: [.55, 2.15, .2, -1.15],
+  open2: [.5, 2.0, .5, 2.0],
+  chest: [.2, -1.15, .35, -2.25],
+  beat: [.3, -1.6, .3, -1.6],
 };
 
-export function hostState(keys, t) {           // keys: [[t, pose], ...] → blended arm angles
+// keys: [[t, pose], ...]; talk: 0..1 speech level → blended arm angles with talking motion
+export function hostState(keys, t, talk = 0) {
   let i = 0; while (i < keys.length - 1 && keys[i + 1][0] <= t) i++;
   const cur = POSES[keys[i][1]], prev = i ? POSES[keys[i - 1][1]] : cur;
-  const u = clamp((t - keys[i][0]) / .35), e = u * u * (3 - 2 * u);
+  const u = clamp((t - keys[i][0]) / .4), e = u * u * (3 - 2 * u);
   const ang = cur.map((v, k) => lerp(prev[k], v, e));
-  const wave = keys[i][1] === 'wave' ? Math.sin((t - keys[i][0]) * 9) * .35 * e : 0;
-  ang[3] += wave;
+  if (keys[i][1] === 'wave') ang[3] += Math.sin((t - keys[i][0]) * 9) * .35 * e;
+  // always alive: a slow sway, plus beat gestures that follow the voice
+  ang[0] += Math.sin(t * 1.3) * .05 + Math.sin(t * 2.3 + 1) * .1 * talk;
+  ang[2] += Math.sin(t * 1.1 + 2) * .05 + Math.sin(t * 2.0 + .3) * .12 * talk;
+  ang[1] += Math.sin(t * 3.1 + .7) * .28 * talk;
+  ang[3] += Math.sin(t * 2.7 + 2.1) * .32 * talk;
   return ang;
 }
 
@@ -44,34 +55,17 @@ export function hostState(keys, t) {           // keys: [[t, pose], ...] → ble
 export function drawHost(ctx, x, y, s, st) {
   const lift = st.lift || 0, up = lift * 30 * s;
   ctx.save();
-  // cast shadow on the board (grows and blurs as the magnet lifts)
-  ctx.save(); ctx.translate(x + (10 + lift * 26) * s, y + (6 + lift * 22) * s); ctx.scale(s, s);
-  ctx.filter = `blur(${(10 + lift * 18) * s}px)`; ctx.fillStyle = `rgba(40,35,40,${.28 - lift * .1})`;
-  ctx.beginPath(); ctx.ellipse(0, -210, 150, 230, 0, 0, TAU); ctx.fill(); ctx.restore();
+  // soft contact shadow on the board, only noticeable when he slides (lifts) across it
+  ctx.save(); ctx.translate(x + (6 + lift * 26) * s, y + (4 + lift * 18) * s); ctx.scale(s, s);
+  ctx.filter = `blur(${(12 + lift * 18) * s}px)`; ctx.fillStyle = `rgba(40,35,40,${.10 + lift * .08})`;
+  ctx.beginPath(); ctx.ellipse(0, -8, 150, 22, 0, 0, TAU); ctx.fill(); ctx.restore();
 
   ctx.translate(x, y - up); ctx.scale(s, s); ctx.rotate(st.tilt || 0);
   ctx.translate(0, -(st.bob || 0));
   const g = ctx;
-  const body = () => {                        // silhouette (for the white die-cut border)
-    g.beginPath(); g.ellipse(0, -290, 140, 150, 0, 0, TAU); g.fill();
-    g.beginPath(); g.roundRect(-140, -165, 280, 175, 50); g.fill();
-  };
-  // white sticker border
-  g.fillStyle = '#ffffff'; g.save(); g.shadowColor = 'rgba(0,0,0,.12)'; g.shadowBlur = 6; g.lineJoin = 'round';
-  g.strokeStyle = '#ffffff'; g.lineWidth = 36; g.beginPath(); g.ellipse(0, -290, 140, 150, 0, 0, TAU); g.stroke(); g.fill();
-  g.beginPath(); g.roundRect(-140, -165, 280, 175, 50); g.stroke(); g.fill(); g.restore();
   const [la1, la2, ra1, ra2] = st.ang;
-  // arms behind the torso when hanging down; raised arms drawn after the head
-  const armsBack = la1 < 1 && ra1 < 1;
+  const raised = la1 > 1 || ra1 > 1;
   const drawArms = () => { arm(g, -100, -128, la1, la2, -1); arm(g, 100, -128, ra1, ra2, 1); };
-  // white border around arms
-  g.save(); g.strokeStyle = '#fff'; g.lineCap = 'round'; g.lineWidth = 64;
-  for (const [sx, a1, a2, sd] of [[-100, la1, la2, -1], [100, ra1, ra2, 1]]) {
-    const ex = sx + Math.sin(a1) * 70 * sd, ey = -128 + Math.cos(a1) * 70, a = a1 + a2;
-    g.beginPath(); g.moveTo(sx, -128); g.lineTo(ex, ey); g.lineTo(ex + Math.sin(a) * 66 * sd, ey + Math.cos(a) * 66); g.stroke();
-  }
-  g.restore();
-  if (armsBack) drawArms();
   // torso: grey tee
   g.fillStyle = TEE; g.strokeStyle = LINE; g.lineWidth = 6; g.lineJoin = 'round';
   g.beginPath(); g.moveTo(-122, 0); g.lineTo(-118, -120); g.quadraticCurveTo(-112, -150, -60, -160); g.lineTo(60, -160);
@@ -80,6 +74,7 @@ export function drawHost(ctx, x, y, s, st) {
   // neck
   g.fillStyle = SKIN_D; g.beginPath(); g.roundRect(-30, -195, 60, 50, 14); g.fill();
   g.strokeStyle = LINE; g.lineWidth = 5; g.beginPath(); g.moveTo(-34, -158); g.quadraticCurveTo(0, -128, 34, -158); g.stroke();
+  if (!raised) drawArms();
   // ears
   for (const sd of [-1, 1]) { g.fillStyle = SKIN; g.beginPath(); g.ellipse(sd * 104, -280, 22, 30, 0, 0, TAU); g.fill(); g.lineWidth = 5; g.stroke(); }
   // head
@@ -123,7 +118,7 @@ export function drawHost(ctx, x, y, s, st) {
     g.fillStyle = '#fff'; g.fillRect(-w * .55, -210, w * 1.1, 4);
     g.strokeStyle = LINE; g.lineWidth = 5; g.beginPath(); g.moveTo(-w, -208); g.quadraticCurveTo(0, -214, w, -208); g.quadraticCurveTo(w * .6, -208 + h * 1.1, 0, -206 + h); g.quadraticCurveTo(-w * .6, -208 + h * 1.1, -w, -208); g.stroke();
   }
-  if (!armsBack) drawArms();
+  if (raised) drawArms();
   // a glossy magnet glint across the sticker
   g.fillStyle = 'rgba(255,255,255,.10)'; g.beginPath(); g.ellipse(-60, -360, 40, 16, -.6, 0, TAU); g.fill();
   ctx.restore();
