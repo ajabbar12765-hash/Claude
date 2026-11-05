@@ -371,10 +371,10 @@ export async function build() {
       const h = hostAt(t);
       const drop = clamp((t - HOST_IN + .4) / .7), dl = drop < 1 ? (1 - drop) * 1.6 : 0;
       const [sx, sy] = W.toScreen(c, h.x, h.y);
-      const sc = Math.max(.55, c.z) * .95;               // keep the host readable on wide shots
+      const sc = Math.max(.55, c.z) * .8;               // keep the host readable on wide shots
       const bl = (() => { const p = (t + 1.3) % 4.1; return p < .14 ? Math.sin(p / .14 * Math.PI) : 0; })();
       const m = mouthAt(t);
-      drawHost(ctx, sx, sy, sc, { mouth: m, blink: bl, ang: hostState(POSE, t, talkAt(t)), lift: Math.max(h.lift, dl), look: .7, bob: m * 3 + Math.sin(t * 1.7) * 2, tilt: Math.sin(t * .9) * .015 + (h.lift ? .04 * h.lift : 0) });
+      drawHost(ctx, sx, sy, sc, { mouth: m, blink: bl, ang: hostState(POSE, t, talkAt(t)), lift: Math.max(h.lift, dl), look: .7, sway: Math.sin(t * .8), bob: m * 3 + Math.sin(t * 1.7) * 2, tilt: Math.sin(t * .9) * .015 + (h.lift ? .04 * h.lift : 0) });
     }
   });
   // floating markers

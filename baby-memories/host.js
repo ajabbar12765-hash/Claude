@@ -2,6 +2,7 @@
 // Drawn in screen space from a world anchor (bottom centre). Design units: 440 tall at scale 1.
 import { clamp, lerp, TAU } from '/core/lib.js';
 
+const PANTS = '#3f4b63', PANTS_D = '#323c50', INK_SOLE = '#2b2f36';
 const SKIN = '#a8714f', SKIN_D = '#8d5b3e', HAIR = '#241913', TEE = '#70747b', TEE_D = '#5c6067', LINE = '#23262c';
 
 // arm: shoulder at (sx,sy), upper angle a1, elbow bend a2 (radians, 0 = straight down), side ±1
@@ -58,9 +59,33 @@ export function drawHost(ctx, x, y, s, st) {
   // soft contact shadow on the board, only noticeable when he slides (lifts) across it
   ctx.save(); ctx.translate(x + (6 + lift * 26) * s, y + (4 + lift * 18) * s); ctx.scale(s, s);
   ctx.filter = `blur(${(12 + lift * 18) * s}px)`; ctx.fillStyle = `rgba(40,35,40,${.10 + lift * .08})`;
-  ctx.beginPath(); ctx.ellipse(0, -8, 150, 22, 0, 0, TAU); ctx.fill(); ctx.restore();
+  ctx.beginPath(); ctx.ellipse(0, 4, 130, 18, 0, 0, TAU); ctx.fill(); ctx.restore();
 
   ctx.translate(x, y - up); ctx.scale(s, s); ctx.rotate(st.tilt || 0);
+  // legs and sneakers below the tee; the anchor is now the soles of the feet
+  const LEG = 150; ctx.translate(0, -LEG - 40);
+  {
+    const g = ctx, sw = st.sway ?? 0, dang = lift * .22;
+    for (const sd of [-1, 1]) {
+      const hx = sd * 48, a = sd * dang + sw * sd * .04, fx = hx + Math.sin(a) * LEG, fy = Math.cos(a) * LEG;
+      g.lineCap = 'round';
+      g.strokeStyle = LINE; g.lineWidth = 64; g.beginPath(); g.moveTo(hx, -10); g.lineTo(fx, fy); g.stroke();
+      g.strokeStyle = PANTS; g.lineWidth = 52; g.beginPath(); g.moveTo(hx, -10); g.lineTo(fx, fy); g.stroke();
+      g.strokeStyle = PANTS_D; g.lineWidth = 4; g.beginPath(); g.moveTo(hx + sd * 6, 20); g.lineTo(fx + sd * 6, fy - 20); g.stroke();
+      // sneaker
+      g.save(); g.translate(fx, fy + 6); g.rotate(a * .6);
+      g.fillStyle = '#f4f4f2'; g.strokeStyle = LINE; g.lineWidth = 6;
+      g.beginPath(); g.moveTo(-34 * (sd < 0 ? 1.5 : 1), 30); g.lineTo(34 * (sd > 0 ? 1.5 : 1), 30);
+      g.quadraticCurveTo(46 * sd + (sd > 0 ? 10 : -10), 12, 28 * sd, 0); g.lineTo(-28 * sd, -8); g.quadraticCurveTo(-36 * sd, 10, -34 * (sd < 0 ? 1.5 : 1) * (sd < 0 ? 1 : 1), 30); g.closePath();
+      g.fill(); g.stroke();
+      g.fillStyle = INK_SOLE; g.fillRect(-36 * (sd < 0 ? 1.5 : 1), 26, (sd < 0 ? 1.5 : 1) * 36 + 36 * (sd > 0 ? 1.5 : 1), 8);
+      g.strokeStyle = '#9aa0a8'; g.lineWidth = 3; g.beginPath(); g.moveTo(-8, 2); g.lineTo(10, 2); g.moveTo(-6, 10); g.lineTo(12, 10); g.stroke();
+      g.restore();
+    }
+    // shorts/pants top under the tee hem
+    g.fillStyle = PANTS; g.strokeStyle = LINE; g.lineWidth = 6;
+    g.beginPath(); g.roundRect(-104, -30, 208, 60, 16); g.fill(); g.stroke();
+  }
   ctx.translate(0, -(st.bob || 0));
   const g = ctx;
   const [la1, la2, ra1, ra2] = st.ang;
