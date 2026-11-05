@@ -1,0 +1,19 @@
+Why can't you remember being a baby? — credits
+
+Picture, animation, host character and score: original, made in code for this film.
+Style: Whiteboard Explainer, from the Lemo-Opuscar style library (techniques only).
+
+Third-party assets
+- Narration voice: Kokoro TTS (kokoro-onnx), voice "am_puck" — Apache License 2.0 (model weights: hexgrad/Kokoro-82M, Apache 2.0).
+- Handwriting font: EMS Tech by Sheldon B. Michaels (Hershey-derived single-line font, via the npm package "hersheytext") — SIL Open Font License 1.1.
+- Subtitle font: Architects Daughter, Kimberly Geswein — SIL Open Font License 1.1 (fonts/OFL-ArchitectsDaughter.txt).
+- Instrument samples (CC0 1.0): VS Chamber Orchestra: Community Edition (Versilian Studios);
+  Versilian Community Sample Library (Versilian Studios).
+
+Facts cited (for the video description)
+- Rovee-Collier, C. (1999). The development of infant memory. Current Directions in Psychological Science, 8(3), 80–85. (mobile-kick experiments, 1980s)
+- Akers, K. G. et al. (2014). Hippocampal neurogenesis regulates forgetting during adulthood and infancy. Science, 344(6184), 598–602.
+- Bauer, P. J. & Larkina, M. (2014). The onset of childhood amnesia in childhood. Memory, 22(8), 907–924.
+- Guskjolen, A. et al. (2018). Recovery of "lost" infant memories in mice. Current Biology, 28(14), 2283–2290. (Toronto)
+- Yates, T. S. et al. (2025). Hippocampal encoding of memories in human infants. Science, 387(6740), 1316–1320. (Yale)
+- Akhtar, S. et al. (2018). Fictional first memories. Psychological Science, 29(10), 1612–1619. (6,641 people; ~39% claimed memories from age 2 or younger)

@@ -1,0 +1,79 @@
+[
+ {
+  "id": "s01_hook",
+  "text": "Quick question. What's the very first thing you remember? Got it? Okay. Here's the weird part. Whatever it is, you were probably at least three years old. That means more than a thousand days of your life, the days you learned to walk, to talk, to recognize your mom's face, are just... gone. Deleted. So where did they go?",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s02_title",
+  "text": "Why can't you remember being a baby?",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s03_babies",
+  "text": "First, let's kill a myth. Babies are not bad at remembering. In the nineteen eighties, a scientist named Carolyn Rovee-Collier tied a ribbon from a baby's ankle to a mobile hanging over the crib. Kick, and the mobile moves. Babies figured that out fast. And when she brought them back a week later, three-month-olds still remembered, and started kicking right away. Older babies remembered for months. So babies do make memories. Tons of them. The problem is, they don't last.",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s04_name",
+  "text": "Scientists have a name for this. Infantile amnesia. And there are three big suspects.",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s05_hippo",
+  "text": "Suspect number one: your brain was a construction site. Deep inside your brain is a part shaped a bit like a seahorse, called the hippocampus. Its job is to take what happens to you and save it as a memory. But in babies, the hippocampus is still being built. It keeps making brand-new neurons, and every new neuron that wires in can scramble the connections that were already there. Imagine writing in a notebook while someone keeps adding and ripping out pages. In experiments with baby mice, when scientists slowed down that new-neuron growth, the mice forgot less.",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s06_words",
+  "text": "Suspect number two: you had no words. Grown-up memories are like files with labels. My tenth birthday. The day I broke my arm. But a baby has no words to label anything. So even if the memory is in there, later, when you think in words, you can't search for it. It's like a file saved in a format your computer can't open anymore.",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s07_me",
+  "text": "Suspect number three: there was no you yet. To remember something happening to you, you need a sense of me. Most babies don't recognize themselves in a mirror until around eighteen months. Before that, there's no main character to build the story around.",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s08_seven",
+  "text": "Now here's what's really strange. Little kids actually remember their baby years for a while. Psychologist Patricia Bauer recorded three-year-olds talking with their moms about things they'd done. Years later, she checked what they still remembered. At five, six and seven, the kids remembered most of it. By eight and nine, only about a third. So the big forgetting doesn't happen when you're a baby. It happens around age seven.",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s09_locked",
+  "text": "But wait. Are those memories really deleted? Maybe not. In twenty eighteen, researchers in Toronto gave baby mice a memory, waited until they had forgotten it, and then used light to switch on the exact brain cells that stored it. And the mice remembered. The memory was still there. They just couldn't find the door. And in twenty twenty-five, a team at Yale scanned babies' brains, and saw the hippocampus saving new memories from about one year old. So your baby memories might be locked away inside you, right now.",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s10_fake",
+  "text": "Which brings us back to your first memory. In a survey of more than six thousand people, almost forty percent said they remembered something from age two or younger. Scientists think most of those are fake. Not lies. Your brain stitched them together from photos, family stories and things you were told, and then filed them as real.",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ },
+ {
+  "id": "s11_end",
+  "text": "So, why can't you remember being a baby? Your brain was under construction, you had no words, and no me. And around age seven, your brain cleaned house. But the baby you were didn't disappear. Every word you know, every face you trust, every step you take, you learned in the years you forgot. So, what's your earliest memory? Drop it in the comments, and I'll tell you if it's fake.",
+  "voice": "am_puck",
+  "speed": 0.8,
+  "lang": "en-us"
+ }
+]
