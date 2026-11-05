@@ -111,11 +111,11 @@ export async function build() {
   // ═════════ S02 TITLE
   shot(vEnd('s01_hook') + .15, 4150, 780, .95);
   const tt0 = VO.s02_title, tt1 = vEnd('s02_title') + 1.1;
-  const L1 = T("Why can't you", 4150, 600, { h: 140, align: 'center' }), L2 = T('remember being', 4150, 830, { h: 140, align: 'center' });
-  const L3a = T('a ', 3930, 1060, { h: 140 }), L3b = T('baby?', 3930 + L3a.width, 1060, { h: 150 });
+  const L1 = T("Why can't you", 4390, 600, { h: 130, align: 'center' }), L2 = T('remember being', 4390, 820, { h: 120, align: 'center' });
+  const L3a = T('a ', 4170, 1050, { h: 130 }), L3b = T('baby?', 4170 + L3a.width, 1050, { h: 140 });
   const tm = (tt1 - tt0);
   D(K, [...L1, ...L2, ...L3a], tt0 - .2, tt0 + tm * .72);
-  D(O, [...L3b, W.curve([[3930 + L3a.width - 10, 1110], [4200, 1130], [4500, 1100]], { w: 12 })], tt0 + tm * .72, tt1);
+  D(O, [...L3b, W.curve([[4170 + L3a.width - 10, 1100], [4440, 1120], [4740, 1090]], { w: 12 })], tt0 + tm * .72, tt1);
   pose(tt0, 'both'); pose(tt1 + .3, 'idle');
   hold(tt1 + 1);
 
