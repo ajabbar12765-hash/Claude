@@ -19,6 +19,18 @@ subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', ref_in, '-ac', '1', '-ar', 
 
 M = ChatterboxTTS.from_pretrained(device='cpu')
 M.prepare_conditionals(ref, exaggeration=.5)
+# American accent: take the speech rhythm/accent prompt from an American reference (Kokoro am_puck reading the same
+# words), keep the creator's own timbre (decoder reference) and blend the speaker embedding toward the creator.
+accent = sys.argv[sys.argv.index('--accent') + 1] if '--accent' in sys.argv else None
+if accent:
+    import librosa
+    from chatterbox.models.s3tokenizer import S3_SR
+    w, _ = librosa.load(accent, sr=S3_SR)
+    tok, _ = M.s3gen.tokenizer.forward([w[:M.ENC_COND_LEN]], max_len=M.t3.hp.speech_cond_prompt_len)
+    M.conds.t3.cond_prompt_speech_tokens = torch.atleast_2d(tok).to(M.device)
+    ve_us = torch.from_numpy(M.ve.embeds_from_wavs([w], sample_rate=S3_SR)).mean(0, keepdim=True)
+    mix = float(sys.argv[sys.argv.index('--mix') + 1]) if '--mix' in sys.argv else .35
+    M.conds.t3.speaker_emb = (M.conds.t3.speaker_emb * (1 - mix) + ve_us.to(M.device) * mix)
 
 # mood → (exaggeration, cfg_weight, pause before the sentence in seconds)
 MOOD = {'excited': (.85, .35, .25), 'amazed': (.8, .35, .3), 'playful': (.75, .4, .25), 'happy': (.75, .4, .3), 'surprised': (.85, .35, .3),
