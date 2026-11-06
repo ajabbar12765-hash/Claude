@@ -1,347 +1,347 @@
 1
-00:00:01,750 --> 00:00:06,210
+00:00:01,750 --> 00:00:06,980
 Quick question. What's the very first thing you remember? Got it? Okay.
 
 2
-00:00:06,250 --> 00:00:08,500
+00:00:07,260 --> 00:00:09,580
 Here's the weird part. Whatever it is,
 
 3
-00:00:08,540 --> 00:00:10,970
+00:00:09,620 --> 00:00:11,760
 you were probably at least three years old.
 
 4
-00:00:11,010 --> 00:00:13,720
+00:00:11,850 --> 00:00:14,550
 That means more than a thousand days of your life,
 
 5
-00:00:13,760 --> 00:00:15,910
+00:00:14,760 --> 00:00:17,120
 the days you learned to walk, to talk,
 
 6
-00:00:15,950 --> 00:00:19,640
+00:00:17,230 --> 00:00:24,110
 to recognize your mom's face, are just... gone. Deleted.
 
 7
-00:00:19,680 --> 00:00:21,480
+00:00:24,190 --> 00:00:25,990
 So where did they go?
 
 8
-00:00:22,220 --> 00:00:24,290
+00:00:26,800 --> 00:00:28,650
 Why can't you remember being a baby?
 
 9
-00:00:27,690 --> 00:00:29,120
+00:00:32,150 --> 00:00:34,120
 First, let's kill a myth.
 
 10
-00:00:29,160 --> 00:00:30,960
+00:00:34,160 --> 00:00:35,960
 Babies are not bad at remembering.
 
 11
-00:00:31,120 --> 00:00:32,070
+00:00:36,460 --> 00:00:37,710
 In the nineteen eighties,
 
 12
-00:00:32,110 --> 00:00:36,320
+00:00:37,750 --> 00:00:44,290
 a scientist named Carolyn Rovee-Collier tied a ribbon from a baby's ankle to a mobile hanging over the crib.
 
 13
-00:00:36,360 --> 00:00:38,100
+00:00:44,370 --> 00:00:46,170
 Kick, and the mobile moves.
 
 14
-00:00:38,140 --> 00:00:39,520
+00:00:46,300 --> 00:00:48,280
 Babies figured that out fast.
 
 15
-00:00:39,560 --> 00:00:41,530
+00:00:48,600 --> 00:00:51,050
 And when she brought them back a week later,
 
 16
-00:00:41,570 --> 00:00:42,930
+00:00:51,330 --> 00:00:52,660
 three-month-olds still remembered,
 
 17
-00:00:42,970 --> 00:00:44,580
+00:00:52,700 --> 00:00:54,860
 and started kicking right away.
 
 18
-00:00:44,620 --> 00:00:46,070
+00:00:55,060 --> 00:00:56,990
 Older babies remembered for months.
 
 19
-00:00:46,110 --> 00:00:48,070
+00:00:57,270 --> 00:01:00,310
 So babies do make memories. Tons of them.
 
 20
-00:00:48,110 --> 00:00:49,910
+00:01:00,540 --> 00:01:02,930
 The problem is, they don't last.
 
 21
-00:00:50,960 --> 00:00:53,250
+00:01:04,380 --> 00:01:06,180
 Scientists have a name for this.
 
 22
-00:00:53,290 --> 00:00:54,870
+00:01:06,430 --> 00:01:08,230
 Infantile amnesia.
 
 23
-00:00:54,910 --> 00:00:57,750
+00:01:08,660 --> 00:01:10,600
 And there are three big suspects.
 
 24
-00:00:59,410 --> 00:01:00,760
+00:01:12,340 --> 00:01:13,640
 Suspect number one:
 
 25
-00:01:00,800 --> 00:01:03,080
+00:01:13,680 --> 00:01:15,580
 your brain was a construction site.
 
 26
-00:01:03,120 --> 00:01:07,410
+00:01:15,670 --> 00:01:18,820
 Deep inside your brain is a part shaped a bit like a seahorse,
 
 27
-00:01:07,450 --> 00:01:09,080
+00:01:18,860 --> 00:01:20,630
 called the hippocampus.
 
 28
-00:01:09,120 --> 00:01:13,740
+00:01:20,670 --> 00:01:24,240
 Its job is to take what happens to you and save it as a memory.
 
 29
-00:01:13,780 --> 00:01:17,700
+00:01:24,500 --> 00:01:27,720
 But in babies, the hippocampus is still being built.
 
 30
-00:01:17,740 --> 00:01:20,980
+00:01:28,050 --> 00:01:29,720
 It keeps making brand-new neurons,
 
 31
-00:01:21,020 --> 00:01:26,670
+00:01:29,760 --> 00:01:35,110
 and every new neuron that wires in can scramble the connections that were already there.
 
 32
-00:01:26,710 --> 00:01:32,860
+00:01:35,260 --> 00:01:39,230
 Imagine writing in a notebook while someone keeps adding and ripping out pages.
 
 33
-00:01:33,060 --> 00:01:35,110
+00:01:39,360 --> 00:01:40,940
 In experiments with baby mice,
 
 34
-00:01:35,150 --> 00:01:38,290
+00:01:40,980 --> 00:01:43,990
 when scientists slowed down that new-neuron growth,
 
 35
-00:01:38,330 --> 00:01:40,360
+00:01:44,030 --> 00:01:45,830
 the mice forgot less.
 
 36
-00:01:41,660 --> 00:01:43,750
+00:01:46,930 --> 00:01:49,360
 Suspect number two: you had no words.
 
 37
-00:01:43,790 --> 00:01:46,440
+00:01:49,480 --> 00:01:51,750
 Grown-up memories are like files with labels.
 
 38
-00:01:46,480 --> 00:01:49,530
+00:01:52,220 --> 00:01:55,610
 My tenth birthday. The day I broke my arm.
 
 39
-00:01:49,570 --> 00:01:51,840
+00:01:55,690 --> 00:01:58,250
 But a baby has no words to label anything.
 
 40
-00:01:51,880 --> 00:01:54,230
+00:01:58,790 --> 00:02:01,730
 So even if the memory is in there, later,
 
 41
-00:01:54,270 --> 00:01:55,540
+00:02:01,770 --> 00:02:03,570
 when you think in words,
 
 42
-00:01:55,580 --> 00:01:57,220
+00:02:03,670 --> 00:02:05,290
 you can't search for it.
 
 43
-00:01:57,260 --> 00:02:01,110
+00:02:05,330 --> 00:02:09,450
 It's like a file saved in a format your computer can't open anymore.
 
 44
-00:02:02,380 --> 00:02:05,380
+00:02:10,830 --> 00:02:13,720
 Suspect number three: there was no you yet.
 
 45
-00:02:05,420 --> 00:02:08,310
+00:02:13,990 --> 00:02:15,940
 To remember something happening to you,
 
 46
-00:02:08,350 --> 00:02:10,340
+00:02:15,980 --> 00:02:17,780
 you need a sense of me.
 
 47
-00:02:10,380 --> 00:02:15,750
+00:02:17,830 --> 00:02:22,120
 Most babies don't recognize themselves in a mirror until around eighteen months.
 
 48
-00:02:15,790 --> 00:02:20,850
+00:02:22,450 --> 00:02:26,430
 Before that, there's no main character to build the story around.
 
 49
-00:02:22,520 --> 00:02:23,970
+00:02:28,150 --> 00:02:30,790
 Now here's what's really strange.
 
 50
-00:02:24,010 --> 00:02:27,010
+00:02:31,250 --> 00:02:34,690
 Little kids actually remember their baby years for a while.
 
 51
-00:02:27,050 --> 00:02:31,990
+00:02:34,950 --> 00:02:39,930
 Psychologist Patricia Bauer recorded three-year-olds talking with their moms about things they'd done.
 
 52
-00:02:32,030 --> 00:02:35,620
+00:02:40,120 --> 00:02:43,590
 Years later, she checked what they still remembered. At five,
 
 53
-00:02:35,660 --> 00:02:37,720
+00:02:43,630 --> 00:02:46,740
 six and seven, the kids remembered most of it.
 
 54
-00:02:37,760 --> 00:02:39,940
+00:02:46,810 --> 00:02:49,080
 By eight and nine, only about a third.
 
 55
-00:02:39,980 --> 00:02:43,130
+00:02:49,460 --> 00:02:52,400
 So the big forgetting doesn't happen when you're a baby.
 
 56
-00:02:44,550 --> 00:02:46,350
+00:02:53,920 --> 00:02:56,310
 It happens around age seven.
 
 57
-00:02:47,840 --> 00:02:51,710
+00:02:58,240 --> 00:03:03,540
 But wait. Are those memories really deleted? Maybe not.
 
 58
-00:02:51,750 --> 00:02:53,310
+00:03:03,660 --> 00:03:04,800
 In twenty eighteen,
 
 59
-00:02:53,350 --> 00:02:56,360
+00:03:04,840 --> 00:03:08,280
 researchers in Toronto gave baby mice a memory,
 
 60
-00:02:56,400 --> 00:02:58,760
+00:03:08,500 --> 00:03:10,230
 waited until they had forgotten it,
 
 61
-00:02:58,800 --> 00:03:03,790
+00:03:10,270 --> 00:03:13,940
 and then used light to switch on the exact brain cells that stored it.
 
 62
-00:03:03,830 --> 00:03:05,910
+00:03:13,980 --> 00:03:15,760
 And the mice remembered.
 
 63
-00:03:05,950 --> 00:03:09,040
+00:03:15,800 --> 00:03:17,600
 The memory was still there.
 
 64
-00:03:09,080 --> 00:03:11,590
+00:03:17,730 --> 00:03:19,530
 They just couldn't find the door.
 
 65
-00:03:11,820 --> 00:03:13,720
+00:03:19,590 --> 00:03:21,080
 And in twenty twenty-five,
 
 66
-00:03:13,760 --> 00:03:16,370
+00:03:21,120 --> 00:03:22,780
 a team at Yale scanned babies' brains,
 
 67
-00:03:16,410 --> 00:03:20,940
+00:03:22,820 --> 00:03:26,460
 and saw the hippocampus saving new memories from about one year old.
 
 68
-00:03:20,980 --> 00:03:25,800
+00:03:26,500 --> 00:03:31,080
 So your baby memories might be locked away inside you, right now.
 
 69
-00:03:27,220 --> 00:03:29,990
+00:03:32,560 --> 00:03:34,690
 Which brings us back to your first memory.
 
 70
-00:03:30,030 --> 00:03:32,400
+00:03:35,000 --> 00:03:37,750
 In a survey of more than six thousand people,
 
 71
-00:03:32,440 --> 00:03:36,740
+00:03:37,810 --> 00:03:42,320
 almost forty percent said they remembered something from age two or younger.
 
 72
-00:03:36,920 --> 00:03:40,040
+00:03:42,690 --> 00:03:46,190
 Scientists think most of those are fake. Not lies.
 
 73
-00:03:40,080 --> 00:03:42,780
+00:03:46,720 --> 00:03:49,010
 Your brain stitched them together from photos,
 
 74
-00:03:42,820 --> 00:03:45,000
+00:03:49,050 --> 00:03:51,230
 family stories and things you were told,
 
 75
-00:03:45,040 --> 00:03:46,950
+00:03:51,270 --> 00:03:53,070
 and then filed them as real.
 
 76
-00:03:48,720 --> 00:03:50,830
+00:03:54,720 --> 00:03:57,330
 So, why can't you remember being a baby?
 
 77
-00:03:50,870 --> 00:03:52,390
+00:03:57,520 --> 00:03:59,100
 Your brain was under construction,
 
 78
-00:03:52,430 --> 00:03:53,720
+00:03:59,140 --> 00:04:01,030
 you had no words, and no me.
 
 79
-00:03:53,760 --> 00:03:54,810
+00:04:01,300 --> 00:04:03,100
 And around age seven,
 
 80
-00:03:54,850 --> 00:03:55,980
+00:04:03,160 --> 00:04:04,960
 your brain cleaned house.
 
 81
-00:03:56,020 --> 00:03:58,360
+00:04:05,220 --> 00:04:07,660
 But the baby you were didn't disappear.
 
 82
-00:03:58,400 --> 00:04:00,510
+00:04:08,230 --> 00:04:10,760
 Every word you know, every face you trust,
 
 83
-00:04:00,550 --> 00:04:01,520
+00:04:10,900 --> 00:04:12,140
 every step you take,
 
 84
-00:04:01,560 --> 00:04:03,670
+00:04:12,180 --> 00:04:14,710
 you learned in the years you forgot. So,
 
 85
-00:04:03,710 --> 00:04:05,230
+00:04:14,970 --> 00:04:16,650
 what's your earliest memory?
 
 86
-00:04:05,270 --> 00:04:06,570
+00:04:16,690 --> 00:04:17,580
 Drop it in the comments,
 
 87
-00:04:06,610 --> 00:04:08,540
+00:04:17,620 --> 00:04:20,120
 and I'll tell you if it's fake.

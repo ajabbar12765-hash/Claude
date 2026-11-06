@@ -151,7 +151,7 @@ for L in vo_lines:
     if L['id'] == SP['id']:
         c = int(SP['at'] * SR); place(y[:c], VO[L['id']]); place(y[c:], VO[L['id']] + SP['at'] + SP['gap'])
     else: place(y, VO[L['id']])
-vo_mono = hp(vo_mono, 70); vo_mono = compress(vo_mono / (np.abs(vo_mono).max() + 1e-9) * .8, thr=.2, ratio=3.0, att=.004, rel=.1)
+vo_mono = hp(vo_mono, 70); vo_mono = compress(vo_mono / (np.abs(vo_mono).max() + 1e-9) * .8, thr=.15, ratio=4.0, att=.002, rel=.1)
 vo[:, 0] = vo_mono; vo[:, 1] = vo_mono
 vo = vo * .85 + S.room(vo, size=.2, mix=.1) * .15
 
@@ -168,7 +168,7 @@ mus = mus * (1 - (1 - db(-8)) * dk)[:, None]
 def rms(x): return float(np.sqrt(np.mean(x[np.abs(x).max(1) > 1e-4] ** 2))) if np.any(np.abs(x) > 1e-4) else 1.
 vo_r, mu_r, fo_r = rms(vo), rms(mus), rms(fol)
 mix = vo + mus * (vo_r / mu_r) * db(-9) + fol * (vo_r / fo_r) * db(-13) + room * db(0)
-mix = np.stack([limit(mix[:, c], .85) for c in range(2)], 1)
+mix = np.stack([limit(mix[:, c], .7) for c in range(2)], 1)
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
 sf.write(os.path.join(HERE, 'out/mix.wav'), mix[:int(DUR * SR)].astype(np.float32), SR)
 print('rms vo/music/foley', round(20 * np.log10(vo_r), 1), round(20 * np.log10(mu_r), 1), round(20 * np.log10(fo_r), 1), 'peak', float(np.abs(mix).max()))
