@@ -9,7 +9,7 @@ from chatterbox.tts import ChatterboxTTS
 P = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 ref_in = sys.argv[1]
 only = sys.argv[sys.argv.index('--only') + 1].split(',') if '--only' in sys.argv else None
-torch.manual_seed(7)
+torch.manual_seed(int(sys.argv[sys.argv.index('--seed') + 1]) if '--seed' in sys.argv else 7)
 
 # clean reference: mono 24 kHz, trimmed, loudness-evened (phone recordings come in many formats)
 ref = os.path.join(P, 'voices', 'reference.wav')
@@ -62,6 +62,13 @@ for lid, text in SCRIPT.items():
         for s in re.findall(r'[^.?!]+(?:[.?!]+|$)', seg):
             s = s.strip()
             if s: sents.append((m, s, extra)); extra = 0
+    # very short sentences ("Okay.", "Deleted.") make the model stumble: join them to a neighbour
+    merged = []
+    for m, t, ex in sents:
+        if merged and (len(t.split()) < 4 or len(merged[-1][1].split()) < 3):
+            pm, pt, pe = merged[-1]; merged[-1] = (pm, pt + ' ' + t, pe + ex)
+        else: merged.append((m, t, ex))
+    sents = merged
     out = []
     for k, (m, s, ex) in enumerate(sents):
         e, cfg, pre = MOOD[m]

@@ -4,7 +4,7 @@ Picture, animation, host character and score: original, made in code for this fi
 Style: Whiteboard Explainer, from the Lemo-Opuscar style library (techniques only).
 
 Third-party assets
-- Narration voice: Kokoro TTS (kokoro-onnx), voice "am_puck" — Apache License 2.0 (model weights: hexgrad/Kokoro-82M, Apache 2.0).
+- Narration: the creator's own voice, cloned from a 20-second recording with Chatterbox (Resemble AI) — MIT License; American accent prompt read by Kokoro TTS voice "am_puck" (kokoro-onnx, Apache License 2.0). Word timings checked with faster-whisper (MIT).
 - Handwriting font: EMS Tech by Sheldon B. Michaels (Hershey-derived single-line font, via the npm package "hersheytext") — SIL Open Font License 1.1.
 - Subtitle font: Architects Daughter, Kimberly Geswein — SIL Open Font License 1.1 (fonts/OFL-ArchitectsDaughter.txt).
 - Instrument samples (CC0 1.0): VS Chamber Orchestra: Community Edition (Versilian Studios);

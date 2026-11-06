@@ -3,3 +3,6 @@ stills/
 music/*.wav
 voices_me/sample.m4a
 voices/reference.wav
+voices_me/s01*_seed*.wav
+voices_me/words_s01*
+voices_me/s01_us.wav
