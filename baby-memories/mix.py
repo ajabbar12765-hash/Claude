@@ -151,9 +151,11 @@ for L in vo_lines:
     if L['id'] == SP['id']:
         c = int(SP['at'] * SR); place(y[:c], VO[L['id']]); place(y[c:], VO[L['id']] + SP['at'] + SP['gap'])
     else: place(y, VO[L['id']])
-vo_mono = hp(vo_mono, 70); vo_mono = compress(vo_mono / (np.abs(vo_mono).max() + 1e-9) * .8, thr=.15, ratio=4.0, att=.002, rel=.1)
+vo_mono = hp(vo_mono, 90)
+vo_mono = vo_mono - bp(vo_mono, 180, 450) * .35 + bp(vo_mono, 2200, 6500) * .55   # less mud, more presence: clearer words
+vo_mono = compress(vo_mono / (np.abs(vo_mono).max() + 1e-9) * .8, thr=.15, ratio=4.0, att=.002, rel=.1)
 vo[:, 0] = vo_mono; vo[:, 1] = vo_mono
-vo = vo * .85 + S.room(vo, size=.2, mix=.1) * .15
+# dry voice (no room echo) for clarity
 
 # ───────── score, ducked under VO
 mus, _ = sf.read(os.path.join(HERE, 'music/score.wav')); mus = mus[:NS]
@@ -163,11 +165,11 @@ env = np.convolve(env, np.ones(win) / win, 'same'); on = (env > .02).astype(np.f
 att, rel = int(.06 * SR), int(.35 * SR); g = 0.; dk = np.zeros(NS, np.float32)
 for j in range(0, NS, 240):
     tgt = on[j]; g += (tgt - g) * (240 / att if tgt > g else 240 / rel); dk[j:j + 240] = g
-mus = mus * (1 - (1 - db(-8)) * dk)[:, None]
+mus = mus * (1 - (1 - db(-12)) * dk)[:, None]
 
 def rms(x): return float(np.sqrt(np.mean(x[np.abs(x).max(1) > 1e-4] ** 2))) if np.any(np.abs(x) > 1e-4) else 1.
 vo_r, mu_r, fo_r = rms(vo), rms(mus), rms(fol)
-mix = vo + mus * (vo_r / mu_r) * db(-9) + fol * (vo_r / fo_r) * db(-13) + room * db(0)
+mix = vo + mus * (vo_r / mu_r) * db(-12) + fol * (vo_r / fo_r) * db(-16) + room * db(0)
 mix = np.stack([limit(mix[:, c], .7) for c in range(2)], 1)
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
 sf.write(os.path.join(HERE, 'out/mix.wav'), mix[:int(DUR * SR)].astype(np.float32), SR)

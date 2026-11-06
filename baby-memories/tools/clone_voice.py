@@ -72,11 +72,13 @@ for lid, text in SCRIPT.items():
     out = []
     for k, (m, s, ex) in enumerate(sents):
         e, cfg, pre = MOOD[m]
-        w = M.generate(s, exaggeration=e, cfg_weight=cfg, temperature=.75)
+        if '--clear' in sys.argv:                       # clearer diction: less exaggeration, more guidance, steadier sampling
+            e, cfg = min(e, .62), max(cfg, .5)
+        w = M.generate(s, exaggeration=e, cfg_weight=cfg, temperature=.6 if '--clear' in sys.argv else .75)
         y = w.squeeze(0).numpy()
         nz = np.where(np.abs(y) > np.abs(y).max() * .02)[0]
         if len(nz): y = y[max(0, nz[0] - 480): nz[-1] + 1440]
-        if m in ('whispering', 'softly'): y = y * .6
+        if m in ('whispering', 'softly'): y = y * (.8 if '--clear' in sys.argv else .6)
         if k: out.append(np.zeros(int((pre + ex) * M.sr), np.float32))
         out.append(y.astype(np.float32))
         print(lid, k, m, s[:50], flush=True)
