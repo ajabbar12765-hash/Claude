@@ -132,7 +132,7 @@ for pen, L in by_pen.items():
 for w in C['whips']: put(fol, whoosh(max(.5, w['dur']), .5 + .6 * w['amt']), w['t'], 1, 0)
 
 # ───────── room: tone + a wall clock ticking under the opening question
-room_tone = lp(rng.standard_normal(NS), 900) * .010 + lp(rng.standard_normal(NS), 180) * .012
+room_tone = np.zeros(NS, np.float32)   # no constant room hiss (it read as static); only the wall-clock ticks remain
 room[:, 0] += room_tone; room[:, 1] += np.roll(room_tone, 311)
 rv = C['revealT']; gap = C['split']['gap']
 ticks = list(np.arange(rv - gap - .2, rv - .1, .625))
@@ -152,7 +152,8 @@ for L in vo_lines:
         c = int(SP['at'] * SR); place(y[:c], VO[L['id']]); place(y[c:], VO[L['id']] + SP['at'] + SP['gap'])
     else: place(y, VO[L['id']])
 vo_mono = hp(vo_mono, 90)
-vo_mono = vo_mono - bp(vo_mono, 180, 450) * .35 + bp(vo_mono, 2200, 6500) * .55   # less mud, more presence: clearer words
+vo_mono = vo_mono - bp(vo_mono, 180, 450) * .35 + bp(vo_mono, 2200, 5000) * .45
+vo_mono = lp(vo_mono, 11000)   # no hiss above the voice   # less mud, more presence: clearer words
 vo_mono = compress(vo_mono / (np.abs(vo_mono).max() + 1e-9) * .8, thr=.15, ratio=4.0, att=.002, rel=.1)
 vo[:, 0] = vo_mono; vo[:, 1] = vo_mono
 # dry voice (no room echo) for clarity
@@ -169,7 +170,7 @@ mus = mus * (1 - (1 - db(-12)) * dk)[:, None]
 
 def rms(x): return float(np.sqrt(np.mean(x[np.abs(x).max(1) > 1e-4] ** 2))) if np.any(np.abs(x) > 1e-4) else 1.
 vo_r, mu_r, fo_r = rms(vo), rms(mus), rms(fol)
-mix = vo + mus * (vo_r / mu_r) * db(-12) + fol * (vo_r / fo_r) * db(-16) + room * db(0)
+mix = vo + mus * (vo_r / mu_r) * db(-12) + fol * (vo_r / fo_r) * db(-19) + room * db(0)
 mix = np.stack([limit(mix[:, c], .7) for c in range(2)], 1)
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
 sf.write(os.path.join(HERE, 'out/mix.wav'), mix[:int(DUR * SR)].astype(np.float32), SR)
