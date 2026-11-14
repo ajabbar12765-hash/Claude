@@ -22,6 +22,23 @@ const SETTINGS = {
 
   // How many times Jarvis may auto-reply in a single conversation before stopping.
   MAX_AUTO_REPLIES: 3,
+
+  // Where the Jarvis app lives (leave as-is unless you host it yourself).
+  APP_URL: 'https://jarvis-ipad.vercel.app',
+
+  // ---------- Email manager ----------
+  // Sort new email automatically every 15 minutes.
+  AUTO_ORGANIZE: true,
+  // These categories are labelled AND moved out of the inbox (never deleted).
+  AUTO_ARCHIVE: ['Promotions', 'Junk'],
+  // Write reply drafts (never sent) for emails that need an answer.
+  AUTO_DRAFT_REPLIES: true,
+  // Your own sorting rules, in plain English. Jarvis also learns new ones
+  // whenever you move an email or say "always put X in Y".
+  EMAIL_RULES: [
+    // 'Anything from my school or teachers goes in School and Work.',
+    // 'Emails from Epic Games are Updates unless they are about a purchase.',
+  ],
 };
 
 /**

@@ -22,19 +22,12 @@ function setup() {
   if (!PROPS.getProperty('JARVIS_SECRET')) {
     PROPS.setProperty('JARVIS_SECRET', Utilities.getUuid().replace(/-/g, '').slice(0, 20));
   }
-  if (!PROPS.getProperty('NTFY_TOPIC')) {
-    PROPS.setProperty('NTFY_TOPIC', 'jarvis-' + Utilities.getUuid().replace(/-/g, '').slice(0, 16));
-  }
+  PROPS.deleteProperty('NTFY_TOPIC'); // notifications are no longer used
   // Touch every service once so Google asks for all permissions now, not mid-game.
   GmailApp.getInboxUnreadCount();
   CalendarApp.getDefaultCalendar();
   ScriptApp.getProjectTriggers();
-  UrlFetchApp.fetch('https://ntfy.sh/' + PROPS.getProperty('NTFY_TOPIC'), {
-    method: 'post',
-    payload: 'Jarvis is connected. You will get replies and updates here.',
-    headers: { Title: 'Jarvis online' },
-    muteHttpExceptions: true,
-  });
+  UrlFetchApp.fetch('https://www.google.com', { muteHttpExceptions: true });
 
   const problems = [];
   if (!cfg_('GEMINI_API_KEY') || cfg_('GEMINI_API_KEY').indexOf('PASTE') === 0) {
@@ -43,14 +36,34 @@ function setup() {
   if (cfg_('DISCORD_BOT_TOKEN')) {
     try { botUserId_(); } catch (err) { problems.push('Discord token did not work: ' + err.message); }
   }
+  ensureLabels_();
+  setEmailAutopilot_(String(cfg_('AUTO_ORGANIZE')) !== 'false');
 
   console.log([
     '================ JARVIS SETUP ================',
-    'Your secret:      ' + PROPS.getProperty('JARVIS_SECRET'),
-    'Your ntfy topic:  ' + PROPS.getProperty('NTFY_TOPIC'),
+    'Your secret:  ' + PROPS.getProperty('JARVIS_SECRET'),
     '',
-    'Copy both into the steps in SETUP.md.',
+    'Next: Deploy > New deployment > Web app (Execute as: Me, Access: Anyone),',
+    'then run the function appLink to get the link to open on your iPad.',
     problems.length ? 'PROBLEMS:\n - ' + problems.join('\n - ') : 'Everything looks good.',
+    '==============================================',
+  ].join('\n'));
+}
+
+/** After deploying, run this to get the one-tap link for your iPad. */
+function appLink() {
+  const url = ScriptApp.getService().getUrl();
+  if (!url) { console.log('Deploy the web app first (Deploy > New deployment > Web app).'); return; }
+  const app = (cfg_('APP_URL') || '').replace(/\/$/, '');
+  console.log([
+    '================ JARVIS LINKS ================',
+    'Web app URL (for the Shortcut):',
+    url,
+    '',
+    'Secret: ' + PROPS.getProperty('JARVIS_SECRET'),
+    '',
+    'Open THIS on your iPad in Safari, then Share > Add to Home Screen:',
+    app + '/#u=' + encodeURIComponent(url) + '&s=' + PROPS.getProperty('JARVIS_SECRET'),
     '==============================================',
   ].join('\n'));
 }
@@ -76,17 +89,43 @@ function doPost(e) {
 }
 
 function handle_(p) {
-  if (!p.secret && !p.text) return ContentService.createTextOutput('Jarvis is online.');
+  if (!p.secret && !p.text && !p.action) return ContentService.createTextOutput('Jarvis is online.');
   if (String(p.secret || '') !== PROPS.getProperty('JARVIS_SECRET')) {
-    return json_(reply_('Access denied. The secret in your shortcut does not match.'));
+    return json_(Object.assign({ error: 'auth' }, reply_('Access denied. The secret does not match.')));
   }
-  const text = String(p.text || '').trim();
-  if (!text) return json_(reply_('Yes?', '', true));
+  const action = String(p.action || 'chat');
   try {
-    return json_(runAgent_(text, {}));
+    switch (action) {
+      case 'chat': {
+        const text = String(p.text || '').trim();
+        if (!text) return json_(reply_('Yes?', '', true));
+        const out = runAgent_(text, {});
+        // The Shortcut has no screen, so it hears any news before the answer.
+        if (p.client !== 'app') {
+          const news = takeUnheard_();
+          if (news.length) out.speak = 'Update: ' + news.map(function (n) { return n.text; }).join(' ') + ' ... ' + out.speak;
+        }
+        return json_(out);
+      }
+      case 'updates':
+        return json_({
+          updates: takeUnheard_(),
+          events: getState_('events', []).slice(-20).reverse(),
+          watches: getState_('watches', []).map(function (w) { return { contact: w.contact, via: w.type, auto: w.auto || '', expires: w.expires }; }),
+          queue: getState_('queue', []).map(function (q) { return { kind: q.kind, due: q.due, text: q.text }; }),
+        });
+      case 'inbox':
+        return json_(inboxOverview_(p));
+      case 'organize':
+        return json_(organizeInbox_({ max: 40, days: 30 }));
+      case 'email':
+        return json_(emailAction_(p));
+      default:
+        return json_({ error: 'Unknown action ' + action });
+    }
   } catch (err) {
     console.error(err && err.stack || err);
-    return json_(reply_('Sorry, something went wrong. ' + friendlyError_(err)));
+    return json_(Object.assign({ error: friendlyError_(err) }, reply_('Sorry, something went wrong. ' + friendlyError_(err))));
   }
 }
 
@@ -140,8 +179,9 @@ function runAgent_(userText, mode) {
       const args = p.functionCall.args || {};
       let result;
       try {
-        if (!TOOLS_[name]) throw new Error('Unknown tool ' + name);
-        result = TOOLS_[name](args, out);
+        const fn = TOOLS_[name] || EMAIL_TOOLS_[name];
+        if (!fn) throw new Error('Unknown tool ' + name);
+        result = fn(args, out);
       } catch (err) {
         console.error('Tool ' + name + ' failed: ' + (err && err.stack || err));
         result = { ok: false, error: String((err && err.message) || err) };
@@ -190,7 +230,7 @@ function systemPrompt_(background) {
     'You are Jarvis, a witty, loyal, highly capable personal assistant for ' + me + '.',
     background
       ? 'You are running a BACKGROUND job while ' + me + ' is busy. Do the work with tools, then end with a short spoken-style summary of the result (it will be pushed to their iPad). You cannot open anything on the iPad in this mode.'
-      : me + ' talks to you by voice on an iPad, often while gaming. Your final text is read aloud: keep it to one or two short sentences, natural speech, no markdown, no emojis, no URLs read out.',
+      : me + ' talks to you by voice on an iPad (the Jarvis app or a voice shortcut), often while gaming. Your final text is read aloud: keep it to one or two short sentences, natural speech, no markdown, no emojis, no URLs read out.',
     'Current time: ' + now + ' (timezone ' + tz + '). Use this to convert phrases like "in 20 minutes" or "tonight at 8".',
     '',
     'CONTACTS:',
@@ -213,6 +253,8 @@ function systemPrompt_(background) {
     '- For long or slow work ("research", "while I play", "every so often", "later"), use start_background_job or set_reminder so the user is not kept waiting.',
     '- Never claim something was sent or done unless the tool returned ok:true. If a tool fails, say what failed in plain words.',
     '- Use web_search for news, scores, prices, facts after your knowledge cutoff, or anything you are unsure about.',
+    '- EMAIL: you are ' + me + '\'s email manager. Use organize_inbox to sort mail, inbox_summary to report, find_emails then manage_email to act (archive, trash, reply, draft, move, read, star). If the user says an email or sender belongs somewhere else, use manage_email move AND it will be remembered. Use add_email_rule for standing instructions ("always archive Roblox emails").',
+    '- Before trashing more than 5 emails or sending a reply that commits ' + me + ' to something (money, dates, personal info), confirm with ask_follow_up unless they clearly already said to.',
   ].join('\n');
 }
 
@@ -229,8 +271,14 @@ function callGemini_(contents, opts) {
     generationConfig: { temperature: 0.5, maxOutputTokens: 2048 },
   };
   if (opts && opts.system) payload.systemInstruction = { parts: [{ text: opts.system }] };
-  if (opts && opts.tools) payload.tools = [{ functionDeclarations: TOOL_DECLS_ }];
+  if (opts && opts.tools) payload.tools = [{ functionDeclarations: TOOL_DECLS_.concat(emailToolDecls_()) }];
   if (opts && opts.googleSearch) payload.tools = [{ google_search: {} }];
+  if (opts && opts.schema) {
+    payload.generationConfig.responseMimeType = 'application/json';
+    payload.generationConfig.responseSchema = opts.schema;
+    payload.generationConfig.temperature = 0.1;
+    payload.generationConfig.maxOutputTokens = 8192;
+  }
 
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent';
   let lastErr;
@@ -290,8 +338,8 @@ const TOOL_DECLS_ = [
     }, ['to', 'body']),
   },
   {
-    name: 'read_emails',
-    description: 'Read the user\'s recent Gmail messages. Uses Gmail search syntax.',
+    name: 'find_emails',
+    description: 'Find/read the user\'s Gmail messages (returns thread_id for each). Uses Gmail search syntax; Jarvis categories are labels like label:jarvis-needs-reply, label:jarvis-important.',
     parameters: obj_({
       query: { type: S, description: 'e.g. "is:unread in:inbox", "from:amazon newer_than:2d"' },
       max: { type: I },
@@ -399,11 +447,11 @@ const TOOLS_ = {
     return { ok: true, sent_to: addr, watching: !!(a.watch_for_reply || a.auto_reply_instructions) };
   },
 
-  read_emails: function (a) {
+  find_emails: function (a) {
     const threads = GmailApp.search(a.query || 'is:unread in:inbox', 0, Math.min(a.max || 5, 10));
     return threads.map(function (t) {
       const m = t.getMessages().pop();
-      return { from: m.getFrom(), subject: m.getSubject(), date: String(m.getDate()), text: stripQuoted_(m.getPlainBody()).slice(0, 400) };
+      return { thread_id: t.getId(), from: m.getFrom(), subject: m.getSubject(), date: String(m.getDate()), unread: t.isUnread(), category: threadCategory_(t), text: stripQuoted_(m.getPlainBody()).slice(0, 400) };
     });
   },
 
@@ -599,16 +647,14 @@ function processQueue_() {
 
   due.forEach(function (item) {
     if (item.kind === 'reminder') {
-      push_('Reminder', item.text);
-      addEvent_('Reminded the user: ' + item.text);
+      addEvent_('Reminder: ' + item.text, true);
       return;
     }
     try {
       const res = runAgent_(item.text, { background: true });
-      push_('Jarvis finished a job', res.speak);
-      addEvent_('Background job "' + item.text.slice(0, 80) + '" → ' + res.speak);
+      addEvent_('Job done: ' + res.speak, true);
     } catch (err) {
-      push_('Jarvis job failed', friendlyError_(err));
+      addEvent_('A background job failed: ' + friendlyError_(err), true);
     }
   });
 }
@@ -652,8 +698,7 @@ function checkWatches_() {
         note += '. That needs you, so I did not answer.';
       }
     }
-    push_(w.contact + ' replied', note);
-    addEvent_(note);
+    addEvent_(note, true);
   });
 
   setState_('watches', keep);
@@ -754,10 +799,31 @@ function enqueue_(item) {
   ensureTick_();
 }
 
-function addEvent_(text) {
-  const ev = getState_('events', []);
-  ev.push({ when: Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'HH:mm'), text: text.slice(0, 400) });
-  setState_('events', ev.slice(-12));
+/** Record something that happened. announce=true → Jarvis says it out loud next time it can. */
+function addEvent_(text, announce) {
+  withLock_(function () {
+    const ev = getState_('events', []);
+    ev.push({
+      id: Date.now() + '-' + Math.floor(Math.random() * 1000),
+      ts: Date.now(),
+      when: Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'HH:mm'),
+      text: String(text).slice(0, 400),
+      heard: !announce,
+    });
+    setState_('events', ev.slice(-25));
+  });
+}
+
+/** Returns news not yet spoken to the user, and marks it as heard. */
+function takeUnheard_() {
+  return withLock_(function () {
+    const ev = getState_('events', []);
+    const fresh = ev.filter(function (e) { return !e.heard; });
+    if (!fresh.length) return [];
+    ev.forEach(function (e) { e.heard = true; });
+    setState_('events', ev);
+    return fresh.map(function (e) { return { id: e.id, when: e.when, text: e.text }; });
+  });
 }
 
 let LOCK_HELD_ = false;
@@ -795,18 +861,6 @@ function ensureTick_() {
 function removeTick_() {
   ScriptApp.getProjectTriggers().forEach(function (t) {
     if (t.getHandlerFunction() === 'jarvisTick') ScriptApp.deleteTrigger(t);
-  });
-}
-
-/** Push a notification to the iPad via the free ntfy app. */
-function push_(title, message) {
-  const topic = PROPS.getProperty('NTFY_TOPIC');
-  if (!topic) return;
-  UrlFetchApp.fetch('https://ntfy.sh/' + topic, {
-    method: 'post',
-    payload: String(message).slice(0, 3500),
-    headers: { Title: String(title).replace(/[^\x20-\x7E]/g, '').slice(0, 120), Priority: 'high', Tags: 'robot' },
-    muteHttpExceptions: true,
   });
 }
 
