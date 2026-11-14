@@ -2,7 +2,7 @@
 
 Total time: about 30–40 minutes, done once.
 Cost: $0. You need a Google account, a Gemini API key, and an iPad on **iPadOS 18 or newer**.
-For replies read out loud while you game, you also need **AirPods or Beats**.
+**No Siri is used anywhere.** You can turn Siri off completely.
 
 ```
  You: "Jarvis… message Sam on Discord asking if he wants to play"
@@ -16,7 +16,7 @@ For replies read out loud while you game, you also need **AirPods or Beats**.
    ├─ opens WhatsApp / iMessage / any app on the iPad
    └─ checks for replies every minute, can auto-answer, runs jobs while you play
    ▼
- ntfy push notification → Siri reads it in your AirPods:
+ ntfy push notification on your iPad:
  "Sam replied on Discord: yeah sure. I answered: cool, join at 8."
 ```
 
@@ -71,7 +71,7 @@ Open the **Shortcuts** app, tap **＋**, and name the shortcut **Jarvis**. Add t
 | 3 | **Text** | `YOUR_WEB_APP_URL?secret=YOUR_SECRET&text=`, then insert the variable *URL Encoded Text* right after `text=` |
 | 4 | **Get Contents of URL** | URL: *Text* (method GET is fine) |
 | 5 | **Get Dictionary Value** | Get **Value** for key `speak` in *Contents of URL* |
-| 6 | **Speak Text** | *Dictionary Value* |
+| 6 | **Speak Text** | *Dictionary Value*. Tap **Show More → Voice** and pick any voice that isn't a "Siri" voice, e.g. *Daniel* or *Samantha* |
 | 7 | **Get Dictionary Value** | Get **Value** for key `url` in *Contents of URL* |
 | 8 | **If** | *Dictionary Value* **has any value** → inside: **Open URLs** (*Dictionary Value*) → **End If** |
 | 9 | **Get Dictionary Value** | Get **Value** for key `listen_again` in *Contents of URL* |
@@ -88,16 +88,14 @@ It may ask a similar question the first time Jarvis opens an app. Tap **Always A
 3. Type the phrase **Jarvis** and say it 3 times when asked.
 4. Tap **Add Action** again. Pick the same Jarvis shortcut, give it the phrase **Hey Jarvis**, and train it the same way.
 
-Now you can say "Jarvis" at any time, even inside a game, to start it. If your iPad doesn't have Vocal Shortcuts, say **"Hey Siri, Jarvis"** instead. That runs the same shortcut.
+Now you can say "Jarvis" at any time, even inside a game, to start it. Vocal Shortcuts is an Accessibility feature, not Siri, so it works with Siri turned off.
 
-## Step 6: Hear replies while you game (5 min)
+## Step 6: Get replies and updates while you game (2 min)
 
 1. Install **ntfy** from the App Store (free).
 2. Open it, tap **＋**, and paste **your ntfy topic** (server: `ntfy.sh`). Allow notifications.
-3. Open **Settings → Notifications → Announce Notifications** and turn it on.
-   Then turn it on for **ntfy**. Also turn it on for **WhatsApp**, **Discord** and **Messages** so Siri reads those replies to you too.
-4. Wear AirPods or Beats. Siri now speaks every Jarvis update and reply without you touching anything.
-   Without AirPods, updates still show as banners.
+3. Replies and job results now show up as notification banners on top of your game.
+   *(Hands-free spoken replies without Siri are coming in the next update.)*
 
 ## Step 7 (optional): Discord (10 min)
 
@@ -143,8 +141,8 @@ It also opens apps and deep links directly, such as YouTube searches, Spotify, M
 
 | Limit | Why | Workaround used |
 |---|---|---|
-| No app can listen in the background on an iPad | Apple only allows Siri to do that | Vocal Shortcuts gives you a custom "Jarvis" wake word that works system-wide |
-| WhatsApp / iMessage need one tap to send | Apple and WhatsApp block silent sending on iPad | Jarvis opens the chat with the text filled in. Siri reads their replies through Announce Notifications |
+| Normal apps can't listen in the background on an iPad | Apple blocks it | Vocal Shortcuts (Accessibility) gives you a custom "Jarvis" wake word that works system-wide |
+| WhatsApp / iMessage need one tap to send | Apple and WhatsApp block silent sending on iPad | Jarvis opens the chat with the text filled in. Their replies show in WhatsApp/Messages notifications |
 | Discord messages come from your bot, not your account | Automating a personal account breaks Discord's rules and gets accounts banned | A free bot on your server |
 | No tapping around inside apps that don't support Shortcuts | Apple doesn't let apps control other apps | URL deep links, plus any Shortcut you build |
 | Replies can arrive up to about 1 minute late | Google's free timer runs once a minute | Good enough for chats |

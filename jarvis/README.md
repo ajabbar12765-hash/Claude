@@ -14,9 +14,11 @@ Everything runs free:
 | Part | Free service |
 |---|---|
 | Wake word | iPadOS 18 Vocal Shortcuts |
-| Microphone and voice | Apple Shortcuts dictation and speech |
+| Microphone and voice | Apple Shortcuts dictation and Speak Text (non-Siri voice) |
 | Brain | Gemini API (free tier) on Google Apps Script |
-| Notifications | ntfy, read aloud by Siri Announce Notifications |
+| Notifications | ntfy push notifications |
+
+No Siri is used anywhere.
 
 **Start here → [SETUP.md](SETUP.md)**
 
