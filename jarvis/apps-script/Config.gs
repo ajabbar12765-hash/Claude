@@ -24,7 +24,7 @@ const SETTINGS = {
   MAX_AUTO_REPLIES: 3,
 
   // Where the Jarvis app lives (leave as-is unless you host it yourself).
-  APP_URL: 'https://jarvis-ipad.vercel.app',
+  APP_URL: 'https://jarvis-ipad-wheat.vercel.app',
 
   // ---------- Email manager ----------
   // Sort new email automatically every 15 minutes.

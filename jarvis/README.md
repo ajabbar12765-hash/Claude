@@ -1,29 +1,22 @@
-# Jarvis: a free, voice-controlled AI assistant for iPad
+# Jarvis: a free personal assistant and email manager for iPad
 
-Say **"Jarvis"** or **"Hey Jarvis"** in any app, even mid-game. Jarvis can:
+A Home Screen app (**https://jarvis-ipad-wheat.vercel.app**) plus a free brain that runs in your own Google account.
+It uses no Siri and no notifications.
 
-- message people on **Discord** or **Gmail**, then **tell you their reply**, and **auto-answer for you** if you tell it how
-- open **WhatsApp / iMessage** with your message ready, plus any app, website or deep link
-- run **your own Apple Shortcuts** to control almost any other iPad app
-- do **background jobs while you play** (research, check email every N minutes, send something later) and push you the result
-- handle reminders, Google Calendar, notes and live web search
-- ask you a follow-up question when it really needs one
-
-Everything runs free:
-
-| Part | Free service |
-|---|---|
-| Wake word | iPadOS 18 Vocal Shortcuts |
-| Microphone and voice | Apple Shortcuts dictation and Speak Text (non-Siri voice) |
-| Brain | Gemini API (free tier) on Google Apps Script |
-| Notifications | ntfy push notifications |
-
-No Siri is used anywhere.
+- **Email manager:** sorts Gmail automatically every 15 minutes into Needs Reply, Important, School and Work, Orders and Receipts, Bills and Money, Personal, Updates, Social, Newsletters, Promotions and Junk.
+  - Summarises every email
+  - Archives clutter (never deletes it)
+  - Writes reply drafts
+  - Learns from your corrections
+- **Voice:** tap the orb, or turn on hands-free and say "Jarvis…". Jarvis talks back in a non-Siri voice and reads out new replies and updates while the app is open.
+- **Messages:** sends Discord and Gmail messages, tells you the reply, and can auto-answer the way you asked. Opens WhatsApp and iMessage with the message ready.
+- **Works while you play:** background jobs, reminders, calendar, notes and live web search. An optional "Jarvis" voice shortcut works on top of games.
 
 **Start here → [SETUP.md](SETUP.md)**
 
 ```
-apps-script/Code.gs     the brain: agent loop, tools, reply watcher, background jobs
-apps-script/Config.gs   your key, name and contacts (the only file you edit)
-apps-script/appsscript.json  manifest (optional)
+app/                     the iPad web app (static; hosted on Vercel)
+apps-script/Code.gs      brain: agent loop, tools, reply watcher, jobs, app API
+apps-script/Email.gs     email manager: AI sorting, learning, drafts, autopilot
+apps-script/Config.gs    your key, name, contacts and email rules (the only file you edit)
 ```
