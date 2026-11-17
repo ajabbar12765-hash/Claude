@@ -1,0 +1,16 @@
+{
+  "avoid": ["Grok", "SuperGrok", "xAI"],
+  "app_store": {
+    "name": "Tern: Assistant That Asks",
+    "subtitle": "Email, calendar, apps, tasks",
+    "promotional_text": "Tern reads your inbox, books time and works in your apps. It asks before anything is sent or changed. Free with your own Gemini key.",
+    "description": "Tern is an assistant that gets errands done in your own accounts, and asks first.\n\nAsk in plain words: summarise my unread email, draft replies, find an hour on Thursday, archive the receipts. Tern shows each step it takes. Anything that sends, changes or deletes waits for your OK, and you can edit it before it goes.\n\nWhat you get:\n- Gmail, Google Calendar and Google Drive\n- Notion, Linear, Canva, Jira and any app with an MCP server, plus thousands more through Zapier\n- Tasks that run on a schedule and email you the result\n- Think mode, live web search with sources, and image making\n\nFree. Bring a free Gemini API key from Google AI Studio.",
+    "keywords": "inbox,automation,gmail,planner,ai,productivity,schedule,agent,organizer,zapier,notion",
+    "whats_new": "Tasks: schedule work and get the result by email."
+  },
+  "google_play": {
+    "title": "Tern: Assistant That Asks",
+    "short_description": "Inbox, calendar and app errands done for you, with your OK before it acts.",
+    "full_description": "Tern is an assistant that gets errands done in your own accounts, and asks first.\n\nAsk in plain words: summarise my unread email, draft replies, find an hour on Thursday. Tern shows each step. Anything that sends, changes or deletes waits for your OK.\n\nGmail, Calendar, Drive, Notion, Linear, Canva, Jira and thousands more through Zapier. Tasks run on a schedule and email you the result.\n\nFree with your own Gemini key."
+  }
+}

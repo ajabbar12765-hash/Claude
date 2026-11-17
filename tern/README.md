@@ -77,6 +77,6 @@ Optional settings: `TERN_MODEL` (default `gemini-2.5-flash`) and `TERN_IMAGE_MOD
 
 - If the server has a key, anyone with the link spends your free quota. A simple per-IP limit is built in: 30 chats and 10 images a minute. Keep the URL private, or leave the server key unset so each visitor uses their own. Apps and tasks only reach the accounts of people who sign in, and only Google test users you list can sign in at all.
 - Email, web pages and documents can contain text written to trick an assistant. Tern treats app content as data, and nothing is sent, changed or deleted without your OK unless you turned on "can act" for a task.
-- Tern is an original app. It does not use xAI's or Grok's name, logo, code or assets. Check the trademark yourself before you launch it publicly under any name.
+- Tern is an original app, built clean-room from public descriptions of how assistants like it work. It uses no other product's name, logo, code or assets. Check the trademark yourself before you launch it publicly.
 
 UI direction follows [unslop](https://github.com/heydamir/unslop) by Damir Sokolovsky (CC BY 4.0).

@@ -29,3 +29,9 @@ Workspaces with files and instructions,workspaces,could,yes,no,
 X posts real-time data,data,could,yes,skip,owned network data
 Companions with avatars,companions,could,yes,skip,licensed characters
 Video generation,imagine,could,yes,skip,no free API
+Free with your own key (no subscription),business,should,no,yes,fix 1
+Clear limit messages and own quota,chat,should,no,yes,fix 2
+Editable approval before writes,apps,should,no,yes,fix 3
+Read-only tasks by default,tasks,should,no,yes,fix 4
+Email-triggered tasks,tasks,could,no,no,fix 5
+Export chats,history,could,no,no,fix 7

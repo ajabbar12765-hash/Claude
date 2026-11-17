@@ -1,0 +1,5 @@
+{
+  "avoid": ["Grok", "SuperGrok", "xAI", "Grokipedia"],
+  "domains": ["x.ai", "grok.com"],
+  "colors": []
+}
