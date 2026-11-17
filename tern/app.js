@@ -242,6 +242,10 @@
         <summary><span class="dot ${live ? 'live' : 'done'}"></span><span>${label}</span>${icon('chevron-right')}</summary>
         <div class="thought md">${m.thought ? renderMarkdown(m.thought) : ''}</div></details>`;
     }
+    if (m.steps && m.steps.length) {
+      html += `<ol class="steps">${m.steps.map((st) => `<li class="step ${st.status}"><span class="dot ${st.status === 'running' ? 'live' : st.status === 'done' ? 'done' : ''}"></span><span class="step-label">${esc(st.label)}</span>${st.detail ? `<span class="step-detail">${esc(st.detail)}</span>` : ''}</li>`).join('')}</ol>`;
+    }
+    if (m.confirm) html += confirmCard(m.confirm);
     if (m.kind === 'image') {
       if (m.streaming && !(m.genImages || []).length) html += `<div class="gen"><figure class="loading" aria-label="Drawing"></figure></div><p class="gen-note">Drawing</p>`;
       else if ((m.genImages || []).length) {
@@ -249,7 +253,7 @@
       }
     }
     if (m.text) html += `<div class="md${m.streaming ? ' cursor-host' : ''}">${renderMarkdown(m.text)}</div>`;
-    else if (m.streaming && m.mode !== 'think' && m.kind !== 'image') html += `<div class="status-line"><span class="dot live"></span><span>${m.search ? 'Searching the web' : 'Writing'}</span></div>`;
+    else if (m.streaming && m.mode !== 'think' && m.kind !== 'image' && !(m.steps || []).some((x) => x.status === 'running') && !m.confirm) html += `<div class="status-line"><span class="dot live"></span><span>${m.search ? 'Searching the web' : (m.steps || []).length ? 'Working' : 'Writing'}</span></div>`;
     if (m.sources && m.sources.length) {
       html += `<div class="sources"><p class="sources-label">Sources</p><ol>${m.sources.map((s, i) => {
         let host = s.title; try { host = s.title || new URL(s.url).hostname; } catch {}
@@ -259,7 +263,7 @@
     if (m.error) {
       html += `<div class="error-line"><span>${esc(m.error)}</span>${m.errorCode === 'no_key' ? '<button type="button" data-act="settings">Open settings</button>' : '<button type="button" data-act="retry">Try again</button>'}</div>`;
     }
-    if (!m.streaming) {
+    if (!m.streaming && !m.confirm) {
       html += `<div class="actions">
         ${m.text ? `<button type="button" data-act="copy" aria-label="Copy">${icon('copy')}</button>` : ''}
         <button type="button" data-act="retry" aria-label="Regenerate">${icon('refresh-cw')}</button>
@@ -283,6 +287,27 @@
     if (m && m.streaming && !m.text) return; // auto-opened while thinking
     if (d.open) openThoughts.add(id); else openThoughts.delete(id);
   }, true);
+  const FIELD_LABEL = { to: 'To', cc: 'Cc', subject: 'Subject', body: 'Message', title: 'Title', start: 'Starts', end: 'Ends', location: 'Where', attendees: 'Guests', prompt: 'What it does', when: 'When' };
+  function confirmCard(c) {
+    const p = c.preview || {}; const editable = p.editable || [];
+    const rows = Object.entries(p.fields || {}).filter(([, v]) => v !== '' && v !== undefined && v !== null).map(([k, v]) => {
+      const label = FIELD_LABEL[k] || k;
+      const val = typeof v === 'string' ? v : JSON.stringify(v);
+      if (editable.includes(k) && !c.state) {
+        const big = k === 'body' || k === 'prompt' || val.length > 80;
+        return `<label class="cf-row"><span>${esc(label)}</span>${big ? `<textarea data-edit="${esc(k)}" rows="${Math.min(10, Math.max(3, val.split('\n').length + 1))}">${esc(val)}</textarea>` : `<input data-edit="${esc(k)}" value="${esc(val)}" />`}</label>`;
+      }
+      return `<div class="cf-row"><span>${esc(label)}</span><p>${esc(val)}</p></div>`;
+    }).join('');
+    const head = c.state === 'approved' ? 'Approved' : c.state === 'cancelled' ? 'Cancelled' : 'Needs your OK';
+    return `<div class="confirm${c.state ? ' settled' : ''}" role="group" aria-label="${esc(c.label)}">
+      <div class="cf-head"><span class="cf-app">${esc(appName(c.app))}</span><span class="cf-title">${esc(c.label)}</span><span class="cf-state">${head}</span></div>
+      ${c.state ? '' : `<div class="cf-body">${rows}</div><div class="cf-actions"><button type="button" class="btn ghost" data-act="deny">Cancel</button><button type="button" class="btn primary" data-act="approve">${p.kind === 'email' ? 'Send' : 'Approve'}</button></div>`}
+    </div>`;
+  }
+  const APP_NAMES = { gmail: 'Gmail', calendar: 'Calendar', drive: 'Drive', tasks: 'Tasks', web: 'Web' };
+  const appName = (a) => APP_NAMES[a] || a;
+
   function deepestLast(root) {
     let n = root.lastElementChild;
     while (n && n.lastElementChild && !['PRE', 'TABLE', 'SPAN'].includes(n.tagName) && !n.classList.contains('katex-display') && !n.classList.contains('codeblock')) n = n.lastElementChild;
@@ -329,6 +354,11 @@
     const act = btn.dataset.act;
     if (act === 'copy') { await copy(m.text || ''); btn.innerHTML = icon('check'); setTimeout(() => { btn.innerHTML = icon('copy'); }, 1500); }
     if (act === 'settings') openSettings();
+    if ((act === 'approve' || act === 'deny') && m.confirm && !state.busy) {
+      const edits = {};
+      node.querySelectorAll('[data-edit]').forEach((f) => { edits[f.dataset.edit] = f.value; });
+      resumeAction(m, act === 'approve', edits);
+    }
     if (act === 'speak') speak(m.text, btn);
     if (act === 'download') {
       const src = m.genImages[0].src;
@@ -549,14 +579,39 @@
     }
   }
 
+  const tz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return 'UTC'; } })();
+  function historyText(x) {
+    if (x.kind === 'image') return `[Generated an image for: ${x.prompt || ''}]`;
+    const acts = (x.steps || []).map((s) => `${s.label}${s.detail ? ` (${s.detail})` : ''}${s.status === 'denied' ? ' — not done' : s.status === 'error' ? ' — failed' : ''}`);
+    return (acts.length ? `[Actions taken: ${acts.join('; ')}]\n` : '') + (x.text || '');
+  }
   async function streamChat(m, chat, started) {
-    const messages = chat.messages.filter((x) => x !== m && !x.error).map((x) => ({
-      role: x.role, text: x.kind === 'image' ? `[Generated an image for: ${x.prompt || ''}]` : x.text, images: x.images,
-    }));
+    const messages = chat.messages.filter((x) => x !== m && !x.error).map((x) => ({ role: x.role, text: x.role === 'assistant' ? historyText(x) : x.text, images: x.images }));
     const res = await fetch('/api/chat', {
       method: 'POST', headers: headers(), signal: state.controller.signal,
-      body: JSON.stringify({ messages, mode: m.mode, search: m.search, instructions: prefs.instructions }),
+      body: JSON.stringify({ messages, mode: m.mode, search: m.search, instructions: prefs.instructions, timezone: tz }),
     });
+    await readStream(res, m, started);
+  }
+  async function resumeAction(m, approve, edits) {
+    const chat = state.current;
+    const c = m.confirm;
+    c.state = approve ? 'approved' : 'cancelled';
+    m.streaming = true; state.busy = true; state.controller = new AbortController(); syncSend();
+    fillMessage(nodeFor(m), m);
+    try {
+      const res = await fetch('/api/chat', { method: 'POST', headers: headers(), signal: state.controller.signal, body: JSON.stringify({ resume: { id: c.pendingId, approve, edits }, timezone: tz }) });
+      m.confirm = null;
+      await readStream(res, m, performance.now());
+    } catch (e) { if (e.name !== 'AbortError') m.error = 'Lost the connection. Try again.'; }
+    finally {
+      m.streaming = false; state.busy = false; state.controller = null; syncSend();
+      const n = nodeFor(m); if (n) fillMessage(n, m);
+      chat.updated = Date.now(); persist(chat); renderHistory();
+      if (approve) refreshMe();
+    }
+  }
+  async function readStream(res, m, started) {
     if (!res.ok) {
       let data = {}; try { data = await res.json(); } catch {}
       m.error = data.error || `Request failed (${res.status})`; m.errorCode = data.code;
@@ -578,11 +633,14 @@
         else if (ev.t === 'text') { if (!m.text && m.mode === 'think') m.thoughtMs = performance.now() - started; m.text += ev.v; }
         else if (ev.t === 'sources') m.sources = ev.v;
         else if (ev.t === 'error') m.error = ev.v;
+        else if (ev.t === 'step') { m.steps = m.steps || []; const k = m.steps.findIndex((x) => x.id === ev.v.id); if (k >= 0) m.steps[k] = ev.v; else m.steps.push(ev.v); }
+        else if (ev.t === 'confirm') m.confirm = ev.v;
         scheduleUpdate(m);
       }
     }
     if (m.mode === 'think' && !m.thought) m.mode = 'fast';
     m.meta = m.mode === 'think' ? 'Think' : '';
+    if (m.confirm) requestAnimationFrame(() => nodeFor(m)?.querySelector('.confirm [data-act="approve"]')?.focus({ preventScroll: true }));
   }
 
   async function drawImage(m, user) {
@@ -653,6 +711,195 @@
     if (t === 'system') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
   }
 
+  /* ---------- Account, apps, tasks ---------- */
+  async function api(path, opts = {}) {
+    const res = await fetch(path, { ...opts, headers: { 'content-type': 'application/json', ...(opts.headers || {}) } });
+    let data = null; try { data = res.status === 204 ? {} : await res.json(); } catch { data = {}; }
+    if (!res.ok) { const e = new Error(data.error || `Request failed (${res.status})`); e.code = data.code; throw e; }
+    return data;
+  }
+  async function refreshMe() {
+    try {
+      const me = await api('/api/me');
+      state.user = me.user;
+      $('#account').hidden = !me.user;
+      if (me.user) {
+        $('#accountName').textContent = me.user.name || me.user.email.split('@')[0];
+        $('#accountEmail').textContent = me.user.email;
+        $('#avatar').textContent = (me.user.name || me.user.email).trim()[0].toUpperCase();
+      }
+      $('#tasksDot').hidden = !me.unread;
+    } catch { state.user = null; }
+  }
+  $('#signOutBtn').addEventListener('click', async () => {
+    await api('/api/auth?step=logout', { method: 'POST' }).catch(() => {});
+    await refreshMe(); toast('Signed out');
+  });
+  document.querySelectorAll('dialog [data-close]').forEach((b) => b.addEventListener('click', () => b.closest('dialog').close()));
+  document.querySelectorAll('dialog.modal').forEach((d) => d.addEventListener('click', (e) => { if (e.target === d) d.close(); }));
+
+  const appsDialog = $('#appsDialog'); const appsBody = $('#appsBody');
+  const signInBlock = (why) => state.auth
+    ? `<div class="empty-block"><p>${why}</p><a class="btn primary" href="/api/auth?step=start">${icon('log-in')}<span>Sign in with Google</span></a></div>`
+    : `<div class="empty-block"><p>${why}</p><p class="muted">Sign-in is not set up on this server yet. The README’s “Connect apps” section takes about ten minutes.</p></div>`;
+  async function openApps() {
+    closeSidebarOnMobile();
+    if (!appsDialog.open) appsDialog.showModal();
+    if (!state.user) { appsBody.innerHTML = signInBlock('Sign in with Google to let Tern work in your email, calendar, files and other apps.'); return; }
+    appsBody.innerHTML = '<p class="muted">Loading</p>';
+    try { renderApps(await api('/api/apps')); } catch (e) { appsBody.innerHTML = `<p class="error-text">${esc(e.message)}</p>`; }
+  }
+  const GICON = { gmail: 'mail', calendar: 'calendar', drive: 'hard-drive' };
+  function statusText(st) { return { connected: 'Connected', needs_auth: 'Sign in needed', expired: 'Expired', error: 'Error', disconnected: '' }[st] || ''; }
+  function renderApps(d) {
+    const g = d.google.map((a) => `<li class="app-row">
+      <span class="app-icon">${icon(GICON[a.id])}</span>
+      <span class="app-text"><span class="app-name">${esc(a.name)}</span><span class="muted">${esc(a.blurb)}</span></span>
+      ${a.status === 'connected' ? `<span class="app-state ok">Connected</span><button class="btn ghost sm" data-g-off="${a.id}">Disconnect</button>`
+        : `<a class="btn ${a.status === 'disconnected' ? 'primary' : 'ghost'} sm" href="/api/auth?step=start&apps=${a.id}">${a.status === 'disconnected' ? 'Connect' : 'Reconnect'}</a>`}
+    </li>`).join('');
+    const c = d.custom.map((a) => `<li class="app-row">
+      <span class="app-icon">${icon('plug')}</span>
+      <span class="app-text"><span class="app-name">${esc(a.name)}</span><span class="muted mono">${esc(a.host)}${a.tools ? ` · ${a.tools} actions` : ''}</span></span>
+      ${a.status === 'connected' ? '<span class="app-state ok">Connected</span>' : `<a class="btn primary sm" href="/api/apps?step=oauth&id=${a.id}">Sign in</a>`}
+      <button class="icon-btn" data-c-off="${a.id}" aria-label="Remove ${esc(a.name)}">${icon('trash-2')}</button>
+    </li>`).join('');
+    const presets = d.presets.map((p) => `<button type="button" class="preset" data-preset='${esc(JSON.stringify(p))}'>${esc(p.name)}</button>`).join('');
+    appsBody.innerHTML = `
+      <p class="panel-lead">Tern acts in these apps for you. It reads on its own; anything that sends, changes or deletes waits for your OK.</p>
+      <h3 class="panel-h">Google</h3><ul class="app-list">${g}</ul>
+      <h3 class="panel-h">Your other apps</h3>
+      ${c ? `<ul class="app-list">${c}</ul>` : '<p class="muted">None yet. Add the apps you use; most offer one-click sign-in.</p>'}
+      <div class="presets">${presets}<button type="button" class="preset" data-preset='{"name":"","url":"","auth":"any"}'>${icon('plus')}<span>Any app</span></button></div>
+      <form class="add-app" id="addApp" hidden>
+        <p class="muted" id="addNote"></p>
+        <label class="field"><span>Name</span><input name="name" required maxlength="40" /></label>
+        <label class="field"><span>Server URL</span><input name="url" type="url" required placeholder="https://…/mcp" /></label>
+        <label class="field" id="tokenField"><span>Access token</span><input name="token" type="password" autocomplete="off" placeholder="Only if the app gave you one" /></label>
+        <div class="row-end"><button type="button" class="btn ghost" data-cancel-add>Cancel</button><button class="btn primary">Connect</button></div>
+      </form>
+      <p class="fine">Other apps connect through the open Model Context Protocol (MCP). Zapier’s server alone reaches thousands of apps.</p>`;
+  }
+  appsBody.addEventListener('click', async (e) => {
+    const off = e.target.closest('[data-g-off]');
+    const coff = e.target.closest('[data-c-off]');
+    const pre = e.target.closest('[data-preset]');
+    try {
+      if (off) renderApps(await api(`/api/apps?google=${off.dataset.gOff}`, { method: 'DELETE' }));
+      if (coff) renderApps(await api(`/api/apps?id=${coff.dataset.cOff}`, { method: 'DELETE' }));
+    } catch (err) { toast(err.message); }
+    if (pre) {
+      const p = JSON.parse(pre.dataset.preset);
+      const f = $('#addApp'); f.hidden = false;
+      f.name.value = p.name; f.url.value = p.url || '';
+      $('#addNote').textContent = p.note || (p.auth === 'oauth' ? 'You will be sent to the app to sign in.' : p.auth === 'any' ? 'Paste the MCP server URL the app gives you.' : '');
+      $('#tokenField').hidden = p.auth === 'oauth' || p.auth === 'url';
+      (p.url ? f.querySelector('button.primary') : f.url).focus();
+    }
+    if (e.target.closest('[data-cancel-add]')) $('#addApp').hidden = true;
+  });
+  appsBody.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target; const btn = f.querySelector('button.primary');
+    btn.disabled = true; btn.textContent = 'Connecting';
+    try {
+      const r = await api('/api/apps', { method: 'POST', body: JSON.stringify({ name: f.name.value, url: f.url.value, token: f.token.value }) });
+      if (r.needsAuth) { location.href = r.authUrl; return; }
+      toast(`${f.name.value} connected${r.tools ? ` with ${r.tools} actions` : ''}`);
+      renderApps(await api('/api/apps'));
+    } catch (err) { toast(err.message); btn.disabled = false; btn.textContent = 'Connect'; }
+  });
+  $('#appsBtn').addEventListener('click', openApps);
+
+  /* Tasks */
+  const tasksDialog = $('#tasksDialog'); const tasksBody = $('#tasksBody');
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const fmtWhen = (iso, zone) => { try { return new Date(iso).toLocaleString(undefined, { timeZone: zone, weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch { return iso; } };
+  async function openTasks() {
+    closeSidebarOnMobile();
+    if (!tasksDialog.open) tasksDialog.showModal();
+    if (!state.user) { tasksBody.innerHTML = signInBlock('Sign in to set up tasks that run on their own, like a 7am inbox digest emailed to you.'); return; }
+    tasksBody.innerHTML = '<p class="muted">Loading</p>';
+    try {
+      const [{ tasks, serverKey }, { runs }] = await Promise.all([api('/api/tasks'), api('/api/tasks?step=runs')]);
+      renderTasks(tasks, runs, serverKey);
+      api('/api/tasks?step=read', { method: 'POST' }).then(() => { $('#tasksDot').hidden = true; }).catch(() => {});
+    } catch (e) { tasksBody.innerHTML = `<p class="error-text">${esc(e.message)}</p>`; }
+  }
+  function renderTasks(tasks, runs, serverKey) {
+    const list = tasks.map((t) => `<li class="task-row${t.enabled ? '' : ' paused'}" data-id="${t.id}">
+      <span class="dot ${t.last_status === 'error' ? 'bad' : t.enabled ? 'done' : ''}"></span>
+      <span class="app-text"><span class="app-name">${esc(t.title)}</span><span class="muted">${esc(t.when)} · ${esc(t.timezone)}</span>
+        <span class="muted mono">${t.enabled && t.next_run_at ? `Next ${esc(fmtWhen(t.next_run_at, t.timezone))}` : 'Paused'}${t.can_act ? ' · can act' : ''}</span></span>
+      <label class="switch" title="${t.enabled ? 'Pause' : 'Resume'}"><input type="checkbox" data-toggle ${t.enabled ? 'checked' : ''} aria-label="Task on" /><span></span></label>
+      <button class="icon-btn" data-run aria-label="Run now">${icon('play')}</button>
+      <button class="icon-btn" data-del aria-label="Delete task">${icon('trash-2')}</button>
+    </li>`).join('');
+    const results = runs.slice(0, 8).map((r, i) => `<details class="run"${!r.read || i === 0 ? ' open' : ''}><summary><span class="dot ${r.status === 'ok' ? 'done' : 'bad'}"></span><span class="app-name">${esc(r.title || 'Task')}</span><span class="muted mono">${esc(fmtWhen(r.started_at))}${r.emailed ? ' · emailed' : ''}</span></summary><div class="md run-out">${renderMarkdown(r.output || '')}</div></details>`).join('');
+    tasksBody.innerHTML = `
+      <p class="panel-lead">Tasks run on their own on a schedule, even with Tern closed, and email you what they find. You can also just ask in chat: “every weekday at 7, summarise my inbox”.</p>
+      ${serverKey ? '' : '<p class="error-text">Tasks need a Gemini key set on the server (GEMINI_API_KEY); a key saved only in this browser cannot run while it is closed.</p>'}
+      ${list ? `<ul class="app-list">${list}</ul>` : ''}
+      <button type="button" class="btn ghost" id="newTaskBtn">${icon('plus')}<span>New task</span></button>
+      <form class="task-form" id="taskForm" hidden>
+        <label class="field"><span>Name</span><input name="title" maxlength="80" placeholder="Morning inbox digest" required /></label>
+        <label class="field"><span>What should Tern do</span><textarea name="prompt" rows="3" required placeholder="Summarise unread email from the last day, flag anything that needs a reply today, and list my meetings"></textarea></label>
+        <div class="field-row">
+          <label class="field"><span>Repeat</span><select name="freq"><option value="weekdays">Weekdays</option><option value="daily">Every day</option><option value="weekly">Weekly</option><option value="hourly">Every hour</option><option value="once">Once</option></select></label>
+          <label class="field" data-for="time"><span>Time</span><input name="time" type="time" value="07:00" /></label>
+          <label class="field" data-for="at" hidden><span>Date and time</span><input name="at" type="datetime-local" /></label>
+        </div>
+        <fieldset class="days" data-for="days" hidden><legend>Days</legend>${DAYS.map((d, i) => `<label><input type="checkbox" name="days" value="${i + 1}" ${i === 0 ? 'checked' : ''} />${d}</label>`).join('')}</fieldset>
+        <label class="check"><input type="checkbox" name="deliver_email" checked /> Email me the result (needs Gmail connected)</label>
+        <label class="check"><input type="checkbox" name="can_act" /> Can act without asking (send, change, delete). Off means it only reads and reports</label>
+        <p class="muted">Times use ${esc(tz)}.</p>
+        <div class="row-end"><button type="button" class="btn ghost" data-cancel-task>Cancel</button><button class="btn primary">Create task</button></div>
+      </form>
+      ${results ? `<h3 class="panel-h">Recent results</h3><div class="runs">${results}</div>` : ''}`;
+    tasksBody.querySelectorAll('.run-out').forEach(enhance);
+  }
+  tasksBody.addEventListener('change', async (e) => {
+    if (e.target.name === 'freq') {
+      const v = e.target.value; const f = $('#taskForm');
+      f.querySelector('[data-for="time"]').hidden = v === 'once';
+      f.querySelector('[data-for="at"]').hidden = v !== 'once';
+      f.querySelector('[data-for="days"]').hidden = v !== 'weekly';
+      f.querySelector('[data-for="time"] span').textContent = v === 'hourly' ? 'Minute past the hour' : 'Time';
+    }
+    if (e.target.matches('[data-toggle]')) {
+      const id = e.target.closest('[data-id]').dataset.id;
+      try { await api('/api/tasks', { method: 'PATCH', body: JSON.stringify({ id, enabled: e.target.checked, timezone: undefined }) }); openTasks(); } catch (err) { toast(err.message); }
+    }
+  });
+  tasksBody.addEventListener('click', async (e) => {
+    const row = e.target.closest('[data-id]');
+    if (e.target.closest('#newTaskBtn')) { $('#taskForm').hidden = false; $('#newTaskBtn').hidden = true; $('#taskForm').title.focus(); }
+    if (e.target.closest('[data-cancel-task]')) { $('#taskForm').hidden = true; $('#newTaskBtn').hidden = false; }
+    if (row && e.target.closest('[data-del]')) {
+      if (!confirm('Delete this task and its results?')) return;
+      await api(`/api/tasks?id=${row.dataset.id}`, { method: 'DELETE' }).catch((err) => toast(err.message)); openTasks();
+    }
+    if (row && e.target.closest('[data-run]')) {
+      const b = e.target.closest('[data-run]'); b.disabled = true; b.classList.add('busy');
+      toast('Running');
+      try { const r = await api(`/api/tasks?step=run&id=${row.dataset.id}`, { method: 'POST' }); toast(r.run.status === 'ok' ? (r.run.emailed ? 'Done, and emailed to you' : 'Done') : 'The run failed'); }
+      catch (err) { toast(err.message); }
+      openTasks();
+    }
+  });
+  tasksBody.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target; const freq = f.freq.value;
+    const schedule = { freq, time: freq === 'hourly' ? `00:${(f.time.value || '00:00').slice(3)}` : f.time.value };
+    if (freq === 'weekly') schedule.days = [...f.querySelectorAll('[name="days"]:checked')].map((x) => Number(x.value));
+    if (freq === 'once') { if (!f.at.value) { toast('Pick a date and time'); return; } schedule.at = new Date(f.at.value).toISOString(); }
+    try {
+      await api('/api/tasks', { method: 'POST', body: JSON.stringify({ title: f.title.value, prompt: f.prompt.value, schedule, timezone: tz, deliver_email: f.deliver_email.checked, can_act: f.can_act.checked }) });
+      toast('Task created'); openTasks();
+    } catch (err) { toast(err.message); }
+  });
+  $('#tasksBtn').addEventListener('click', openTasks);
+
   let toastTimer;
   function toast(msg) {
     el.toast.textContent = msg; el.toast.hidden = false;
@@ -680,10 +927,17 @@
     if (id && !chat) history.replaceState({}, '', '/');
     openChat(chat ? chat.id : null, false);
     syncSend();
-    fetch('/api/status').then((r) => r.json()).then((s) => {
-      state.serverHasKey = !!s.hasKey;
+    const params = new URLSearchParams(location.search);
+    try {
+      const s = await (await fetch('/api/status')).json();
+      state.serverHasKey = !!s.hasKey; state.auth = !!s.auth;
       if (!s.hasKey && !prefs.key) toast('Add a free Gemini key in Settings to start');
-    }).catch(() => {});
+    } catch {}
+    await refreshMe();
+    if (params.get('error')) toast(params.get('error'));
+    if (params.has('apps') || params.has('error')) history.replaceState(history.state, '', location.pathname);
+    if (params.has('apps')) openApps();
+    if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('/sw.js').catch(() => {});
   }
   boot();
 })();

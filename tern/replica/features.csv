@@ -1,0 +1,31 @@
+feature,area,priority,original,clone,notes
+Streaming chat answers,chat,must,yes,yes,built in v1
+Markdown code tables and maths,chat,must,yes,yes,
+Think mode with visible reasoning,chat,must,yes,yes,Gemini thinking summaries
+Web search with sources,chat,must,yes,yes,Google Search grounding
+Image understanding from attachments,chat,must,yes,yes,
+Image generation,chat,must,yes,yes,Gemini image model with keyless fallback
+Edit message and regenerate,chat,must,yes,yes,
+Stop a reply mid-stream,chat,must,yes,yes,
+Conversation history with search,history,must,yes,yes,browser storage
+Rename and delete chats,history,should,yes,yes,
+Custom instructions,settings,should,yes,yes,
+Dark and light theme,settings,should,yes,yes,
+Voice dictation and read aloud,chat,could,yes,yes,browser speech APIs
+Sign in with Google,account,must,yes,yes,Google OAuth code flow; signed cookie session
+Gmail connector read and search,apps,must,yes,yes,search; read message or thread
+Gmail draft send archive label,apps,must,partial,yes,send and reply with editable approval; drafts; archive/read/star/label; trash
+Google Calendar connector read,apps,must,yes,yes,events by range; free-time finder; calendars
+Google Calendar create and move events,apps,must,partial,yes,create; update; delete with approval
+Google Drive connector search and read,apps,should,yes,yes,search; read Docs Sheets Slides and text files
+Custom connectors for any app (MCP),apps,must,yes,yes,Streamable HTTP; OAuth discovery + dynamic registration + PKCE; bearer token; presets incl. Zapier for 8000+ apps
+Approval before any write action,apps,must,partial,yes,editable approval card; single-use; expires after 1h
+Tool activity shown in the chat,apps,must,yes,yes,live step rows with result counts
+Scheduled auto tasks,tasks,must,yes,yes,from chat or the Tasks panel; once/hourly/daily/weekdays/weekly in local time
+Task results by email,tasks,must,yes,yes,sent from the user's own Gmail to themselves
+Task run history,tasks,should,yes,yes,recent results in the Tasks panel with unread dot
+Installable on phone home screen,platform,should,yes,yes,manifest + service worker
+Workspaces with files and instructions,workspaces,could,yes,no,
+X posts real-time data,data,could,yes,skip,owned network data
+Companions with avatars,companions,could,yes,skip,licensed characters
+Video generation,imagine,could,yes,skip,no free API

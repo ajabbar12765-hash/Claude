@@ -1,0 +1,4 @@
+replica/
+tests/
+.data/
+.env

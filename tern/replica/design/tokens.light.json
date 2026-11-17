@@ -1,0 +1,138 @@
+{
+  "pairs": [
+    [
+      "text",
+      "bg"
+    ],
+    [
+      "text",
+      "surface"
+    ],
+    [
+      "text",
+      "raised"
+    ],
+    [
+      "text-muted",
+      "bg"
+    ],
+    [
+      "text-muted",
+      "surface"
+    ],
+    [
+      "text-2",
+      "bg"
+    ],
+    [
+      "text-2",
+      "raised"
+    ],
+    [
+      "on-accent",
+      "accent"
+    ],
+    [
+      "accent",
+      "bg"
+    ],
+    [
+      "danger",
+      "bg"
+    ],
+    [
+      "success",
+      "bg"
+    ],
+    [
+      "border-input",
+      "bg",
+      "ui"
+    ],
+    [
+      "focus",
+      "bg",
+      "ui"
+    ]
+  ],
+  "font": {
+    "sans": "Geist, system-ui, sans-serif",
+    "mono": "Geist Mono, ui-monospace, monospace"
+  },
+  "type": {
+    "xs": {
+      "size": 12,
+      "line": 16,
+      "weight": 400
+    },
+    "sm": {
+      "size": 13,
+      "line": 20,
+      "weight": 400
+    },
+    "base": {
+      "size": 15,
+      "line": 24,
+      "weight": 400
+    },
+    "lg": {
+      "size": 17,
+      "line": 24,
+      "weight": 500
+    },
+    "xl": {
+      "size": 22,
+      "line": 28,
+      "weight": 500
+    },
+    "display": {
+      "size": 40,
+      "line": 44,
+      "weight": 500
+    }
+  },
+  "space": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    32,
+    40,
+    48,
+    64
+  ],
+  "radius": {
+    "sm": 6,
+    "md": 10,
+    "lg": 16,
+    "xl": 20
+  },
+  "shadow": {
+    "pop": "0 12px 32px rgba(0,0,0,.35)"
+  },
+  "motion": {
+    "fast": "150ms",
+    "base": "220ms",
+    "enter": "300ms",
+    "ease": "cubic-bezier(0.22, 1, 0.36, 1)"
+  },
+  "_about": "Tern light theme",
+  "color": {
+    "bg": "#f7f8fa",
+    "surface": "#ffffff",
+    "raised": "#e4e8ef",
+    "border": "#e3e6eb",
+    "border-input": "#7a8293",
+    "text": "#111827",
+    "text-2": "#4b5565",
+    "text-muted": "#5f6879",
+    "accent": "#c2410c",
+    "on-accent": "#ffffff",
+    "danger": "#dc2626",
+    "success": "#15803d",
+    "focus": "#5f6879"
+  }
+}

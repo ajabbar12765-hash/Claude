@@ -25,7 +25,10 @@ createServer(async (req, res) => {
       res.on('close', () => ac.abort());
       const request = new Request(url, { method: req.method, headers: req.headers, body: chunks.length ? Buffer.concat(chunks) : undefined, signal: ac.signal });
       const response = await handler(request);
-      res.writeHead(response.status, Object.fromEntries(response.headers));
+      const h = Object.fromEntries([...response.headers].filter(([k]) => k !== 'set-cookie'));
+      const sc = response.headers.getSetCookie();
+      if (sc.length) h['set-cookie'] = sc;
+      res.writeHead(response.status, h);
       if (response.body) for await (const c of response.body) res.write(c);
       res.end();
       return;

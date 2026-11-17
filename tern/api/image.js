@@ -1,8 +1,10 @@
-import { API, IMAGE_MODEL, rateLimited, getKey, json, friendlyError } from './_gemini.js';
+import { API, IMAGE_MODEL, rateLimited, getKey, json, friendlyError } from './_lib/gemini.js';
+import { sameOrigin } from './_lib/http.js';
 
 // Makes or edits an image with Gemini. If the key's free tier has no image quota,
 // it answers {fallback:true} and the app draws with a free keyless service instead.
 export async function POST(req) {
+  if (!sameOrigin(req)) return json({ error: 'Forbidden' }, 403);
   if (rateLimited(req, 10)) return json({ error: 'Too many images. Wait a minute and try again.' }, 429);
   let body;
   try { body = await req.json(); } catch { return json({ error: 'Bad request' }, 400); }

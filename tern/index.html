@@ -32,7 +32,14 @@
       </label>
       <nav class="history" id="history"></nav>
       <div class="side-bottom">
+        <button class="nav-row" id="appsBtn"><i data-icon="blocks"></i><span>Apps</span><span class="count" id="appsCount"></span></button>
+        <button class="nav-row" id="tasksBtn"><i data-icon="clock"></i><span>Tasks</span><span class="dot" id="tasksDot" hidden></span></button>
         <button class="nav-row" id="settingsBtn"><i data-icon="settings"></i><span>Settings</span></button>
+        <div class="account" id="account" hidden>
+          <span class="avatar" id="avatar" aria-hidden="true"></span>
+          <span class="account-text"><span id="accountName"></span><span class="muted" id="accountEmail"></span></span>
+          <button class="icon-btn" id="signOutBtn" aria-label="Sign out" data-icon="log-out"></button>
+        </div>
       </div>
     </aside>
     <div class="scrim" id="scrim"></div>
@@ -104,6 +111,26 @@
         <button class="btn primary" value="save" id="saveSettings">Save</button>
       </div>
     </form>
+  </dialog>
+
+  <dialog class="modal wide" id="appsDialog" aria-labelledby="appsTitle">
+    <div class="modal-body">
+      <div class="modal-head">
+        <h2 id="appsTitle">Apps</h2>
+        <button class="icon-btn" data-close aria-label="Close" data-icon="x"></button>
+      </div>
+      <div id="appsBody" class="panel-body"></div>
+    </div>
+  </dialog>
+
+  <dialog class="modal wide" id="tasksDialog" aria-labelledby="tasksTitle">
+    <div class="modal-body">
+      <div class="modal-head">
+        <h2 id="tasksTitle">Tasks</h2>
+        <button class="icon-btn" data-close aria-label="Close" data-icon="x"></button>
+      </div>
+      <div id="tasksBody" class="panel-body"></div>
+    </div>
   </dialog>
 
   <div class="toast" id="toast" role="status" hidden></div>
