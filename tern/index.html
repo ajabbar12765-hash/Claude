@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+  <title>Tern</title>
+  <meta name="description" content="Tern is a free assistant for questions, reasoning, web answers and images." />
+  <meta name="theme-color" content="#0b0d14" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f5f7fa" media="(prefers-color-scheme: light)" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script>
+    try { const t = localStorage.getItem('tern.theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch {}
+  </script>
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="sidebar" id="sidebar" aria-label="Chats">
+      <div class="side-top">
+        <a class="wordmark" href="/" id="homeLink" aria-label="Tern, new chat"><span class="mark" aria-hidden="true"></span>tern</a>
+        <button class="icon-btn" id="collapseBtn" aria-label="Hide sidebar" data-icon="panel-left"></button>
+      </div>
+      <button class="nav-row" id="newChatBtn"><i data-icon="square-pen"></i><span>New chat</span><kbd class="kbd">⌘⇧O</kbd></button>
+      <label class="side-search">
+        <i data-icon="search"></i>
+        <input id="historySearch" type="search" placeholder="Search" aria-label="Search chats" />
+      </label>
+      <nav class="history" id="history"></nav>
+      <div class="side-bottom">
+        <button class="nav-row" id="settingsBtn"><i data-icon="settings"></i><span>Settings</span></button>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn" id="openSideBtn" aria-label="Show sidebar" data-icon="panel-left"></button>
+        <h1 class="chat-title" id="chatTitle"></h1>
+        <button class="icon-btn" id="topNewBtn" aria-label="New chat" data-icon="square-pen"></button>
+      </header>
+
+      <section class="thread" id="thread" aria-live="polite"></section>
+
+      <div class="dock" id="dock">
+        <div class="hero" id="hero">
+          <p class="hero-mark"><span class="mark" aria-hidden="true"></span>tern</p>
+          <p class="hero-sub">Ask anything. Think it through, check the web, or draw it.</p>
+        </div>
+        <button class="jump" id="jumpBtn" aria-label="Scroll to latest" data-icon="arrow-down" hidden></button>
+        <form class="composer" id="composer" autocomplete="off">
+          <div class="attachments" id="attachments" hidden></div>
+          <label class="sr-only" for="input">Message</label>
+          <textarea id="input" rows="1" placeholder="Ask anything" enterkeyhint="send"></textarea>
+          <div class="composer-bar">
+            <div class="tools">
+              <button type="button" class="tool" id="attachBtn" aria-label="Attach image"><i data-icon="paperclip"></i></button>
+              <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple hidden />
+              <button type="button" class="tool toggle" id="searchBtn" aria-pressed="false" title="Answer from the live web"><i data-icon="globe"></i><span>Search</span></button>
+              <button type="button" class="tool toggle" id="thinkBtn" aria-pressed="false" title="Reason step by step before answering"><i data-icon="brain"></i><span>Think</span></button>
+              <button type="button" class="tool toggle" id="imageBtn" aria-pressed="false" title="Make an image from your message"><i data-icon="image"></i><span>Image</span></button>
+            </div>
+            <div class="tools">
+              <button type="button" class="tool" id="micBtn" aria-label="Dictate" hidden><i data-icon="mic"></i></button>
+              <button type="submit" class="send" id="sendBtn" aria-label="Send" disabled><i data-icon="arrow-up"></i></button>
+            </div>
+          </div>
+        </form>
+        <p class="footnote">Tern can be wrong. Check anything important.</p>
+      </div>
+      <div class="drop-hint" id="dropHint" hidden>Drop images to attach</div>
+    </main>
+  </div>
+
+  <dialog class="modal" id="settings" aria-labelledby="settingsTitle">
+    <form method="dialog" class="modal-body" id="settingsForm">
+      <div class="modal-head">
+        <h2 id="settingsTitle">Settings</h2>
+        <button class="icon-btn" value="cancel" aria-label="Close" data-icon="x"></button>
+      </div>
+      <label class="field">
+        <span>Gemini API key</span>
+        <input id="keyInput" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…" />
+        <small id="keyHelp">Optional. Free from Google AI Studio at aistudio.google.com/apikey. Kept in this browser only.</small>
+      </label>
+      <label class="field">
+        <span>Custom instructions</span>
+        <textarea id="instructionsInput" rows="4" placeholder="How should Tern answer you? For example: keep it short, I write Python, use metric units"></textarea>
+      </label>
+      <label class="field">
+        <span>Theme</span>
+        <select id="themeSelect">
+          <option value="system">Match system</option>
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+        </select>
+      </label>
+      <div class="modal-foot">
+        <button type="button" class="btn danger" id="clearAllBtn">Delete all chats</button>
+        <button class="btn primary" value="save" id="saveSettings">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="/icons.js"></script>
+  <script src="/vendor/marked.min.js"></script>
+  <script src="/vendor/purify.min.js"></script>
+  <script src="/vendor/katex/katex.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
