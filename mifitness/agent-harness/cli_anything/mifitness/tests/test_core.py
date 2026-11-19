@@ -120,3 +120,54 @@ def test_date_range_window():
 def test_reset(store):
     store.reset()
     assert store.status()["records"] == 0
+
+
+# ---------------------------------------------------------------- project / session / export
+from cli_anything.mifitness.core import export as X
+from cli_anything.mifitness.core import project as P
+from cli_anything.mifitness.core.session import Session
+
+
+@pytest.fixture
+def home(tmp_path, monkeypatch):
+    monkeypatch.setenv("MIFITNESS_HOME", str(tmp_path / "home"))
+    return tmp_path / "home"
+
+
+def test_project_resolve_and_create(home):
+    assert P.resolve(None) == home / "mifitness.db"
+    assert P.resolve("me") == home / "profiles" / "me.db"
+    info = P.create("me")
+    assert info["exists"] and info["records"] == 0
+    with pytest.raises(FileExistsError):
+        P.create("me")
+    assert [p["name"] for p in P.list_profiles()] == ["me"]
+    with pytest.raises(FileNotFoundError):
+        P.open_project("missing")
+
+
+def test_session_undo_redo(home, tmp_path):
+    recs, _ = read_export(write_zip(tmp_path / "e.zip"), "s3cret")
+    s = Session()
+    with Store(home / "x.db") as st:
+        res = st.add(recs)
+        s.snapshot(st, "import", res["import_id"])
+        n = st.status()["records"]
+        assert s.undo(st)["undone"]["records"] == len(recs)
+        assert st.status()["records"] == 0
+        s.redo(st)
+        assert st.status()["records"] == n
+        with pytest.raises(ValueError):
+            s.redo(st)
+    assert Session().history(Store(home / "x.db"))["undo"][0]["import_id"] == res["import_id"]
+
+
+def test_export_presets_and_report(store, tmp_path):
+    assert {"daily-csv", "sleep-json", "raw-json", "report-md"} <= set(X.EXPORT_PRESETS)
+    r = X.render(store, UTC, "report-md", str(tmp_path / "r.md"))
+    text = (tmp_path / "r.md").read_text()
+    assert r["size_bytes"] > 0 and text.startswith("# Mi Fitness report") and "## Workouts" in text
+    with pytest.raises(ValueError):
+        X.render(store, UTC, "nope", str(tmp_path / "x"))
+    with pytest.raises(FileExistsError):
+        X.render(store, UTC, "report-md", str(tmp_path / "r.md"), overwrite=False)

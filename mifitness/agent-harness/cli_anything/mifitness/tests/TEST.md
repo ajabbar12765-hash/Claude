@@ -1,8 +1,8 @@
 # cli-anything-mifitness test plan
 
 ## Inventory
-- `test_core.py`: ~14 unit tests (reader, store, metrics) on synthetic data
-- `test_full_e2e.py`: ~8 end-to-end tests: build a realistic AES-encrypted
+- `test_core.py`: 18 unit tests (reader, store, metrics, project, session, export) on synthetic data
+- `test_full_e2e.py`: 11 end-to-end tests in `TestCLISubprocess`: build a realistic AES-encrypted
   Mi Fitness export ZIP, run the installed CLI as a subprocess, verify output files
 
 ## Unit plan
@@ -22,12 +22,12 @@
 4. **Sleep + workouts** — values match the generated fixture.
 5. **Export** — `export --what daily --format csv` → file exists, header + 7 rows,
    steps column equals fixture totals; JSON export parses.
-6. **Re-import** is idempotent (added == 0).
+6. **Re-import** is idempotent (added == 0); `--dry-run` saves nothing.
+7. **Undo/redo** — `session undo` empties the project, `session redo` restores it.
+8. **Projects** — `project new me --open`, import, `--project me status`; unknown project fails.
+9. **Report** — `export render report-md` writes a Markdown report containing fixture values.
 
-## Results
-See bottom of file (appended after running pytest).
-
-## Results (2026-11-19)
+## Part 2: Results (2026-11-19)
 
 ```
 cli_anything/mifitness/tests/test_core.py::test_classify PASSED
@@ -45,13 +45,19 @@ cli_anything/mifitness/tests/test_core.py::test_daily_merges PASSED
 cli_anything/mifitness/tests/test_core.py::test_series_agg PASSED
 cli_anything/mifitness/tests/test_core.py::test_date_range_window PASSED
 cli_anything/mifitness/tests/test_core.py::test_reset PASSED
-cli_anything/mifitness/tests/test_full_e2e.py::test_help PASSED
-cli_anything/mifitness/tests/test_full_e2e.py::test_status_empty_hint PASSED
-cli_anything/mifitness/tests/test_full_e2e.py::test_missing_and_wrong_password PASSED
-cli_anything/mifitness/tests/test_full_e2e.py::test_import_and_status PASSED
-cli_anything/mifitness/tests/test_full_e2e.py::test_weekly_daily PASSED
-cli_anything/mifitness/tests/test_full_e2e.py::test_sleep_workouts_vitals PASSED
+cli_anything/mifitness/tests/test_core.py::test_project_resolve_and_create PASSED
+cli_anything/mifitness/tests/test_core.py::test_session_undo_redo PASSED
+cli_anything/mifitness/tests/test_core.py::test_export_presets_and_report PASSED
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_help_groups PASSED
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_status_empty_hint PASSED
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_missing_and_wrong_password PASSED
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_dry_run_saves_nothing PASSED
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_import_status_idempotent PASSED
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_weekly_daily PASSED
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_sleep_workouts_vitals PASSED
 PASSED
-cli_anything/mifitness/tests/test_full_e2e.py::test_human_table PASSED
-============================== 23 passed in 2.13s ==============================
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_undo_redo_import PASSED
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_projects PASSED
+cli_anything/mifitness/tests/test_full_e2e.py::TestCLISubprocess::test_human_table PASSED
+============================== 29 passed in 3.87s ==============================
 ```

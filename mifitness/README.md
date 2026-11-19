@@ -10,7 +10,7 @@ cli-anything-mifitness daily --from 7d
 ```
 
 The Claude skill lives at `.claude/skills/cli-anything-mifitness/SKILL.md`, so Claude
-Code sessions in this repo know how to use it. Full command list: see that file.
+Code sessions in this repo know how to use it. Full command list: see that file, `agent-harness/README.md` and `agent-harness/MIFITNESS.md`.
 
 Tests: `python -m pytest mifitness/agent-harness/cli_anything/mifitness/tests`
 (uses a generated, realistic AES-encrypted export; no real data in the repo).

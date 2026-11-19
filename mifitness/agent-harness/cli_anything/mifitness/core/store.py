@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS records (
     ts INTEGER NOT NULL,
     category TEXT NOT NULL DEFAULT '',
     value TEXT NOT NULL,
-    digest TEXT NOT NULL UNIQUE
+    digest TEXT NOT NULL UNIQUE,
+    import_id INTEGER
 );
 CREATE INDEX IF NOT EXISTS idx_key_ts ON records(key, ts);
 CREATE TABLE IF NOT EXISTS imports (
@@ -34,7 +35,12 @@ CREATE TABLE IF NOT EXISTS imports (
     imported_at INTEGER NOT NULL,
     files INTEGER NOT NULL,
     parsed INTEGER NOT NULL,
-    added INTEGER NOT NULL
+    added INTEGER NOT NULL,
+    undone INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS undone_records (
+    import_id INTEGER NOT NULL,
+    source TEXT, tag TEXT, key TEXT, ts INTEGER, category TEXT, value TEXT, digest TEXT
 );
 """
 
@@ -54,6 +60,16 @@ class Store:
         self.conn = sqlite3.connect(self.path, timeout=30)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
+        self._migrate()
+
+    def _migrate(self) -> None:
+        cols = {r[1] for r in self.conn.execute("PRAGMA table_info(records)")}
+        if "import_id" not in cols:
+            self.conn.execute("ALTER TABLE records ADD COLUMN import_id INTEGER")
+        cols = {r[1] for r in self.conn.execute("PRAGMA table_info(imports)")}
+        if "undone" not in cols:
+            self.conn.execute("ALTER TABLE imports ADD COLUMN undone INTEGER NOT NULL DEFAULT 0")
+        self.conn.commit()
 
     def close(self):
         self.conn.close()
@@ -70,20 +86,46 @@ class Store:
         return hashlib.sha1(blob.encode()).hexdigest()
 
     def add(self, records: Iterable[Record], path: str = "", files: int = 0) -> dict:
+        """Insert records as one import batch. Returns counts and the import id."""
         parsed = added = 0
         with self.conn:
+            cur = self.conn.execute(
+                "INSERT INTO imports(path,imported_at,files,parsed,added) VALUES (?,?,?,?,?)",
+                (str(path), int(time.time()), files, 0, 0))
+            import_id = cur.lastrowid
             for r in records:
                 parsed += 1
                 cur = self.conn.execute(
-                    "INSERT OR IGNORE INTO records(source,tag,key,ts,category,value,digest) "
-                    "VALUES (?,?,?,?,?,?,?)",
+                    "INSERT OR IGNORE INTO records(source,tag,key,ts,category,value,digest,import_id) "
+                    "VALUES (?,?,?,?,?,?,?,?)",
                     (r.source, r.tag, r.key, r.ts, r.category,
-                     json.dumps(r.value, sort_keys=True), self._digest(r)))
+                     json.dumps(r.value, sort_keys=True), self._digest(r), import_id))
                 added += cur.rowcount
+            self.conn.execute("UPDATE imports SET parsed=?, added=? WHERE id=?",
+                              (parsed, added, import_id))
+        return {"import_id": import_id, "parsed": parsed, "added": added,
+                "duplicates": parsed - added}
+
+    def undo_import(self, import_id: int) -> int:
+        """Move an import's records aside (reversible). Returns rows moved."""
+        with self.conn:
             self.conn.execute(
-                "INSERT INTO imports(path,imported_at,files,parsed,added) VALUES (?,?,?,?,?)",
-                (str(path), int(time.time()), files, parsed, added))
-        return {"parsed": parsed, "added": added, "duplicates": parsed - added}
+                "INSERT INTO undone_records SELECT import_id,source,tag,key,ts,category,value,digest "
+                "FROM records WHERE import_id=?", (import_id,))
+            n = self.conn.execute("DELETE FROM records WHERE import_id=?", (import_id,)).rowcount
+            self.conn.execute("UPDATE imports SET undone=1 WHERE id=?", (import_id,))
+        return n
+
+    def redo_import(self, import_id: int) -> int:
+        """Restore records moved aside by undo_import. Returns rows restored."""
+        with self.conn:
+            n = self.conn.execute(
+                "INSERT OR IGNORE INTO records(import_id,source,tag,key,ts,category,value,digest) "
+                "SELECT import_id,source,tag,key,ts,category,value,digest FROM undone_records "
+                "WHERE import_id=?", (import_id,)).rowcount
+            self.conn.execute("DELETE FROM undone_records WHERE import_id=?", (import_id,))
+            self.conn.execute("UPDATE imports SET undone=0 WHERE id=?", (import_id,))
+        return n
 
     def query(self, key: str | None = None, start: int | None = None, end: int | None = None,
               source: str | None = None, tag: str | None = None, limit: int | None = None,
@@ -118,7 +160,7 @@ class Store:
         r = self.conn.execute("SELECT COUNT(*) n, MIN(ts) first, MAX(ts) last FROM records "
                               "WHERE source != 'profile'").fetchone()
         imports = [dict(x) for x in self.conn.execute(
-            "SELECT path, imported_at, files, parsed, added FROM imports ORDER BY id")]
+            "SELECT id, path, imported_at, files, parsed, added, undone FROM imports ORDER BY id")]
         return {"db": str(self.path), "records": r["n"], "first_ts": r["first"],
                 "last_ts": r["last"], "imports": imports}
 
@@ -126,3 +168,4 @@ class Store:
         with self.conn:
             self.conn.execute("DELETE FROM records")
             self.conn.execute("DELETE FROM imports")
+            self.conn.execute("DELETE FROM undone_records")

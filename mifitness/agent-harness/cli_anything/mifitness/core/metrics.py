@@ -12,7 +12,6 @@ from datetime import date, datetime, timedelta, timezone, tzinfo
 from statistics import mean
 from zoneinfo import ZoneInfo
 
-from .reader import Record
 from .store import Store
 
 IGNORE_FIELDS = {"time", "ts", "timestamp", "date", "uid", "sid", "zone_offset",
