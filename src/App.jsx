@@ -15,15 +15,6 @@ const CONTACT = {
 const WHATSAPP = '923290985503';
 const waLink = (text) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 
-// Bank-transfer payment details shown at checkout.
-const BANK = {
-  bank: 'Meezan Bank',
-  title: 'NIDA ABBASI',
-  account: '99190103724123',
-  iban: 'PK42MEZN0099190103724123',
-  branch: 'Nursery Branch — Karachi',
-};
-
 // Product photos and logo are served from the repo (public on GitHub),
 // pinned to the commit that contains them.
 const IMG = 'https://raw.githubusercontent.com/ajabbar12765-hash/Claude/ad3c4a2f2e296f202b291dd55a756a9b44456691/public';
@@ -507,8 +498,7 @@ function AboutPage() {
 function CheckoutForm({ onBrowse }) {
   const { items, setQty, removeItem, clear, total } = useCart();
   const [status, setStatus] = useState('idle'); // idle | sending | error
-  const [placed, setPlaced] = useState(null); // { phone, method, total } after success
-  const methodRef = useRef('cod'); // set by whichever payment button is clicked
+  const [placed, setPlaced] = useState(null); // { phone } after success
 
   // Resolve cart lines against the product list (names, prices).
   const lines = items
@@ -522,8 +512,6 @@ function CheckoutForm({ onBrowse }) {
   async function handleSubmit(e) {
     e.preventDefault();
     if (lines.length === 0) return;
-    const method = methodRef.current;
-    const paymentLabel = method === 'bank' ? 'Bank Transfer' : 'Cash on Delivery';
     const data = new FormData(e.target);
     setStatus('sending');
     const summary = lines
@@ -536,10 +524,10 @@ function CheckoutForm({ onBrowse }) {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
           access_key: WEB3FORMS_KEY,
-          subject: `New FreshLeaf Order (${paymentLabel}) — ${data.get('name')} (${rs(total)})`,
+          subject: `New FreshLeaf Order — ${data.get('name')} (${rs(total)})`,
           from_name: 'FreshLeaf Website',
           replyto: data.get('email') || undefined,
-          'Payment method': paymentLabel,
+          'Payment method': 'Cash on Delivery',
           Order: summary,
           Items: String(itemCount),
           Total: rs(total),
@@ -552,7 +540,7 @@ function CheckoutForm({ onBrowse }) {
       });
       const result = await res.json();
       if (result.success) {
-        setPlaced({ phone: data.get('phone'), method, total });
+        setPlaced({ phone: data.get('phone') });
         clear();
         setStatus('idle');
       } else {
@@ -564,39 +552,6 @@ function CheckoutForm({ onBrowse }) {
   }
 
   if (placed) {
-    if (placed.method === 'bank') {
-      return (
-        <div className="order-thanks">
-          <Leaf />
-          <h3>Order received — please complete your bank transfer</h3>
-          <p>
-            Thank you! To finish your order, transfer <strong>{rs(placed.total)}</strong> to
-            the account below, then send us your payment screenshot on WhatsApp or email.
-            We'll confirm and dispatch once payment is received.
-          </p>
-          <div className="bank-box">
-            <div><span>Bank</span><strong>{BANK.bank}</strong></div>
-            <div><span>Account title</span><strong>{BANK.title}</strong></div>
-            <div><span>Account number</span><strong>{BANK.account}</strong></div>
-            <div><span>IBAN</span><strong>{BANK.iban}</strong></div>
-            <div><span>Branch</span><strong>{BANK.branch}</strong></div>
-          </div>
-          <div className="thanks-actions">
-            <a
-              className="footer-btn wa"
-              href={waLink(`Hi FreshLeaf! I've placed an order for ${rs(placed.total)} and I'm sending my bank transfer receipt.`)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Send receipt on WhatsApp
-            </a>
-            <button className="btn btn-outline" onClick={() => setPlaced(null)}>
-              Place another order
-            </button>
-          </div>
-        </div>
-      );
-    }
     return (
       <div className="order-thanks">
         <Leaf />
@@ -695,28 +650,16 @@ function CheckoutForm({ onBrowse }) {
 
       <div className="pay-section">
         <h3 className="pay-title">Payment</h3>
-        <p className="pay-sub">Choose how you'd like to pay — your total is {rs(total)}.</p>
-        <div className="pay-methods">
-          <button
-            type="submit"
-            className="pay-btn"
-            onClick={() => { methodRef.current = 'cod'; }}
-            disabled={status === 'sending'}
-          >
-            <span className="pay-btn-title">Cash on Delivery</span>
-            <span className="pay-btn-sub">Pay in cash when your order arrives</span>
-          </button>
-          <button
-            type="submit"
-            className="pay-btn"
-            onClick={() => { methodRef.current = 'bank'; }}
-            disabled={status === 'sending'}
-          >
-            <span className="pay-btn-title">Bank Transfer</span>
-            <span className="pay-btn-sub">Pay now by bank transfer (Meezan)</span>
-          </button>
-        </div>
-        {status === 'sending' && <p className="form-note">Placing your order…</p>}
+        <p className="pay-sub">
+          <strong>Cash on Delivery</strong> — pay in cash when your order arrives. Your total is {rs(total)}.
+        </p>
+        <button
+          type="submit"
+          className="btn btn-primary place-order-btn"
+          disabled={status === 'sending'}
+        >
+          {status === 'sending' ? 'Placing order…' : `Place Order · ${rs(total)}`}
+        </button>
         {status === 'error' && (
           <p className="form-error dark-on-light">
             Something went wrong sending your order. Please try again, or order directly by

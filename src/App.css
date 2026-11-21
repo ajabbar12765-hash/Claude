@@ -847,6 +847,8 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
 
 .order-form .btn-primary:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
+.place-order-btn { width: 100%; text-align: center; }
+
 .form-note { font-size: 0.8rem; color: var(--ink-soft); text-align: center; }
 
 .order-thanks {
