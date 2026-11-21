@@ -497,8 +497,8 @@ function AboutPage() {
 
 function CheckoutForm({ onBrowse }) {
   const { items, setQty, removeItem, clear, total } = useCart();
+  const navigate = useContext(NavContext);
   const [status, setStatus] = useState('idle'); // idle | sending | error
-  const [placed, setPlaced] = useState(null); // { phone } after success
 
   // Resolve cart lines against the product list (names, prices).
   const lines = items
@@ -540,31 +540,15 @@ function CheckoutForm({ onBrowse }) {
       });
       const result = await res.json();
       if (result.success) {
-        setPlaced({ phone: data.get('phone') });
         clear();
         setStatus('idle');
+        navigate('/thank-you'); // redirect to the dedicated thank-you page
       } else {
         setStatus('error');
       }
     } catch {
       setStatus('error');
     }
-  }
-
-  if (placed) {
-    return (
-      <div className="order-thanks">
-        <Leaf />
-        <h3>Order received — thank you!</h3>
-        <p>
-          Your order has been sent to us. We'll call you at {placed.phone} to confirm
-          your order and delivery, and you'll pay in cash when it arrives.
-        </p>
-        <button className="btn btn-outline" onClick={() => setPlaced(null)}>
-          Place another order
-        </button>
-      </div>
-    );
   }
 
   if (lines.length === 0) {
@@ -832,6 +816,29 @@ function ContactPage() {
 
 /* ---------- app shell ---------- */
 
+function ThankYouPage() {
+  return (
+    <section className="section about page-top page-fill">
+      <div className="about-glow" aria-hidden="true" />
+      <Reveal eager>
+        <div className="order-thanks thankyou-card">
+          <Leaf />
+          <h2>Thank you for your order!</h2>
+          <p>
+            Your order has been received. We'll call you shortly to confirm your order and
+            delivery — and you'll pay in cash when it arrives.
+          </p>
+          <p className="tagline-line">Naturally crafted. Beautifully scented. Thoughtfully made.</p>
+          <div className="thanks-actions">
+            <Link className="btn btn-primary" to="/products">Continue shopping</Link>
+            <Link className="btn btn-outline" to="/">Back to home</Link>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
 const NAV = [
   ['/', 'Home'],
   ['/about', 'About Us'],
@@ -845,6 +852,7 @@ const PAGES = {
   '/products': SpraysPage,
   '/order': SpraysPage,
   '/contact': ContactPage,
+  '/thank-you': ThankYouPage,
 };
 
 function CartButton({ onClick }) {

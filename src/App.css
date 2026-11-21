@@ -849,6 +849,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; color: var(--green-dar
 
 .place-order-btn { width: 100%; text-align: center; }
 
+.thankyou-card { max-width: 34rem; margin: 0 auto; }
+.thankyou-card h2 { font-size: clamp(1.8rem, 4vw, 2.4rem); }
+
 .form-note { font-size: 0.8rem; color: var(--ink-soft); text-align: center; }
 
 .order-thanks {
